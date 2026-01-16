@@ -3,13 +3,17 @@ import sys
 import os
 import queue
 import time
+import asyncio
+import json
 from datetime import datetime
 
 import numpy as np
 import sounddevice as sd
 import soundfile as sf
+import websockets
+from dotenv import load_dotenv
 
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import Qt, QThread, Signal, QMetaObject, Q_ARG
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -22,7 +26,10 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QMessageBox,
     QLineEdit,
+    QTextEdit,
 )
+
+load_dotenv()
 
 
 class RecorderWorker(QThread):
@@ -90,14 +97,135 @@ class RecorderWorker(QThread):
             self.error.emit(str(e))
 
 
+class SonioxWorker(QThread):
+    error = Signal(str)
+    status = Signal(str)
+    transcription_update = Signal(str, bool)
+    
+    def __init__(self, device_id: int, parent=None):
+        super().__init__(parent)
+        self._device_id = device_id
+        self._stop_flag = False
+        self._api_key = os.environ.get("SONIOX_API_KEY")
+        self._ws_url = "wss://stt-rt.soniox.com/transcribe-websocket"
+        self._sample_rate = 16000
+        self._channels = 1
+        self._audio_queue = queue.Queue(maxsize=16)
+        
+    def stop(self):
+        self._stop_flag = True
+        
+    def run(self):
+        try:
+            if not self._api_key:
+                self.error.emit("SONIOX_API_KEY not found in .env file")
+                return
+                
+            self.status.emit("Connecting to Soniox...")
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(self._stream_audio())
+        except Exception as e:
+            self.error.emit(f"Soniox error: {e}")
+            
+    async def _stream_audio(self):
+        try:
+            async with websockets.connect(self._ws_url) as ws:
+                self.status.emit("Connected to Soniox")
+                
+                config = {
+                    "api_key": self._api_key,
+                    "model": "stt-rt-v3",
+                    "audio_format": "pcm_s16le",
+                    "sample_rate": self._sample_rate,
+                    "num_channels": self._channels,
+                    "enable_endpoint_detection": True,
+                }
+                
+                await ws.send(json.dumps(config))
+                self.status.emit("Streaming audio to Soniox...")
+                
+                async def sender():
+                    def audio_callback(indata, frames, time_info, status):
+                        if not self._stop_flag:
+                            pcm16 = np.clip(indata[:, 0] * 32767, -32768, 32767).astype(np.int16).tobytes()
+                            try:
+                                self._audio_queue.put_nowait(pcm16)
+                            except queue.Full:
+                                pass
+                    
+                    with sd.InputStream(
+                        samplerate=self._sample_rate,
+                        channels=self._channels,
+                        dtype="float32",
+                        callback=audio_callback,
+                        blocksize=1024,
+                        device=self._device_id,
+                    ):
+                        while not self._stop_flag:
+                            try:
+                                chunk = self._audio_queue.get_nowait()
+                                await ws.send(chunk)
+                            except queue.Empty:
+                                await asyncio.sleep(0.01)
+                    
+                    await ws.send("")
+                
+                async def receiver():
+                    async for msg in ws:
+                        try:
+                            data = json.loads(msg)
+                            
+                            if data.get("error_code"):
+                                self.error.emit(f"{data['error_code']}: {data.get('error_message', '')}")
+                                break
+                            
+                            tokens = data.get("tokens", [])
+                            if tokens:
+                                final_tokens = [t for t in tokens if t.get("is_final")]
+                                non_final_tokens = [t for t in tokens if not t.get("is_final")]
+                                
+                                if final_tokens:
+                                    text_parts = []
+                                    for t in final_tokens:
+                                        token_text = t.get("text", "")
+                                        if token_text == "<end>":
+                                            text_parts.append("\n")
+                                        else:
+                                            text_parts.append(token_text)
+                                    text = "".join(text_parts)
+                                    print(f"[DEBUG] Emitting FINAL: {repr(text)}")
+                                    self.transcription_update.emit(text, True)
+                                elif non_final_tokens:
+                                    text = "".join(t.get("text", "") for t in non_final_tokens)
+                                    print(f"[DEBUG] Emitting PARTIAL: {repr(text)}")
+                                    self.transcription_update.emit(text, False)
+                            
+                            if data.get("finished"):
+                                self.status.emit("Session finished")
+                                break
+                        except json.JSONDecodeError:
+                            pass
+                        except Exception as e:
+                            print(f"Receiver error: {e}")
+                
+                await asyncio.gather(sender(), receiver())
+                
+        except Exception as e:
+            self.error.emit(f"WebSocket error: {e}")
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("PySide6 Audio Recorder (sounddevice)")
-        self.setMinimumSize(520, 280)
+        self.setWindowTitle("Soniox Real-Time Transcription")
+        self.setMinimumSize(700, 500)
 
-        self._worker: RecorderWorker | None = None
+        self._recorder_worker: RecorderWorker | None = None
+        self._soniox_worker: SonioxWorker | None = None
         self._recording = False
+        self._transcribing = False
+        self._final_transcript = ""
         self._devices = []  # list of dicts with device info
         self._device_ids = []  # parallel list of actual device indices
         self._channels_default = 2
@@ -141,6 +269,15 @@ class MainWindow(QMainWindow):
         dest_row.addWidget(browse_btn)
         layout.addLayout(dest_row)
 
+        # Transcription text area
+        transcription_label = QLabel("Real-Time Transcription:")
+        layout.addWidget(transcription_label)
+        
+        self.transcription_text = QTextEdit()
+        self.transcription_text.setPlaceholderText("Transcription will appear here...")
+        self.transcription_text.setMinimumHeight(200)
+        layout.addWidget(self.transcription_text)
+        
         # Status label
         self.status_label = QLabel("Idle")
         font = self.status_label.font()
@@ -148,12 +285,24 @@ class MainWindow(QMainWindow):
         self.status_label.setFont(font)
         layout.addWidget(self.status_label)
 
-        # Record/Stop button
-        self.record_btn = QPushButton("Record")
+        # Buttons row
+        buttons_row = QHBoxLayout()
+        
+        # Transcribe button
+        self.transcribe_btn = QPushButton("Start Transcription")
+        self.transcribe_btn.setCheckable(True)
+        self.transcribe_btn.setMinimumHeight(56)
+        self.transcribe_btn.clicked.connect(self._toggle_transcription)
+        buttons_row.addWidget(self.transcribe_btn)
+        
+        # Record button
+        self.record_btn = QPushButton("Record to File")
         self.record_btn.setCheckable(True)
         self.record_btn.setMinimumHeight(56)
         self.record_btn.clicked.connect(self._toggle_recording)
-        layout.addWidget(self.record_btn)
+        buttons_row.addWidget(self.record_btn)
+        
+        layout.addLayout(buttons_row)
 
         # Styling for a cleaner look
         self.setStyleSheet(
@@ -162,6 +311,7 @@ class MainWindow(QMainWindow):
             QComboBox, QLineEdit { padding: 6px; }
             QPushButton { padding: 10px 16px; }
             QPushButton:checked { background-color: #d9534f; color: white; }
+            QTextEdit { font-family: monospace; font-size: 13px; }
             """
         )
 
@@ -230,40 +380,109 @@ class MainWindow(QMainWindow):
         filename = f"recording_{timestamp}.wav"
         filepath = os.path.join(self._base_dir, filename)
 
-        self._worker = RecorderWorker(device_id, samplerate, channels, filepath)
-        self._worker.status.connect(self._update_state_label)
-        self._worker.error.connect(self._on_worker_error)
-        self._worker.saved.connect(self._on_worker_saved)
+        self._recorder_worker = RecorderWorker(device_id, samplerate, channels, filepath)
+        self._recorder_worker.status.connect(self._update_state_label)
+        self._recorder_worker.error.connect(self._on_recorder_error)
+        self._recorder_worker.saved.connect(self._on_recorder_saved)
 
         try:
-            self._worker.start()
+            self._recorder_worker.start()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to start recording: {e}")
-            self._worker = None
+            self._recorder_worker = None
             self.record_btn.setChecked(False)
             return
 
         self._recording = True
-        self.record_btn.setText("Stop")
+        self.record_btn.setText("Stop Recording")
+        self.transcribe_btn.setEnabled(False)
         self._update_state_label("Recording...")
 
     def _stop_recording(self):
-        if self._worker is not None:
-            self._worker.stop()
+        if self._recorder_worker is not None:
+            self._recorder_worker.stop()
         self._update_state_label("Stopping...")
+    
+    def _toggle_transcription(self, checked: bool):
+        if checked:
+            self._start_transcription()
+        else:
+            self._stop_transcription()
+    
+    def _start_transcription(self):
+        if not self._device_ids:
+            QMessageBox.warning(self, "No Device", "No input device is available.")
+            self.transcribe_btn.setChecked(False)
+            return
+        
+        index = self.device_combo.currentIndex()
+        if index < 0 or index >= len(self._device_ids):
+            QMessageBox.warning(self, "No Device Selected", "Please select an input device.")
+            self.transcribe_btn.setChecked(False)
+            return
+        
+        device_id = self._device_ids[index]
+        
+        self._final_transcript = ""
+        self.transcription_text.clear()
+        
+        self._soniox_worker = SonioxWorker(device_id)
+        self._soniox_worker.status.connect(self._update_state_label, Qt.ConnectionType.QueuedConnection)
+        self._soniox_worker.error.connect(self._on_soniox_error, Qt.ConnectionType.QueuedConnection)
+        self._soniox_worker.transcription_update.connect(self._on_transcription_update, Qt.ConnectionType.QueuedConnection)
+        
+        try:
+            self._soniox_worker.start()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to start transcription: {e}")
+            self._soniox_worker = None
+            self.transcribe_btn.setChecked(False)
+            return
+        
+        self._transcribing = True
+        self.transcribe_btn.setText("Stop Transcription")
+        self.record_btn.setEnabled(False)
+        self._update_state_label("Transcribing...")
+    
+    def _stop_transcription(self):
+        if self._soniox_worker is not None:
+            self._soniox_worker.stop()
+        self._update_state_label("Stopping transcription...")
+    
+    def _on_transcription_update(self, text: str, is_final: bool):
+        print(f"[DEBUG] Received in UI: is_final={is_final}, text={repr(text)}")
+        if is_final:
+            cursor = self.transcription_text.textCursor()
+            cursor.movePosition(cursor.MoveOperation.End)
+            cursor.insertText(text)
+            self.transcription_text.setTextCursor(cursor)
+            self.transcription_text.ensureCursorVisible()
+            self._final_transcript = self.transcription_text.toPlainText()
+        else:
+            self.status_label.setText(f"Listening: {text}..." if text.strip() else "Listening...")
+    
+    def _on_soniox_error(self, msg: str):
+        self._transcribing = False
+        self.transcribe_btn.setChecked(False)
+        self.transcribe_btn.setText("Start Transcription")
+        self.record_btn.setEnabled(True)
+        QMessageBox.critical(self, "Transcription Error", msg)
+        self._update_state_label("Error.")
 
-    def _on_worker_error(self, msg: str):
+    def _on_recorder_error(self, msg: str):
         self._recording = False
         self.record_btn.setChecked(False)
-        self.record_btn.setText("Record")
+        self.record_btn.setText("Record to File")
+        self.transcribe_btn.setEnabled(True)
         QMessageBox.critical(self, "Recording Error", msg +
                              "\n\nTip (macOS): Ensure microphone permission is granted in System Settings > Privacy & Security > Microphone.")
         self._update_state_label("Error.")
 
-    def _on_worker_saved(self, path: str):
+    def _on_recorder_saved(self, path: str):
         self._recording = False
         self.record_btn.setChecked(False)
-        self.record_btn.setText("Record")
+        self.record_btn.setText("Record to File")
+        self.transcribe_btn.setEnabled(True)
         self._update_state_label(f"Saved to: {path}")
 
     def _update_state_label(self, text: str):
@@ -271,10 +490,12 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         try:
-            if self._worker is not None and self._worker.isRunning():
-                self._worker.stop()
-                # Wait briefly to allow proper shutdown of stream
-                self._worker.wait(3000)
+            if self._recorder_worker is not None and self._recorder_worker.isRunning():
+                self._recorder_worker.stop()
+                self._recorder_worker.wait(3000)
+            if self._soniox_worker is not None and self._soniox_worker.isRunning():
+                self._soniox_worker.stop()
+                self._soniox_worker.wait(3000)
         except Exception:
             pass
         return super().closeEvent(event)
