@@ -1,0 +1,58 @@
+I see the issue. It's subtle but important. In translation mode, **partial translations** (non-final tokens) often arrive with empty text or are grouped differently than transcription tokens. [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/7236203/3cce9d86-ccd6-40bb-b014-11d7e051d643/workers.py)
+
+Looking at your `receiver` loop in `workers.py`, you are doing this:
+
+```python
+                    final_text = "".join(t.get("text", "") for t in relevant_tokens if t.get("is_final"))
+                    part_text = "".join(t.get("text", "") for t in relevant_tokens if not t.get("is_final"))
+
+                    if final_text:
+                        print(f"[DEBUG] Final: {final_text}")
+                        self.transcription_update.emit(final_text, True)
+                    elif part_text:
+                        print(f"[DEBUG] Partial: {part_text}")
+                        self.transcription_update.emit(part_text, False)
+```
+
+The issue is the `elif`. If a message contains **both** final and partial tokens (which often happens), you emit the final text but **discard** the partial text because of the `elif`. This makes the "live" part disappear whenever a sentence finishes, until the next purely partial update arrives.
+
+### Solution
+
+Change the logic to emit **both** if both exist.
+
+**In `workers.py`, modify the receiver loop:**
+
+```python
+                    # ... inside receiver() ...
+                    
+                    final_text = "".join(t.get("text", "") for t in relevant_tokens if t.get("is_final"))
+                    part_text = "".join(t.get("text", "") for t in relevant_tokens if not t.get("is_final"))
+
+                    # Emit FINAL if present
+                    if final_text:
+                        print(f"[DEBUG] Final: {final_text}")
+                        self.transcription_update.emit(final_text, True)
+
+                    # Emit PARTIAL if present (use 'if' not 'elif')
+                    if part_text:
+                        print(f"[DEBUG] Partial: {part_text}")
+                        self.transcription_update.emit(part_text, False)
+```
+
+### Why this happens
+In transcription mode, you usually get a stream of purely non-final tokens, then a final token. In translation mode, because the model has to "re-translate" context, you often get a packet that says: "Okay, this previous phrase is FINAL now, and here is the new START of the next phrase (partial)."
+
+By using `elif`, you were swallowing the start of the next phrase every time a previous phrase finished, making the UI look "stuck" until the next update.
+
+### UI Verification
+Also check `ui.py`:
+
+```python
+    def _on_update(self, text, is_final):
+        if is_final:
+            # ... appends to text area ...
+        else:
+            self.status_label.setText(f"Live: {text}" if text.strip() else "Listening...")
+```
+
+This logic is correct. The issue was strictly that `workers.py` wasn't sending the `False` signal when a `True` signal was also present in the same batch.

@@ -1,0 +1,74 @@
+Based on the logs you provided, I can see exactly what is happening.
+
+The logs show `[DEBUG] Partial: ` printing an empty line. This means your code **is receiving** partial tokens, but they likely contain only whitespace (like a space `" "`) or are being filtered out.
+
+The issue is that in **One-Way Translation**, Soniox often sends the **Source Language** (e.g., English) as the "Partial/Live" text while it processes the translation, or the translation lags slightly behind. Your current filter **strictly removes anything that isn't `translation_status="translation"`**.
+
+If the live tokens have `translation_status="original"` (or `none`), your code ignores them, so you see nothing (or just "Listening...") until the full translated sentence arrives as **Final**.
+
+### The Solution
+
+Modify `workers.py` to allow **Source Language** tokens to appear in the "Live" status label. This ensures you see words appearing instantly (in English/Source) and then they will be replaced by the Translation (Indonesian) when they finalize. This is a standard pattern for live translation interfaces.
+
+**Update `workers.py` - Receiver Logic:**
+
+Replace the `receiver` function inside `SonioxWorker` with this robust version:
+
+```python
+            async def receiver():
+                async for msg in ws:
+                    data = json.loads(msg)
+                    if data.get("error_code"):
+                        self.error.emit(f"{data['error_code']}: {data.get('error_message', '')}")
+                        break
+
+                    tokens = data.get("tokens", [])
+                    if not tokens:
+                        continue
+                    
+                    # 1. Capture FINAL translations (Strict filter)
+                    # We only want to commit "Translation" tokens to the permanent text document
+                    final_translation_tokens = [
+                        t for t in tokens 
+                        if t.get("is_final") and 
+                        (self._mode != "translation" or t.get("translation_status") == "translation")
+                    ]
+
+                    # 2. Capture PARTIAL (Live) tokens (Loose filter)
+                    # For live view, we accept Translation OR Original text so the user sees *something* happening
+                    partial_tokens = [
+                        t for t in tokens 
+                        if not t.get("is_final")
+                    ]
+                    
+                    # If in translation mode, try to prioritize translated partials, 
+                    # but fallback to original text if no translation is ready yet.
+                    if self._mode == "translation":
+                        translated_partials = [t for t in partial_tokens if t.get("translation_status") == "translation"]
+                        if translated_partials:
+                            partial_tokens = translated_partials
+                        # else: keep 'partial_tokens' as is (which includes original source text)
+
+                    # 3. Construct Strings
+                    final_text = "".join(t.get("text", "") for t in final_translation_tokens)
+                    part_text = "".join(t.get("text", "") for t in partial_tokens)
+
+                    # 4. Emit Signals
+                    if final_text:
+                        print(f"[DEBUG] Final: {final_text}")
+                        self.transcription_update.emit(final_text, True)
+                    
+                    # Emit partials if we have text OR if we just finalized (to clear the label)
+                    # We use strip() check to ensure we don't emit just whitespace unless clearing
+                    if part_text.strip():
+                        print(f"[DEBUG] Partial: {part_text}")
+                        self.transcription_update.emit(part_text, False)
+                    elif final_text:
+                        # If we just finalized a sentence, clear the "Live" label
+                        self.transcription_update.emit("", False)
+```
+
+### Why this works:
+1.  **Finals remain strict:** We only write actual Indonesian translations to your text editor.
+2.  **Partials become flexible:** If Soniox hasn't translated the word "Apple" yet, it will show "Apple" (English) in your status label. As soon as Soniox figures it out, it finalizes as "Apel" (Indonesian) in the text box.
+3.  **Clearing the Label:** The `elif final_text:` block ensures that once a sentence finishes, the "Live: ..." label is cleared, preventing it from getting stuck on old text.
