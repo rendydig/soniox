@@ -118,11 +118,22 @@ class SonioxWorker(QThread):
                         if translated_partials:
                             partial_tokens = translated_partials
 
-                    final_text = "".join(t.get("text", "") for t in final_translation_tokens)
+                    if final_translation_tokens:
+                        text_parts = []
+                        for t in final_translation_tokens:
+                            token_text = t.get("text", "")
+                            if token_text == "<end>":
+                                text_parts.append("\n")
+                            else:
+                                text_parts.append(token_text)
+                        final_text = "".join(text_parts)
+                    else:
+                        final_text = ""
+                    
                     part_text = "".join(t.get("text", "") for t in partial_tokens)
 
                     if final_text:
-                        print(f"[DEBUG] Final: {final_text}")
+                        print(f"[DEBUG] Final: {repr(final_text)}")
                         self.transcription_update.emit(final_text, True)
                     
                     if part_text.strip():
