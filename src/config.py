@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 SONIOX_API_KEY = os.environ.get("SONIOX_API_KEY")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 WS_URL = "wss://stt-rt.soniox.com/transcribe-websocket"
 
 LANGUAGES = {

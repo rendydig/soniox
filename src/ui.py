@@ -5,8 +5,9 @@ from datetime import datetime
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                              QLabel, QComboBox, QPushButton, QTextEdit, QMessageBox, 
                              QRadioButton, QButtonGroup, QLineEdit, QFileDialog)
-from PySide6.QtCore import Qt
-from src.workers import SonioxWorker, RecorderWorker
+from PySide6.QtCore import Qt, QEvent
+from PySide6.QtGui import QKeyEvent
+from src.workers import SonioxWorker, RecorderWorker, GeminiWorker
 from src.config import LANGUAGES
 
 
@@ -18,6 +19,7 @@ class MainWindow(QMainWindow):
         
         self._soniox_worker = None
         self._recorder_worker = None
+        self._gemini_worker = None
         self._device_ids = []
         self._recording = False
         self._transcribing = False
@@ -86,13 +88,60 @@ class MainWindow(QMainWindow):
 
         self.mode_group.buttonToggled.connect(self._on_mode_changed)
 
-        transcription_label = QLabel("Output:")
-        layout.addWidget(transcription_label)
+        # Text areas row (side by side)
+        text_areas_label = QLabel("Output:")
+        layout.addWidget(text_areas_label)
         
+        text_areas_row = QHBoxLayout()
+        
+        # Transcription text area (left)
+        transcription_container = QVBoxLayout()
+        transcription_label = QLabel("Real-Time Transcription")
         self.text_area = QTextEdit()
-        self.text_area.setPlaceholderText("Output will appear here...")
+        self.text_area.setPlaceholderText("Transcription will appear here...")
         self.text_area.setMinimumHeight(200)
-        layout.addWidget(self.text_area)
+        transcription_container.addWidget(transcription_label)
+        transcription_container.addWidget(self.text_area)
+        
+        # Gemini suggestion text area (right)
+        gemini_container = QVBoxLayout()
+        gemini_label = QLabel("Gemini Suggestion")
+        self.gemini_text = QTextEdit()
+        self.gemini_text.setPlaceholderText("Gemini translation will appear here...")
+        self.gemini_text.setMinimumHeight(200)
+        self.gemini_text.setReadOnly(True)
+        gemini_container.addWidget(gemini_label)
+        gemini_container.addWidget(self.gemini_text)
+        
+        text_areas_row.addLayout(transcription_container)
+        text_areas_row.addLayout(gemini_container)
+        layout.addLayout(text_areas_row)
+        
+        # Translation section
+        translation_section_label = QLabel("Gemini Translation:")
+        layout.addWidget(translation_section_label)
+        
+        # Language selection for Gemini
+        gemini_lang_row = QHBoxLayout()
+        gemini_lang_label = QLabel("Target Language:")
+        self.gemini_lang_combo = QComboBox()
+        self.gemini_lang_combo.addItems(["English", "Arabic", "Japanese", "Chinese", "Korean"])
+        self.gemini_lang_combo.setMinimumWidth(150)
+        
+        gemini_lang_row.addWidget(gemini_lang_label)
+        gemini_lang_row.addWidget(self.gemini_lang_combo)
+        gemini_lang_row.addStretch()
+        layout.addLayout(gemini_lang_row)
+        
+        # Translation input field
+        input_label = QLabel("Text to Translate (Press Ctrl+Enter to submit):")
+        layout.addWidget(input_label)
+        
+        self.translation_input = QTextEdit()
+        self.translation_input.setPlaceholderText("Type text to translate and press Ctrl+Enter...")
+        self.translation_input.setMinimumHeight(80)
+        self.translation_input.installEventFilter(self)
+        layout.addWidget(self.translation_input)
 
         buttons_row = QHBoxLayout()
         
@@ -199,6 +248,43 @@ class MainWindow(QMainWindow):
 
     def _update_status(self, text: str):
         self.status_label.setText(text)
+    
+    def eventFilter(self, obj, event):
+        if obj == self.translation_input and event.type() == QEvent.Type.KeyPress:
+            key_event = event
+            if key_event.key() == Qt.Key.Key_Return and key_event.modifiers() == Qt.KeyboardModifier.ControlModifier:
+                self._translate_text()
+                return True
+        return super().eventFilter(obj, event)
+    
+    def _translate_text(self):
+        text = self.translation_input.toPlainText().strip()
+        if not text:
+            QMessageBox.warning(self, "No Text", "Please enter text to translate.")
+            return
+        
+        target_language = self.gemini_lang_combo.currentText()
+        
+        if self._gemini_worker is not None and self._gemini_worker.isRunning():
+            QMessageBox.warning(self, "Translation in Progress", "Please wait for the current translation to complete.")
+            return
+        
+        self._gemini_worker = GeminiWorker(text, target_language)
+        self._gemini_worker.result.connect(self._on_gemini_result, Qt.ConnectionType.QueuedConnection)
+        self._gemini_worker.error.connect(self._on_gemini_error, Qt.ConnectionType.QueuedConnection)
+        
+        self.gemini_text.setText("Translating...")
+        self._update_status(f"Translating to {target_language}...")
+        self._gemini_worker.start()
+    
+    def _on_gemini_result(self, result: str):
+        self.gemini_text.setText(result)
+        self._update_status("Translation complete.")
+    
+    def _on_gemini_error(self, msg: str):
+        QMessageBox.critical(self, "Translation Error", msg)
+        self.gemini_text.setText("Translation failed.")
+        self._update_status("Translation error.")
 
     def _populate_devices(self):
         try:
@@ -288,6 +374,8 @@ class MainWindow(QMainWindow):
             if self._soniox_worker is not None and self._soniox_worker.isRunning():
                 self._soniox_worker.stop()
                 self._soniox_worker.wait(3000)
+            if self._gemini_worker is not None and self._gemini_worker.isRunning():
+                self._gemini_worker.wait(3000)
         except Exception:
             pass
         return super().closeEvent(event)
