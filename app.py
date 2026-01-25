@@ -12,7 +12,6 @@ import sounddevice as sd
 import soundfile as sf
 import websockets
 from dotenv import load_dotenv
-import google.generativeai as genai
 
 from PySide6.QtCore import Qt, QThread, Signal, QMetaObject, Q_ARG, QEvent
 from PySide6.QtGui import QKeyEvent
@@ -29,227 +28,14 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QLineEdit,
     QTextEdit,
+    QFileDialog,
+    Dialog,
 )
 
+from src.gemini_worker import GeminiWorker
+from src.workers import RecorderWorker, SonioxWorker
+
 load_dotenv()
-
-
-class RecorderWorker(QThread):
-    error = Signal(str)
-    status = Signal(str)
-    saved = Signal(str)
-
-    def __init__(self, device_id: int, samplerate: float, channels: int, filepath: str, parent=None):
-        super().__init__(parent)
-        self._device_id = device_id
-        self._samplerate = int(samplerate)
-        self._channels = channels
-        self._filepath = filepath
-        self._stop_flag = False
-        self._q: "queue.Queue[np.ndarray]" = queue.Queue(maxsize=64)
-
-    def stop(self):
-        self._stop_flag = True
-
-    def run(self):
-        try:
-            self.status.emit("Opening audio stream...")
-
-            # Open file for writing WAV
-            with sf.SoundFile(
-                self._filepath,
-                mode="w",
-                samplerate=self._samplerate,
-                channels=self._channels,
-                subtype="PCM_16",
-                format="WAV",
-            ) as wav_file:
-
-                def callback(indata, frames, time_info, status):
-                    if status:
-                        # Forward PortAudio status warnings to UI
-                        self.status.emit(f"Audio status: {status}")
-                    # Copy to avoid referencing the underlying buffer
-                    try:
-                        self._q.put_nowait(indata.copy())
-                    except queue.Full:
-                        # Drop if writer is slow
-                        pass
-
-                with sd.InputStream(
-                    samplerate=self._samplerate,
-                    channels=self._channels,
-                    device=self._device_id,
-                    dtype="int16",
-                    callback=callback,
-                ):
-                    self.status.emit("Recording...")
-                    # Writer loop
-                    while not self._stop_flag or not self._q.empty():
-                        try:
-                            data = self._q.get(timeout=0.2)
-                            wav_file.write(data)
-                        except queue.Empty:
-                            if self._stop_flag:
-                                break
-                            continue
-
-            self.saved.emit(self._filepath)
-        except Exception as e:
-            self.error.emit(str(e))
-
-
-class GeminiWorker(QThread):
-    error = Signal(str)
-    result = Signal(str)
-    
-    def __init__(self, text: str, target_language: str, parent=None):
-        super().__init__(parent)
-        self._text = text
-        self._target_language = target_language
-        self._api_key = os.environ.get("GEMINI_API_KEY")
-    
-    def run(self):
-        try:
-            if not self._api_key:
-                self.error.emit("GEMINI_API_KEY not found in .env file")
-                return
-            
-            genai.configure(api_key=self._api_key)
-            model = genai.GenerativeModel('gemini-pro')
-            
-            prompt = f"""Translate the following text to {self._target_language}. Provide the response in this exact format:
-
-{self._target_language} Text: [Write the sentence using natural {self._target_language} script]
-
-Syllables/Pronunciation: [Provide the pronunciation in Latin alphabet with Indonesian spelling so I know how to speak it]
-
-English Translation: [Provide the meaning in clear English]
-
-Text to translate: {self._text}"""
-            
-            response = model.generate_content(prompt)
-            self.result.emit(response.text)
-        except Exception as e:
-            self.error.emit(f"Gemini error: {str(e)}")
-
-
-class SonioxWorker(QThread):
-    error = Signal(str)
-    status = Signal(str)
-    transcription_update = Signal(str, bool)
-    
-    def __init__(self, device_id: int, parent=None):
-        super().__init__(parent)
-        self._device_id = device_id
-        self._stop_flag = False
-        self._api_key = os.environ.get("SONIOX_API_KEY")
-        self._ws_url = "wss://stt-rt.soniox.com/transcribe-websocket"
-        self._sample_rate = 16000
-        self._channels = 1
-        self._audio_queue = queue.Queue(maxsize=16)
-        
-    def stop(self):
-        self._stop_flag = True
-        
-    def run(self):
-        try:
-            if not self._api_key:
-                self.error.emit("SONIOX_API_KEY not found in .env file")
-                return
-                
-            self.status.emit("Connecting to Soniox...")
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(self._stream_audio())
-        except Exception as e:
-            self.error.emit(f"Soniox error: {e}")
-            
-    async def _stream_audio(self):
-        try:
-            async with websockets.connect(self._ws_url) as ws:
-                self.status.emit("Connected to Soniox")
-                
-                config = {
-                    "api_key": self._api_key,
-                    "model": "stt-rt-v3",
-                    "audio_format": "pcm_s16le",
-                    "sample_rate": self._sample_rate,
-                    "num_channels": self._channels,
-                    "enable_endpoint_detection": True,
-                }
-                
-                await ws.send(json.dumps(config))
-                self.status.emit("Streaming audio to Soniox...")
-                
-                async def sender():
-                    def audio_callback(indata, frames, time_info, status):
-                        if not self._stop_flag:
-                            pcm16 = np.clip(indata[:, 0] * 32767, -32768, 32767).astype(np.int16).tobytes()
-                            try:
-                                self._audio_queue.put_nowait(pcm16)
-                            except queue.Full:
-                                pass
-                    
-                    with sd.InputStream(
-                        samplerate=self._sample_rate,
-                        channels=self._channels,
-                        dtype="float32",
-                        callback=audio_callback,
-                        blocksize=1024,
-                        device=self._device_id,
-                    ):
-                        while not self._stop_flag:
-                            try:
-                                chunk = self._audio_queue.get_nowait()
-                                await ws.send(chunk)
-                            except queue.Empty:
-                                await asyncio.sleep(0.01)
-                    
-                    await ws.send("")
-                
-                async def receiver():
-                    async for msg in ws:
-                        try:
-                            data = json.loads(msg)
-                            
-                            if data.get("error_code"):
-                                self.error.emit(f"{data['error_code']}: {data.get('error_message', '')}")
-                                break
-                            
-                            tokens = data.get("tokens", [])
-                            if tokens:
-                                final_tokens = [t for t in tokens if t.get("is_final")]
-                                non_final_tokens = [t for t in tokens if not t.get("is_final")]
-                                
-                                if final_tokens:
-                                    text_parts = []
-                                    for t in final_tokens:
-                                        token_text = t.get("text", "")
-                                        if token_text == "<end>":
-                                            text_parts.append("\n")
-                                        else:
-                                            text_parts.append(token_text)
-                                    text = "".join(text_parts)
-                                    print(f"[DEBUG] Emitting FINAL: {repr(text)}")
-                                    self.transcription_update.emit(text, True)
-                                elif non_final_tokens:
-                                    text = "".join(t.get("text", "") for t in non_final_tokens)
-                                    print(f"[DEBUG] Emitting PARTIAL: {repr(text)}")
-                                    self.transcription_update.emit(text, False)
-                            
-                            if data.get("finished"):
-                                self.status.emit("Session finished")
-                                break
-                        except json.JSONDecodeError:
-                            pass
-                        except Exception as e:
-                            print(f"Receiver error: {e}")
-                
-                await asyncio.gather(sender(), receiver())
-                
-        except Exception as e:
-            self.error.emit(f"WebSocket error: {e}")
 
 
 class MainWindow(QMainWindow):
@@ -397,7 +183,7 @@ class MainWindow(QMainWindow):
             QComboBox, QLineEdit { padding: 6px; }
             QPushButton { padding: 10px 16px; }
             QPushButton:checked { background-color: #d9534f; color: white; }
-            QTextEdit { font-family: monospace; font-size: 13px; }
+            QTextEdit { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; }
             """
         )
 

@@ -7,7 +7,8 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QRadioButton, QButtonGroup, QLineEdit, QFileDialog)
 from PySide6.QtCore import Qt, QEvent
 from PySide6.QtGui import QKeyEvent
-from src.workers import SonioxWorker, RecorderWorker, GeminiWorker
+from src.workers import SonioxWorker, RecorderWorker
+from src.gemini_worker import GeminiWorker
 from src.config import LANGUAGES
 
 
@@ -123,7 +124,7 @@ class MainWindow(QMainWindow):
         
         # Language selection for Gemini
         gemini_lang_row = QHBoxLayout()
-        gemini_lang_label = QLabel("Target Language:")
+        gemini_lang_label = QLabel("Target translation Language:")
         self.gemini_lang_combo = QComboBox()
         self.gemini_lang_combo.addItems(["English", "Arabic", "Japanese", "Chinese", "Korean"])
         self.gemini_lang_combo.setMinimumWidth(150)
@@ -171,7 +172,7 @@ class MainWindow(QMainWindow):
             QComboBox, QLineEdit { padding: 6px; }
             QPushButton { padding: 10px 16px; }
             QPushButton:checked { background-color: #d9534f; color: white; }
-            QTextEdit { font-family: monospace; font-size: 13px; }
+            QTextEdit { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; }
             """
         )
 

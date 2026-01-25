@@ -7,9 +7,8 @@ import numpy as np
 import sounddevice as sd
 import soundfile as sf
 import websockets
-import google.generativeai as genai
 from PySide6.QtCore import QThread, Signal
-from src.config import SONIOX_API_KEY, GEMINI_API_KEY, WS_URL
+from src.config import SONIOX_API_KEY, WS_URL
 
 
 class SonioxWorker(QThread):
@@ -134,11 +133,11 @@ class SonioxWorker(QThread):
                     part_text = "".join(t.get("text", "") for t in partial_tokens)
 
                     if final_text:
-                        print(f"[DEBUG] Final: {repr(final_text)}")
+                        # print(f"[DEBUG] Final: {repr(final_text)}")
                         self.transcription_update.emit(final_text, True)
                     
                     if part_text.strip():
-                        print(f"[DEBUG] Partial: {part_text}")
+                        # print(f"[DEBUG] Partial: {part_text}")
                         self.transcription_update.emit(part_text, False)
                     elif final_text:
                         self.transcription_update.emit("", False)
@@ -206,35 +205,3 @@ class RecorderWorker(QThread):
             self.error.emit(str(e))
 
 
-class GeminiWorker(QThread):
-    error = Signal(str)
-    result = Signal(str)
-    
-    def __init__(self, text: str, target_language: str, parent=None):
-        super().__init__(parent)
-        self._text = text
-        self._target_language = target_language
-    
-    def run(self):
-        try:
-            if not GEMINI_API_KEY:
-                self.error.emit("GEMINI_API_KEY not found in .env file")
-                return
-            
-            genai.configure(api_key=GEMINI_API_KEY)
-            model = genai.GenerativeModel('gemini-2.5-flash')
-            
-            prompt = f"""Translate the following text to {self._target_language}. Provide the response in this exact format:
-
-{self._target_language} Text: [Write the sentence using natural {self._target_language} script]
-
-Syllables/Pronunciation: [Provide the pronunciation in Latin alphabet with Indonesian spelling so I know how to speak it]
-
-English Translation: [Provide the meaning in clear English]
-
-Text to translate: {self._text}"""
-            
-            response = model.generate_content(prompt)
-            self.result.emit(response.text)
-        except Exception as e:
-            self.error.emit(f"Gemini error: {str(e)}")
