@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QRadioButton, QButtonGroup, QLineEdit, QFileDialog)
 from PySide6.QtCore import Qt, QEvent
 from src.config import LANGUAGES
+from src.text_formatter import append_timestamped_text
 from src.controllers import (
     DeviceController,
     RecordingController,
@@ -89,19 +90,19 @@ class MainWindow(QMainWindow):
         self.mode_group.buttonToggled.connect(self._on_mode_changed)
 
         # Text areas row (side by side)
-        text_areas_label = QLabel("Output:")
-        layout.addWidget(text_areas_label)
+        transcription_editors_label = QLabel("Output:")
+        layout.addWidget(transcription_editors_label)
         
-        text_areas_row = QHBoxLayout()
+        transcription_editors_row = QHBoxLayout()
         
         # Transcription text area (left)
         transcription_container = QVBoxLayout()
         transcription_label = QLabel("Real-Time Transcription")
-        self.text_area = QTextEdit()
-        self.text_area.setPlaceholderText("Transcription will appear here...")
-        self.text_area.setMinimumHeight(200)
+        self.transcription_editor = QTextEdit()
+        self.transcription_editor.setPlaceholderText("Transcription will appear here...")
+        self.transcription_editor.setMinimumHeight(200)
         transcription_container.addWidget(transcription_label)
-        transcription_container.addWidget(self.text_area)
+        transcription_container.addWidget(self.transcription_editor)
         
         # Gemini suggestion text area (right)
         gemini_container = QVBoxLayout()
@@ -113,9 +114,9 @@ class MainWindow(QMainWindow):
         gemini_container.addWidget(gemini_label)
         gemini_container.addWidget(self.gemini_text)
         
-        text_areas_row.addLayout(transcription_container)
-        text_areas_row.addLayout(gemini_container)
-        layout.addLayout(text_areas_row)
+        transcription_editors_row.addLayout(transcription_container)
+        transcription_editors_row.addLayout(gemini_container)
+        layout.addLayout(transcription_editors_row)
         
         # Translation section
         translation_section_label = QLabel("Gemini Translation:")
@@ -234,7 +235,7 @@ class MainWindow(QMainWindow):
         mode = "translation" if self.rb_translate.isChecked() else "transcription"
         target_lang = self.lang_combo.currentData()
 
-        self.text_area.clear()
+        self.transcription_editor.clear()
         self.transcription_controller.start_session(device_id, mode=mode, target_lang=target_lang)
 
     def _stop_session(self):
@@ -242,11 +243,7 @@ class MainWindow(QMainWindow):
 
     def _on_update(self, text, is_final):
         if is_final:
-            cursor = self.text_area.textCursor()
-            cursor.movePosition(cursor.MoveOperation.End)
-            cursor.insertText(text)
-            self.text_area.setTextCursor(cursor)
-            self.text_area.ensureCursorVisible()
+            append_timestamped_text(self.transcription_editor, text)
         else:
             self.status_label.setText(f"Live: {text}" if text.strip() else "Listening...")
 
