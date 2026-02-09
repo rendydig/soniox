@@ -1,15 +1,16 @@
 import sys
 import os
-import sounddevice as sd
-from datetime import datetime
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                              QLabel, QComboBox, QPushButton, QTextEdit, QMessageBox, 
                              QRadioButton, QButtonGroup, QLineEdit, QFileDialog)
 from PySide6.QtCore import Qt, QEvent
-from PySide6.QtGui import QKeyEvent
-from src.workers import SonioxWorker, RecorderWorker
-from src.gemini_worker import GeminiWorker
 from src.config import LANGUAGES
+from src.controllers import (
+    DeviceController,
+    RecordingController,
+    TranscriptionController,
+    TranslationController
+)
 
 
 class MainWindow(QMainWindow):
@@ -18,18 +19,16 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Soniox AI: Transcribe & Translate")
         self.resize(800, 600)
         
-        self._soniox_worker = None
-        self._recorder_worker = None
-        self._gemini_worker = None
-        self._device_ids = []
-        self._recording = False
-        self._transcribing = False
+        base_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "recordings")
         
-        self._base_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "recordings")
-        os.makedirs(self._base_dir, exist_ok=True)
+        self.device_controller = DeviceController()
+        self.recording_controller = RecordingController(base_dir)
+        self.transcription_controller = TranscriptionController()
+        self.translation_controller = TranslationController()
         
         self._init_ui()
-        self._populate_devices()
+        self._setup_controller_connections()
+        self.device_controller.populate_devices()
 
     def _init_ui(self):
         central = QWidget()
@@ -47,7 +46,7 @@ class MainWindow(QMainWindow):
 
         dest_row = QHBoxLayout()
         dest_label = QLabel("Destination Folder:")
-        self.dest_edit = QLineEdit(self._base_dir)
+        self.dest_edit = QLineEdit(self.recording_controller.get_base_dir())
         self.dest_edit.setReadOnly(True)
         browse_btn = QPushButton("Change...")
         browse_btn.clicked.connect(self._choose_destination)
@@ -175,11 +174,32 @@ class MainWindow(QMainWindow):
             QTextEdit { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; }
             """
         )
+    
+    def _setup_controller_connections(self):
+        """Connect controller signals to UI handlers."""
+        self.device_controller.devices_populated.connect(self._on_devices_populated)
+        self.device_controller.device_error.connect(self._on_device_error)
+        
+        self.recording_controller.status_changed.connect(self._update_status)
+        self.recording_controller.error_occurred.connect(self._on_recording_error)
+        self.recording_controller.recording_started.connect(self._on_recording_started)
+        self.recording_controller.recording_stopped.connect(self._on_recording_stopped)
+        
+        self.transcription_controller.status_changed.connect(self._update_status)
+        self.transcription_controller.error_occurred.connect(self._on_transcription_error)
+        self.transcription_controller.transcription_update.connect(self._on_update)
+        self.transcription_controller.session_started.connect(self._on_transcription_started)
+        self.transcription_controller.session_stopped.connect(self._on_transcription_stopped)
+        
+        self.translation_controller.status_changed.connect(self._update_status)
+        self.translation_controller.error_occurred.connect(self._on_translation_error)
+        self.translation_controller.translation_result.connect(self._on_translation_result)
+        self.translation_controller.translation_started.connect(lambda: self.gemini_text.setText("Translating..."))
 
     def _choose_destination(self):
-        folder = QFileDialog.getExistingDirectory(self, "Choose destination folder", self._base_dir)
+        folder = QFileDialog.getExistingDirectory(self, "Choose destination folder", self.recording_controller.get_base_dir())
         if folder:
-            self._base_dir = folder
+            self.recording_controller.set_base_dir(folder)
             self.dest_edit.setText(folder)
 
     def _on_mode_changed(self, btn, checked):
@@ -204,30 +224,21 @@ class MainWindow(QMainWindow):
             self.btn_start.setChecked(False)
             return
 
-        device_id = self._device_ids[idx]
+        device_ids = self.device_controller.get_device_ids()
+        if idx >= len(device_ids):
+            QMessageBox.warning(self, "Invalid Device", "Selected device is not available.")
+            self.btn_start.setChecked(False)
+            return
         
+        device_id = device_ids[idx]
         mode = "translation" if self.rb_translate.isChecked() else "transcription"
         target_lang = self.lang_combo.currentData()
 
-        self._soniox_worker = SonioxWorker(device_id, mode=mode, target_lang=target_lang)
-        self._soniox_worker.transcription_update.connect(self._on_update)
-        self._soniox_worker.status.connect(self._update_status)
-        self._soniox_worker.error.connect(lambda e: self._on_soniox_error(e))
-        self._soniox_worker.start()
-        
-        self.btn_start.setText("Stop")
-        self.record_btn.setEnabled(False)
         self.text_area.clear()
-        self._transcribing = True
+        self.transcription_controller.start_session(device_id, mode=mode, target_lang=target_lang)
 
     def _stop_session(self):
-        if self._soniox_worker:
-            self._soniox_worker.stop()
-            self._soniox_worker = None
-        self.btn_start.setText("Start Transcription" if self.rb_transcribe.isChecked() else "Start Translation")
-        self.record_btn.setEnabled(True)
-        self._transcribing = False
-        self._update_status("Stopped")
+        self.transcription_controller.stop_session()
 
     def _on_update(self, text, is_final):
         if is_final:
@@ -239,13 +250,23 @@ class MainWindow(QMainWindow):
         else:
             self.status_label.setText(f"Live: {text}" if text.strip() else "Listening...")
 
-    def _on_soniox_error(self, msg: str):
-        self._transcribing = False
+    def _on_transcription_started(self):
+        """Handle transcription session started."""
+        self.btn_start.setText("Stop")
+        self.record_btn.setEnabled(False)
+    
+    def _on_transcription_stopped(self):
+        """Handle transcription session stopped."""
+        self.btn_start.setChecked(False)
+        self.btn_start.setText("Start Transcription" if self.rb_transcribe.isChecked() else "Start Translation")
+        self.record_btn.setEnabled(True)
+    
+    def _on_transcription_error(self, msg: str):
+        """Handle transcription errors."""
         self.btn_start.setChecked(False)
         self.btn_start.setText("Start Transcription" if self.rb_transcribe.isChecked() else "Start Translation")
         self.record_btn.setEnabled(True)
         QMessageBox.critical(self, "Error", msg)
-        self._update_status("Error")
 
     def _update_status(self, text: str):
         self.status_label.setText(text)
@@ -265,40 +286,29 @@ class MainWindow(QMainWindow):
             return
         
         target_language = self.gemini_lang_combo.currentText()
-        
-        if self._gemini_worker is not None and self._gemini_worker.isRunning():
-            QMessageBox.warning(self, "Translation in Progress", "Please wait for the current translation to complete.")
-            return
-        
-        self._gemini_worker = GeminiWorker(text, target_language)
-        self._gemini_worker.result.connect(self._on_gemini_result, Qt.ConnectionType.QueuedConnection)
-        self._gemini_worker.error.connect(self._on_gemini_error, Qt.ConnectionType.QueuedConnection)
-        
-        self.gemini_text.setText("Translating...")
-        self._update_status(f"Translating to {target_language}...")
-        self._gemini_worker.start()
+        self.translation_controller.translate_text(text, target_language)
     
-    def _on_gemini_result(self, result: str):
+    def _on_translation_result(self, result: str):
+        """Handle translation result."""
         self.gemini_text.setText(result)
-        self._update_status("Translation complete.")
     
-    def _on_gemini_error(self, msg: str):
-        QMessageBox.critical(self, "Translation Error", msg)
+    def _on_translation_error(self, msg: str):
+        """Handle translation errors."""
+        if "already in progress" in msg.lower():
+            QMessageBox.warning(self, "Translation in Progress", "Please wait for the current translation to complete.")
+        else:
+            QMessageBox.critical(self, "Translation Error", msg)
         self.gemini_text.setText("Translation failed.")
-        self._update_status("Translation error.")
 
-    def _populate_devices(self):
-        try:
-            devs = sd.query_devices()
-            for idx, d in enumerate(devs):
-                if d.get('max_input_channels', 0) > 0:
-                    name = d.get('name', f'Device {idx}')
-                    sr = d.get('default_samplerate') or 44100
-                    label = f"[{idx}] {name} — {int(sr)} Hz"
-                    self.device_combo.addItem(label)
-                    self._device_ids.append(idx)
-        except Exception as e:
-            QMessageBox.warning(self, "Device Error", f"Failed to query audio devices: {e}")
+    def _on_devices_populated(self, device_list: list, device_ids: list):
+        """Handle devices populated from controller."""
+        self.device_combo.clear()
+        for label in device_list:
+            self.device_combo.addItem(label)
+    
+    def _on_device_error(self, msg: str):
+        """Handle device errors."""
+        QMessageBox.warning(self, "Device Error", msg)
 
     def _toggle_recording(self, checked: bool):
         if checked:
@@ -307,76 +317,58 @@ class MainWindow(QMainWindow):
             self._stop_recording()
 
     def _start_recording(self):
-        if not self._device_ids:
+        if not self.device_controller.has_devices():
             QMessageBox.warning(self, "No Device", "No input device is available to record from.")
             self.record_btn.setChecked(False)
             return
 
         index = self.device_combo.currentIndex()
-        if index < 0 or index >= len(self._device_ids):
+        device_ids = self.device_controller.get_device_ids()
+        
+        if index < 0 or index >= len(device_ids):
             QMessageBox.warning(self, "No Device Selected", "Please select an input device.")
             self.record_btn.setChecked(False)
             return
 
-        device_id = self._device_ids[index]
-        dev_info = sd.query_devices(device_id)
+        device_id = device_ids[index]
+        dev_info = self.device_controller.get_device_info(device_id)
+        
+        if not dev_info:
+            self.record_btn.setChecked(False)
+            return
+        
         samplerate = dev_info.get("default_samplerate") or 44100
         channels = min(dev_info.get("max_input_channels", 1), 2)
         channels = max(1, channels)
 
-        os.makedirs(self._base_dir, exist_ok=True)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"recording_{timestamp}.wav"
-        filepath = os.path.join(self._base_dir, filename)
-
-        self._recorder_worker = RecorderWorker(device_id, samplerate, channels, filepath)
-        self._recorder_worker.status.connect(self._update_status)
-        self._recorder_worker.error.connect(self._on_recorder_error)
-        self._recorder_worker.saved.connect(self._on_recorder_saved)
-
-        try:
-            self._recorder_worker.start()
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to start recording: {e}")
-            self._recorder_worker = None
+        success = self.recording_controller.start_recording(device_id, samplerate, channels)
+        if not success:
             self.record_btn.setChecked(False)
-            return
-
-        self._recording = True
-        self.record_btn.setText("Stop Recording")
-        self.btn_start.setEnabled(False)
-        self._update_status("Recording...")
 
     def _stop_recording(self):
-        if self._recorder_worker is not None:
-            self._recorder_worker.stop()
-        self._update_status("Stopping...")
+        self.recording_controller.stop_recording()
 
-    def _on_recorder_error(self, msg: str):
-        self._recording = False
+    def _on_recording_started(self):
+        """Handle recording started."""
+        self.record_btn.setText("Stop Recording")
+        self.btn_start.setEnabled(False)
+    
+    def _on_recording_stopped(self):
+        """Handle recording stopped."""
         self.record_btn.setChecked(False)
         self.record_btn.setText("Record to File")
         self.btn_start.setEnabled(True)
+    
+    def _on_recording_error(self, msg: str):
+        """Handle recording errors."""
         QMessageBox.critical(self, "Recording Error", msg)
-        self._update_status("Error")
-
-    def _on_recorder_saved(self, path: str):
-        self._recording = False
-        self.record_btn.setChecked(False)
-        self.record_btn.setText("Record to File")
-        self.btn_start.setEnabled(True)
-        self._update_status(f"Saved to: {path}")
 
     def closeEvent(self, event):
+        """Clean up resources on window close."""
         try:
-            if self._recorder_worker is not None and self._recorder_worker.isRunning():
-                self._recorder_worker.stop()
-                self._recorder_worker.wait(3000)
-            if self._soniox_worker is not None and self._soniox_worker.isRunning():
-                self._soniox_worker.stop()
-                self._soniox_worker.wait(3000)
-            if self._gemini_worker is not None and self._gemini_worker.isRunning():
-                self._gemini_worker.wait(3000)
+            self.recording_controller.cleanup()
+            self.transcription_controller.cleanup()
+            self.translation_controller.cleanup()
         except Exception:
             pass
         return super().closeEvent(event)
