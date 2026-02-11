@@ -24,7 +24,8 @@ class SonioxWorker(QThread):
         self._stop_flag = False
         self._sample_rate = 16000
         self._channels = 1
-        self._audio_queue = queue.Queue(maxsize=16)
+        self._audio_queue = queue.Queue(maxsize=32)
+        self._queue_overflow_count = 0
 
     def stop(self):
         self._stop_flag = True
@@ -71,8 +72,16 @@ class SonioxWorker(QThread):
                         pcm16 = np.clip(indata[:, 0] * 32767, -32768, 32767).astype(np.int16).tobytes()
                         try:
                             self._audio_queue.put_nowait(pcm16)
+                            self._queue_overflow_count = 0
                         except queue.Full:
-                            pass
+                            self._queue_overflow_count += 1
+                            if self._queue_overflow_count > 50:
+                                while self._audio_queue.qsize() > 16:
+                                    try:
+                                        self._audio_queue.get_nowait()
+                                    except queue.Empty:
+                                        break
+                                self._queue_overflow_count = 0
 
                 with sd.InputStream(
                     samplerate=self._sample_rate,

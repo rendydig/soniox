@@ -3,8 +3,8 @@ import os
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                              QLabel, QComboBox, QPushButton, QTextEdit, QMessageBox, 
                              QRadioButton, QButtonGroup, QLineEdit, QFileDialog, QCheckBox)
-from PySide6.QtCore import Qt, QEvent
-from src.config import LANGUAGES
+from PySide6.QtCore import Qt, QEvent, QTimer
+from src.config import LANGUAGES, MAX_TRANSCRIPTION_LINES, MAX_GEMINI_LINES
 from src.text_formatter import append_timestamped_text
 from src.controllers import (
     DeviceController,
@@ -26,6 +26,10 @@ class MainWindow(QMainWindow):
         self.recording_controller = RecordingController(base_dir)
         self.transcription_controller = TranscriptionController()
         self.translation_controller = TranslationController()
+        
+        self._memory_monitor_timer = QTimer()
+        self._memory_monitor_timer.timeout.connect(self._update_memory_usage)
+        self._memory_monitor_timer.start(5000)
         
         self._init_ui()
         self._setup_controller_connections()
@@ -165,11 +169,17 @@ class MainWindow(QMainWindow):
         
         layout.addLayout(buttons_row)
 
+        status_row = QHBoxLayout()
         self.status_label = QLabel("Ready")
         font = self.status_label.font()
         font.setPointSize(font.pointSize() + 1)
         self.status_label.setFont(font)
-        layout.addWidget(self.status_label)
+        status_row.addWidget(self.status_label, 1)
+        
+        self.memory_label = QLabel("")
+        self.memory_label.setStyleSheet("color: #666; font-size: 11px;")
+        status_row.addWidget(self.memory_label)
+        layout.addLayout(status_row)
 
         self.setStyleSheet(
             """
@@ -253,7 +263,7 @@ class MainWindow(QMainWindow):
         print(f"[DEBUG] _on_update called: is_final={is_final}, text='{text[:50]}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
         
         if is_final:
-            append_timestamped_text(self.transcription_editor, text)
+            append_timestamped_text(self.transcription_editor, text, max_lines=MAX_TRANSCRIPTION_LINES)
             
             if self.auto_reply_checkbox.isChecked() and text.strip():
                 print(f"[DEBUG] Scheduling auto-reply for: '{text}'")
@@ -395,9 +405,28 @@ class MainWindow(QMainWindow):
         """Handle recording errors."""
         QMessageBox.critical(self, "Recording Error", msg)
 
+    def _update_memory_usage(self):
+        """Update memory usage indicator."""
+        try:
+            import psutil
+            process = psutil.Process(os.getpid())
+            mem_info = process.memory_info()
+            mem_mb = mem_info.rss / 1024 / 1024
+            
+            trans_lines = self.transcription_editor.document().blockCount()
+            gemini_lines = self.gemini_text.document().blockCount()
+            
+            self.memory_label.setText(f"Memory: {mem_mb:.1f} MB | Lines: {trans_lines}/{MAX_TRANSCRIPTION_LINES}")
+        except ImportError:
+            trans_lines = self.transcription_editor.document().blockCount()
+            self.memory_label.setText(f"Lines: {trans_lines}/{MAX_TRANSCRIPTION_LINES}")
+        except Exception:
+            pass
+    
     def closeEvent(self, event):
         """Clean up resources on window close."""
         try:
+            self._memory_monitor_timer.stop()
             self.recording_controller.cleanup()
             self.transcription_controller.cleanup()
             self.translation_controller.cleanup()

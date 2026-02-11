@@ -17,3 +17,7 @@ LANGUAGES = {
     "Japanese": "ja",
     "Korean": "ko"
 }
+
+MAX_TRANSCRIPTION_LINES = 500
+MAX_GEMINI_LINES = 300
+CLEANUP_CHECK_INTERVAL = 50

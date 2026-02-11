@@ -16,6 +16,7 @@ class TranslationController(QObject):
         super().__init__()
         self._gemini_worker = None
         self._auto_reply_worker = None
+        self._old_workers = []
         self._auto_reply_timer = QTimer()
         self._auto_reply_timer.setSingleShot(True)
         self._auto_reply_timer.timeout.connect(self._trigger_auto_reply)
@@ -62,6 +63,7 @@ class TranslationController(QObject):
         """Handle translation result from worker."""
         if self._gemini_worker is not None:
             self._gemini_worker.wait(1000)
+            self._cleanup_old_workers()
             self._gemini_worker = None
         self.translation_result.emit(result)
         self.translation_completed.emit()
@@ -71,6 +73,7 @@ class TranslationController(QObject):
         """Handle errors from worker."""
         if self._gemini_worker is not None:
             self._gemini_worker.wait(1000)
+            self._cleanup_old_workers()
             self._gemini_worker = None
         self.error_occurred.emit(msg)
         self.translation_completed.emit()
@@ -139,8 +142,9 @@ class TranslationController(QObject):
         """Handle auto-reply result from worker."""
         print(f"[DEBUG TranslationController] Auto-reply result received: '{result[:100]}...'")
         if self._auto_reply_worker is not None:
-            self._auto_reply_worker.wait(1000)
+            self._old_workers.append(self._auto_reply_worker)
             self._auto_reply_worker = None
+            self._cleanup_old_workers()
         self.auto_reply_result.emit(result)
         self.status_changed.emit("Auto-reply complete.")
     
@@ -148,10 +152,29 @@ class TranslationController(QObject):
         """Handle errors from auto-reply worker."""
         print(f"[DEBUG TranslationController] Auto-reply error: {msg}")
         if self._auto_reply_worker is not None:
-            self._auto_reply_worker.wait(1000)
+            self._old_workers.append(self._auto_reply_worker)
             self._auto_reply_worker = None
+            self._cleanup_old_workers()
         self.error_occurred.emit(msg)
         self.status_changed.emit("Auto-reply error.")
+    
+    def _cleanup_old_workers(self):
+        """Clean up finished workers to prevent memory buildup."""
+        workers_to_keep = []
+        for worker in self._old_workers:
+            if worker.isRunning():
+                workers_to_keep.append(worker)
+            else:
+                worker.deleteLater()
+        self._old_workers = workers_to_keep
+        
+        if len(self._old_workers) > 10:
+            for worker in self._old_workers[:5]:
+                if worker.isRunning():
+                    worker.stop()
+                    worker.wait(500)
+                worker.deleteLater()
+            self._old_workers = self._old_workers[5:]
     
     def cleanup(self):
         """Clean up resources."""
@@ -170,3 +193,10 @@ class TranslationController(QObject):
                 if self._auto_reply_worker.isRunning():
                     self._auto_reply_worker.terminate()
             self._auto_reply_worker = None
+        
+        for worker in self._old_workers:
+            if worker.isRunning():
+                worker.stop()
+                worker.wait(1000)
+            worker.deleteLater()
+        self._old_workers.clear()
