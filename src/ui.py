@@ -2,7 +2,7 @@ import sys
 import os
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                              QLabel, QComboBox, QPushButton, QTextEdit, QMessageBox, 
-                             QRadioButton, QButtonGroup, QLineEdit, QFileDialog)
+                             QRadioButton, QButtonGroup, QLineEdit, QFileDialog, QCheckBox)
 from PySide6.QtCore import Qt, QEvent
 from src.config import LANGUAGES
 from src.text_formatter import append_timestamped_text
@@ -106,12 +106,17 @@ class MainWindow(QMainWindow):
         
         # Gemini suggestion text area (right)
         gemini_container = QVBoxLayout()
+        gemini_header = QHBoxLayout()
         gemini_label = QLabel("Gemini Suggestion")
+        self.auto_reply_checkbox = QCheckBox("Auto reply")
+        gemini_header.addWidget(gemini_label)
+        gemini_header.addWidget(self.auto_reply_checkbox)
+        gemini_header.addStretch()
         self.gemini_text = QTextEdit()
         self.gemini_text.setPlaceholderText("Gemini translation will appear here...")
         self.gemini_text.setMinimumHeight(200)
         self.gemini_text.setReadOnly(True)
-        gemini_container.addWidget(gemini_label)
+        gemini_container.addLayout(gemini_header)
         gemini_container.addWidget(self.gemini_text)
         
         transcription_editors_row.addLayout(transcription_container)
@@ -196,6 +201,9 @@ class MainWindow(QMainWindow):
         self.translation_controller.error_occurred.connect(self._on_translation_error)
         self.translation_controller.translation_result.connect(self._on_translation_result)
         self.translation_controller.translation_started.connect(lambda: self.gemini_text.setText("Translating..."))
+        self.translation_controller.auto_reply_result.connect(self._on_auto_reply_result)
+        
+        self.gemini_lang_combo.currentTextChanged.connect(self._on_auto_reply_language_changed)
 
     def _choose_destination(self):
         folder = QFileDialog.getExistingDirectory(self, "Choose destination folder", self.recording_controller.get_base_dir())
@@ -242,10 +250,27 @@ class MainWindow(QMainWindow):
         self.transcription_controller.stop_session()
 
     def _on_update(self, text, is_final):
+        print(f"[DEBUG] _on_update called: is_final={is_final}, text='{text[:50]}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
+        
         if is_final:
             append_timestamped_text(self.transcription_editor, text)
+            
+            if self.auto_reply_checkbox.isChecked() and text.strip():
+                print(f"[DEBUG] Scheduling auto-reply for: '{text}'")
+                additional_context = self.translation_input.toPlainText().strip()
+                if additional_context:
+                    print(f"[DEBUG] Including translation input as context: '{additional_context[:50]}...'")
+                self.translation_controller.schedule_auto_reply(text, additional_context)
+            else:
+                print(f"[DEBUG] NOT scheduling auto-reply. Checkbox: {self.auto_reply_checkbox.isChecked()}, Text empty: {not text.strip()}")
         else:
             self.status_label.setText(f"Live: {text}" if text.strip() else "Listening...")
+            
+            if self.auto_reply_checkbox.isChecked() and text.strip():
+                print(f"[DEBUG] Canceling auto-reply (non-final text with content received)")
+                self.translation_controller.cancel_auto_reply()
+            elif self.auto_reply_checkbox.isChecked() and not text.strip():
+                print(f"[DEBUG] Ignoring empty non-final text, keeping auto-reply timer active")
 
     def _on_transcription_started(self):
         """Handle transcription session started."""
@@ -293,9 +318,19 @@ class MainWindow(QMainWindow):
         """Handle translation errors."""
         if "already in progress" in msg.lower():
             QMessageBox.warning(self, "Translation in Progress", "Please wait for the current translation to complete.")
-        else:
+        elif "auto-reply" not in msg.lower():
             QMessageBox.critical(self, "Translation Error", msg)
-        self.gemini_text.setText("Translation failed.")
+        
+        if "auto-reply" not in msg.lower():
+            self.gemini_text.setText("Translation failed.")
+    
+    def _on_auto_reply_result(self, result: str):
+        """Handle auto-reply result."""
+        self.gemini_text.setText(result)
+    
+    def _on_auto_reply_language_changed(self, language: str):
+        """Update auto-reply target language when combo box changes."""
+        self.translation_controller.set_auto_reply_language(language)
 
     def _on_devices_populated(self, device_list: list, device_ids: list):
         """Handle devices populated from controller."""
