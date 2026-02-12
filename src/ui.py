@@ -60,6 +60,10 @@ class MainWindow(QMainWindow):
         dest_row.addWidget(browse_btn)
         layout.addLayout(dest_row)
 
+        self.auto_record_checkbox = QCheckBox("Auto-record to WAV when transcribing/translating")
+        self.auto_record_checkbox.setChecked(False)
+        layout.addWidget(self.auto_record_checkbox)
+
         mode_layout = QHBoxLayout()
         mode_layout.addWidget(QLabel("Mode:"))
         
@@ -255,9 +259,24 @@ class MainWindow(QMainWindow):
 
         self.transcription_editor.clear()
         self.transcription_controller.start_session(device_id, mode=mode, target_lang=target_lang)
+        
+        if self.auto_record_checkbox.isChecked():
+            dev_info = self.device_controller.get_device_info(device_id)
+            if dev_info:
+                samplerate = dev_info.get("default_samplerate") or 44100
+                channels = min(dev_info.get("max_input_channels", 1), 2)
+                channels = max(1, channels)
+                self.recording_controller.start_recording(device_id, samplerate, channels)
+                self.record_btn.setText("Recording (auto)")
+                self.record_btn.setEnabled(False)
 
     def _stop_session(self):
+        self.status_label.setText("Stopping...")
+        
         self.transcription_controller.stop_session()
+        
+        if self.auto_record_checkbox.isChecked() and self.recording_controller.is_recording():
+            self.recording_controller.stop_recording()
 
     def _on_update(self, text, is_final):
         print(f"[DEBUG] _on_update called: is_final={is_final}, text='{text[:50]}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
@@ -393,13 +412,16 @@ class MainWindow(QMainWindow):
     def _on_recording_started(self):
         """Handle recording started."""
         self.record_btn.setText("Stop Recording")
-        self.btn_start.setEnabled(False)
+        if not self.auto_record_checkbox.isChecked():
+            self.btn_start.setEnabled(False)
     
     def _on_recording_stopped(self):
         """Handle recording stopped."""
         self.record_btn.setChecked(False)
         self.record_btn.setText("Record to File")
-        self.btn_start.setEnabled(True)
+        if not self.auto_record_checkbox.isChecked():
+            self.btn_start.setEnabled(True)
+        self.record_btn.setEnabled(True)
     
     def _on_recording_error(self, msg: str):
         """Handle recording errors."""

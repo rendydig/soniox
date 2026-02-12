@@ -50,6 +50,7 @@ class RecordingController(QObject):
             self._recorder_worker.status.connect(self.status_changed)
             self._recorder_worker.error.connect(self._on_error)
             self._recorder_worker.saved.connect(self._on_saved)
+            self._recorder_worker.finished.connect(self._on_worker_finished)
             
             self._recorder_worker.start()
             self._recording = True
@@ -78,10 +79,15 @@ class RecordingController(QObject):
     def _on_saved(self, path: str):
         """Handle successful save from worker."""
         self._recording = False
-        self._recorder_worker = None
         self.recording_saved.emit(path)
         self.recording_stopped.emit()
         self.status_changed.emit(f"Saved to: {path}")
+    
+    def _on_worker_finished(self):
+        """Handle worker thread finished."""
+        if self._recorder_worker is not None:
+            self._recorder_worker.deleteLater()
+            self._recorder_worker = None
     
     def cleanup(self):
         """Clean up resources."""

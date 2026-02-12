@@ -1,0 +1,154 @@
+You’ve got a UI state conflict between the auto WAV recording and the Soniox session, so the Stop button (the main **Start Transcription/Translation** toggle) gets stuck disabled while both are active.
+
+### What the code is doing
+
+In `ui.py`:
+
+- When you start a Soniox session (`Start Transcription / Start Translation`), you also optionally start WAV recording if the checkbox is on:
+
+```python
+def startsession(self):
+    ...
+    self.transcriptioneditor.clear()
+    self.transcriptioncontroller.startsession(deviceid, mode=mode, targetlang=targetlang)
+
+    if self.autorecordcheckbox.isChecked():
+        devinfo = self.devicecontroller.getdeviceinfo(deviceid)
+        ...
+        self.recordingcontroller.startrecording(deviceid, samplerate, channels)  # [file:1]
+```
+
+- When the transcription session starts, you disable the recording button:
+
+```python
+def ontranscriptionstarted(self):
+    self.btnstart.setText("Stop")
+    self.recordbtn.setEnabled(False)  # [file:1]
+```
+
+- When the transcription session stops, you re‑enable the recording button and reset the start button:
+
+```python
+def ontranscriptionstopped(self):
+    self.btnstart.setChecked(False)
+    self.btnstart.setText("Start Transcription" if self.rbtranscribe.isChecked() else "Start Translation")
+    self.recordbtn.setEnabled(True)  # [file:1]
+```
+
+- When the WAV recording starts, you disable the **Start** button:
+
+```python
+def onrecordingstarted(self):
+    self.recordbtn.setText("Stop Recording")
+    self.btnstart.setEnabled(False)  # [file:1]
+```
+
+- When the WAV recording stops, you re‑enable the **Start** button:
+
+```python
+def onrecordingstopped(self):
+    self.recordbtn.setChecked(False)
+    self.recordbtn.setText("Record to File")
+    self.btnstart.setEnabled(True)  # [file:1]
+```
+
+The controllers:
+
+- `TranscriptionController.stopsession()` simply stops Soniox and emits `sessionstopped`, which triggers `ontranscriptionstopped()` above. [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/7236203/48f3ffe5-fa77-4e20-9cac-40e2ab8db7d0/transcription_controller.py)
+- `RecordingController.stoprecording()` just calls `RecorderWorker.stop()` and emits a “Stopping...” status; the `recordingstopped` signal only fires when the worker thread finishes (`onsaved` / `onerror`). [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/7236203/18e08e80-8add-4fac-afd9-fdac274b679a/workers.py)
+
+### Why the Stop button feels unclickable
+
+When **auto‑record** is enabled and you press **Stop**:
+
+```python
+def stopsession(self):
+    self.statuslabel.setText("Stopping...")
+    self.transcriptioncontroller.stopsession()
+    if self.autorecordcheckbox.isChecked() and self.recordingcontroller.isrecording():
+        self.recordingcontroller.stoprecording()  # [file:1]
+```
+
+Sequence:
+
+1. Soniox stop is requested.
+2. Recording stop is requested.
+3. `onrecordingstarted` had previously set `btnstart.setEnabled(False)` and it only becomes enabled again when `recordingstopped` fires (after the recorder thread flushes and emits `saved`). [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/7236203/6021ae8a-b6e1-4a0d-bd2f-8b89cac1ced0/ui.py)
+4. If recorder shutdown is slow or blocked, `onrecordingstopped` is delayed, so `btnstart` remains disabled and looks “unclickable” while the session still appears to be running.
+
+On top of that:
+
+- `ontranscriptionstarted` and `onrecordingstarted` disable the “other” button, but there is no coordinated state machine for “both are active automatically”. [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/7236203/6021ae8a-b6e1-4a0d-bd2f-8b89cac1ced0/ui.py)
+- If Soniox and recorder are started together, the order of signals (`recordingstarted`, `sessionstarted`, `recordingstopped`, `sessionstopped`) will determine which enable/disable call “wins”, which can easily desync the UI.
+
+### A practical fix
+
+The simplest robust fix is to let the **Start/Stop** button always stay enabled during auto‑record, and drive the recording state only from the session state when auto‑record is on.
+
+Concrete changes in `ui.py`:
+
+1. Remove the cross‑disabling between buttons when auto‑record is in play.
+
+   - In `onrecordingstarted`, do **not** disable `btnstart` when the recording was triggered by auto‑record:
+
+   ```python
+   def onrecordingstarted(self):
+       self.recordbtn.setText("Stop Recording")
+       # Only disable Start if user explicitly pressed Record button
+       if not self.autorecordcheckbox.isChecked():
+           self.btnstart.setEnabled(True)  # or leave as-is, just don't set to False
+   ```  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/7236203/6021ae8a-b6e1-4a0d-bd2f-8b89cac1ced0/ui.py)
+
+   - In `onrecordingstopped`, likewise do not re‑enable `btnstart` conditionally; just avoid touching it when auto‑record is active:
+
+   ```python
+   def onrecordingstopped(self):
+       self.recordbtn.setChecked(False)
+       self.recordbtn.setText("Record to File")
+       if not self.autorecordcheckbox.isChecked():
+           self.btnstart.setEnabled(True)
+   ```  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/7236203/6021ae8a-b6e1-4a0d-bd2f-8b89cac1ced0/ui.py)
+
+2. Treat auto‑record as “session‑owned”; the **Record to File** button should be mainly for manual recording. You can visually de‑emphasize it or ignore its text when auto‑record is active. For example, in `startsession`:
+
+   ```python
+   if self.autorecordcheckbox.isChecked():
+       # Optionally reflect that recording is automatic
+       self.recordbtn.setText("Recording (auto)")
+       self.recordbtn.setEnabled(False)
+   ```  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/7236203/6021ae8a-b6e1-4a0d-bd2f-8b89cac1ced0/ui.py)
+
+   And in `stopsession`, after stopping both:
+
+   ```python
+   def stopsession(self):
+       self.statuslabel.setText("Stopping...")
+       self.transcriptioncontroller.stopsession()
+       if self.autorecordcheckbox.isChecked() and self.recordingcontroller.isrecording():
+           self.recordingcontroller.stoprecording()
+           # Keep Start button enabled so user can press again if needed
+           self.btnstart.setEnabled(True)
+   ```  [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/7236203/6021ae8a-b6e1-4a0d-bd2f-8b89cac1ced0/ui.py)
+
+3. Alternatively (cleaner): enforce a single source of truth and remove mutual disabling entirely:
+
+   - Let `btnstart` always be enabled (unless you truly must lock during an in‑flight “start”).
+   - In `ontranscriptionstarted`, do not touch `recordbtn` at all when `autorecordcheckbox` is checked.
+   - In `onrecordingstarted`, do not touch `btnstart` at all when recording was triggered from `startsession`.
+
+This way, even if recorder shutdown is slow, the **Stop** button remains clickable; it just won’t start a new session until `TranscriptionController.transcribing` becomes `False` (and your controller already prevents double starts). [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/7236203/48f3ffe5-fa77-4e20-9cac-40e2ab8db7d0/transcription_controller.py)
+
+### Debugging tip
+
+To confirm, add a few prints or logs in these slots:
+
+- `onrecordingstarted`, `onrecordingstopped`
+- `ontranscriptionstarted`, `ontranscriptionstopped`
+- `RecordingController.stoprecording` and `RecorderWorker.run` loop
+
+Check in the console whether:
+
+- `onrecordingstopped` is firing promptly when you hit Stop.
+- `btnstart.setEnabled(False)` is being called after you think you stopped.
+
+Once you stop disabling `btnstart` from the recording side (or gate it behind `not autorecordcheckbox.isChecked()`), the “Stop button cannot be clicked when transcribing + auto‑record” symptom should disappear.

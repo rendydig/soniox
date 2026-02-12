@@ -26,6 +26,7 @@ class SonioxWorker(QThread):
         self._channels = 1
         self._audio_queue = queue.Queue(maxsize=32)
         self._queue_overflow_count = 0
+        self._stream = None
 
     def stop(self):
         self._stop_flag = True
@@ -83,14 +84,16 @@ class SonioxWorker(QThread):
                                         break
                                 self._queue_overflow_count = 0
 
-                with sd.InputStream(
+                self._stream = sd.InputStream(
                     samplerate=self._sample_rate,
                     channels=self._channels,
                     dtype="float32",
                     callback=audio_callback,
                     blocksize=1024,
                     device=self._device_id,
-                ):
+                )
+                self._stream.start()
+                try:
                     while not self._stop_flag:
                         try:
                             chunk = self._audio_queue.get_nowait()
@@ -98,9 +101,20 @@ class SonioxWorker(QThread):
                         except queue.Empty:
                             await asyncio.sleep(0.01)
                     await ws.send("")
+                finally:
+                    if self._stream is not None:
+                        try:
+                            self._stream.stop()
+                            self._stream.close()
+                        except:
+                            pass
+                        self._stream = None
 
             async def receiver():
                 async for msg in ws:
+                    if self._stop_flag:
+                        break
+                    
                     data = json.loads(msg)
                     
                     if data.get("error_code"):
@@ -167,6 +181,7 @@ class RecorderWorker(QThread):
         self._filepath = filepath
         self._stop_flag = False
         self._q: "queue.Queue[np.ndarray]" = queue.Queue(maxsize=64)
+        self._stream = None
 
     def stop(self):
         self._stop_flag = True
@@ -192,13 +207,15 @@ class RecorderWorker(QThread):
                     except queue.Full:
                         pass
 
-                with sd.InputStream(
+                self._stream = sd.InputStream(
                     samplerate=self._samplerate,
                     channels=self._channels,
                     device=self._device_id,
                     dtype="int16",
                     callback=callback,
-                ):
+                )
+                self._stream.start()
+                try:
                     self.status.emit("Recording...")
                     while not self._stop_flag or not self._q.empty():
                         try:
@@ -208,6 +225,14 @@ class RecorderWorker(QThread):
                             if self._stop_flag:
                                 break
                             continue
+                finally:
+                    if self._stream is not None:
+                        try:
+                            self._stream.stop()
+                            self._stream.close()
+                        except:
+                            pass
+                        self._stream = None
 
             self.saved.emit(self._filepath)
         except Exception as e:

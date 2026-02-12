@@ -47,6 +47,7 @@ class TranscriptionController(QObject):
             self._soniox_worker.transcription_update.connect(self._on_transcription_update)
             self._soniox_worker.status.connect(self.status_changed)
             self._soniox_worker.error.connect(self._on_error)
+            self._soniox_worker.finished.connect(self._on_worker_finished)
             
             self._soniox_worker.start()
             self._transcribing = True
@@ -65,7 +66,6 @@ class TranscriptionController(QObject):
         """Stop the current transcription/translation session."""
         if self._soniox_worker:
             self._soniox_worker.stop()
-            self._soniox_worker = None
         
         self._transcribing = False
         self.session_stopped.emit()
@@ -86,6 +86,12 @@ class TranscriptionController(QObject):
         self._soniox_worker = None
         self.error_occurred.emit(msg)
         self.session_stopped.emit()
+    
+    def _on_worker_finished(self):
+        """Handle worker thread finished."""
+        if self._soniox_worker is not None:
+            self._soniox_worker.deleteLater()
+            self._soniox_worker = None
     
     def cleanup(self):
         """Clean up resources."""
