@@ -12,6 +12,7 @@ from src.controllers import (
     TranscriptionController,
     TranslationController
 )
+from src.websocket_client import WebSocketClient
 
 
 class MainWindow(QMainWindow):
@@ -26,6 +27,9 @@ class MainWindow(QMainWindow):
         self.recording_controller = RecordingController(base_dir)
         self.transcription_controller = TranscriptionController()
         self.translation_controller = TranslationController()
+        
+        self.websocket_client = WebSocketClient("ws://localhost:8765")
+        self.websocket_client.start()
         
         self._memory_monitor_timer = QTimer()
         self._memory_monitor_timer.timeout.connect(self._update_memory_usage)
@@ -281,6 +285,8 @@ class MainWindow(QMainWindow):
     def _on_update(self, text, is_final):
         print(f"[DEBUG] _on_update called: is_final={is_final}, text='{text[:50]}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
         
+        self.websocket_client.send_transcription(text, is_final)
+        
         if is_final:
             append_timestamped_text(self.transcription_editor, text, max_lines=MAX_TRANSCRIPTION_LINES)
             
@@ -452,6 +458,7 @@ class MainWindow(QMainWindow):
             self.recording_controller.cleanup()
             self.transcription_controller.cleanup()
             self.translation_controller.cleanup()
+            self.websocket_client.stop()
         except Exception:
             pass
         return super().closeEvent(event)
