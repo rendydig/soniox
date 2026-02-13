@@ -31,7 +31,14 @@ const StatusIndicator = ({ connected }) => {
 };
 
 const LiveText = ({ finalizedText, liveText }) => {
+    const liveTextRef = useRef(null);
     const hasContent = finalizedText || liveText;
+    
+    useEffect(() => {
+        if (liveTextRef.current) {
+            liveTextRef.current.scrollTop = liveTextRef.current.scrollHeight;
+        }
+    }, [finalizedText, liveText]);
     
     if (!hasContent) {
         return html`
@@ -41,10 +48,12 @@ const LiveText = ({ finalizedText, liveText }) => {
         `;
     }
 
+    const formattedFinalizedText = finalizedText ? finalizedText.replace(/([.?!])/g, '$1<br/>') : '';
+
     return html`
-        <div class="live-text active">
+        <div class="live-text active" ref=${liveTextRef}>
             <div class="live-text-line">
-                ${finalizedText && html`<span class="finalized-text">${finalizedText}</span>`}
+                ${finalizedText && html`<span class="finalized-text" dangerouslySetInnerHTML=${{ __html: formattedFinalizedText }}></span>`}
                 ${liveText && html`<span class="live-text-updating">${liveText}</span>`}
             </div>
         </div>
@@ -147,7 +156,7 @@ const App = () => {
         const trimmedText = text.trim();
         
         setFinalizedText(prev => {
-            const newFinalized = prev ? prev + trimmedText : trimmedText;
+            const newFinalized = prev ? prev + ' ' + trimmedText : trimmedText;
             console.log('[DEBUG] Finalized text accumulated:', newFinalized);
             return newFinalized;
         });

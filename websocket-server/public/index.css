@@ -112,7 +112,7 @@
         font-style: italic;
         white-space: pre-line;
         text-align: left;
-        max-height: 300px;
+        max-height: 200px;
         overflow-y: auto;
     }
 
