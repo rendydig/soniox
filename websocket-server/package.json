@@ -7,14 +7,20 @@
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": ["websocket", "transcription", "broadcast"],
+  "keywords": [
+    "websocket",
+    "transcription",
+    "broadcast"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ws": "^8.14.2",
+    "@langchain/google-genai": "^2.1.18",
+    "dotenv": "^17.3.1",
     "express": "^4.18.2",
+    "htm": "^3.1.1",
     "preact": "^10.19.3",
-    "htm": "^3.1.1"
+    "ws": "^8.14.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

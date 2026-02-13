@@ -20,6 +20,17 @@ function formatTime(timestamp) {
     return date.toLocaleTimeString();
 }
 
+function splitIntoSentences(text) {
+    if (!text) return [];
+    return text.split(/([.?!])/).reduce((acc, part, i, arr) => {
+        if (i % 2 === 0 && part.trim()) {
+            const sentence = part + (arr[i + 1] || '');
+            acc.push(sentence.trim());
+        }
+        return acc;
+    }, []);
+}
+
 const StatusIndicator = ({ connected }) => {
     return html`
         <div class="status">
@@ -30,7 +41,7 @@ const StatusIndicator = ({ connected }) => {
     `;
 };
 
-const LiveText = ({ finalizedText, liveText }) => {
+const LiveText = ({ finalizedText, liveText, corrections, correctionEnabled }) => {
     const liveTextRef = useRef(null);
     const hasContent = finalizedText || liveText;
     
@@ -48,14 +59,77 @@ const LiveText = ({ finalizedText, liveText }) => {
         `;
     }
 
-    const formattedFinalizedText = finalizedText ? finalizedText.replace(/([.?!])/g, '$1<br/>') : '';
+    const sentences = splitIntoSentences(finalizedText);
 
     return html`
         <div class="live-text active" ref=${liveTextRef}>
-            <div class="live-text-line">
-                ${finalizedText && html`<span class="finalized-text" dangerouslySetInnerHTML=${{ __html: formattedFinalizedText }}></span>`}
-                ${liveText && html`<span class="live-text-updating">${liveText}</span>`}
+            ${sentences.map((sentence, index) => {
+                const isLatest = index === sentences.length - 1;
+                const style = isLatest 
+                     ? { opacity: '1', fontWeight: '600', fontSize: '24px' }
+                    : { opacity: '0.7', fontWeight: 'normal', fontSize: '18px' };
+                const correction = corrections[sentence];
+                
+                return html`
+                    <div class="live-text-line" style=${style}>
+                        ${correctionEnabled && correction ? html`
+                            ${correction.status === 'good' ? html`
+                                <span class="correction-badge good">✓</span>
+                                <span class="finalized-text">${sentence}</span>
+                            ` : correction.status === 'bad' ? html`
+                                <span class="correction-badge bad">✗</span>
+                                <span class="finalized-text original">${sentence}</span>
+                                <span class="correction-suggestion">→ ${correction.corrected}</span>
+                            ` : html`
+                                <span class="finalized-text">${sentence}</span>
+                            `}
+                        ` : html`
+                            <span class="finalized-text">${sentence}</span>
+                        `}
+                    </div>
+                `;
+            })}
+            ${liveText && html`
+                <div class="live-text-line" style=${{ opacity: '1', fontStyle: 'normal' }}>
+                    <span class="live-text-updating">${liveText}</span>
+                </div>
+            `}
+        </div>
+    `;
+};
+
+const LiveTranslation = ({ finalizedTranslation }) => {
+    const translationRef = useRef(null);
+    
+    useEffect(() => {
+        if (translationRef.current) {
+            translationRef.current.scrollTop = translationRef.current.scrollHeight;
+        }
+    }, [finalizedTranslation]);
+    
+    if (!finalizedTranslation) {
+        return html`
+            <div class="live-text active translation-view">
+                Waiting for translation...
             </div>
+        `;
+    }
+
+    const sentences = splitIntoSentences(finalizedTranslation);
+
+    return html`
+        <div class="live-text active translation-view" ref=${translationRef}>
+            ${sentences.map((sentence, index) => {
+                const isLatest = index === sentences.length - 1;
+                const style = isLatest 
+                    ? { opacity: '1', fontWeight: '600' , fontSize: '24px' }
+                    : { opacity: '0.7', fontWeight: 'normal' , fontSize: '18px' };
+                return html`
+                    <div class="live-text-line" style=${style}>
+                        <span class="finalized-text">${sentence}</span>
+                    </div>
+                `;
+            })}
         </div>
     `;
 };
@@ -119,10 +193,22 @@ const App = () => {
     const [currentSentence, setCurrentSentence] = useState(null);
     const [finalizedText, setFinalizedText] = useState('');
     const [liveText, setLiveText] = useState('');
-    const [translations, setTranslations] = useState([]);
-    const [currentTranslation, setCurrentTranslation] = useState(null);
-    const [currentMode, setCurrentMode] = useState('transcription');
+    const [finalizedTranslation, setFinalizedTranslation] = useState('');
+    const [translationEnabled, setTranslationEnabled] = useState(true);
+    const [correctionEnabled, setCorrectionEnabled] = useState(false);
+    const [corrections, setCorrections] = useState({});
     const wsManager = useRef(null);
+    const sentenceIdCounter = useRef(0);
+    const correctionEnabledRef = useRef(correctionEnabled);
+    const correctionsRef = useRef(corrections);
+    
+    useEffect(() => {
+        correctionEnabledRef.current = correctionEnabled;
+    }, [correctionEnabled]);
+    
+    useEffect(() => {
+        correctionsRef.current = corrections;
+    }, [corrections]);
 
     useEffect(() => {
         const handleMessage = (data) => {
@@ -133,7 +219,6 @@ const App = () => {
 
             if (data.type === 'transcription') {
                 console.log('[WebSocket]', data);
-                setCurrentMode('transcription');
                 if (data.is_final) {
                     console.log('[DEBUG] Final transcription:', data.text);
                     handleFinalTranscription(data.text, data.timestamp);
@@ -145,15 +230,15 @@ const App = () => {
             
             if (data.type === 'translation') {
                 console.log('[WebSocket]', data);
-                setCurrentMode('translation');
                 if (data.is_final) {
                     console.log('[DEBUG] Final translation:', data.text);
-                    handleFinalTranslation(data.text, data.timestamp);
-                } else {
-                    console.log('[DEBUG] Non-final translation (English):', data.text);
-                    // Show live English text for translation mode
-                    handleLiveTranscription(data.text);
+                    handleFinalTranslation(data.text);
                 }
+            }
+            
+            if (data.type === 'correction_response') {
+                console.log('[WebSocket] Correction response:', data);
+                handleCorrectionResponse(data);
             }
         };
 
@@ -174,7 +259,20 @@ const App = () => {
         
         setFinalizedText(prev => {
             const newFinalized = prev ? prev + ' ' + trimmedText : trimmedText;
-            console.log('[DEBUG] Finalized text accumulated:', newFinalized);
+            const isCorrectionEnabled = correctionEnabledRef.current;
+            const currentCorrections = correctionsRef.current;
+            console.log('[DEBUG] Finalized text accumulated:', newFinalized, {correctionEnabled: isCorrectionEnabled});
+            
+            if (isCorrectionEnabled) {
+                console.log('[DEBUG] Correction enabled, processing sentences...');
+                const sentences = splitIntoSentences(newFinalized);
+                sentences.forEach(sentence => {
+                    if (sentence && !currentCorrections[sentence]) {
+                        requestCorrection(sentence);
+                    }
+                });
+            }
+            
             return newFinalized;
         });
         
@@ -231,85 +329,90 @@ const App = () => {
         });
     };
     
-    const handleFinalTranslation = (text, timestamp) => {
+    const handleFinalTranslation = (text) => {
         if (!text || text.trim().length === 0) return;
         
         const trimmedText = text.trim();
         console.log('[DEBUG] Final translation received:', trimmedText);
         
-        // Add directly to translations history
-        addTranslation(trimmedText, timestamp);
+        setFinalizedTranslation(prev => {
+            const newFinalized = prev ? prev + ' ' + trimmedText : trimmedText;
+            console.log('[DEBUG] Finalized translation accumulated:', newFinalized);
+            return newFinalized;
+        });
     };
     
-    const addTranslation = (text, timestamp) => {
-        if (!text || text.trim().length === 0) return;
-
-        const trimmedText = text.trim();
-        const isSentenceEnd = endsWithSentenceTerminator(trimmedText);
-
-        setCurrentTranslation(prev => {
-            if (prev === null) {
-                const newTranslation = {
-                    text: trimmedText,
-                    timestamp: timestamp,
-                    isComplete: isSentenceEnd
-                };
-
-                if (isSentenceEnd) {
-                    setTranslations(prevTranslations => [newTranslation, ...prevTranslations]);
-                    return null;
-                }
-                
-                return newTranslation;
-            } else {
-                const updatedTranslation = {
-                    text: prev.text + ' ' + trimmedText,
-                    timestamp: timestamp,
-                    isComplete: isSentenceEnd
-                };
-
-                if (isSentenceEnd) {
-                    setTranslations(prevTranslations => [updatedTranslation, ...prevTranslations]);
-                    return null;
-                }
-                
-                return updatedTranslation;
+    const requestCorrection = (sentence) => {
+        if (!wsManager.current || !wsManager.current.ws) return;
+        
+        const sentenceId = sentenceIdCounter.current++;
+        const request = {
+            type: 'correction_request',
+            sentenceId: sentenceId,
+            sentence: sentence
+        };
+        
+        console.log('[DEBUG] Requesting correction for:', sentence);
+        wsManager.current.ws.send(JSON.stringify(request));
+    };
+    
+    const handleCorrectionResponse = (data) => {
+        setCorrections(prev => ({
+            ...prev,
+            [data.original]: {
+                status: data.status,
+                corrected: data.corrected
             }
-        });
+        }));
+        console.log('[DEBUG] Correction stored:', data.original, '->', data.status);
     };
 
     return html`
         <div class="container">
             <div class="header">
                 <${StatusIndicator} connected=${connected} />
+                <div class="translation-toggle">
+                    <label class="toggle-label">
+                        <input 
+                            type="checkbox" 
+                            checked=${translationEnabled}
+                            onChange=${(e) => setTranslationEnabled(e.target.checked)}
+                        />
+                        <span class="toggle-text">Enable Translation</span>
+                    </label>
+                    <label class="toggle-label">
+                        <input 
+                            type="checkbox" 
+                            checked=${correctionEnabled}
+                            onChange=${(e) => setCorrectionEnabled(e.target.checked)}
+                        />
+                        <span class="toggle-text">Enable Correction</span>
+                    </label>
+                </div>
             </div>
 
             <div class="main-content">
-                <div class="card center-content">
-                    <h2>📝 Live ${currentMode === 'translation' ? 'Transcription (Source)' : 'Transcription'}</h2>
-                    <${LiveText} 
-                        finalizedText=${currentMode === 'translation' ? '' : finalizedText}
-                        liveText=${liveText}
-                    />
+                <div class="split-view">
+                    <div class="card live-view">
+                        <h2>📝 Live Transcription</h2>
+                        <${LiveText} 
+                            finalizedText=${finalizedText}
+                            liveText=${liveText}
+                            corrections=${corrections}
+                            correctionEnabled=${correctionEnabled}
+                        />
+                    </div>
                     
-                    ${currentMode === 'transcription' ? html`
-                        <h2>📜 Transcription History</h2>
-                        <div class="transcription-list">
-                            <${TranscriptionList} 
-                                transcriptions=${transcriptions}
-                                currentSentence=${currentSentence}
-                            />
-                        </div>
-                    ` : html`
-                        <h2>🌐 Translation History</h2>
-                        <div class="transcription-list">
-                            <${TranscriptionList} 
-                                transcriptions=${translations}
-                                currentSentence=${currentTranslation}
+                    ${translationEnabled && html`
+                        <div class="card live-view">
+                            <h2>🌐 Live Translation</h2>
+                            <${LiveTranslation} 
+                                finalizedTranslation=${finalizedTranslation}
                             />
                         </div>
                     `}
                 </div>
+                
             </div>
         </div>
     `;

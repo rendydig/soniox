@@ -2,6 +2,7 @@ const WebSocket = require('ws');
 const http = require('http');
 const express = require('express');
 const path = require('path');
+const { correctSentence } = require('./gemini-correction');
 
 const app = express();
 const server = http.createServer(app);
@@ -31,10 +32,28 @@ wss.on('connection', (ws, req) => {
     timestamp: new Date().toISOString()
   }));
   
-  ws.on('message', (data) => {
+  ws.on('message', async (data) => {
     try {
       const message = JSON.parse(data.toString());
       console.log(`[WebSocket] Received: ${message.type} - is_final=${message.is_final} {${message.text}}`);
+      
+      if (message.type === 'correction_request') {
+        console.log(`[WebSocket] Processing correction request for: "${message.sentence}"`);
+        const correctionResult = await correctSentence(message.sentence);
+        
+        const response = {
+          type: 'correction_response',
+          sentenceId: message.sentenceId,
+          status: correctionResult.status,
+          original: correctionResult.original,
+          corrected: correctionResult.corrected,
+          timestamp: new Date().toISOString()
+        };
+        
+        ws.send(JSON.stringify(response));
+        console.log(`[WebSocket] Sent correction response: ${correctionResult.status}`);
+        return;
+      }
       
       message.timestamp = new Date().toISOString();
       
