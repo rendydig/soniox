@@ -1,10 +1,9 @@
 import sys
 import os
-from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
-                             QLabel, QComboBox, QPushButton, QTextEdit, QMessageBox, 
-                             QRadioButton, QButtonGroup, QLineEdit, QFileDialog, QCheckBox)
+from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, 
+                             QMessageBox, QFileDialog)
 from PySide6.QtCore import Qt, QEvent, QTimer
-from src.config import LANGUAGES, MAX_TRANSCRIPTION_LINES, MAX_GEMINI_LINES
+from src.config import MAX_TRANSCRIPTION_LINES, MAX_GEMINI_LINES
 from src.text_formatter import append_timestamped_text
 from src.controllers import (
     DeviceController,
@@ -13,6 +12,14 @@ from src.controllers import (
     TranslationController
 )
 from src.websocket_client import WebSocketClient
+from src.ui_components import (
+    DeviceSettingsWidget,
+    ModeSelectionWidget,
+    TextEditorsWidget,
+    TranslationSectionWidget,
+    ControlButtonsWidget,
+    StatusBarWidget
+)
 
 
 class MainWindow(QMainWindow):
@@ -46,149 +53,61 @@ class MainWindow(QMainWindow):
         layout.setSpacing(12)
         layout.setContentsMargins(16, 16, 16, 16)
 
-        dev_layout = QHBoxLayout()
-        self.device_combo = QComboBox()
-        self.device_combo.setMinimumWidth(360)
-        dev_layout.addWidget(QLabel("Input Device:"))
-        dev_layout.addWidget(self.device_combo, 1)
-        layout.addLayout(dev_layout)
-
-        dest_row = QHBoxLayout()
-        dest_label = QLabel("Destination Folder:")
-        self.dest_edit = QLineEdit(self.recording_controller.get_base_dir())
-        self.dest_edit.setReadOnly(True)
-        browse_btn = QPushButton("Change...")
-        browse_btn.clicked.connect(self._choose_destination)
-        dest_row.addWidget(dest_label)
-        dest_row.addWidget(self.dest_edit, 1)
-        dest_row.addWidget(browse_btn)
-        layout.addLayout(dest_row)
-
-        self.auto_record_checkbox = QCheckBox("Auto-record to WAV when transcribing/translating")
-        self.auto_record_checkbox.setChecked(False)
-        layout.addWidget(self.auto_record_checkbox)
-
-        mode_layout = QHBoxLayout()
-        mode_layout.addWidget(QLabel("Mode:"))
+        self.device_settings = DeviceSettingsWidget(self.recording_controller)
+        layout.addWidget(self.device_settings)
         
-        self.mode_group = QButtonGroup(self)
-        self.rb_transcribe = QRadioButton("Live Transcription")
-        self.rb_translate = QRadioButton("Live Translation")
-        self.rb_transcribe.setChecked(True)
+        self.mode_selection = ModeSelectionWidget()
+        layout.addWidget(self.mode_selection)
         
-        self.mode_group.addButton(self.rb_transcribe)
-        self.mode_group.addButton(self.rb_translate)
+        self.text_editors = TextEditorsWidget()
+        layout.addWidget(self.text_editors)
         
-        mode_layout.addWidget(self.rb_transcribe)
-        mode_layout.addWidget(self.rb_translate)
-        mode_layout.addStretch()
-        layout.addLayout(mode_layout)
-
-        self.lang_container = QWidget()
-        lang_layout = QHBoxLayout(self.lang_container)
-        lang_layout.setContentsMargins(0,0,0,0)
+        self.translation_section = TranslationSectionWidget()
+        layout.addWidget(self.translation_section)
         
-        self.lang_combo = QComboBox()
-        for name, code in LANGUAGES.items():
-            self.lang_combo.addItem(name, code)
-        self.lang_combo.setCurrentText("Indonesian")
+        self.control_buttons = ControlButtonsWidget()
+        layout.addWidget(self.control_buttons)
         
-        lang_layout.addWidget(QLabel("Target Language:"))
-        lang_layout.addWidget(self.lang_combo, 1)
+        self.status_bar = StatusBarWidget()
+        layout.addWidget(self.status_bar)
         
-        layout.addWidget(self.lang_container)
-        self.lang_container.setVisible(False)
-
+        self._setup_widget_references()
+        self._setup_widget_connections()
+        self._apply_styles()
+    
+    def _setup_widget_references(self):
+        self.device_combo = self.device_settings.get_device_combo()
+        self.speaker_combo = self.device_settings.get_speaker_combo()
+        self.dest_edit = self.device_settings.get_dest_edit()
+        self.auto_record_checkbox = self.device_settings.get_auto_record_checkbox()
+        
+        self.mode_group = self.mode_selection.get_mode_group()
+        self.rb_transcribe = self.mode_selection.get_transcribe_radio()
+        self.rb_translate = self.mode_selection.get_translate_radio()
+        self.lang_container = self.mode_selection.get_lang_container()
+        self.lang_combo = self.mode_selection.get_lang_combo()
+        
+        self.transcription_editor = self.text_editors.get_transcription_editor()
+        self.gemini_text = self.text_editors.get_gemini_text()
+        self.auto_reply_checkbox = self.text_editors.get_auto_reply_checkbox()
+        
+        self.gemini_lang_combo = self.translation_section.get_gemini_lang_combo()
+        self.translation_input = self.translation_section.get_translation_input()
+        
+        self.btn_start = self.control_buttons.get_start_button()
+        self.record_btn = self.control_buttons.get_record_button()
+        
+        self.status_label = self.status_bar.get_status_label()
+        self.memory_label = self.status_bar.get_memory_label()
+    
+    def _setup_widget_connections(self):
+        self.device_settings.get_browse_button().clicked.connect(self._choose_destination)
         self.mode_group.buttonToggled.connect(self._on_mode_changed)
-
-        # Text areas row (side by side)
-        transcription_editors_label = QLabel("Output:")
-        layout.addWidget(transcription_editors_label)
-        
-        transcription_editors_row = QHBoxLayout()
-        
-        # Transcription text area (left)
-        transcription_container = QVBoxLayout()
-        transcription_label = QLabel("Real-Time Transcription")
-        self.transcription_editor = QTextEdit()
-        self.transcription_editor.setPlaceholderText("Transcription will appear here...")
-        self.transcription_editor.setMinimumHeight(200)
-        transcription_container.addWidget(transcription_label)
-        transcription_container.addWidget(self.transcription_editor)
-        
-        # Gemini suggestion text area (right)
-        gemini_container = QVBoxLayout()
-        gemini_header = QHBoxLayout()
-        gemini_label = QLabel("Gemini Suggestion")
-        self.auto_reply_checkbox = QCheckBox("Auto reply")
-        gemini_header.addWidget(gemini_label)
-        gemini_header.addWidget(self.auto_reply_checkbox)
-        gemini_header.addStretch()
-        self.gemini_text = QTextEdit()
-        self.gemini_text.setPlaceholderText("Gemini translation will appear here...")
-        self.gemini_text.setMinimumHeight(200)
-        self.gemini_text.setReadOnly(True)
-        gemini_container.addLayout(gemini_header)
-        gemini_container.addWidget(self.gemini_text)
-        
-        transcription_editors_row.addLayout(transcription_container)
-        transcription_editors_row.addLayout(gemini_container)
-        layout.addLayout(transcription_editors_row)
-        
-        # Translation section
-        translation_section_label = QLabel("Gemini Translation:")
-        layout.addWidget(translation_section_label)
-        
-        # Language selection for Gemini
-        gemini_lang_row = QHBoxLayout()
-        gemini_lang_label = QLabel("Target translation Language:")
-        self.gemini_lang_combo = QComboBox()
-        self.gemini_lang_combo.addItems(["English", "Arabic", "Japanese", "Chinese", "Korean"])
-        self.gemini_lang_combo.setMinimumWidth(150)
-        
-        gemini_lang_row.addWidget(gemini_lang_label)
-        gemini_lang_row.addWidget(self.gemini_lang_combo)
-        gemini_lang_row.addStretch()
-        layout.addLayout(gemini_lang_row)
-        
-        # Translation input field
-        input_label = QLabel("Text to Translate (Press Ctrl+Enter to submit):")
-        layout.addWidget(input_label)
-        
-        self.translation_input = QTextEdit()
-        self.translation_input.setPlaceholderText("Type text to translate and press Ctrl+Enter...")
-        self.translation_input.setMinimumHeight(80)
         self.translation_input.installEventFilter(self)
-        layout.addWidget(self.translation_input)
-
-        buttons_row = QHBoxLayout()
-        
-        self.btn_start = QPushButton("Start Transcription")
-        self.btn_start.setCheckable(True)
-        self.btn_start.setMinimumHeight(56)
         self.btn_start.clicked.connect(self._toggle_start)
-        buttons_row.addWidget(self.btn_start)
-        
-        self.record_btn = QPushButton("Record to File")
-        self.record_btn.setCheckable(True)
-        self.record_btn.setMinimumHeight(56)
         self.record_btn.clicked.connect(self._toggle_recording)
-        buttons_row.addWidget(self.record_btn)
-        
-        layout.addLayout(buttons_row)
-
-        status_row = QHBoxLayout()
-        self.status_label = QLabel("Ready")
-        font = self.status_label.font()
-        font.setPointSize(font.pointSize() + 1)
-        self.status_label.setFont(font)
-        status_row.addWidget(self.status_label, 1)
-        
-        self.memory_label = QLabel("")
-        self.memory_label.setStyleSheet("color: #666; font-size: 11px;")
-        status_row.addWidget(self.memory_label)
-        layout.addLayout(status_row)
-
+    
+    def _apply_styles(self):
         self.setStyleSheet(
             """
             QWidget { font-size: 14px; }
@@ -211,7 +130,7 @@ class MainWindow(QMainWindow):
         
         self.transcription_controller.status_changed.connect(self._update_status)
         self.transcription_controller.error_occurred.connect(self._on_transcription_error)
-        self.transcription_controller.transcription_update.connect(self._on_update)
+        self.transcription_controller.transcription_update.connect(self._on_update_transcription)
         self.transcription_controller.translation_update.connect(self._on_translation_update)
         self.transcription_controller.session_started.connect(self._on_transcription_started)
         self.transcription_controller.session_stopped.connect(self._on_transcription_stopped)
@@ -283,8 +202,8 @@ class MainWindow(QMainWindow):
         if self.auto_record_checkbox.isChecked() and self.recording_controller.is_recording():
             self.recording_controller.stop_recording()
 
-    def _on_update(self, text, is_final):
-        print(f"[DEBUG] _on_update called: is_final={is_final}, text='{text[:50]}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
+    def _on_update_transcription(self, text, is_final):
+        print(f"[DEBUG] _on_update_transcription called: is_final={is_final}, text='{text[:50]}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
         
         # Always send as "transcription" type (original English text)
         # Translation results are sent separately via _on_translation_update
@@ -380,8 +299,16 @@ class MainWindow(QMainWindow):
     def _on_devices_populated(self, device_list: list, device_ids: list):
         """Handle devices populated from controller."""
         self.device_combo.clear()
+        self.speaker_combo.clear()
         for label in device_list:
             self.device_combo.addItem(label)
+            self.speaker_combo.addItem(label)
+        
+        # Auto-select BlackHole for speaker device if available
+        for idx, label in enumerate(device_list):
+            if "blackhole" in label.lower():
+                self.speaker_combo.setCurrentIndex(idx)
+                break
     
     def _on_device_error(self, msg: str):
         """Handle device errors."""
