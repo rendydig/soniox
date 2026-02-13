@@ -165,6 +165,27 @@
         font-size: 16px;
     }
 
+    .finalized-text {
+        color: #92400e;
+        font-weight: 600;
+        font-style: normal;
+    }
+
+    .live-text-updating {
+        color: #d97706;
+        font-weight: 400;
+        animation: textPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes textPulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.7;
+        }
+    }
+
     .transcription-list {
         max-height: 500px;
         overflow-y: auto;

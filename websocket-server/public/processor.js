@@ -30,18 +30,10 @@ const StatusIndicator = ({ connected }) => {
     `;
 };
 
-const LiveText = ({ liveTextBuffer, currentLiveSentence }) => {
-    const displayLines = [];
+const LiveText = ({ finalizedText, liveText }) => {
+    const hasContent = finalizedText || liveText;
     
-    if (currentLiveSentence) {
-        displayLines.push({ text: currentLiveSentence, isCurrent: true });
-    }
-    
-    liveTextBuffer.slice().reverse().forEach(line => {
-        displayLines.push({ text: line, isCurrent: false });
-    });
-
-    if (displayLines.length === 0) {
+    if (!hasContent) {
         return html`
             <div class="live-text active">
                 Listening...
@@ -51,11 +43,10 @@ const LiveText = ({ liveTextBuffer, currentLiveSentence }) => {
 
     return html`
         <div class="live-text active">
-            ${displayLines.map((line, index) => {
-                const fadeLevel = line.isCurrent ? '' : `fade-${Math.min(5, index)}`;
-                const className = `live-text-line ${line.isCurrent ? 'current' : fadeLevel}`;
-                return html`<div key=${index} class=${className}>${line.text}</div>`;
-            })}
+            <div class="live-text-line">
+                ${finalizedText && html`<span class="finalized-text">${finalizedText}</span>`}
+                ${liveText && html`<span class="live-text-updating">${liveText}</span>`}
+            </div>
         </div>
     `;
 };
@@ -117,8 +108,8 @@ const App = () => {
     const [connected, setConnected] = useState(false);
     const [transcriptions, setTranscriptions] = useState([]);
     const [currentSentence, setCurrentSentence] = useState(null);
-    const [liveTextBuffer, setLiveTextBuffer] = useState([]);
-    const [currentLiveSentence, setCurrentLiveSentence] = useState('');
+    const [finalizedText, setFinalizedText] = useState('');
+    const [liveText, setLiveText] = useState('');
     const wsManager = useRef(null);
 
     useEffect(() => {
@@ -132,10 +123,10 @@ const App = () => {
                 console.log('[WebSocket]', data);
                 if (data.is_final) {
                     console.log('[DEBUG] Final transcription:', data.text);
-                    addTranscription(data.text, data.timestamp);
-                    updateLiveText(data.text, true);
+                    handleFinalTranscription(data.text, data.timestamp);
                 } else {
-                    console.log('[DEBUG] Non-final (ignored for display):', data.text);
+                    console.log('[DEBUG] Non-final transcription:', data.text);
+                    handleLiveTranscription(data.text);
                 }
             }
         };
@@ -150,32 +141,31 @@ const App = () => {
         };
     }, []);
 
-    const updateLiveText = (text, isFinal) => {
+    const handleFinalTranscription = (text, timestamp) => {
+        if (!text || text.trim().length === 0) return;
+        
+        const trimmedText = text.trim();
+        
+        setFinalizedText(prev => {
+            const newFinalized = prev ? prev + trimmedText : trimmedText;
+            console.log('[DEBUG] Finalized text accumulated:', newFinalized);
+            return newFinalized;
+        });
+        
+        setLiveText('');
+        
+        addTranscription(trimmedText, timestamp);
+    };
+    
+    const handleLiveTranscription = (text) => {
         if (!text || text.trim().length === 0) {
+            setLiveText('');
             return;
         }
-
+        
         const trimmedText = text.trim();
-        const isSentenceEnd = endsWithSentenceTerminator(trimmedText);
-
-        if (isSentenceEnd) {
-            // Complete sentence - move to buffer and clear current
-            setCurrentLiveSentence(prev => {
-                const newSentence = prev ? prev + ' ' + trimmedText : trimmedText;
-                setLiveTextBuffer(prevBuffer => {
-                    const newBuffer = [...prevBuffer, newSentence];
-                    if (newBuffer.length > MAX_LIVE_LINES) {
-                        newBuffer.shift();
-                    }
-                    console.log({liveTextBuffer: newBuffer});
-                    return newBuffer;
-                });
-                return '';
-            });
-        } else {
-            // Incomplete sentence - accumulate in currentLiveSentence
-            setCurrentLiveSentence(prev => prev ? prev + ' ' + trimmedText : trimmedText);
-        }
+        setLiveText(trimmedText);
+        console.log('[DEBUG] Live text updated:', trimmedText);
     };
 
     const addTranscription = (text, timestamp) => {
@@ -225,8 +215,8 @@ const App = () => {
                 <div class="card center-content">
                     <h2>📝 Live Transcription</h2>
                     <${LiveText} 
-                        liveTextBuffer=${liveTextBuffer} 
-                        currentLiveSentence=${currentLiveSentence}
+                        finalizedText=${finalizedText}
+                        liveText=${liveText}
                     />
                     
                     <h2>📜 Transcription History</h2>
