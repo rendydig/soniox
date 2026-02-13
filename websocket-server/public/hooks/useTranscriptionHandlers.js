@@ -39,6 +39,7 @@ export const useTranscriptionHandlers = ({
         wsManager.current.ws.send(JSON.stringify(request));
     }, [wsManager]);
 
+    /** Final transcription is handled by utilizing is_final: true */
     const handleFinalTranscription = useCallback((text, timestamp, source) => {
         if (!text || text.trim().length === 0) return;
         
@@ -60,7 +61,31 @@ export const useTranscriptionHandlers = ({
             });
         } else {
             setFinalizedSentences(prev => {
-                const newSentences = sentences.map((sentence, index) => ({
+                let sentencesToProcess = [...sentences];
+                let updatedPrev = [...prev];
+                
+                if (updatedPrev.length > 0 && sentencesToProcess.length > 0) {
+                    const lastSentence = updatedPrev[updatedPrev.length - 1];
+                    const lastChar = lastSentence.text.trim().slice(-1);
+                    
+                    if (lastChar !== '.' && lastChar !== '?' && lastChar !== '!') {
+                        const mergedText = lastSentence.text + ' ' + sentencesToProcess[0];
+                        updatedPrev[updatedPrev.length - 1] = {
+                            ...lastSentence,
+                            text: mergedText
+                        };
+                        
+                        console.log('[DEBUG] Merged sentence:', mergedText);
+                        
+                        if (isCorrectionEnabled && !currentCorrections[mergedText]) {
+                            requestCorrection(mergedText);
+                        }
+                        
+                        sentencesToProcess = sentencesToProcess.slice(1);
+                    }
+                }
+                
+                const newSentences = sentencesToProcess.map((sentence, index) => ({
                     text: sentence,
                     source: source,
                     timestamp: timestamp || new Date().toISOString(),
@@ -77,7 +102,7 @@ export const useTranscriptionHandlers = ({
                     });
                 }
                 
-                return [...prev, ...newSentences];
+                return [...updatedPrev, ...newSentences];
             });
         }
         
@@ -88,7 +113,8 @@ export const useTranscriptionHandlers = ({
         }
     }, [setFinalizedSentences, setLiveTextHost, setLiveTextSpeaker, requestCorrection]);
     
-    const handleLiveTranscription = useCallback((text, source) => {
+    /** Live transcription is handled by utilizing is_final: false */
+    const handleLiveTranscription = useCallback((text, timestamp, source) => {
         if (!text || text.trim().length === 0) {
             if (source.toLowerCase() === 'host') {
                 setLiveTextHost('');
@@ -129,7 +155,7 @@ export const useTranscriptionHandlers = ({
         }
     }, [setFinalizedTranslations, setLiveTranslationHost, setLiveTranslationSpeaker]);
     
-    const handleLiveTranslation = useCallback((text, source) => {
+    const handleLiveTranslation = useCallback((text, timestamp, source) => {
         if (!text || text.trim().length === 0) {
             if (source.toLowerCase() === 'host') {
                 setLiveTranslationHost('');

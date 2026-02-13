@@ -26,10 +26,13 @@ const App = () => {
     const wsManager = useRef(null);
     
     const {
+        /** Transcriptions Handlers */
         handleFinalTranscription,
         handleLiveTranscription,
+        /** Translations Handlers */
         handleFinalTranslation,
         handleLiveTranslation,
+        /** Corrections Handlers */
         handleCorrectionResponse
     } = useTranscriptionHandlers({
         setFinalizedSentences,
@@ -45,10 +48,13 @@ const App = () => {
     });
 
     const handleMessage = useWebSocketHandler({
+        /** Transcriptions Handlers */
         handleFinalTranscription,
         handleLiveTranscription,
+        /** Translations Handlers */
         handleFinalTranslation,
         handleLiveTranslation,
+        /** Corrections Handlers */
         handleCorrectionResponse
     });
 
