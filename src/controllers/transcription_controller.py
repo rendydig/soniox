@@ -8,6 +8,7 @@ class TranscriptionController(QObject):
     status_changed = Signal(str)
     error_occurred = Signal(str)
     transcription_update = Signal(str, bool)
+    translation_update = Signal(str, bool)
     session_started = Signal()
     session_stopped = Signal()
     
@@ -45,6 +46,7 @@ class TranscriptionController(QObject):
             
             self._soniox_worker = SonioxWorker(device_id, mode=mode, target_lang=target_lang)
             self._soniox_worker.transcription_update.connect(self._on_transcription_update)
+            self._soniox_worker.translation_update.connect(self._on_translation_update)
             self._soniox_worker.status.connect(self.status_changed)
             self._soniox_worker.error.connect(self._on_error)
             self._soniox_worker.finished.connect(self._on_worker_finished)
@@ -79,6 +81,10 @@ class TranscriptionController(QObject):
             self.status_changed.emit(f"Live: {text}")
         elif not is_final:
             self.status_changed.emit("Listening...")
+    
+    def _on_translation_update(self, text: str, is_final: bool):
+        """Handle translation updates from worker."""
+        self.translation_update.emit(text, is_final)
     
     def _on_error(self, msg: str):
         """Handle errors from worker."""

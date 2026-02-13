@@ -119,6 +119,9 @@ const App = () => {
     const [currentSentence, setCurrentSentence] = useState(null);
     const [finalizedText, setFinalizedText] = useState('');
     const [liveText, setLiveText] = useState('');
+    const [translations, setTranslations] = useState([]);
+    const [currentTranslation, setCurrentTranslation] = useState(null);
+    const [currentMode, setCurrentMode] = useState('transcription');
     const wsManager = useRef(null);
 
     useEffect(() => {
@@ -130,11 +133,25 @@ const App = () => {
 
             if (data.type === 'transcription') {
                 console.log('[WebSocket]', data);
+                setCurrentMode('transcription');
                 if (data.is_final) {
                     console.log('[DEBUG] Final transcription:', data.text);
                     handleFinalTranscription(data.text, data.timestamp);
                 } else {
                     console.log('[DEBUG] Non-final transcription:', data.text);
+                    handleLiveTranscription(data.text);
+                }
+            }
+            
+            if (data.type === 'translation') {
+                console.log('[WebSocket]', data);
+                setCurrentMode('translation');
+                if (data.is_final) {
+                    console.log('[DEBUG] Final translation:', data.text);
+                    handleFinalTranslation(data.text, data.timestamp);
+                } else {
+                    console.log('[DEBUG] Non-final translation (English):', data.text);
+                    // Show live English text for translation mode
                     handleLiveTranscription(data.text);
                 }
             }
@@ -213,6 +230,53 @@ const App = () => {
             }
         });
     };
+    
+    const handleFinalTranslation = (text, timestamp) => {
+        if (!text || text.trim().length === 0) return;
+        
+        const trimmedText = text.trim();
+        console.log('[DEBUG] Final translation received:', trimmedText);
+        
+        // Add directly to translations history
+        addTranslation(trimmedText, timestamp);
+    };
+    
+    const addTranslation = (text, timestamp) => {
+        if (!text || text.trim().length === 0) return;
+
+        const trimmedText = text.trim();
+        const isSentenceEnd = endsWithSentenceTerminator(trimmedText);
+
+        setCurrentTranslation(prev => {
+            if (prev === null) {
+                const newTranslation = {
+                    text: trimmedText,
+                    timestamp: timestamp,
+                    isComplete: isSentenceEnd
+                };
+
+                if (isSentenceEnd) {
+                    setTranslations(prevTranslations => [newTranslation, ...prevTranslations]);
+                    return null;
+                }
+                
+                return newTranslation;
+            } else {
+                const updatedTranslation = {
+                    text: prev.text + ' ' + trimmedText,
+                    timestamp: timestamp,
+                    isComplete: isSentenceEnd
+                };
+
+                if (isSentenceEnd) {
+                    setTranslations(prevTranslations => [updatedTranslation, ...prevTranslations]);
+                    return null;
+                }
+                
+                return updatedTranslation;
+            }
+        });
+    };
 
     return html`
         <div class="container">
@@ -222,19 +286,29 @@ const App = () => {
 
             <div class="main-content">
                 <div class="card center-content">
-                    <h2>📝 Live Transcription</h2>
+                    <h2>📝 Live ${currentMode === 'translation' ? 'Transcription (Source)' : 'Transcription'}</h2>
                     <${LiveText} 
-                        finalizedText=${finalizedText}
+                        finalizedText=${currentMode === 'translation' ? '' : finalizedText}
                         liveText=${liveText}
                     />
                     
-                    <h2>📜 Transcription History</h2>
-                    <div class="transcription-list">
-                        <${TranscriptionList} 
-                            transcriptions=${transcriptions}
-                            currentSentence=${currentSentence}
-                        />
-                    </div>
+                    ${currentMode === 'transcription' ? html`
+                        <h2>📜 Transcription History</h2>
+                        <div class="transcription-list">
+                            <${TranscriptionList} 
+                                transcriptions=${transcriptions}
+                                currentSentence=${currentSentence}
+                            />
+                        </div>
+                    ` : html`
+                        <h2>🌐 Translation History</h2>
+                        <div class="transcription-list">
+                            <${TranscriptionList} 
+                                transcriptions=${translations}
+                                currentSentence=${currentTranslation}
+                            />
+                        </div>
+                    `}
                 </div>
             </div>
         </div>

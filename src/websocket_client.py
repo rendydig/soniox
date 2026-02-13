@@ -56,13 +56,13 @@ class WebSocketClient:
             self.connected = False
             self.websocket = None
     
-    def send_transcription(self, text: str, is_final: bool, additional_data: dict = None):
+    def send_transcription(self, text: str, is_final: bool, additional_data: dict = None, message_type: str = "transcription"):
         if not self.connected or not self.loop:
             print("[WebSocket] Not connected, skipping send")
             return
         
         message = {
-            "type": "transcription",
+            "type": message_type,
             "text": text,
             "is_final": is_final,
             "timestamp": None

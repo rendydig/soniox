@@ -15,6 +15,7 @@ class SonioxWorker(QThread):
     error = Signal(str)
     status = Signal(str)
     transcription_update = Signal(str, bool)
+    translation_update = Signal(str, bool)
 
     def __init__(self, device_id: int, mode: str = "transcription", target_lang: str = "en", parent=None):
         super().__init__(parent)
@@ -125,45 +126,93 @@ class SonioxWorker(QThread):
                     if not tokens:
                         continue
                     
-                    final_translation_tokens = [
-                        t for t in tokens 
-                        if t.get("is_final") and 
-                        (self._mode != "translation" or t.get("translation_status") == "translation")
-                    ]
-
-                    partial_tokens = [
-                        t for t in tokens 
-                        if not t.get("is_final")
-                    ]
-                    
                     if self._mode == "translation":
-                        translated_partials = [t for t in partial_tokens if t.get("translation_status") == "translation"]
-                        if translated_partials:
-                            partial_tokens = translated_partials
-
-                    if final_translation_tokens:
-                        text_parts = []
-                        for t in final_translation_tokens:
-                            token_text = t.get("text", "")
-                            if token_text == "<end>":
-                                text_parts.append("\n")
-                            else:
-                                text_parts.append(token_text)
-                        final_text = "".join(text_parts)
+                        # In translation mode, emit both transcription and translation
+                        
+                        # Final transcription (English - original)
+                        final_transcription_tokens = [
+                            t for t in tokens 
+                            if t.get("is_final") and t.get("translation_status") != "translation"
+                        ]
+                        
+                        # Final translation (Indonesian - translated)
+                        final_translation_tokens = [
+                            t for t in tokens 
+                            if t.get("is_final") and t.get("translation_status") == "translation"
+                        ]
+                        
+                        # Partial tokens (English - for live display)
+                        partial_tokens = [
+                            t for t in tokens 
+                            if not t.get("is_final")
+                        ]
+                        
+                        # Emit final transcription (English)
+                        if final_transcription_tokens:
+                            text_parts = []
+                            for t in final_transcription_tokens:
+                                token_text = t.get("text", "")
+                                if token_text == "<end>":
+                                    text_parts.append("\n")
+                                else:
+                                    text_parts.append(token_text)
+                            final_transcription = "".join(text_parts)
+                            print(f"[DEBUG] Final Transcription (English): {repr(final_transcription)}")
+                            self.transcription_update.emit(final_transcription, True)
+                        
+                        # Emit final translation (Indonesian)
+                        if final_translation_tokens:
+                            text_parts = []
+                            for t in final_translation_tokens:
+                                token_text = t.get("text", "")
+                                if token_text == "<end>":
+                                    text_parts.append("\n")
+                                else:
+                                    text_parts.append(token_text)
+                            final_translation = "".join(text_parts)
+                            print(f"[DEBUG] Final Translation (Indonesian): {repr(final_translation)}")
+                            self.translation_update.emit(final_translation, True)
+                        
+                        # Emit partial text (English - for live display)
+                        part_text = "".join(t.get("text", "") for t in partial_tokens)
+                        if part_text.strip():
+                            self.transcription_update.emit(part_text, False)
+                        elif final_transcription_tokens or final_translation_tokens:
+                            self.transcription_update.emit("", False)
+                    
                     else:
-                        final_text = ""
-                    
-                    part_text = "".join(t.get("text", "") for t in partial_tokens)
+                        # Transcription mode - original behavior
+                        final_tokens = [
+                            t for t in tokens 
+                            if t.get("is_final")
+                        ]
 
-                    if final_text:
-                        # print(f"[DEBUG] Final: {repr(final_text)}")
-                        self.transcription_update.emit(final_text, True)
-                    
-                    if part_text.strip():
-                        # print(f"[DEBUG] Partial: {part_text}")
-                        self.transcription_update.emit(part_text, False)
-                    elif final_text:
-                        self.transcription_update.emit("", False)
+                        partial_tokens = [
+                            t for t in tokens 
+                            if not t.get("is_final")
+                        ]
+
+                        if final_tokens:
+                            text_parts = []
+                            for t in final_tokens:
+                                token_text = t.get("text", "")
+                                if token_text == "<end>":
+                                    text_parts.append("\n")
+                                else:
+                                    text_parts.append(token_text)
+                            final_text = "".join(text_parts)
+                        else:
+                            final_text = ""
+                        
+                        part_text = "".join(t.get("text", "") for t in partial_tokens)
+
+                        if final_text:
+                            self.transcription_update.emit(final_text, True)
+                        
+                        if part_text.strip():
+                            self.transcription_update.emit(part_text, False)
+                        elif final_text:
+                            self.transcription_update.emit("", False)
 
             await asyncio.gather(sender(), receiver())
 

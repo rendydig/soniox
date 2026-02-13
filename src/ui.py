@@ -212,6 +212,7 @@ class MainWindow(QMainWindow):
         self.transcription_controller.status_changed.connect(self._update_status)
         self.transcription_controller.error_occurred.connect(self._on_transcription_error)
         self.transcription_controller.transcription_update.connect(self._on_update)
+        self.transcription_controller.translation_update.connect(self._on_translation_update)
         self.transcription_controller.session_started.connect(self._on_transcription_started)
         self.transcription_controller.session_stopped.connect(self._on_transcription_stopped)
         
@@ -285,7 +286,9 @@ class MainWindow(QMainWindow):
     def _on_update(self, text, is_final):
         print(f"[DEBUG] _on_update called: is_final={is_final}, text='{text[:50]}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
         
-        self.websocket_client.send_transcription(text, is_final)
+        # Always send as "transcription" type (original English text)
+        # Translation results are sent separately via _on_translation_update
+        self.websocket_client.send_transcription(text, is_final, message_type="transcription")
         
         if is_final:
             append_timestamped_text(self.transcription_editor, text, max_lines=MAX_TRANSCRIPTION_LINES)
@@ -306,6 +309,13 @@ class MainWindow(QMainWindow):
                 self.translation_controller.cancel_auto_reply()
             elif self.auto_reply_checkbox.isChecked() and not text.strip():
                 print(f"[DEBUG] Ignoring empty non-final text, keeping auto-reply timer active")
+    
+    def _on_translation_update(self, text: str, is_final: bool):
+        """Handle translation updates from transcription controller (Indonesian translations)."""
+        print(f"[DEBUG] _on_translation_update called: is_final={is_final}, text='{text[:50]}...'")
+        
+        # Send translation via WebSocket
+        self.websocket_client.send_transcription(text, is_final, message_type="translation")
 
     def _on_transcription_started(self):
         """Handle transcription session started."""

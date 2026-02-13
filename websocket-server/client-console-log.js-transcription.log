@@ -1,0 +1,93 @@
+websocket-manager.js:14 [WebSocket] Connected
+processor.js:127 [WebSocket] Connected to transcription server
+processor.js:142 [WebSocket] {type: 'translation', text: ' it has helped cut robbery and sh', is_final: false, timestamp: '2026-02-13T02:05:17.050Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' it has helped cut robbery and shop', is_final: false, timestamp: '2026-02-13T02:05:17.201Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' it has helped cut robbery and shopli', is_final: false, timestamp: '2026-02-13T02:05:17.318Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' it has helped cut robbery and shoplift', is_final: false, timestamp: '2026-02-13T02:05:17.447Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' ini membantu mengurangi perampokan dan pencurian di toko,', is_final: true, timestamp: '2026-02-13T02:05:17.769Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:17.769Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and', is_final: false, timestamp: '2026-02-13T02:05:17.892Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and that', is_final: false, timestamp: '2026-02-13T02:05:18.083Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and that the', is_final: false, timestamp: '2026-02-13T02:05:18.266Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and that the techn', is_final: false, timestamp: '2026-02-13T02:05:18.387Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and that the technology', is_final: false, timestamp: '2026-02-13T02:05:18.891Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and that the technology is', is_final: false, timestamp: '2026-02-13T02:05:19.126Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and that the technology is game', is_final: false, timestamp: '2026-02-13T02:05:19.624Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and that the technology is game-ch', is_final: false, timestamp: '2026-02-13T02:05:19.810Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and that the technology is game-chang', is_final: false, timestamp: '2026-02-13T02:05:19.925Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' dan bahwa teknologinya mengubah permainan.', is_final: true, timestamp: '2026-02-13T02:05:20.218Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:20.218Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' But', is_final: false, timestamp: '2026-02-13T02:05:20.692Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' But priv', is_final: false, timestamp: '2026-02-13T02:05:20.902Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' But privac', is_final: false, timestamp: '2026-02-13T02:05:21.044Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' But privacy', is_final: false, timestamp: '2026-02-13T02:05:21.151Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' But privacy camp', is_final: false, timestamp: '2026-02-13T02:05:21.427Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' But privacy campa', is_final: false, timestamp: '2026-02-13T02:05:21.531Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' But privacy campaign', is_final: false, timestamp: '2026-02-13T02:05:21.674Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' But privacy campaigners', is_final: false, timestamp: '2026-02-13T02:05:21.840Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' Namun para kampanye privasi mengatakan', is_final: true, timestamp: '2026-02-13T02:05:22.023Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:22.024Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' L', is_final: false, timestamp: '2026-02-13T02:05:22.413Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' LF', is_final: false, timestamp: '2026-02-13T02:05:22.479Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' LFR,', is_final: false, timestamp: '2026-02-13T02:05:22.690Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' LFR, which', is_final: false, timestamp: '2026-02-13T02:05:22.826Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' LFR, which map', is_final: false, timestamp: '2026-02-13T02:05:23.195Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' LFR, which maps', is_final: false, timestamp: '2026-02-13T02:05:23.347Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' LFR, which maps a person', is_final: false, timestamp: '2026-02-13T02:05:23.590Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: " LFR, which maps a person's", is_final: false, timestamp: '2026-02-13T02:05:24.015Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: " LFR, which maps a person's fa", is_final: false, timestamp: '2026-02-13T02:05:24.182Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: " LFR, which maps a person's facial", is_final: false, timestamp: '2026-02-13T02:05:24.339Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: " LFR, which maps a person's facial fe", is_final: false, timestamp: '2026-02-13T02:05:24.826Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: " LFR, which maps a person's facial featur", is_final: false, timestamp: '2026-02-13T02:05:24.964Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' LFR, yang memetakan fitur wajah seseorang', is_final: true, timestamp: '2026-02-13T02:05:25.029Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:25.030Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and', is_final: false, timestamp: '2026-02-13T02:05:25.270Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and mat', is_final: false, timestamp: '2026-02-13T02:05:25.475Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and matches', is_final: false, timestamp: '2026-02-13T02:05:25.552Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them', is_final: false, timestamp: '2026-02-13T02:05:25.788Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against', is_final: false, timestamp: '2026-02-13T02:05:25.843Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against fac', is_final: false, timestamp: '2026-02-13T02:05:26.319Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against faces', is_final: false, timestamp: '2026-02-13T02:05:26.521Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against faces on', is_final: false, timestamp: '2026-02-13T02:05:26.672Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against faces on wat', is_final: false, timestamp: '2026-02-13T02:05:26.917Z'}
+processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against faces on watch', is_final: false, timestamp: '2026-02-13T02:05:27.187Z'}
+ [WebSocket] {type: 'translation', text: ' and matches them against faces on watch list', is_final: false, timestamp: '2026-02-13T02:05:27.295Z'}
+ [WebSocket] {type: 'translation', text: ' dan mencocokkannya dengan wajah di daftar pengamatan,', is_final: true, timestamp: '2026-02-13T02:05:27.549Z'}
+ [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:27.549Z'}
+ [WebSocket] {type: 'translation', text: ' car', is_final: false, timestamp: '2026-02-13T02:05:27.995Z'}
+ [WebSocket] {type: 'translation', text: ' carries', is_final: false, timestamp: '2026-02-13T02:05:28.232Z'}
+ [WebSocket] {type: 'translation', text: ' carries an', is_final: false, timestamp: '2026-02-13T02:05:28.544Z'}
+ [WebSocket] {type: 'translation', text: ' carries an un', is_final: false, timestamp: '2026-02-13T02:05:28.724Z'}
+ [WebSocket] {type: 'translation', text: ' carries an unac', is_final: false, timestamp: '2026-02-13T02:05:28.956Z'}
+ [WebSocket] {type: 'translation', text: ' carries an unaccep', is_final: false, timestamp: '2026-02-13T02:05:29.108Z'}
+ [WebSocket] {type: 'translation', text: ' carries an unaccepta', is_final: false, timestamp: '2026-02-13T02:05:29.224Z'}
+ [WebSocket] {type: 'translation', text: ' carries an unacceptable', is_final: false, timestamp: '2026-02-13T02:05:29.343Z'}
+ [WebSocket] {type: 'translation', text: ' carries an unacceptable r', is_final: false, timestamp: '2026-02-13T02:05:29.517Z'}
+ [WebSocket] {type: 'translation', text: ' carries an unacceptable risk', is_final: false, timestamp: '2026-02-13T02:05:29.650Z'}
+ [WebSocket] {type: 'translation', text: ' carries an unacceptable risk of', is_final: false, timestamp: '2026-02-13T02:05:29.774Z'}
+ [WebSocket] {type: 'translation', text: ' carries an unacceptable risk of mis', is_final: false, timestamp: '2026-02-13T02:05:30.289Z'}
+ [WebSocket] {type: 'translation', text: ' carries an unacceptable risk of misident', is_final: false, timestamp: '2026-02-13T02:05:30.506Z'}
+ [WebSocket] {type: 'translation', text: ' carries an unacceptable risk of misidentific', is_final: false, timestamp: '2026-02-13T02:05:30.760Z'}
+ [WebSocket] {type: 'translation', text: ' membawa risiko yang tidak dapat diterima terhadap salah identifikasi.', is_final: true, timestamp: '2026-02-13T02:05:31.348Z'}
+ [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:31.349Z'}
+ [WebSocket] {type: 'translation', text: ' Here', is_final: false, timestamp: '2026-02-13T02:05:31.695Z'}
+ [WebSocket] {type: 'translation', text: " Here's", is_final: false, timestamp: '2026-02-13T02:05:31.823Z'}
+ [WebSocket] {type: 'translation', text: " Here's our", is_final: false, timestamp: '2026-02-13T02:05:31.966Z'}
+ [WebSocket] {type: 'translation', text: " Here's our Home", is_final: false, timestamp: '2026-02-13T02:05:32.068Z'}
+ [WebSocket] {type: 'translation', text: " Here's our Home Aff", is_final: false, timestamp: '2026-02-13T02:05:32.204Z'}
+ [WebSocket] {type: 'translation', text: " Here's our Home Affa", is_final: false, timestamp: '2026-02-13T02:05:32.295Z'}
+ [WebSocket] {type: 'translation', text: " Here's our Home Affairs", is_final: false, timestamp: '2026-02-13T02:05:32.421Z'}
+ [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspond", is_final: false, timestamp: '2026-02-13T02:05:32.682Z'}
+ [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspondent,", is_final: false, timestamp: '2026-02-13T02:05:33.066Z'}
+ [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspondent, Son", is_final: false, timestamp: '2026-02-13T02:05:33.353Z'}
+ [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspondent, Sonia", is_final: false, timestamp: '2026-02-13T02:05:33.483Z'}
+ [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspondent, Sonia Jess", is_final: false, timestamp: '2026-02-13T02:05:33.741Z'}
+ [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspondent, Sonia Jessop", is_final: false, timestamp: '2026-02-13T02:05:33.863Z'}
+ [WebSocket] {type: 'translation', text: ' Ini koresponden Urusan Dalam Negeri kami, Sonia Jessop.', is_final: true, timestamp: '2026-02-13T02:05:34.075Z'}
+ [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:34.075Z'}
+ [WebSocket] {type: 'translation', text: ' You', is_final: false, timestamp: '2026-02-13T02:05:34.842Z'}
+ [WebSocket] {type: 'translation', text: " You'", is_final: false, timestamp: '2026-02-13T02:05:34.981Z'}
+ [WebSocket] {type: 'translation', text: " You're", is_final: false, timestamp: '2026-02-13T02:05:35.109Z'}
+ [WebSocket] {type: 'translation', text: " You're und", is_final: false, timestamp: '2026-02-13T02:05:35.169Z'}
+ [WebSocket] {type: 'translation', text: ' Anda berada di bawah pengawasan.', is_final: true, timestamp: '2026-02-13T02:05:35.345Z'}
+ [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:35.345Z'}

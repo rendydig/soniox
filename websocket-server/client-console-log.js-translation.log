@@ -1,0 +1,1050 @@
+websocket-manager.js:14 [WebSocket] Connected
+processor.js:130 [WebSocket] Connected to transcription server
+processor.js:135 [WebSocket] {type: 'transcription', text: 'In', is_final: false, timestamp: '2026-02-13T02:38:41.447Z'}
+processor.js:141 [DEBUG] Non-final transcription: In
+processor.js:194 [DEBUG] Live text updated: In
+processor.js:135 [WebSocket] {type: 'transcription', text: 'In crim', is_final: false, timestamp: '2026-02-13T02:38:41.636Z'}
+processor.js:141 [DEBUG] Non-final transcription: In crim
+processor.js:194 [DEBUG] Live text updated: In crim
+processor.js:135 [WebSocket] {type: 'transcription', text: 'In crime,', is_final: false, timestamp: '2026-02-13T02:38:41.749Z'}
+processor.js:141 [DEBUG] Non-final transcription: In crime,
+processor.js:194 [DEBUG] Live text updated: In crime,
+processor.js:135 [WebSocket] {type: 'transcription', text: 'In crime, we', is_final: false, timestamp: '2026-02-13T02:38:41.896Z'}
+processor.js:141 [DEBUG] Non-final transcription: In crime, we
+processor.js:194 [DEBUG] Live text updated: In crime, we
+processor.js:135 [WebSocket] {type: 'transcription', text: 'In crime, we se', is_final: false, timestamp: '2026-02-13T02:38:42.018Z'}
+processor.js:141 [DEBUG] Non-final transcription: In crime, we se
+processor.js:194 [DEBUG] Live text updated: In crime, we se
+processor.js:135 [WebSocket] {type: 'transcription', text: 'In crime, we see', is_final: false, timestamp: '2026-02-13T02:38:42.129Z'}
+processor.js:141 [DEBUG] Non-final transcription: In crime, we see
+processor.js:194 [DEBUG] Live text updated: In crime, we see
+processor.js:135 [WebSocket] {type: 'transcription', text: 'In crime, we see more', is_final: false, timestamp: '2026-02-13T02:38:42.274Z'}
+processor.js:141 [DEBUG] Non-final transcription: In crime, we see more
+processor.js:194 [DEBUG] Live text updated: In crime, we see more
+processor.js:135 [WebSocket] {type: 'transcription', text: 'In crime, we see more and', is_final: false, timestamp: '2026-02-13T02:38:42.482Z'}
+processor.js:141 [DEBUG] Non-final transcription: In crime, we see more and
+processor.js:194 [DEBUG] Live text updated: In crime, we see more and
+processor.js:135 [WebSocket] {type: 'transcription', text: 'In crime, we see more and more', is_final: true, timestamp: '2026-02-13T02:38:42.606Z'}
+processor.js:138 [DEBUG] Final transcription: In crime, we see more and more
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:42.606Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: 'Dalam kejahatan, kita melihat semakin banyak', is_final: true, timestamp: '2026-02-13T02:38:42.653Z'}
+processor.js:150 [DEBUG] Final translation: Dalam kejahatan, kita melihat semakin banyak
+processor.js:238 [DEBUG] Final translation received: Dalam kejahatan, kita melihat semakin banyak
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:42.654Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of', is_final: false, timestamp: '2026-02-13T02:38:42.728Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of
+processor.js:194 [DEBUG] Live text updated: of
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of these', is_final: false, timestamp: '2026-02-13T02:38:42.978Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of these
+processor.js:194 [DEBUG] Live text updated: of these
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of these dep', is_final: false, timestamp: '2026-02-13T02:38:43.425Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of these dep
+processor.js:194 [DEBUG] Live text updated: of these dep
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of these deplo', is_final: false, timestamp: '2026-02-13T02:38:43.578Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of these deplo
+processor.js:194 [DEBUG] Live text updated: of these deplo
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of these deploym', is_final: false, timestamp: '2026-02-13T02:38:43.666Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of these deploym
+processor.js:194 [DEBUG] Live text updated: of these deploym
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of these deployments', is_final: false, timestamp: '2026-02-13T02:38:43.789Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of these deployments
+processor.js:194 [DEBUG] Live text updated: of these deployments
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of these deployments us', is_final: false, timestamp: '2026-02-13T02:38:44.053Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of these deployments us
+processor.js:194 [DEBUG] Live text updated: of these deployments us
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of these deployments using', is_final: false, timestamp: '2026-02-13T02:38:44.177Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of these deployments using
+processor.js:194 [DEBUG] Live text updated: of these deployments using
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of these deployments using m', is_final: false, timestamp: '2026-02-13T02:38:44.379Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of these deployments using m
+processor.js:194 [DEBUG] Live text updated: of these deployments using m
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of these deployments using mobile', is_final: false, timestamp: '2026-02-13T02:38:44.527Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of these deployments using mobile
+processor.js:194 [DEBUG] Live text updated: of these deployments using mobile
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of these deployments using mobile v', is_final: false, timestamp: '2026-02-13T02:38:44.914Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of these deployments using mobile v
+processor.js:194 [DEBUG] Live text updated: of these deployments using mobile v
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of these deployments using mobile vans', is_final: true, timestamp: '2026-02-13T02:38:45.199Z'}
+processor.js:138 [DEBUG] Final transcription:  of these deployments using mobile vans
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:45.199Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' penempatan seperti ini menggunakan van mobile', is_final: true, timestamp: '2026-02-13T02:38:45.226Z'}
+processor.js:150 [DEBUG] Final translation:  penempatan seperti ini menggunakan van mobile
+processor.js:238 [DEBUG] Final translation received: penempatan seperti ini menggunakan van mobile
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:45.226Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' around', is_final: false, timestamp: '2026-02-13T02:38:45.350Z'}
+processor.js:141 [DEBUG] Non-final transcription:  around
+processor.js:194 [DEBUG] Live text updated: around
+processor.js:135 [WebSocket] {type: 'transcription', text: ' around London', is_final: false, timestamp: '2026-02-13T02:38:46.268Z'}
+processor.js:141 [DEBUG] Non-final transcription:  around London
+processor.js:194 [DEBUG] Live text updated: around London
+processor.js:135 [WebSocket] {type: 'transcription', text: ' around London and', is_final: false, timestamp: '2026-02-13T02:38:46.824Z'}
+processor.js:141 [DEBUG] Non-final transcription:  around London and
+processor.js:194 [DEBUG] Live text updated: around London and
+processor.js:135 [WebSocket] {type: 'transcription', text: ' around London and,', is_final: false, timestamp: '2026-02-13T02:38:46.977Z'}
+processor.js:141 [DEBUG] Non-final transcription:  around London and,
+processor.js:194 [DEBUG] Live text updated: around London and,
+processor.js:135 [WebSocket] {type: 'transcription', text: ' around London and, u', is_final: false, timestamp: '2026-02-13T02:38:47.075Z'}
+processor.js:141 [DEBUG] Non-final transcription:  around London and, u
+processor.js:194 [DEBUG] Live text updated: around London and, u
+processor.js:135 [WebSocket] {type: 'transcription', text: ' around London and, uh, it', is_final: false, timestamp: '2026-02-13T02:38:47.227Z'}
+processor.js:141 [DEBUG] Non-final transcription:  around London and, uh, it
+processor.js:194 [DEBUG] Live text updated: around London and, uh, it
+processor.js:135 [WebSocket] {type: 'transcription', text: ' around London and, uh, it says', is_final: true, timestamp: '2026-02-13T02:38:47.396Z'}
+processor.js:138 [DEBUG] Final transcription:  around London and, uh, it says
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:47.396Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' di sekitar London dan, eh, dikatakan', is_final: true, timestamp: '2026-02-13T02:38:47.431Z'}
+processor.js:150 [DEBUG] Final translation:  di sekitar London dan, eh, dikatakan
+processor.js:238 [DEBUG] Final translation received: di sekitar London dan, eh, dikatakan
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:47.431Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it', is_final: false, timestamp: '2026-02-13T02:38:47.504Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it
+processor.js:194 [DEBUG] Live text updated: it
+processor.js:135 [WebSocket] {type: 'transcription', text: " it's", is_final: false, timestamp: '2026-02-13T02:38:47.655Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it's
+processor.js:194 [DEBUG] Live text updated: it's
+processor.js:135 [WebSocket] {type: 'transcription', text: " it's help", is_final: false, timestamp: '2026-02-13T02:38:47.755Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it's help
+processor.js:194 [DEBUG] Live text updated: it's help
+processor.js:135 [WebSocket] {type: 'transcription', text: " it's helping get", is_final: false, timestamp: '2026-02-13T02:38:47.901Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it's helping get
+processor.js:194 [DEBUG] Live text updated: it's helping get
+processor.js:135 [WebSocket] {type: 'transcription', text: " it's helping get the", is_final: false, timestamp: '2026-02-13T02:38:48.012Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it's helping get the
+processor.js:194 [DEBUG] Live text updated: it's helping get the
+processor.js:135 [WebSocket] {type: 'transcription', text: " it's helping get the most", is_final: false, timestamp: '2026-02-13T02:38:48.154Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it's helping get the most
+processor.js:194 [DEBUG] Live text updated: it's helping get the most
+processor.js:135 [WebSocket] {type: 'transcription', text: " it's helping get the most viol", is_final: false, timestamp: '2026-02-13T02:38:48.379Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it's helping get the most viol
+processor.js:194 [DEBUG] Live text updated: it's helping get the most viol
+processor.js:135 [WebSocket] {type: 'transcription', text: " it's helping get the most violent", is_final: false, timestamp: '2026-02-13T02:38:48.630Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it's helping get the most violent
+processor.js:194 [DEBUG] Live text updated: it's helping get the most violent
+processor.js:135 [WebSocket] {type: 'transcription', text: " it's helping get the most violent off", is_final: false, timestamp: '2026-02-13T02:38:48.738Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it's helping get the most violent off
+processor.js:194 [DEBUG] Live text updated: it's helping get the most violent off
+processor.js:135 [WebSocket] {type: 'transcription', text: " it's helping get the most violent offenders", is_final: true, timestamp: '2026-02-13T02:38:49.003Z'}
+processor.js:138 [DEBUG] Final transcription:  it's helping get the most violent offenders
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:49.003Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' ini membantu menghilangkan pelaku paling kekerasan', is_final: true, timestamp: '2026-02-13T02:38:49.045Z'}
+processor.js:150 [DEBUG] Final translation:  ini membantu menghilangkan pelaku paling kekerasan
+processor.js:238 [DEBUG] Final translation received: ini membantu menghilangkan pelaku paling kekerasan
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:49.046Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' off', is_final: false, timestamp: '2026-02-13T02:38:49.191Z'}
+processor.js:141 [DEBUG] Non-final transcription:  off
+processor.js:194 [DEBUG] Live text updated: off
+processor.js:135 [WebSocket] {type: 'transcription', text: ' off the', is_final: false, timestamp: '2026-02-13T02:38:49.421Z'}
+processor.js:141 [DEBUG] Non-final transcription:  off the
+processor.js:194 [DEBUG] Live text updated: off the
+processor.js:135 [WebSocket] {type: 'transcription', text: ' off the stre', is_final: false, timestamp: '2026-02-13T02:38:49.673Z'}
+processor.js:141 [DEBUG] Non-final transcription:  off the stre
+processor.js:194 [DEBUG] Live text updated: off the stre
+processor.js:135 [WebSocket] {type: 'transcription', text: ' off the street', is_final: false, timestamp: '2026-02-13T02:38:49.851Z'}
+processor.js:141 [DEBUG] Non-final transcription:  off the street
+processor.js:194 [DEBUG] Live text updated: off the street
+processor.js:135 [WebSocket] {type: 'transcription', text: ' off the streets.', is_final: true, timestamp: '2026-02-13T02:38:49.963Z'}
+processor.js:138 [DEBUG] Final transcription:  off the streets.
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:49.963Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' dari jalanan.', is_final: true, timestamp: '2026-02-13T02:38:49.972Z'}
+processor.js:150 [DEBUG] Final translation:  dari jalanan.
+processor.js:238 [DEBUG] Final translation received: dari jalanan.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:49.972Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I', is_final: false, timestamp: '2026-02-13T02:38:50.085Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I
+processor.js:194 [DEBUG] Live text updated: I
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I mean,', is_final: false, timestamp: '2026-02-13T02:38:50.196Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I mean,
+processor.js:194 [DEBUG] Live text updated: I mean,
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I mean, we', is_final: false, timestamp: '2026-02-13T02:38:50.307Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I mean, we
+processor.js:194 [DEBUG] Live text updated: I mean, we
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I mean, we heard', is_final: false, timestamp: '2026-02-13T02:38:50.454Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I mean, we heard
+processor.js:194 [DEBUG] Live text updated: I mean, we heard
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I mean, we heard there', is_final: false, timestamp: '2026-02-13T02:38:50.571Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I mean, we heard there
+processor.js:194 [DEBUG] Live text updated: I mean, we heard there
+processor.js:135 [WebSocket] {type: 'transcription', text: " I mean, we heard they'", is_final: false, timestamp: '2026-02-13T02:38:50.678Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I mean, we heard they'
+processor.js:194 [DEBUG] Live text updated: I mean, we heard they'
+processor.js:135 [WebSocket] {type: 'transcription', text: " I mean, we heard they're in", is_final: false, timestamp: '2026-02-13T02:38:50.813Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I mean, we heard they're in
+processor.js:194 [DEBUG] Live text updated: I mean, we heard they're in
+processor.js:135 [WebSocket] {type: 'transcription', text: " I mean, we heard they're in Cro", is_final: false, timestamp: '2026-02-13T02:38:50.930Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I mean, we heard they're in Cro
+processor.js:194 [DEBUG] Live text updated: I mean, we heard they're in Cro
+processor.js:135 [WebSocket] {type: 'transcription', text: " I mean, we heard they're in Croyd", is_final: false, timestamp: '2026-02-13T02:38:51.059Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I mean, we heard they're in Croyd
+processor.js:194 [DEBUG] Live text updated: I mean, we heard they're in Croyd
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I mean, we heard there in Croydon,', is_final: true, timestamp: '2026-02-13T02:38:51.114Z'}
+processor.js:138 [DEBUG] Final transcription:  I mean, we heard there in Croydon,
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon,
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:51.114Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' Maksud saya, kami dengar di Croydon,', is_final: true, timestamp: '2026-02-13T02:38:51.150Z'}
+processor.js:150 [DEBUG] Final translation:  Maksud saya, kami dengar di Croydon,
+processor.js:238 [DEBUG] Final translation received: Maksud saya, kami dengar di Croydon,
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:51.150Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' they', is_final: false, timestamp: '2026-02-13T02:38:51.244Z'}
+processor.js:141 [DEBUG] Non-final transcription:  they
+processor.js:194 [DEBUG] Live text updated: they
+processor.js:135 [WebSocket] {type: 'transcription', text: " they're", is_final: false, timestamp: '2026-02-13T02:38:51.380Z'}
+processor.js:141 [DEBUG] Non-final transcription:  they're
+processor.js:194 [DEBUG] Live text updated: they're
+processor.js:135 [WebSocket] {type: 'transcription', text: " they're convin", is_final: false, timestamp: '2026-02-13T02:38:51.555Z'}
+processor.js:141 [DEBUG] Non-final transcription:  they're convin
+processor.js:194 [DEBUG] Live text updated: they're convin
+processor.js:135 [WebSocket] {type: 'transcription', text: " they're convinced", is_final: false, timestamp: '2026-02-13T02:38:51.627Z'}
+processor.js:141 [DEBUG] Non-final transcription:  they're convinced
+processor.js:194 [DEBUG] Live text updated: they're convinced
+processor.js:135 [WebSocket] {type: 'transcription', text: " they're convinced that", is_final: false, timestamp: '2026-02-13T02:38:51.847Z'}
+processor.js:141 [DEBUG] Non-final transcription:  they're convinced that
+processor.js:194 [DEBUG] Live text updated: they're convinced that
+processor.js:135 [WebSocket] {type: 'transcription', text: " they're convinced that it", is_final: false, timestamp: '2026-02-13T02:38:51.908Z'}
+processor.js:141 [DEBUG] Non-final transcription:  they're convinced that it
+processor.js:194 [DEBUG] Live text updated: they're convinced that it
+processor.js:135 [WebSocket] {type: 'transcription', text: " they're convinced that it's", is_final: false, timestamp: '2026-02-13T02:38:52.259Z'}
+processor.js:141 [DEBUG] Non-final transcription:  they're convinced that it's
+processor.js:194 [DEBUG] Live text updated: they're convinced that it's
+processor.js:135 [WebSocket] {type: 'transcription', text: " they're convinced that it's bring", is_final: false, timestamp: '2026-02-13T02:38:52.742Z'}
+processor.js:141 [DEBUG] Non-final transcription:  they're convinced that it's bring
+processor.js:194 [DEBUG] Live text updated: they're convinced that it's bring
+processor.js:135 [WebSocket] {type: 'transcription', text: " they're convinced that it's bringing", is_final: false, timestamp: '2026-02-13T02:38:52.868Z'}
+processor.js:141 [DEBUG] Non-final transcription:  they're convinced that it's bringing
+processor.js:194 [DEBUG] Live text updated: they're convinced that it's bringing
+processor.js:135 [WebSocket] {type: 'transcription', text: " they're convinced that it's bringing down", is_final: true, timestamp: '2026-02-13T02:38:53.004Z'}
+processor.js:138 [DEBUG] Final transcription:  they're convinced that it's bringing down
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:53.005Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' mereka yakin bahwa ini menurunkan', is_final: true, timestamp: '2026-02-13T02:38:53.008Z'}
+processor.js:150 [DEBUG] Final translation:  mereka yakin bahwa ini menurunkan
+processor.js:238 [DEBUG] Final translation received: mereka yakin bahwa ini menurunkan
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:53.008Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' the', is_final: false, timestamp: '2026-02-13T02:38:53.080Z'}
+processor.js:141 [DEBUG] Non-final transcription:  the
+processor.js:194 [DEBUG] Live text updated: the
+processor.js:135 [WebSocket] {type: 'transcription', text: ' the cri', is_final: false, timestamp: '2026-02-13T02:38:53.330Z'}
+processor.js:141 [DEBUG] Non-final transcription:  the cri
+processor.js:194 [DEBUG] Live text updated: the cri
+processor.js:135 [WebSocket] {type: 'transcription', text: ' the crime in', is_final: false, timestamp: '2026-02-13T02:38:53.430Z'}
+processor.js:141 [DEBUG] Non-final transcription:  the crime in
+processor.js:194 [DEBUG] Live text updated: the crime in
+processor.js:135 [WebSocket] {type: 'transcription', text: ' the crime in the', is_final: false, timestamp: '2026-02-13T02:38:53.586Z'}
+processor.js:141 [DEBUG] Non-final transcription:  the crime in the
+processor.js:194 [DEBUG] Live text updated: the crime in the
+processor.js:135 [WebSocket] {type: 'transcription', text: ' the crime in the local', is_final: false, timestamp: '2026-02-13T02:38:53.678Z'}
+processor.js:141 [DEBUG] Non-final transcription:  the crime in the local
+processor.js:194 [DEBUG] Live text updated: the crime in the local
+processor.js:135 [WebSocket] {type: 'transcription', text: ' the crime in the local are', is_final: false, timestamp: '2026-02-13T02:38:54.004Z'}
+processor.js:141 [DEBUG] Non-final transcription:  the crime in the local are
+processor.js:194 [DEBUG] Live text updated: the crime in the local are
+processor.js:135 [WebSocket] {type: 'transcription', text: ' the crime in the local area.', is_final: true, timestamp: '2026-02-13T02:38:54.405Z'}
+processor.js:138 [DEBUG] Final transcription:  the crime in the local area.
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:54.406Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' tingkat kejahatan di wilayah setempat.', is_final: true, timestamp: '2026-02-13T02:38:54.445Z'}
+processor.js:150 [DEBUG] Final translation:  tingkat kejahatan di wilayah setempat.
+processor.js:238 [DEBUG] Final translation received: tingkat kejahatan di wilayah setempat.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:54.445Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I', is_final: false, timestamp: '2026-02-13T02:38:54.756Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I
+processor.js:194 [DEBUG] Live text updated: I
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I as', is_final: false, timestamp: '2026-02-13T02:38:54.892Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I as
+processor.js:194 [DEBUG] Live text updated: I as
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I asked', is_final: false, timestamp: '2026-02-13T02:38:54.958Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I asked
+processor.js:194 [DEBUG] Live text updated: I asked
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I asked how', is_final: false, timestamp: '2026-02-13T02:38:55.211Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I asked how
+processor.js:194 [DEBUG] Live text updated: I asked how
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I asked how,', is_final: false, timestamp: '2026-02-13T02:38:55.569Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I asked how,
+processor.js:194 [DEBUG] Live text updated: I asked how,
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I asked how, how', is_final: false, timestamp: '2026-02-13T02:38:55.716Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I asked how, how
+processor.js:194 [DEBUG] Live text updated: I asked how, how
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I asked how, how they', is_final: false, timestamp: '2026-02-13T02:38:55.821Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I asked how, how they
+processor.js:194 [DEBUG] Live text updated: I asked how, how they
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I asked how, how they co', is_final: false, timestamp: '2026-02-13T02:38:55.906Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I asked how, how they co
+processor.js:194 [DEBUG] Live text updated: I asked how, how they co
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I asked how, how they could', is_final: false, timestamp: '2026-02-13T02:38:56.128Z'}
+processor.js:141 [DEBUG] Non-final transcription:  I asked how, how they could
+processor.js:194 [DEBUG] Live text updated: I asked how, how they could
+processor.js:135 [WebSocket] {type: 'transcription', text: ' I asked how, how they could be', is_final: true, timestamp: '2026-02-13T02:38:56.252Z'}
+processor.js:138 [DEBUG] Final transcription:  I asked how, how they could be
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:56.252Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' Saya bertanya bagaimana, bagaimana mereka bisa', is_final: true, timestamp: '2026-02-13T02:38:56.297Z'}
+processor.js:150 [DEBUG] Final translation:  Saya bertanya bagaimana, bagaimana mereka bisa
+processor.js:238 [DEBUG] Final translation received: Saya bertanya bagaimana, bagaimana mereka bisa
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:56.297Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so', is_final: false, timestamp: '2026-02-13T02:38:56.313Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so
+processor.js:194 [DEBUG] Live text updated: so
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convin', is_final: false, timestamp: '2026-02-13T02:38:56.427Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so convin
+processor.js:194 [DEBUG] Live text updated: so convin
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convinced', is_final: false, timestamp: '2026-02-13T02:38:56.718Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so convinced
+processor.js:194 [DEBUG] Live text updated: so convinced
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convinced it', is_final: false, timestamp: '2026-02-13T02:38:56.840Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so convinced it
+processor.js:194 [DEBUG] Live text updated: so convinced it
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convinced it was', is_final: false, timestamp: '2026-02-13T02:38:56.899Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so convinced it was
+processor.js:194 [DEBUG] Live text updated: so convinced it was
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convinced it was down', is_final: false, timestamp: '2026-02-13T02:38:57.151Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so convinced it was down
+processor.js:194 [DEBUG] Live text updated: so convinced it was down
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convinced it was down to', is_final: false, timestamp: '2026-02-13T02:38:57.402Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so convinced it was down to
+processor.js:194 [DEBUG] Live text updated: so convinced it was down to
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convinced it was down to that', is_final: false, timestamp: '2026-02-13T02:38:57.549Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so convinced it was down to that
+processor.js:194 [DEBUG] Live text updated: so convinced it was down to that
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convinced it was down to that L', is_final: false, timestamp: '2026-02-13T02:38:58.405Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so convinced it was down to that L
+processor.js:194 [DEBUG] Live text updated: so convinced it was down to that L
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convinced it was down to that LF', is_final: false, timestamp: '2026-02-13T02:38:58.479Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so convinced it was down to that LF
+processor.js:194 [DEBUG] Live text updated: so convinced it was down to that LF
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convinced it was down to that LFR', is_final: false, timestamp: '2026-02-13T02:38:58.774Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so convinced it was down to that LFR
+processor.js:194 [DEBUG] Live text updated: so convinced it was down to that LFR
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convinced it was down to that LFR pil', is_final: false, timestamp: '2026-02-13T02:38:58.913Z'}
+processor.js:141 [DEBUG] Non-final transcription:  so convinced it was down to that LFR pil
+processor.js:194 [DEBUG] Live text updated: so convinced it was down to that LFR pil
+processor.js:135 [WebSocket] {type: 'transcription', text: ' so convinced it was down to that LFR pilot', is_final: true, timestamp: '2026-02-13T02:38:59.031Z'}
+processor.js:138 [DEBUG] Final transcription:  so convinced it was down to that LFR pilot
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:59.031Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' begitu yakin itu karena pilot LFR itu', is_final: true, timestamp: '2026-02-13T02:38:59.070Z'}
+processor.js:150 [DEBUG] Final translation:  begitu yakin itu karena pilot LFR itu
+processor.js:238 [DEBUG] Final translation received: begitu yakin itu karena pilot LFR itu
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:38:59.070Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and', is_final: false, timestamp: '2026-02-13T02:38:59.316Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and
+processor.js:194 [DEBUG] Live text updated: and
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not', is_final: false, timestamp: '2026-02-13T02:38:59.415Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not
+processor.js:194 [DEBUG] Live text updated: and not
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other', is_final: false, timestamp: '2026-02-13T02:38:59.668Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other
+processor.js:194 [DEBUG] Live text updated: and not other
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other th', is_final: false, timestamp: '2026-02-13T02:38:59.747Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other th
+processor.js:194 [DEBUG] Live text updated: and not other th
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things', is_final: false, timestamp: '2026-02-13T02:38:59.896Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other things
+processor.js:194 [DEBUG] Live text updated: and not other things
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things lik', is_final: false, timestamp: '2026-02-13T02:39:00.180Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other things lik
+processor.js:194 [DEBUG] Live text updated: and not other things lik
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things like,', is_final: false, timestamp: '2026-02-13T02:39:00.281Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other things like,
+processor.js:194 [DEBUG] Live text updated: and not other things like,
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things like, um,', is_final: false, timestamp: '2026-02-13T02:39:00.650Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other things like, um,
+processor.js:194 [DEBUG] Live text updated: and not other things like, um,
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things like, um, hot', is_final: false, timestamp: '2026-02-13T02:39:00.844Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other things like, um, hot
+processor.js:194 [DEBUG] Live text updated: and not other things like, um, hot
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things like, um, hotsp', is_final: false, timestamp: '2026-02-13T02:39:01.106Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other things like, um, hotsp
+processor.js:194 [DEBUG] Live text updated: and not other things like, um, hotsp
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things like, um, hotspot', is_final: false, timestamp: '2026-02-13T02:39:01.473Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other things like, um, hotspot
+processor.js:194 [DEBUG] Live text updated: and not other things like, um, hotspot
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things like, um, hotspot ne', is_final: false, timestamp: '2026-02-13T02:39:01.675Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other things like, um, hotspot ne
+processor.js:194 [DEBUG] Live text updated: and not other things like, um, hotspot ne
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things like, um, hotspot neighbour', is_final: false, timestamp: '2026-02-13T02:39:01.836Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other things like, um, hotspot neighbour
+processor.js:194 [DEBUG] Live text updated: and not other things like, um, hotspot neighbour
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things like, um, hotspot neighbourhood', is_final: false, timestamp: '2026-02-13T02:39:01.930Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other things like, um, hotspot neighbourhood
+processor.js:194 [DEBUG] Live text updated: and not other things like, um, hotspot neighbourhood
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things like, um, hotspot neighbourhood polic', is_final: false, timestamp: '2026-02-13T02:39:02.198Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and not other things like, um, hotspot neighbourhood polic
+processor.js:194 [DEBUG] Live text updated: and not other things like, um, hotspot neighbourhood polic
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and not other things like, um, hotspot neighbourhood policing,', is_final: true, timestamp: '2026-02-13T02:39:02.439Z'}
+processor.js:138 [DEBUG] Final transcription:  and not other things like, um, hotspot neighbourhood policing,
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing,
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:02.439Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' dan bukan hal lain seperti, eh, kepolisian lingkungan hotspot,', is_final: true, timestamp: '2026-02-13T02:39:02.502Z'}
+processor.js:150 [DEBUG] Final translation:  dan bukan hal lain seperti, eh, kepolisian lingkungan hotspot,
+processor.js:238 [DEBUG] Final translation received: dan bukan hal lain seperti, eh, kepolisian lingkungan hotspot,
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:02.502Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' for', is_final: false, timestamp: '2026-02-13T02:39:02.627Z'}
+processor.js:141 [DEBUG] Non-final transcription:  for
+processor.js:194 [DEBUG] Live text updated: for
+processor.js:135 [WebSocket] {type: 'transcription', text: ' for ex', is_final: false, timestamp: '2026-02-13T02:39:02.742Z'}
+processor.js:141 [DEBUG] Non-final transcription:  for ex
+processor.js:194 [DEBUG] Live text updated: for ex
+processor.js:135 [WebSocket] {type: 'transcription', text: ' for examp', is_final: false, timestamp: '2026-02-13T02:39:02.873Z'}
+processor.js:141 [DEBUG] Non-final transcription:  for examp
+processor.js:194 [DEBUG] Live text updated: for examp
+processor.js:135 [WebSocket] {type: 'transcription', text: ' for example,', is_final: false, timestamp: '2026-02-13T02:39:03.134Z'}
+processor.js:141 [DEBUG] Non-final transcription:  for example,
+processor.js:194 [DEBUG] Live text updated: for example,
+processor.js:135 [WebSocket] {type: 'transcription', text: ' for example, but', is_final: false, timestamp: '2026-02-13T02:39:03.376Z'}
+processor.js:141 [DEBUG] Non-final transcription:  for example, but
+processor.js:194 [DEBUG] Live text updated: for example, but
+processor.js:135 [WebSocket] {type: 'transcription', text: ' for example, but they', is_final: false, timestamp: '2026-02-13T02:39:03.849Z'}
+processor.js:141 [DEBUG] Non-final transcription:  for example, but they
+processor.js:194 [DEBUG] Live text updated: for example, but they
+processor.js:135 [WebSocket] {type: 'transcription', text: ' for example, but they are', is_final: false, timestamp: '2026-02-13T02:39:03.900Z'}
+processor.js:141 [DEBUG] Non-final transcription:  for example, but they are
+processor.js:194 [DEBUG] Live text updated: for example, but they are
+processor.js:135 [WebSocket] {type: 'transcription', text: ' for example, but they are ins', is_final: false, timestamp: '2026-02-13T02:39:04.035Z'}
+processor.js:141 [DEBUG] Non-final transcription:  for example, but they are ins
+processor.js:194 [DEBUG] Live text updated: for example, but they are ins
+processor.js:135 [WebSocket] {type: 'transcription', text: ' for example, but they are insist', is_final: false, timestamp: '2026-02-13T02:39:04.105Z'}
+processor.js:141 [DEBUG] Non-final transcription:  for example, but they are insist
+processor.js:194 [DEBUG] Live text updated: for example, but they are insist
+processor.js:135 [WebSocket] {type: 'transcription', text: ' for example, but they are insistent', is_final: true, timestamp: '2026-02-13T02:39:04.239Z'}
+processor.js:138 [DEBUG] Final transcription:  for example, but they are insistent
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:04.240Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' misalnya, tetapi mereka bersikeras', is_final: true, timestamp: '2026-02-13T02:39:04.264Z'}
+processor.js:150 [DEBUG] Final translation:  misalnya, tetapi mereka bersikeras
+processor.js:238 [DEBUG] Final translation received: misalnya, tetapi mereka bersikeras
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:04.264Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it', is_final: false, timestamp: '2026-02-13T02:39:04.515Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it
+processor.js:194 [DEBUG] Live text updated: it
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it is', is_final: false, timestamp: '2026-02-13T02:39:04.575Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it is
+processor.js:194 [DEBUG] Live text updated: it is
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it is bec', is_final: false, timestamp: '2026-02-13T02:39:04.946Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it is bec
+processor.js:194 [DEBUG] Live text updated: it is bec
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it is beca', is_final: false, timestamp: '2026-02-13T02:39:05.055Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it is beca
+processor.js:194 [DEBUG] Live text updated: it is beca
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it is because of', is_final: false, timestamp: '2026-02-13T02:39:05.105Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it is because of
+processor.js:194 [DEBUG] Live text updated: it is because of
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it is because of the', is_final: false, timestamp: '2026-02-13T02:39:05.448Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it is because of the
+processor.js:194 [DEBUG] Live text updated: it is because of the
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it is because of the sch', is_final: false, timestamp: '2026-02-13T02:39:05.497Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it is because of the sch
+processor.js:194 [DEBUG] Live text updated: it is because of the sch
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it is because of the schem', is_final: false, timestamp: '2026-02-13T02:39:05.557Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it is because of the schem
+processor.js:194 [DEBUG] Live text updated: it is because of the schem
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it is because of the scheme.', is_final: true, timestamp: '2026-02-13T02:39:05.632Z'}
+processor.js:138 [DEBUG] Final transcription:  it is because of the scheme.
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:05.633Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' itu karena skema tersebut.', is_final: true, timestamp: '2026-02-13T02:39:05.633Z'}
+processor.js:150 [DEBUG] Final translation:  itu karena skema tersebut.
+processor.js:238 [DEBUG] Final translation received: itu karena skema tersebut.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:05.633Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' They say', is_final: false, timestamp: '2026-02-13T02:39:05.672Z'}
+processor.js:141 [DEBUG] Non-final transcription:  They say
+processor.js:194 [DEBUG] Live text updated: They say
+processor.js:135 [WebSocket] {type: 'transcription', text: " They say it's", is_final: false, timestamp: '2026-02-13T02:39:05.944Z'}
+processor.js:141 [DEBUG] Non-final transcription:  They say it's
+processor.js:194 [DEBUG] Live text updated: They say it's
+processor.js:135 [WebSocket] {type: 'transcription', text: " They say it's c", is_final: false, timestamp: '2026-02-13T02:39:06.047Z'}
+processor.js:141 [DEBUG] Non-final transcription:  They say it's c
+processor.js:194 [DEBUG] Live text updated: They say it's c
+processor.js:135 [WebSocket] {type: 'transcription', text: " They say it's cutting", is_final: false, timestamp: '2026-02-13T02:39:06.430Z'}
+processor.js:141 [DEBUG] Non-final transcription:  They say it's cutting
+processor.js:194 [DEBUG] Live text updated: They say it's cutting
+processor.js:135 [WebSocket] {type: 'transcription', text: " They say it's cutting the", is_final: false, timestamp: '2026-02-13T02:39:06.455Z'}
+processor.js:141 [DEBUG] Non-final transcription:  They say it's cutting the
+processor.js:194 [DEBUG] Live text updated: They say it's cutting the
+processor.js:135 [WebSocket] {type: 'transcription', text: " They say it's cutting the time", is_final: true, timestamp: '2026-02-13T02:39:06.651Z'}
+processor.js:138 [DEBUG] Final transcription:  They say it's cutting the time
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:06.651Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' Mereka bilang itu mengurangi waktu', is_final: true, timestamp: '2026-02-13T02:39:06.687Z'}
+processor.js:150 [DEBUG] Final translation:  Mereka bilang itu mengurangi waktu
+processor.js:238 [DEBUG] Final translation received: Mereka bilang itu mengurangi waktu
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:06.687Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it', is_final: false, timestamp: '2026-02-13T02:39:07.230Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it
+processor.js:194 [DEBUG] Live text updated: it
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it tak', is_final: false, timestamp: '2026-02-13T02:39:07.364Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it tak
+processor.js:194 [DEBUG] Live text updated: it tak
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it takes to', is_final: false, timestamp: '2026-02-13T02:39:07.475Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it takes to
+processor.js:194 [DEBUG] Live text updated: it takes to
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it takes to cat', is_final: false, timestamp: '2026-02-13T02:39:07.951Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it takes to cat
+processor.js:194 [DEBUG] Live text updated: it takes to cat
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it takes to catch', is_final: false, timestamp: '2026-02-13T02:39:08.099Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it takes to catch
+processor.js:194 [DEBUG] Live text updated: it takes to catch
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it takes to catch w', is_final: false, timestamp: '2026-02-13T02:39:08.394Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it takes to catch w
+processor.js:194 [DEBUG] Live text updated: it takes to catch w
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it takes to catch wanted', is_final: false, timestamp: '2026-02-13T02:39:08.765Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it takes to catch wanted
+processor.js:194 [DEBUG] Live text updated: it takes to catch wanted
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it takes to catch wanted off', is_final: false, timestamp: '2026-02-13T02:39:08.859Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it takes to catch wanted off
+processor.js:194 [DEBUG] Live text updated: it takes to catch wanted off
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it takes to catch wanted offend', is_final: false, timestamp: '2026-02-13T02:39:09.010Z'}
+processor.js:141 [DEBUG] Non-final transcription:  it takes to catch wanted offend
+processor.js:194 [DEBUG] Live text updated: it takes to catch wanted offend
+processor.js:135 [WebSocket] {type: 'transcription', text: ' it takes to catch wanted offenders', is_final: true, timestamp: '2026-02-13T02:39:09.172Z'}
+processor.js:138 [DEBUG] Final transcription:  it takes to catch wanted offenders
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:09.172Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' yang dibutuhkan untuk menangkap pelaku yang dicari', is_final: true, timestamp: '2026-02-13T02:39:09.221Z'}
+processor.js:150 [DEBUG] Final translation:  yang dibutuhkan untuk menangkap pelaku yang dicari
+processor.js:238 [DEBUG] Final translation received: yang dibutuhkan untuk menangkap pelaku yang dicari
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:09.221Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and', is_final: false, timestamp: '2026-02-13T02:39:09.493Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and
+processor.js:194 [DEBUG] Live text updated: and
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and they say', is_final: false, timestamp: '2026-02-13T02:39:09.605Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and they say
+processor.js:194 [DEBUG] Live text updated: and they say
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and they say', is_final: false, timestamp: '2026-02-13T02:39:09.801Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and they say
+processor.js:194 [DEBUG] Live text updated: and they say
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and they say they', is_final: false, timestamp: '2026-02-13T02:39:09.875Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and they say they
+processor.js:194 [DEBUG] Live text updated: and they say they
+processor.js:135 [WebSocket] {type: 'transcription', text: " and they say they'", is_final: false, timestamp: '2026-02-13T02:39:10.046Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and they say they'
+processor.js:194 [DEBUG] Live text updated: and they say they'
+processor.js:135 [WebSocket] {type: 'transcription', text: " and they say they're mak", is_final: false, timestamp: '2026-02-13T02:39:10.599Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and they say they're mak
+processor.js:194 [DEBUG] Live text updated: and they say they're mak
+processor.js:135 [WebSocket] {type: 'transcription', text: " and they say they're making", is_final: false, timestamp: '2026-02-13T02:39:10.646Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and they say they're making
+processor.js:194 [DEBUG] Live text updated: and they say they're making
+processor.js:135 [WebSocket] {type: 'transcription', text: " and they say they're making an", is_final: false, timestamp: '2026-02-13T02:39:10.767Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and they say they're making an
+processor.js:194 [DEBUG] Live text updated: and they say they're making an
+processor.js:135 [WebSocket] {type: 'transcription', text: " and they say they're making an arrest", is_final: true, timestamp: '2026-02-13T02:39:10.800Z'}
+processor.js:138 [DEBUG] Final transcription:  and they say they're making an arrest
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:10.800Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' dan mereka bilang mereka melakukan penangkapan', is_final: true, timestamp: '2026-02-13T02:39:10.852Z'}
+processor.js:150 [DEBUG] Final translation:  dan mereka bilang mereka melakukan penangkapan
+processor.js:238 [DEBUG] Final translation received: dan mereka bilang mereka melakukan penangkapan
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:10.852Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on', is_final: false, timestamp: '2026-02-13T02:39:10.908Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on
+processor.js:194 [DEBUG] Live text updated: on
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on aver', is_final: false, timestamp: '2026-02-13T02:39:11.133Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on aver
+processor.js:194 [DEBUG] Live text updated: on aver
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on average', is_final: false, timestamp: '2026-02-13T02:39:11.248Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on average
+processor.js:194 [DEBUG] Live text updated: on average
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on average ever', is_final: false, timestamp: '2026-02-13T02:39:11.314Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on average ever
+processor.js:194 [DEBUG] Live text updated: on average ever
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on average every', is_final: false, timestamp: '2026-02-13T02:39:11.432Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on average every
+processor.js:194 [DEBUG] Live text updated: on average every
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on average every 3', is_final: false, timestamp: '2026-02-13T02:39:11.675Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on average every 3
+processor.js:194 [DEBUG] Live text updated: on average every 3
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on average every 34', is_final: false, timestamp: '2026-02-13T02:39:11.912Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on average every 34
+processor.js:194 [DEBUG] Live text updated: on average every 34
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on average every 34 minut', is_final: false, timestamp: '2026-02-13T02:39:12.213Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on average every 34 minut
+processor.js:194 [DEBUG] Live text updated: on average every 34 minut
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on average every 34 minutes', is_final: true, timestamp: '2026-02-13T02:39:12.276Z'}
+processor.js:138 [DEBUG] Final transcription:  on average every 34 minutes
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:12.276Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' rata-rata setiap 34 menit', is_final: true, timestamp: '2026-02-13T02:39:12.313Z'}
+processor.js:150 [DEBUG] Final translation:  rata-rata setiap 34 menit
+processor.js:238 [DEBUG] Final translation received: rata-rata setiap 34 menit
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:12.314Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' when they', is_final: false, timestamp: '2026-02-13T02:39:12.472Z'}
+processor.js:141 [DEBUG] Non-final transcription:  when they
+processor.js:194 [DEBUG] Live text updated: when they
+processor.js:135 [WebSocket] {type: 'transcription', text: " when they'", is_final: false, timestamp: '2026-02-13T02:39:12.596Z'}
+processor.js:141 [DEBUG] Non-final transcription:  when they'
+processor.js:194 [DEBUG] Live text updated: when they'
+processor.js:135 [WebSocket] {type: 'transcription', text: " when they're us", is_final: false, timestamp: '2026-02-13T02:39:12.729Z'}
+processor.js:141 [DEBUG] Non-final transcription:  when they're us
+processor.js:194 [DEBUG] Live text updated: when they're us
+processor.js:135 [WebSocket] {type: 'transcription', text: " when they're using it", is_final: false, timestamp: '2026-02-13T02:39:12.855Z'}
+processor.js:141 [DEBUG] Non-final transcription:  when they're using it
+processor.js:194 [DEBUG] Live text updated: when they're using it
+processor.js:135 [WebSocket] {type: 'transcription', text: " when they're using it.", is_final: true, timestamp: '2026-02-13T02:39:13.199Z'}
+processor.js:138 [DEBUG] Final transcription:  when they're using it.
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:13.199Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: '\n', is_final: true, timestamp: '2026-02-13T02:39:13.227Z'}
+processor.js:138 [DEBUG] Final transcription: 
+
+processor.js:147 [WebSocket] {type: 'translation', text: ' ketika mereka menggunakannya.', is_final: true, timestamp: '2026-02-13T02:39:13.228Z'}
+processor.js:150 [DEBUG] Final translation:  ketika mereka menggunakannya.
+processor.js:238 [DEBUG] Final translation received: ketika mereka menggunakannya.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:13.228Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And', is_final: false, timestamp: '2026-02-13T02:39:13.833Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And
+processor.js:194 [DEBUG] Live text updated: And
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And Ton', is_final: false, timestamp: '2026-02-13T02:39:14.250Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And Ton
+processor.js:194 [DEBUG] Live text updated: And Ton
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And Tony,', is_final: false, timestamp: '2026-02-13T02:39:14.383Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And Tony,
+processor.js:194 [DEBUG] Live text updated: And Tony,
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And Tony, on', is_final: false, timestamp: '2026-02-13T02:39:14.613Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And Tony, on
+processor.js:194 [DEBUG] Live text updated: And Tony, on
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And Tony, on a', is_final: false, timestamp: '2026-02-13T02:39:14.735Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And Tony, on a
+processor.js:194 [DEBUG] Live text updated: And Tony, on a
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And Tony, on a w', is_final: false, timestamp: '2026-02-13T02:39:14.774Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And Tony, on a w
+processor.js:194 [DEBUG] Live text updated: And Tony, on a w
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And Tony, on a wider', is_final: false, timestamp: '2026-02-13T02:39:14.828Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And Tony, on a wider
+processor.js:194 [DEBUG] Live text updated: And Tony, on a wider
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And Tony, on a wider note,', is_final: true, timestamp: '2026-02-13T02:39:15.000Z'}
+processor.js:138 [DEBUG] Final transcription:  And Tony, on a wider note,
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note,
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:15.000Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' Dan Tony, dalam konteks yang lebih luas,', is_final: true, timestamp: '2026-02-13T02:39:15.035Z'}
+processor.js:150 [DEBUG] Final translation:  Dan Tony, dalam konteks yang lebih luas,
+processor.js:238 [DEBUG] Final translation received: Dan Tony, dalam konteks yang lebih luas,
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:15.035Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' there is', is_final: false, timestamp: '2026-02-13T02:39:15.356Z'}
+processor.js:141 [DEBUG] Non-final transcription:  there is
+processor.js:194 [DEBUG] Live text updated: there is
+processor.js:135 [WebSocket] {type: 'transcription', text: ' there is a', is_final: false, timestamp: '2026-02-13T02:39:15.404Z'}
+processor.js:141 [DEBUG] Non-final transcription:  there is a
+processor.js:194 [DEBUG] Live text updated: there is a
+processor.js:135 [WebSocket] {type: 'transcription', text: ' there is a leg', is_final: false, timestamp: '2026-02-13T02:39:15.502Z'}
+processor.js:141 [DEBUG] Non-final transcription:  there is a leg
+processor.js:194 [DEBUG] Live text updated: there is a leg
+processor.js:135 [WebSocket] {type: 'transcription', text: ' there is a legal', is_final: false, timestamp: '2026-02-13T02:39:15.556Z'}
+processor.js:141 [DEBUG] Non-final transcription:  there is a legal
+processor.js:194 [DEBUG] Live text updated: there is a legal
+processor.js:135 [WebSocket] {type: 'transcription', text: ' there is a legal ch', is_final: false, timestamp: '2026-02-13T02:39:15.626Z'}
+processor.js:141 [DEBUG] Non-final transcription:  there is a legal ch
+processor.js:194 [DEBUG] Live text updated: there is a legal ch
+processor.js:135 [WebSocket] {type: 'transcription', text: ' there is a legal chall', is_final: false, timestamp: '2026-02-13T02:39:15.775Z'}
+processor.js:141 [DEBUG] Non-final transcription:  there is a legal chall
+processor.js:194 [DEBUG] Live text updated: there is a legal chall
+processor.js:135 [WebSocket] {type: 'transcription', text: ' there is a legal challenge', is_final: true, timestamp: '2026-02-13T02:39:15.916Z'}
+processor.js:138 [DEBUG] Final transcription:  there is a legal challenge
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:15.916Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' ada tantangan hukum', is_final: true, timestamp: '2026-02-13T02:39:15.927Z'}
+processor.js:150 [DEBUG] Final translation:  ada tantangan hukum
+processor.js:238 [DEBUG] Final translation received: ada tantangan hukum
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:15.927Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' at', is_final: false, timestamp: '2026-02-13T02:39:16.078Z'}
+processor.js:141 [DEBUG] Non-final transcription:  at
+processor.js:194 [DEBUG] Live text updated: at
+processor.js:135 [WebSocket] {type: 'transcription', text: ' at the', is_final: false, timestamp: '2026-02-13T02:39:16.487Z'}
+processor.js:141 [DEBUG] Non-final transcription:  at the
+processor.js:194 [DEBUG] Live text updated: at the
+processor.js:135 [WebSocket] {type: 'transcription', text: ' at the High', is_final: false, timestamp: '2026-02-13T02:39:16.754Z'}
+processor.js:141 [DEBUG] Non-final transcription:  at the High
+processor.js:194 [DEBUG] Live text updated: at the High
+processor.js:135 [WebSocket] {type: 'transcription', text: ' at the High Cour', is_final: false, timestamp: '2026-02-13T02:39:16.882Z'}
+processor.js:141 [DEBUG] Non-final transcription:  at the High Cour
+processor.js:194 [DEBUG] Live text updated: at the High Cour
+processor.js:135 [WebSocket] {type: 'transcription', text: ' at the High Court', is_final: false, timestamp: '2026-02-13T02:39:17.010Z'}
+processor.js:141 [DEBUG] Non-final transcription:  at the High Court
+processor.js:194 [DEBUG] Live text updated: at the High Court
+processor.js:135 [WebSocket] {type: 'transcription', text: ' at the High Court ne', is_final: false, timestamp: '2026-02-13T02:39:17.073Z'}
+processor.js:141 [DEBUG] Non-final transcription:  at the High Court ne
+processor.js:194 [DEBUG] Live text updated: at the High Court ne
+processor.js:135 [WebSocket] {type: 'transcription', text: ' at the High Court next', is_final: false, timestamp: '2026-02-13T02:39:17.224Z'}
+processor.js:141 [DEBUG] Non-final transcription:  at the High Court next
+processor.js:194 [DEBUG] Live text updated: at the High Court next
+processor.js:135 [WebSocket] {type: 'transcription', text: ' at the High Court next we', is_final: false, timestamp: '2026-02-13T02:39:17.313Z'}
+processor.js:141 [DEBUG] Non-final transcription:  at the High Court next we
+processor.js:194 [DEBUG] Live text updated: at the High Court next we
+processor.js:135 [WebSocket] {type: 'transcription', text: ' at the High Court next week.', is_final: true, timestamp: '2026-02-13T02:39:18.053Z'}
+processor.js:138 [DEBUG] Final transcription:  at the High Court next week.
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge at the High Court next week.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:18.053Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' di Mahkamah Agung minggu depan.', is_final: true, timestamp: '2026-02-13T02:39:18.096Z'}
+processor.js:150 [DEBUG] Final translation:  di Mahkamah Agung minggu depan.
+processor.js:238 [DEBUG] Final translation received: di Mahkamah Agung minggu depan.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:18.096Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' How', is_final: false, timestamp: '2026-02-13T02:39:18.144Z'}
+processor.js:141 [DEBUG] Non-final transcription:  How
+processor.js:194 [DEBUG] Live text updated: How
+processor.js:135 [WebSocket] {type: 'transcription', text: ' How co', is_final: false, timestamp: '2026-02-13T02:39:18.293Z'}
+processor.js:141 [DEBUG] Non-final transcription:  How co
+processor.js:194 [DEBUG] Live text updated: How co
+processor.js:135 [WebSocket] {type: 'transcription', text: ' How could that', is_final: false, timestamp: '2026-02-13T02:39:18.339Z'}
+processor.js:141 [DEBUG] Non-final transcription:  How could that
+processor.js:194 [DEBUG] Live text updated: How could that
+processor.js:135 [WebSocket] {type: 'transcription', text: ' How could that aff', is_final: false, timestamp: '2026-02-13T02:39:18.439Z'}
+processor.js:141 [DEBUG] Non-final transcription:  How could that aff
+processor.js:194 [DEBUG] Live text updated: How could that aff
+processor.js:135 [WebSocket] {type: 'transcription', text: ' How could that affect', is_final: false, timestamp: '2026-02-13T02:39:18.529Z'}
+processor.js:141 [DEBUG] Non-final transcription:  How could that affect
+processor.js:194 [DEBUG] Live text updated: How could that affect
+processor.js:135 [WebSocket] {type: 'transcription', text: ' How could that affect th', is_final: false, timestamp: '2026-02-13T02:39:18.569Z'}
+processor.js:141 [DEBUG] Non-final transcription:  How could that affect th
+processor.js:194 [DEBUG] Live text updated: How could that affect th
+processor.js:135 [WebSocket] {type: 'transcription', text: ' How could that affect things', is_final: false, timestamp: '2026-02-13T02:39:18.614Z'}
+processor.js:141 [DEBUG] Non-final transcription:  How could that affect things
+processor.js:194 [DEBUG] Live text updated: How could that affect things
+processor.js:135 [WebSocket] {type: 'transcription', text: ' How could that affect things?', is_final: true, timestamp: '2026-02-13T02:39:18.888Z'}
+processor.js:138 [DEBUG] Final transcription:  How could that affect things?
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge at the High Court next week. How could that affect things?
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:18.889Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: '\n', is_final: true, timestamp: '2026-02-13T02:39:18.933Z'}
+processor.js:138 [DEBUG] Final transcription: 
+
+processor.js:147 [WebSocket] {type: 'translation', text: ' Bagaimana itu bisa memengaruhi keadaan?', is_final: true, timestamp: '2026-02-13T02:39:18.933Z'}
+processor.js:150 [DEBUG] Final translation:  Bagaimana itu bisa memengaruhi keadaan?
+processor.js:238 [DEBUG] Final translation received: Bagaimana itu bisa memengaruhi keadaan?
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:18.933Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' Ye', is_final: false, timestamp: '2026-02-13T02:39:19.286Z'}
+processor.js:141 [DEBUG] Non-final transcription:  Ye
+processor.js:194 [DEBUG] Live text updated: Ye
+processor.js:135 [WebSocket] {type: 'transcription', text: ' Yeah,', is_final: false, timestamp: '2026-02-13T02:39:19.342Z'}
+processor.js:141 [DEBUG] Non-final transcription:  Yeah,
+processor.js:194 [DEBUG] Live text updated: Yeah,
+processor.js:135 [WebSocket] {type: 'transcription', text: ' Yeah, and that', is_final: false, timestamp: '2026-02-13T02:39:19.383Z'}
+processor.js:141 [DEBUG] Non-final transcription:  Yeah, and that
+processor.js:194 [DEBUG] Live text updated: Yeah, and that
+processor.js:135 [WebSocket] {type: 'transcription', text: " Yeah, and that's", is_final: false, timestamp: '2026-02-13T02:39:19.469Z'}
+processor.js:141 [DEBUG] Non-final transcription:  Yeah, and that's
+processor.js:194 [DEBUG] Live text updated: Yeah, and that's
+processor.js:135 [WebSocket] {type: 'transcription', text: " Yeah, and that's not", is_final: false, timestamp: '2026-02-13T02:39:19.685Z'}
+processor.js:141 [DEBUG] Non-final transcription:  Yeah, and that's not
+processor.js:194 [DEBUG] Live text updated: Yeah, and that's not
+processor.js:135 [WebSocket] {type: 'transcription', text: " Yeah, and that's not speci", is_final: false, timestamp: '2026-02-13T02:39:19.723Z'}
+processor.js:141 [DEBUG] Non-final transcription:  Yeah, and that's not speci
+processor.js:194 [DEBUG] Live text updated: Yeah, and that's not speci
+processor.js:135 [WebSocket] {type: 'transcription', text: " Yeah, and that's not specific", is_final: false, timestamp: '2026-02-13T02:39:19.852Z'}
+processor.js:141 [DEBUG] Non-final transcription:  Yeah, and that's not specific
+processor.js:194 [DEBUG] Live text updated: Yeah, and that's not specific
+processor.js:135 [WebSocket] {type: 'transcription', text: " Yeah, and that's not specifically", is_final: true, timestamp: '2026-02-13T02:39:20.004Z'}
+processor.js:138 [DEBUG] Final transcription:  Yeah, and that's not specifically
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge at the High Court next week. How could that affect things? Yeah, and that's not specifically
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:20.005Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' Ya, dan itu bukan secara khusus', is_final: true, timestamp: '2026-02-13T02:39:20.045Z'}
+processor.js:150 [DEBUG] Final translation:  Ya, dan itu bukan secara khusus
+processor.js:238 [DEBUG] Final translation received: Ya, dan itu bukan secara khusus
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:20.045Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' about', is_final: false, timestamp: '2026-02-13T02:39:20.271Z'}
+processor.js:141 [DEBUG] Non-final transcription:  about
+processor.js:194 [DEBUG] Live text updated: about
+processor.js:135 [WebSocket] {type: 'transcription', text: ' about the', is_final: false, timestamp: '2026-02-13T02:39:20.671Z'}
+processor.js:141 [DEBUG] Non-final transcription:  about the
+processor.js:194 [DEBUG] Live text updated: about the
+processor.js:135 [WebSocket] {type: 'transcription', text: ' about the fix', is_final: false, timestamp: '2026-02-13T02:39:21.137Z'}
+processor.js:141 [DEBUG] Non-final transcription:  about the fix
+processor.js:194 [DEBUG] Live text updated: about the fix
+processor.js:135 [WebSocket] {type: 'transcription', text: ' about the fixed', is_final: false, timestamp: '2026-02-13T02:39:21.265Z'}
+processor.js:141 [DEBUG] Non-final transcription:  about the fixed
+processor.js:194 [DEBUG] Live text updated: about the fixed
+processor.js:135 [WebSocket] {type: 'transcription', text: ' about the fixed camer', is_final: false, timestamp: '2026-02-13T02:39:21.528Z'}
+processor.js:141 [DEBUG] Non-final transcription:  about the fixed camer
+processor.js:194 [DEBUG] Live text updated: about the fixed camer
+processor.js:135 [WebSocket] {type: 'transcription', text: ' about the fixed cameras', is_final: false, timestamp: '2026-02-13T02:39:21.640Z'}
+processor.js:141 [DEBUG] Non-final transcription:  about the fixed cameras
+processor.js:194 [DEBUG] Live text updated: about the fixed cameras
+processor.js:135 [WebSocket] {type: 'transcription', text: ' about the fixed cameras we', is_final: false, timestamp: '2026-02-13T02:39:21.767Z'}
+processor.js:141 [DEBUG] Non-final transcription:  about the fixed cameras we
+processor.js:194 [DEBUG] Live text updated: about the fixed cameras we
+processor.js:135 [WebSocket] {type: 'transcription', text: ' about the fixed cameras we sa', is_final: false, timestamp: '2026-02-13T02:39:21.824Z'}
+processor.js:141 [DEBUG] Non-final transcription:  about the fixed cameras we sa
+processor.js:194 [DEBUG] Live text updated: about the fixed cameras we sa
+processor.js:135 [WebSocket] {type: 'transcription', text: ' about the fixed cameras we saw', is_final: false, timestamp: '2026-02-13T02:39:21.955Z'}
+processor.js:141 [DEBUG] Non-final transcription:  about the fixed cameras we saw
+processor.js:194 [DEBUG] Live text updated: about the fixed cameras we saw
+processor.js:135 [WebSocket] {type: 'transcription', text: ' about the fixed cameras we saw h', is_final: false, timestamp: '2026-02-13T02:39:22.080Z'}
+processor.js:141 [DEBUG] Non-final transcription:  about the fixed cameras we saw h
+processor.js:194 [DEBUG] Live text updated: about the fixed cameras we saw h
+processor.js:135 [WebSocket] {type: 'transcription', text: ' about the fixed cameras we saw here', is_final: true, timestamp: '2026-02-13T02:39:22.194Z'}
+processor.js:138 [DEBUG] Final transcription:  about the fixed cameras we saw here
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge at the High Court next week. How could that affect things? Yeah, and that's not specifically about the fixed cameras we saw here
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:22.194Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' tentang kamera tetap yang kita lihat di sini', is_final: true, timestamp: '2026-02-13T02:39:22.239Z'}
+processor.js:150 [DEBUG] Final translation:  tentang kamera tetap yang kita lihat di sini
+processor.js:238 [DEBUG] Final translation received: tentang kamera tetap yang kita lihat di sini
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:22.240Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' in', is_final: false, timestamp: '2026-02-13T02:39:22.362Z'}
+processor.js:141 [DEBUG] Non-final transcription:  in
+processor.js:194 [DEBUG] Live text updated: in
+processor.js:135 [WebSocket] {type: 'transcription', text: ' in Cro', is_final: false, timestamp: '2026-02-13T02:39:22.450Z'}
+processor.js:141 [DEBUG] Non-final transcription:  in Cro
+processor.js:194 [DEBUG] Live text updated: in Cro
+processor.js:135 [WebSocket] {type: 'transcription', text: ' in Croyd', is_final: false, timestamp: '2026-02-13T02:39:22.581Z'}
+processor.js:141 [DEBUG] Non-final transcription:  in Croyd
+processor.js:194 [DEBUG] Live text updated: in Croyd
+processor.js:135 [WebSocket] {type: 'transcription', text: ' in Croydon.', is_final: true, timestamp: '2026-02-13T02:39:22.698Z'}
+processor.js:138 [DEBUG] Final transcription:  in Croydon.
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge at the High Court next week. How could that affect things? Yeah, and that's not specifically about the fixed cameras we saw here in Croydon.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:22.699Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' di Croydon.', is_final: true, timestamp: '2026-02-13T02:39:22.714Z'}
+processor.js:150 [DEBUG] Final translation:  di Croydon.
+processor.js:238 [DEBUG] Final translation received: di Croydon.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:22.714Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' It', is_final: false, timestamp: '2026-02-13T02:39:22.791Z'}
+processor.js:141 [DEBUG] Non-final transcription:  It
+processor.js:194 [DEBUG] Live text updated: It
+processor.js:135 [WebSocket] {type: 'transcription', text: " It's about", is_final: false, timestamp: '2026-02-13T02:39:22.945Z'}
+processor.js:141 [DEBUG] Non-final transcription:  It's about
+processor.js:194 [DEBUG] Live text updated: It's about
+processor.js:135 [WebSocket] {type: 'transcription', text: " It's about the", is_final: false, timestamp: '2026-02-13T02:39:23.206Z'}
+processor.js:141 [DEBUG] Non-final transcription:  It's about the
+processor.js:194 [DEBUG] Live text updated: It's about the
+processor.js:135 [WebSocket] {type: 'transcription', text: " It's about the Met", is_final: false, timestamp: '2026-02-13T02:39:23.687Z'}
+processor.js:141 [DEBUG] Non-final transcription:  It's about the Met
+processor.js:194 [DEBUG] Live text updated: It's about the Met
+processor.js:135 [WebSocket] {type: 'transcription', text: " It's about the Met's", is_final: false, timestamp: '2026-02-13T02:39:23.858Z'}
+processor.js:141 [DEBUG] Non-final transcription:  It's about the Met's
+processor.js:194 [DEBUG] Live text updated: It's about the Met's
+processor.js:135 [WebSocket] {type: 'transcription', text: " It's about the Met's over", is_final: false, timestamp: '2026-02-13T02:39:24.258Z'}
+processor.js:141 [DEBUG] Non-final transcription:  It's about the Met's over
+processor.js:194 [DEBUG] Live text updated: It's about the Met's over
+processor.js:135 [WebSocket] {type: 'transcription', text: " It's about the Met's overall", is_final: false, timestamp: '2026-02-13T02:39:24.388Z'}
+processor.js:141 [DEBUG] Non-final transcription:  It's about the Met's overall
+processor.js:194 [DEBUG] Live text updated: It's about the Met's overall
+processor.js:135 [WebSocket] {type: 'transcription', text: " It's about the Met's overall use", is_final: true, timestamp: '2026-02-13T02:39:24.747Z'}
+processor.js:138 [DEBUG] Final transcription:  It's about the Met's overall use
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge at the High Court next week. How could that affect things? Yeah, and that's not specifically about the fixed cameras we saw here in Croydon. It's about the Met's overall use
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:24.747Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' Ini tentang penggunaan keseluruhan Met', is_final: true, timestamp: '2026-02-13T02:39:24.775Z'}
+processor.js:150 [DEBUG] Final translation:  Ini tentang penggunaan keseluruhan Met
+processor.js:238 [DEBUG] Final translation received: Ini tentang penggunaan keseluruhan Met
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:24.775Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of', is_final: false, timestamp: '2026-02-13T02:39:24.876Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of
+processor.js:194 [DEBUG] Live text updated: of
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of the', is_final: false, timestamp: '2026-02-13T02:39:25.125Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of the
+processor.js:194 [DEBUG] Live text updated: of the
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of the techn', is_final: false, timestamp: '2026-02-13T02:39:25.234Z'}
+processor.js:141 [DEBUG] Non-final transcription:  of the techn
+processor.js:194 [DEBUG] Live text updated: of the techn
+processor.js:135 [WebSocket] {type: 'transcription', text: ' of the technology', is_final: true, timestamp: '2026-02-13T02:39:25.607Z'}
+processor.js:138 [DEBUG] Final transcription:  of the technology
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge at the High Court next week. How could that affect things? Yeah, and that's not specifically about the fixed cameras we saw here in Croydon. It's about the Met's overall use of the technology
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:25.608Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' atas teknologi tersebut', is_final: true, timestamp: '2026-02-13T02:39:25.622Z'}
+processor.js:150 [DEBUG] Final translation:  atas teknologi tersebut
+processor.js:238 [DEBUG] Final translation received: atas teknologi tersebut
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:25.622Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and', is_final: false, timestamp: '2026-02-13T02:39:25.785Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and
+processor.js:194 [DEBUG] Live text updated: and
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and wh', is_final: false, timestamp: '2026-02-13T02:39:25.902Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and wh
+processor.js:194 [DEBUG] Live text updated: and wh
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and whether', is_final: false, timestamp: '2026-02-13T02:39:26.045Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and whether
+processor.js:194 [DEBUG] Live text updated: and whether
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and whether it', is_final: false, timestamp: '2026-02-13T02:39:26.199Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and whether it
+processor.js:194 [DEBUG] Live text updated: and whether it
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and whether it is', is_final: false, timestamp: '2026-02-13T02:39:26.419Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and whether it is
+processor.js:194 [DEBUG] Live text updated: and whether it is
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and whether it is la', is_final: false, timestamp: '2026-02-13T02:39:27.014Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and whether it is la
+processor.js:194 [DEBUG] Live text updated: and whether it is la
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and whether it is law', is_final: false, timestamp: '2026-02-13T02:39:27.141Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and whether it is law
+processor.js:194 [DEBUG] Live text updated: and whether it is law
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and whether it is lawful', is_final: false, timestamp: '2026-02-13T02:39:27.301Z'}
+processor.js:141 [DEBUG] Non-final transcription:  and whether it is lawful
+processor.js:194 [DEBUG] Live text updated: and whether it is lawful
+processor.js:135 [WebSocket] {type: 'transcription', text: ' and whether it is lawful.', is_final: true, timestamp: '2026-02-13T02:39:27.424Z'}
+processor.js:138 [DEBUG] Final transcription:  and whether it is lawful.
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge at the High Court next week. How could that affect things? Yeah, and that's not specifically about the fixed cameras we saw here in Croydon. It's about the Met's overall use of the technology and whether it is lawful.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:27.425Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' dan apakah itu sah.', is_final: true, timestamp: '2026-02-13T02:39:27.458Z'}
+processor.js:150 [DEBUG] Final translation:  dan apakah itu sah.
+processor.js:238 [DEBUG] Final translation received: dan apakah itu sah.
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:27.458Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And', is_final: false, timestamp: '2026-02-13T02:39:27.599Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And
+processor.js:194 [DEBUG] Live text updated: And
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And yes,', is_final: false, timestamp: '2026-02-13T02:39:27.626Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And yes,
+processor.js:194 [DEBUG] Live text updated: And yes,
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And yes, it', is_final: false, timestamp: '2026-02-13T02:39:27.719Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And yes, it
+processor.js:194 [DEBUG] Live text updated: And yes, it
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And yes, it f', is_final: false, timestamp: '2026-02-13T02:39:27.829Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And yes, it f
+processor.js:194 [DEBUG] Live text updated: And yes, it f
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And yes, it foc', is_final: false, timestamp: '2026-02-13T02:39:27.961Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And yes, it foc
+processor.js:194 [DEBUG] Live text updated: And yes, it foc
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And yes, it focus', is_final: false, timestamp: '2026-02-13T02:39:28.080Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And yes, it focus
+processor.js:194 [DEBUG] Live text updated: And yes, it focus
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And yes, it focuses,', is_final: false, timestamp: '2026-02-13T02:39:28.212Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And yes, it focuses,
+processor.js:194 [DEBUG] Live text updated: And yes, it focuses,
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And yes, it focuses, as', is_final: false, timestamp: '2026-02-13T02:39:28.470Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And yes, it focuses, as
+processor.js:194 [DEBUG] Live text updated: And yes, it focuses, as
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And yes, it focuses, as I sa', is_final: false, timestamp: '2026-02-13T02:39:28.585Z'}
+processor.js:141 [DEBUG] Non-final transcription:  And yes, it focuses, as I sa
+processor.js:194 [DEBUG] Live text updated: And yes, it focuses, as I sa
+processor.js:135 [WebSocket] {type: 'transcription', text: ' And yes, it focuses, as I said,', is_final: true, timestamp: '2026-02-13T02:39:28.690Z'}
+processor.js:138 [DEBUG] Final transcription:  And yes, it focuses, as I said,
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge at the High Court next week. How could that affect things? Yeah, and that's not specifically about the fixed cameras we saw here in Croydon. It's about the Met's overall use of the technology and whether it is lawful. And yes, it focuses, as I said,
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:28.691Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' Dan ya, fokusnya, seperti yang saya katakan,', is_final: true, timestamp: '2026-02-13T02:39:28.733Z'}
+processor.js:150 [DEBUG] Final translation:  Dan ya, fokusnya, seperti yang saya katakan,
+processor.js:238 [DEBUG] Final translation received: Dan ya, fokusnya, seperti yang saya katakan,
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:28.733Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on that', is_final: false, timestamp: '2026-02-13T02:39:28.821Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on that
+processor.js:194 [DEBUG] Live text updated: on that
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on that c', is_final: false, timestamp: '2026-02-13T02:39:29.208Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on that c
+processor.js:194 [DEBUG] Live text updated: on that c
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on that case', is_final: false, timestamp: '2026-02-13T02:39:29.314Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on that case
+processor.js:194 [DEBUG] Live text updated: on that case
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on that case of', is_final: false, timestamp: '2026-02-13T02:39:29.435Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on that case of
+processor.js:194 [DEBUG] Live text updated: on that case of
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on that case of Se', is_final: false, timestamp: '2026-02-13T02:39:30.013Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on that case of Se
+processor.js:194 [DEBUG] Live text updated: on that case of Se
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on that case of Sean', is_final: false, timestamp: '2026-02-13T02:39:30.128Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on that case of Sean
+processor.js:194 [DEBUG] Live text updated: on that case of Sean
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on that case of Sean Th', is_final: false, timestamp: '2026-02-13T02:39:30.388Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on that case of Sean Th
+processor.js:194 [DEBUG] Live text updated: on that case of Sean Th
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on that case of Sean Thomp', is_final: false, timestamp: '2026-02-13T02:39:30.476Z'}
+processor.js:141 [DEBUG] Non-final transcription:  on that case of Sean Thomp
+processor.js:194 [DEBUG] Live text updated: on that case of Sean Thomp
+processor.js:135 [WebSocket] {type: 'transcription', text: ' on that case of Sean Thompson,', is_final: true, timestamp: '2026-02-13T02:39:30.599Z'}
+processor.js:138 [DEBUG] Final transcription:  on that case of Sean Thompson,
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge at the High Court next week. How could that affect things? Yeah, and that's not specifically about the fixed cameras we saw here in Croydon. It's about the Met's overall use of the technology and whether it is lawful. And yes, it focuses, as I said, on that case of Sean Thompson,
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:30.600Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' pada kasus Sean Thompson itu,', is_final: true, timestamp: '2026-02-13T02:39:30.640Z'}
+processor.js:150 [DEBUG] Final translation:  pada kasus Sean Thompson itu,
+processor.js:238 [DEBUG] Final translation received: pada kasus Sean Thompson itu,
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:30.640Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who', is_final: false, timestamp: '2026-02-13T02:39:30.741Z'}
+processor.js:141 [DEBUG] Non-final transcription:  who
+processor.js:194 [DEBUG] Live text updated: who
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who was', is_final: false, timestamp: '2026-02-13T02:39:30.862Z'}
+processor.js:141 [DEBUG] Non-final transcription:  who was
+processor.js:194 [DEBUG] Live text updated: who was
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who was st', is_final: false, timestamp: '2026-02-13T02:39:30.986Z'}
+processor.js:141 [DEBUG] Non-final transcription:  who was st
+processor.js:194 [DEBUG] Live text updated: who was st
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who was stopp', is_final: false, timestamp: '2026-02-13T02:39:31.113Z'}
+processor.js:141 [DEBUG] Non-final transcription:  who was stopp
+processor.js:194 [DEBUG] Live text updated: who was stopp
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who was stopped', is_final: false, timestamp: '2026-02-13T02:39:31.236Z'}
+processor.js:141 [DEBUG] Non-final transcription:  who was stopped
+processor.js:194 [DEBUG] Live text updated: who was stopped
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who was stopped a', is_final: false, timestamp: '2026-02-13T02:39:31.422Z'}
+processor.js:141 [DEBUG] Non-final transcription:  who was stopped a
+processor.js:194 [DEBUG] Live text updated: who was stopped a
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who was stopped a coup', is_final: false, timestamp: '2026-02-13T02:39:31.555Z'}
+processor.js:141 [DEBUG] Non-final transcription:  who was stopped a coup
+processor.js:194 [DEBUG] Live text updated: who was stopped a coup
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who was stopped a couple', is_final: false, timestamp: '2026-02-13T02:39:31.676Z'}
+processor.js:141 [DEBUG] Non-final transcription:  who was stopped a couple
+processor.js:194 [DEBUG] Live text updated: who was stopped a couple
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who was stopped a couple of', is_final: false, timestamp: '2026-02-13T02:39:31.788Z'}
+processor.js:141 [DEBUG] Non-final transcription:  who was stopped a couple of
+processor.js:194 [DEBUG] Live text updated: who was stopped a couple of
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who was stopped a couple of years', is_final: false, timestamp: '2026-02-13T02:39:31.920Z'}
+processor.js:141 [DEBUG] Non-final transcription:  who was stopped a couple of years
+processor.js:194 [DEBUG] Live text updated: who was stopped a couple of years
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who was stopped a couple of years a', is_final: false, timestamp: '2026-02-13T02:39:32.195Z'}
+processor.js:141 [DEBUG] Non-final transcription:  who was stopped a couple of years a
+processor.js:194 [DEBUG] Live text updated: who was stopped a couple of years a
+processor.js:135 [WebSocket] {type: 'transcription', text: ' who was stopped a couple of years ago', is_final: true, timestamp: '2026-02-13T02:39:32.314Z'}
+processor.js:138 [DEBUG] Final transcription:  who was stopped a couple of years ago
+processor.js:177 [DEBUG] Finalized text accumulated: In crime, we see more and more of these deployments using mobile vans around London and, uh, it says it's helping get the most violent offenders off the streets. I mean, we heard there in Croydon, they're convinced that it's bringing down the crime in the local area. I asked how, how they could be so convinced it was down to that LFR pilot and not other things like, um, hotspot neighbourhood policing, for example, but they are insistent it is because of the scheme. They say it's cutting the time it takes to catch wanted offenders and they say they're making an arrest on average every 34 minutes when they're using it. And Tony, on a wider note, there is a legal challenge at the High Court next week. How could that affect things? Yeah, and that's not specifically about the fixed cameras we saw here in Croydon. It's about the Met's overall use of the technology and whether it is lawful. And yes, it focuses, as I said, on that case of Sean Thompson, who was stopped a couple of years ago
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:32.314Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:147 [WebSocket] {type: 'translation', text: ' yang dihentikan beberapa tahun lalu', is_final: true, timestamp: '2026-02-13T02:39:32.347Z'}
+processor.js:150 [DEBUG] Final translation:  yang dihentikan beberapa tahun lalu
+processor.js:238 [DEBUG] Final translation received: yang dihentikan beberapa tahun lalu
+processor.js:135 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T02:39:32.347Z'}
+processor.js:141 [DEBUG] Non-final transcription: 
+processor.js:135 [WebSocket] {type: 'transcription', text: ' by', is_final: false, timestamp: '2026-02-13T02:39:32.400Z'}
+processor.js:141 [DEBUG] Non-final transcription:  by
+processor.js:194 [DEBUG] Live text updated: by
