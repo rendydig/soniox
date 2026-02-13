@@ -137,16 +137,51 @@ export const useTranscriptionHandlers = ({
         if (!text || text.trim().length === 0) return;
         
         const trimmedText = text.trim();
+        const sentences = splitIntoSentences(trimmedText);
         
-        setFinalizedTranslations(prev => {
-            const newTranslation = {
-                text: trimmedText,
-                source: source,
-                timestamp: timestamp || new Date().toISOString(),
-                id: Date.now() + Math.random()
-            };
-            return [...prev, newTranslation];
-        });
+        if (sentences.length === 0) {
+            setFinalizedTranslations(prev => {
+                const newTranslation = {
+                    text: trimmedText,
+                    source: source,
+                    timestamp: timestamp || new Date().toISOString(),
+                    id: Date.now() + Math.random()
+                };
+                return [...prev, newTranslation];
+            });
+        } else {
+            setFinalizedTranslations(prev => {
+                let sentencesToProcess = [...sentences];
+                let updatedPrev = [...prev];
+                
+                if (updatedPrev.length > 0 && sentencesToProcess.length > 0) {
+                    const lastTranslation = updatedPrev[updatedPrev.length - 1];
+                    const lastChar = lastTranslation.text.trim().slice(-1);
+                    
+                    if (lastChar !== '.' && lastChar !== '?' && lastChar !== '!') {
+                        const mergedText = lastTranslation.text + ' ' + sentencesToProcess[0];
+                        updatedPrev[updatedPrev.length - 1] = {
+                            ...lastTranslation,
+                            text: mergedText
+                        };
+                        
+                        console.log('[DEBUG] Merged translation:', mergedText);
+                        sentencesToProcess = sentencesToProcess.slice(1);
+                    }
+                }
+                
+                const newTranslations = sentencesToProcess.map((sentence, index) => ({
+                    text: sentence,
+                    source: source,
+                    timestamp: timestamp || new Date().toISOString(),
+                    id: Date.now() + Math.random() + index
+                }));
+                
+                console.log('[DEBUG] Finalized translations added:', newTranslations);
+                
+                return [...updatedPrev, ...newTranslations];
+            });
+        }
         
         if (source.toLowerCase() === 'host') {
             setLiveTranslationHost('');
