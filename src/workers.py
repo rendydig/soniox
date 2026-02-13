@@ -12,16 +12,17 @@ from src.config import SONIOX_API_KEY, WS_URL
 
 
 class SonioxWorker(QThread):
-    error = Signal(str)
-    status = Signal(str)
-    transcription_update = Signal(str, bool)
-    translation_update = Signal(str, bool)
+    error = Signal(str, str)
+    status = Signal(str, str)
+    transcription_update = Signal(str, bool, str)
+    translation_update = Signal(str, bool, str)
 
-    def __init__(self, device_id: int, mode: str = "transcription", target_lang: str = "en", parent=None):
+    def __init__(self, device_id: int, mode: str = "transcription", target_lang: str = "en", input_source: str = "host", parent=None):
         super().__init__(parent)
         self._device_id = device_id
         self._mode = mode
         self._target_lang = target_lang
+        self._input_source = input_source
         self._stop_flag = False
         self._sample_rate = 16000
         self._channels = 1
@@ -34,7 +35,7 @@ class SonioxWorker(QThread):
 
     def run(self):
         if not SONIOX_API_KEY:
-            self.error.emit("SONIOX_API_KEY missing")
+            self.error.emit("SONIOX_API_KEY missing", self._input_source)
             return
 
         loop = asyncio.new_event_loop()
@@ -42,13 +43,13 @@ class SonioxWorker(QThread):
         try:
             loop.run_until_complete(self._stream_audio())
         except Exception as e:
-            self.error.emit(f"Worker error: {e}")
+            self.error.emit(f"Worker error: {e}", self._input_source)
         finally:
             loop.close()
 
     async def _stream_audio(self):
         async with websockets.connect(WS_URL) as ws:
-            self.status.emit(f"Connected ({self._mode})")
+            self.status.emit(f"Connected ({self._mode})", self._input_source)
 
             config = {
                 "api_key": SONIOX_API_KEY,
@@ -119,7 +120,7 @@ class SonioxWorker(QThread):
                     data = json.loads(msg)
                     
                     if data.get("error_code"):
-                        self.error.emit(f"{data['error_code']}: {data.get('error_message', '')}")
+                        self.error.emit(f"{data['error_code']}: {data.get('error_message', '')}", self._input_source)
                         break
 
                     tokens = data.get("tokens", [])
@@ -157,8 +158,8 @@ class SonioxWorker(QThread):
                                 else:
                                     text_parts.append(token_text)
                             final_transcription = "".join(text_parts)
-                            print(f"[DEBUG] Final Transcription (English): {repr(final_transcription)}")
-                            self.transcription_update.emit(final_transcription, True)
+                            print(f"[DEBUG] [{self._input_source}] Final Transcription (English): {repr(final_transcription)}")
+                            self.transcription_update.emit(final_transcription, True, self._input_source)
                         
                         # Emit final translation (Indonesian)
                         if final_translation_tokens:
@@ -170,15 +171,15 @@ class SonioxWorker(QThread):
                                 else:
                                     text_parts.append(token_text)
                             final_translation = "".join(text_parts)
-                            print(f"[DEBUG] Final Translation (Indonesian): {repr(final_translation)}")
-                            self.translation_update.emit(final_translation, True)
+                            print(f"[DEBUG] [{self._input_source}] Final Translation (Indonesian): {repr(final_translation)}")
+                            self.translation_update.emit(final_translation, True, self._input_source)
                         
                         # Emit partial text (English - for live display)
                         part_text = "".join(t.get("text", "") for t in partial_tokens)
                         if part_text.strip():
-                            self.transcription_update.emit(part_text, False)
+                            self.transcription_update.emit(part_text, False, self._input_source)
                         elif final_transcription_tokens or final_translation_tokens:
-                            self.transcription_update.emit("", False)
+                            self.transcription_update.emit("", False, self._input_source)
                     
                     else:
                         # Transcription mode - original behavior
@@ -207,12 +208,12 @@ class SonioxWorker(QThread):
                         part_text = "".join(t.get("text", "") for t in partial_tokens)
 
                         if final_text:
-                            self.transcription_update.emit(final_text, True)
+                            self.transcription_update.emit(final_text, True, self._input_source)
                         
                         if part_text.strip():
-                            self.transcription_update.emit(part_text, False)
+                            self.transcription_update.emit(part_text, False, self._input_source)
                         elif final_text:
-                            self.transcription_update.emit("", False)
+                            self.transcription_update.emit("", False, self._input_source)
 
             await asyncio.gather(sender(), receiver())
 

@@ -165,32 +165,42 @@ class MainWindow(QMainWindow):
             self._stop_session()
 
     def _start_session(self):
-        idx = self.device_combo.currentIndex()
-        if idx < 0:
-            QMessageBox.warning(self, "No Device", "Please select an input device.")
+        host_idx = self.device_combo.currentIndex()
+        if host_idx < 0:
+            QMessageBox.warning(self, "No Device", "Please select a host input device.")
             self.btn_start.setChecked(False)
             return
 
         device_ids = self.device_controller.get_device_ids()
-        if idx >= len(device_ids):
-            QMessageBox.warning(self, "Invalid Device", "Selected device is not available.")
+        if host_idx >= len(device_ids):
+            QMessageBox.warning(self, "Invalid Device", "Selected host device is not available.")
             self.btn_start.setChecked(False)
             return
         
-        device_id = device_ids[idx]
+        host_device_id = device_ids[host_idx]
+        
+        # Get speaker device ID (optional)
+        speaker_idx = self.speaker_combo.currentIndex()
+        speaker_device_id = None
+        if speaker_idx >= 0 and speaker_idx < len(device_ids):
+            speaker_device_id = device_ids[speaker_idx]
+            # Only use speaker device if it's different from host
+            if speaker_device_id == host_device_id:
+                speaker_device_id = None
+        
         mode = "translation" if self.rb_translate.isChecked() else "transcription"
         target_lang = self.lang_combo.currentData()
 
         self.transcription_editor.clear()
-        self.transcription_controller.start_session(device_id, mode=mode, target_lang=target_lang)
+        self.transcription_controller.start_session(host_device_id, speaker_device_id, mode=mode, target_lang=target_lang)
         
         if self.auto_record_checkbox.isChecked():
-            dev_info = self.device_controller.get_device_info(device_id)
+            dev_info = self.device_controller.get_device_info(host_device_id)
             if dev_info:
                 samplerate = dev_info.get("default_samplerate") or 44100
                 channels = min(dev_info.get("max_input_channels", 1), 2)
                 channels = max(1, channels)
-                self.recording_controller.start_recording(device_id, samplerate, channels)
+                self.recording_controller.start_recording(host_device_id, samplerate, channels, speaker_device_id)
                 self.record_btn.setText("Recording (auto)")
                 self.record_btn.setEnabled(False)
 
@@ -202,39 +212,41 @@ class MainWindow(QMainWindow):
         if self.auto_record_checkbox.isChecked() and self.recording_controller.is_recording():
             self.recording_controller.stop_recording()
 
-    def _on_update_transcription(self, text, is_final):
-        print(f"[DEBUG] _on_update_transcription called: is_final={is_final}, text='{text[:50]}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
+    def _on_update_transcription(self, text, is_final, input_source):
+        print(f"[DEBUG] [{input_source}] _on_update_transcription called: is_final={is_final}, text='{text[:50] if text else ''}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
         
         # Always send as "transcription" type (original English text)
         # Translation results are sent separately via _on_translation_update
-        self.websocket_client.send_transcription(text, is_final, message_type="transcription")
+        self.websocket_client.send_transcription(text, is_final, additional_data={"input_source": input_source}, message_type="transcription")
         
         if is_final:
-            append_timestamped_text(self.transcription_editor, text, max_lines=MAX_TRANSCRIPTION_LINES)
+            # Prefix text with input source label
+            labeled_text = f"[{input_source.upper()}] {text}"
+            append_timestamped_text(self.transcription_editor, labeled_text, max_lines=MAX_TRANSCRIPTION_LINES)
             
             if self.auto_reply_checkbox.isChecked() and text.strip():
-                print(f"[DEBUG] Scheduling auto-reply for: '{text}'")
+                print(f"[DEBUG] [{input_source}] Scheduling auto-reply for: '{text}'")
                 additional_context = self.translation_input.toPlainText().strip()
                 if additional_context:
                     print(f"[DEBUG] Including translation input as context: '{additional_context[:50]}...'")
                 self.translation_controller.schedule_auto_reply(text, additional_context)
             else:
-                print(f"[DEBUG] NOT scheduling auto-reply. Checkbox: {self.auto_reply_checkbox.isChecked()}, Text empty: {not text.strip()}")
+                print(f"[DEBUG] [{input_source}] NOT scheduling auto-reply. Checkbox: {self.auto_reply_checkbox.isChecked()}, Text empty: {not text.strip()}")
         else:
-            self.status_label.setText(f"Live: {text}" if text.strip() else "Listening...")
+            self.status_label.setText(f"Live [{input_source}]: {text}" if text.strip() else "Listening...")
             
             if self.auto_reply_checkbox.isChecked() and text.strip():
-                print(f"[DEBUG] Canceling auto-reply (non-final text with content received)")
+                print(f"[DEBUG] [{input_source}] Canceling auto-reply (non-final text with content received)")
                 self.translation_controller.cancel_auto_reply()
             elif self.auto_reply_checkbox.isChecked() and not text.strip():
-                print(f"[DEBUG] Ignoring empty non-final text, keeping auto-reply timer active")
+                print(f"[DEBUG] [{input_source}] Ignoring empty non-final text, keeping auto-reply timer active")
     
-    def _on_translation_update(self, text: str, is_final: bool):
+    def _on_translation_update(self, text: str, is_final: bool, input_source: str):
         """Handle translation updates from transcription controller (Indonesian translations)."""
-        print(f"[DEBUG] _on_translation_update called: is_final={is_final}, text='{text[:50]}...'")
+        print(f"[DEBUG] [{input_source}] _on_translation_update called: is_final={is_final}, text='{text[:50] if text else ''}...'")
         
-        # Send translation via WebSocket
-        self.websocket_client.send_transcription(text, is_final, message_type="translation")
+        # Send translation via WebSocket with input_source
+        self.websocket_client.send_transcription(text, is_final, additional_data={"input_source": input_source}, message_type="translation")
 
     def _on_transcription_started(self):
         """Handle transcription session started."""
@@ -326,26 +338,35 @@ class MainWindow(QMainWindow):
             self.record_btn.setChecked(False)
             return
 
-        index = self.device_combo.currentIndex()
+        host_idx = self.device_combo.currentIndex()
         device_ids = self.device_controller.get_device_ids()
         
-        if index < 0 or index >= len(device_ids):
-            QMessageBox.warning(self, "No Device Selected", "Please select an input device.")
+        if host_idx < 0 or host_idx >= len(device_ids):
+            QMessageBox.warning(self, "No Device Selected", "Please select a host input device.")
             self.record_btn.setChecked(False)
             return
 
-        device_id = device_ids[index]
-        dev_info = self.device_controller.get_device_info(device_id)
+        host_device_id = device_ids[host_idx]
+        dev_info = self.device_controller.get_device_info(host_device_id)
         
         if not dev_info:
             self.record_btn.setChecked(False)
             return
         
+        # Get speaker device ID (optional)
+        speaker_idx = self.speaker_combo.currentIndex()
+        speaker_device_id = None
+        if speaker_idx >= 0 and speaker_idx < len(device_ids):
+            speaker_device_id = device_ids[speaker_idx]
+            # Only use speaker device if it's different from host
+            if speaker_device_id == host_device_id:
+                speaker_device_id = None
+        
         samplerate = dev_info.get("default_samplerate") or 44100
         channels = min(dev_info.get("max_input_channels", 1), 2)
         channels = max(1, channels)
 
-        success = self.recording_controller.start_recording(device_id, samplerate, channels)
+        success = self.recording_controller.start_recording(host_device_id, samplerate, channels, speaker_device_id)
         if not success:
             self.record_btn.setChecked(False)
 

@@ -16,7 +16,7 @@ class DeviceSettingsWidget(QWidget):
         dev_layout = QHBoxLayout()
         
         user_layout = QVBoxLayout()
-        user_layout.addWidget(QLabel("Input Device (User):"))
+        user_layout.addWidget(QLabel("Input Device (Host):"))
         self.device_combo = QComboBox()
         self.device_combo.setMinimumWidth(180)
         user_layout.addWidget(self.device_combo)
