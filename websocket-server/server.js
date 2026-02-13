@@ -34,7 +34,7 @@ wss.on('connection', (ws, req) => {
   ws.on('message', (data) => {
     try {
       const message = JSON.parse(data.toString());
-      console.log(`[WebSocket] Received: ${message.type} - is_final=${message.is_final}`);
+      console.log(`[WebSocket] Received: ${message.type} - is_final=${message.is_final} {${message.text}}`);
       
       message.timestamp = new Date().toISOString();
       

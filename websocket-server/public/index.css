@@ -97,7 +97,7 @@
     }
     .card.center-content > * {
        width: 100%;
-       text-align: center;
+       /* text-align: center; */
     }
 
     .live-text {
@@ -110,12 +110,59 @@
         line-height: 1.6;
         color: #666;
         font-style: italic;
+        white-space: pre-line;
+        text-align: left;
+        max-height: 300px;
+        overflow-y: auto;
     }
 
     .live-text.active {
         background: #fef3c7;
         color: #92400e;
         border-left: 4px solid #f59e0b;
+    }
+
+    .live-text-line {
+        margin-bottom: 8px;
+        line-height: 1.6;
+        transition: opacity 0.3s ease;
+    }
+
+    .live-text-line:last-child {
+        margin-bottom: 0;
+    }
+
+    .live-text-line.current {
+        opacity: 1;
+        font-weight: 500;
+    }
+
+    .live-text-line.fade-1 {
+        opacity: 0.85;
+        font-size: 16px ;
+    }
+
+    .live-text-line.fade-2 {
+        opacity: 0.70;
+        font-size: 16px;
+    }
+
+    .live-text-line.fade-3 {
+        opacity: 0.55;
+        font-style: normal;
+        font-size: 16px;
+    }
+
+    .live-text-line.fade-4 {
+        opacity: 0.40;
+        font-style: normal;
+        font-size: 16px;
+    }
+
+    .live-text-line.fade-5 {
+        opacity: 0.30;
+        font-style: normal;
+        font-size: 16px;
     }
 
     .transcription-list {

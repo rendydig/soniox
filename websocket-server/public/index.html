@@ -7,52 +7,6 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="status"><div>Status : </div>
-                <div class="status-indicator" id="statusIndicator"></div>
-                <span id="statusText">Connecting...</span>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <div class="card center-content">
-                <h2>📝 Live Transcription</h2>
-                <div class="live-text" id="liveText">Waiting for audio input...</div>
-                
-                <h2>📜 Transcription History</h2>
-                <div class="transcription-list" id="transcriptionList">
-                    <div class="empty-state">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                        </svg>
-                        <p>No transcriptions yet</p>
-                    </div>
-                </div>
-            </div>
-            <!-- Statistics -->
-            <!-- <div>
-                <div class="card">
-                    <h2>📊 Statistics</h2>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <div class="stat-value" id="totalCount">0</div>
-                            <div class="stat-label">Total</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="wordCount">0</div>
-                            <div class="stat-label">Words</div>
-                        </div>
-                    </div>
-                    <div class="controls">
-                        <button class="btn-clear" onclick="clearTranscriptions()">Clear</button>
-                        <button class="btn-export" onclick="exportTranscriptions()">Export</button>
-                    </div>
-                </div>
-            </div> -->
-        </div>
-    </div>
-
-   <script src="processor.js"></script>
+   <script type="module" src="processor.js"></script>
 </body>
 </html>
