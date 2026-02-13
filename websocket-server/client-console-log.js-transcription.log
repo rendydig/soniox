@@ -1,93 +1,1292 @@
-websocket-manager.js:14 [WebSocket] Connected
-processor.js:127 [WebSocket] Connected to transcription server
-processor.js:142 [WebSocket] {type: 'translation', text: ' it has helped cut robbery and sh', is_final: false, timestamp: '2026-02-13T02:05:17.050Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' it has helped cut robbery and shop', is_final: false, timestamp: '2026-02-13T02:05:17.201Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' it has helped cut robbery and shopli', is_final: false, timestamp: '2026-02-13T02:05:17.318Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' it has helped cut robbery and shoplift', is_final: false, timestamp: '2026-02-13T02:05:17.447Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' ini membantu mengurangi perampokan dan pencurian di toko,', is_final: true, timestamp: '2026-02-13T02:05:17.769Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:17.769Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and', is_final: false, timestamp: '2026-02-13T02:05:17.892Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and that', is_final: false, timestamp: '2026-02-13T02:05:18.083Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and that the', is_final: false, timestamp: '2026-02-13T02:05:18.266Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and that the techn', is_final: false, timestamp: '2026-02-13T02:05:18.387Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and that the technology', is_final: false, timestamp: '2026-02-13T02:05:18.891Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and that the technology is', is_final: false, timestamp: '2026-02-13T02:05:19.126Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and that the technology is game', is_final: false, timestamp: '2026-02-13T02:05:19.624Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and that the technology is game-ch', is_final: false, timestamp: '2026-02-13T02:05:19.810Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and that the technology is game-chang', is_final: false, timestamp: '2026-02-13T02:05:19.925Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' dan bahwa teknologinya mengubah permainan.', is_final: true, timestamp: '2026-02-13T02:05:20.218Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:20.218Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' But', is_final: false, timestamp: '2026-02-13T02:05:20.692Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' But priv', is_final: false, timestamp: '2026-02-13T02:05:20.902Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' But privac', is_final: false, timestamp: '2026-02-13T02:05:21.044Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' But privacy', is_final: false, timestamp: '2026-02-13T02:05:21.151Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' But privacy camp', is_final: false, timestamp: '2026-02-13T02:05:21.427Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' But privacy campa', is_final: false, timestamp: '2026-02-13T02:05:21.531Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' But privacy campaign', is_final: false, timestamp: '2026-02-13T02:05:21.674Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' But privacy campaigners', is_final: false, timestamp: '2026-02-13T02:05:21.840Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' Namun para kampanye privasi mengatakan', is_final: true, timestamp: '2026-02-13T02:05:22.023Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:22.024Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' L', is_final: false, timestamp: '2026-02-13T02:05:22.413Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' LF', is_final: false, timestamp: '2026-02-13T02:05:22.479Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' LFR,', is_final: false, timestamp: '2026-02-13T02:05:22.690Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' LFR, which', is_final: false, timestamp: '2026-02-13T02:05:22.826Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' LFR, which map', is_final: false, timestamp: '2026-02-13T02:05:23.195Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' LFR, which maps', is_final: false, timestamp: '2026-02-13T02:05:23.347Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' LFR, which maps a person', is_final: false, timestamp: '2026-02-13T02:05:23.590Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: " LFR, which maps a person's", is_final: false, timestamp: '2026-02-13T02:05:24.015Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: " LFR, which maps a person's fa", is_final: false, timestamp: '2026-02-13T02:05:24.182Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: " LFR, which maps a person's facial", is_final: false, timestamp: '2026-02-13T02:05:24.339Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: " LFR, which maps a person's facial fe", is_final: false, timestamp: '2026-02-13T02:05:24.826Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: " LFR, which maps a person's facial featur", is_final: false, timestamp: '2026-02-13T02:05:24.964Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' LFR, yang memetakan fitur wajah seseorang', is_final: true, timestamp: '2026-02-13T02:05:25.029Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:25.030Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and', is_final: false, timestamp: '2026-02-13T02:05:25.270Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and mat', is_final: false, timestamp: '2026-02-13T02:05:25.475Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and matches', is_final: false, timestamp: '2026-02-13T02:05:25.552Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them', is_final: false, timestamp: '2026-02-13T02:05:25.788Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against', is_final: false, timestamp: '2026-02-13T02:05:25.843Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against fac', is_final: false, timestamp: '2026-02-13T02:05:26.319Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against faces', is_final: false, timestamp: '2026-02-13T02:05:26.521Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against faces on', is_final: false, timestamp: '2026-02-13T02:05:26.672Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against faces on wat', is_final: false, timestamp: '2026-02-13T02:05:26.917Z'}
-processor.js:142 [WebSocket] {type: 'translation', text: ' and matches them against faces on watch', is_final: false, timestamp: '2026-02-13T02:05:27.187Z'}
- [WebSocket] {type: 'translation', text: ' and matches them against faces on watch list', is_final: false, timestamp: '2026-02-13T02:05:27.295Z'}
- [WebSocket] {type: 'translation', text: ' dan mencocokkannya dengan wajah di daftar pengamatan,', is_final: true, timestamp: '2026-02-13T02:05:27.549Z'}
- [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:27.549Z'}
- [WebSocket] {type: 'translation', text: ' car', is_final: false, timestamp: '2026-02-13T02:05:27.995Z'}
- [WebSocket] {type: 'translation', text: ' carries', is_final: false, timestamp: '2026-02-13T02:05:28.232Z'}
- [WebSocket] {type: 'translation', text: ' carries an', is_final: false, timestamp: '2026-02-13T02:05:28.544Z'}
- [WebSocket] {type: 'translation', text: ' carries an un', is_final: false, timestamp: '2026-02-13T02:05:28.724Z'}
- [WebSocket] {type: 'translation', text: ' carries an unac', is_final: false, timestamp: '2026-02-13T02:05:28.956Z'}
- [WebSocket] {type: 'translation', text: ' carries an unaccep', is_final: false, timestamp: '2026-02-13T02:05:29.108Z'}
- [WebSocket] {type: 'translation', text: ' carries an unaccepta', is_final: false, timestamp: '2026-02-13T02:05:29.224Z'}
- [WebSocket] {type: 'translation', text: ' carries an unacceptable', is_final: false, timestamp: '2026-02-13T02:05:29.343Z'}
- [WebSocket] {type: 'translation', text: ' carries an unacceptable r', is_final: false, timestamp: '2026-02-13T02:05:29.517Z'}
- [WebSocket] {type: 'translation', text: ' carries an unacceptable risk', is_final: false, timestamp: '2026-02-13T02:05:29.650Z'}
- [WebSocket] {type: 'translation', text: ' carries an unacceptable risk of', is_final: false, timestamp: '2026-02-13T02:05:29.774Z'}
- [WebSocket] {type: 'translation', text: ' carries an unacceptable risk of mis', is_final: false, timestamp: '2026-02-13T02:05:30.289Z'}
- [WebSocket] {type: 'translation', text: ' carries an unacceptable risk of misident', is_final: false, timestamp: '2026-02-13T02:05:30.506Z'}
- [WebSocket] {type: 'translation', text: ' carries an unacceptable risk of misidentific', is_final: false, timestamp: '2026-02-13T02:05:30.760Z'}
- [WebSocket] {type: 'translation', text: ' membawa risiko yang tidak dapat diterima terhadap salah identifikasi.', is_final: true, timestamp: '2026-02-13T02:05:31.348Z'}
- [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:31.349Z'}
- [WebSocket] {type: 'translation', text: ' Here', is_final: false, timestamp: '2026-02-13T02:05:31.695Z'}
- [WebSocket] {type: 'translation', text: " Here's", is_final: false, timestamp: '2026-02-13T02:05:31.823Z'}
- [WebSocket] {type: 'translation', text: " Here's our", is_final: false, timestamp: '2026-02-13T02:05:31.966Z'}
- [WebSocket] {type: 'translation', text: " Here's our Home", is_final: false, timestamp: '2026-02-13T02:05:32.068Z'}
- [WebSocket] {type: 'translation', text: " Here's our Home Aff", is_final: false, timestamp: '2026-02-13T02:05:32.204Z'}
- [WebSocket] {type: 'translation', text: " Here's our Home Affa", is_final: false, timestamp: '2026-02-13T02:05:32.295Z'}
- [WebSocket] {type: 'translation', text: " Here's our Home Affairs", is_final: false, timestamp: '2026-02-13T02:05:32.421Z'}
- [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspond", is_final: false, timestamp: '2026-02-13T02:05:32.682Z'}
- [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspondent,", is_final: false, timestamp: '2026-02-13T02:05:33.066Z'}
- [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspondent, Son", is_final: false, timestamp: '2026-02-13T02:05:33.353Z'}
- [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspondent, Sonia", is_final: false, timestamp: '2026-02-13T02:05:33.483Z'}
- [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspondent, Sonia Jess", is_final: false, timestamp: '2026-02-13T02:05:33.741Z'}
- [WebSocket] {type: 'translation', text: " Here's our Home Affairs correspondent, Sonia Jessop", is_final: false, timestamp: '2026-02-13T02:05:33.863Z'}
- [WebSocket] {type: 'translation', text: ' Ini koresponden Urusan Dalam Negeri kami, Sonia Jessop.', is_final: true, timestamp: '2026-02-13T02:05:34.075Z'}
- [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:34.075Z'}
- [WebSocket] {type: 'translation', text: ' You', is_final: false, timestamp: '2026-02-13T02:05:34.842Z'}
- [WebSocket] {type: 'translation', text: " You'", is_final: false, timestamp: '2026-02-13T02:05:34.981Z'}
- [WebSocket] {type: 'translation', text: " You're", is_final: false, timestamp: '2026-02-13T02:05:35.109Z'}
- [WebSocket] {type: 'translation', text: " You're und", is_final: false, timestamp: '2026-02-13T02:05:35.169Z'}
- [WebSocket] {type: 'translation', text: ' Anda berada di bawah pengawasan.', is_final: true, timestamp: '2026-02-13T02:05:35.345Z'}
- [WebSocket] {type: 'translation', text: '', is_final: false, timestamp: '2026-02-13T02:05:35.345Z'}
+ [DEBUG] Final transcription:  Kedengaran enggak?
+ from host
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  G from host
+ [DEBUG] Live text updated: G from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  K from host
+ [DEBUG] Live text updated: K from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Kunci from host
+ [DEBUG] Live text updated: Kunci from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Kunci ob from host
+ [DEBUG] Live text updated: Kunci ob from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Kunci obat from host
+ [DEBUG] Live text updated: Kunci obat from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Kunci obat t from host
+ [DEBUG] Live text updated: Kunci obat t from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Kunci obat tuh from host
+ [DEBUG] Live text updated: Kunci obat tuh from host
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Gue coba tuh.
+ from host
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Mar from host
+ [DEBUG] Live text updated: Mar from host
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Marta.
+ from host
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sep from host
+ [DEBUG] Live text updated: Sep from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sepert from host
+ [DEBUG] Live text updated: Sepert from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sepertinya from host
+ [DEBUG] Live text updated: Sepertinya from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sepertinya engg from host
+ [DEBUG] Live text updated: Sepertinya engg from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sepertinya enggak from host
+ [DEBUG] Live text updated: Sepertinya enggak from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sepertinya enggak bisa from host
+ [DEBUG] Live text updated: Sepertinya enggak bisa from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sepertinya enggak bisa de from host
+ [DEBUG] Live text updated: Sepertinya enggak bisa de from host
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Sepertinya enggak bisa deh.
+ from host
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Ap from host
+ [DEBUG] Live text updated: Ap from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Apak from host
+ [DEBUG] Live text updated: Apak from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Apakah from host
+ [DEBUG] Live text updated: Apakah from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Apakah dari from host
+ [DEBUG] Live text updated: Apakah dari from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Apakah dari spe from host
+ [DEBUG] Live text updated: Apakah dari spe from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Apakah dari speaker from host
+ [DEBUG] Live text updated: Apakah dari speaker from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Apakah dari speaker atau from host
+ [DEBUG] Live text updated: Apakah dari speaker atau from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Apakah dari speaker atau dari from host
+ [DEBUG] Live text updated: Apakah dari speaker atau dari from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Apakah dari speaker atau dari from host
+ [DEBUG] Live text updated: Apakah dari speaker atau dari from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Apakah dari speaker atau dari from host
+ [DEBUG] Live text updated: Apakah dari speaker atau dari from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Apakah dari speaker atau dari host from host
+ [DEBUG] Live text updated: Apakah dari speaker atau dari host from host
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Apakah dari speaker atau dari host?
+ from host
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: M from speaker
+ [DEBUG] Live text updated: M from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make from speaker
+ [DEBUG] Live text updated: Make from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it from speaker
+ [DEBUG] Live text updated: Make it from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a from speaker
+ [DEBUG] Live text updated: Make it a from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a hab from speaker
+ [DEBUG] Live text updated: Make it a hab from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. from speaker
+ [DEBUG] Live text updated: Make it a habit. from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A from speaker
+ [DEBUG] Live text updated: Make it a habit. A from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 1 from speaker
+ [DEBUG] Live text updated: Make it a habit. A 1 from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10 from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10 from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10- from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10- from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-min from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-min from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute A from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute A from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI ro from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI ro from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI rout from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI rout from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI routine from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI routine from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI routine ever from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI routine ever from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI routine every from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI routine every from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI routine every mor from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI routine every mor from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI routine every morning. from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI routine every morning. from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit, a 10-minute AI routine every morning. You from speaker
+ [DEBUG] Live text updated: Make it a habit, a 10-minute AI routine every morning. You from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit, a 10-minute AI routine every morning. You' from speaker
+ [DEBUG] Live text updated: Make it a habit, a 10-minute AI routine every morning. You' from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI routine every morning. You'll from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI routine every morning. You'll from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI routine every morning. You'll be from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI routine every morning. You'll be from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI routine every morning. You'll be un from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI routine every morning. You'll be un from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription: Make it a habit. A 10-minute AI routine every morning. You'll be unrec from speaker
+ [DEBUG] Live text updated: Make it a habit. A 10-minute AI routine every morning. You'll be unrec from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription: Make it a habit. A from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  10-minute AI routine every morning. You'll be unrecogn from speaker
+ [DEBUG] Live text updated: 10-minute AI routine every morning. You'll be unrecogn from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  10-minute AI routine every morning. You'll be unrecogniz from speaker
+ [DEBUG] Live text updated: 10-minute AI routine every morning. You'll be unrecogniz from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  10-minute AI routine every morning. You'll be unrecognizable from speaker
+ [DEBUG] Live text updated: 10-minute AI routine every morning. You'll be unrecognizable from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  10-minute AI routine every morning. You'll be unrecognizable by from speaker
+ [DEBUG] Live text updated: 10-minute AI routine every morning. You'll be unrecognizable by from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  10-minute AI routine every morning. You'll be unrecognizable by Christ from speaker
+ [DEBUG] Live text updated: 10-minute AI routine every morning. You'll be unrecognizable by Christ from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  10-minute AI routine every morning. You'll be unrecognizable by Christm from speaker
+ [DEBUG] Live text updated: 10-minute AI routine every morning. You'll be unrecognizable by Christm from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  10-minute AI routine every morning. You'll be unrecognizable by Christmas. from speaker
+ [DEBUG] Live text updated: 10-minute AI routine every morning. You'll be unrecognizable by Christmas. from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  10-minute AI routine every morning. You'll be unrecognizable by Christmas. You from speaker
+ [DEBUG] Live text updated: 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in from speaker
+ [DEBUG] Live text updated: 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in?
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So from speaker
+ [DEBUG] Live text updated: So from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this from speaker
+ [DEBUG] Live text updated: So this from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is from speaker
+ [DEBUG] Live text updated: So this is from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how from speaker
+ [DEBUG] Live text updated: So this is how from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I from speaker
+ [DEBUG] Live text updated: So this is how I from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I became from speaker
+ [DEBUG] Live text updated: So this is how I became from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I became the from speaker
+ [DEBUG] Live text updated: So this is how I became the from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I became the most from speaker
+ [DEBUG] Live text updated: So this is how I became the most from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I became the most d from speaker
+ [DEBUG] Live text updated: So this is how I became the most d from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I became the most dang from speaker
+ [DEBUG] Live text updated: So this is how I became the most dang from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I became the most dangero from speaker
+ [DEBUG] Live text updated: So this is how I became the most dangero from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I became the most dangerous from speaker
+ [DEBUG] Live text updated: So this is how I became the most dangerous from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I became the most dangerous person from speaker
+ [DEBUG] Live text updated: So this is how I became the most dangerous person from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I became the most dangerous person in from speaker
+ [DEBUG] Live text updated: So this is how I became the most dangerous person in from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I became the most dangerous person in the from speaker
+ [DEBUG] Live text updated: So this is how I became the most dangerous person in the from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  So this is how I became the most dangerous person in the world from speaker
+ [DEBUG] Live text updated: So this is how I became the most dangerous person in the world from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  So this is how I became the most dangerous person in the world.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Co from speaker
+ [DEBUG] Live text updated: Co from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could from speaker
+ [DEBUG] Live text updated: Could from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a from speaker
+ [DEBUG] Live text updated: Could a from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simp from speaker
+ [DEBUG] Live text updated: Could a simp from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple from speaker
+ [DEBUG] Live text updated: Could a simple from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple b from speaker
+ [DEBUG] Live text updated: Could a simple b from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood from speaker
+ [DEBUG] Live text updated: Could a simple blood from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood test from speaker
+ [DEBUG] Live text updated: Could a simple blood test from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  I from host
+ [DEBUG] Live text updated: I from host
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Iya.
+ from host
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood test tell from speaker
+ [DEBUG] Live text updated: Could a simple blood test tell from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood test tell y from speaker
+ [DEBUG] Live text updated: Could a simple blood test tell y from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood test tell you from speaker
+ [DEBUG] Live text updated: Could a simple blood test tell you from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood test tell you if from speaker
+ [DEBUG] Live text updated: Could a simple blood test tell you if from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood test tell you if you from speaker
+ [DEBUG] Live text updated: Could a simple blood test tell you if you from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood test tell you if you' from speaker
+ [DEBUG] Live text updated: Could a simple blood test tell you if you' from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood test tell you if you've from speaker
+ [DEBUG] Live text updated: Could a simple blood test tell you if you've from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood test tell you if you've got from speaker
+ [DEBUG] Live text updated: Could a simple blood test tell you if you've got from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood test tell you if you've got canc from speaker
+ [DEBUG] Live text updated: Could a simple blood test tell you if you've got canc from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Could a simple blood test tell you if you've got cancer from speaker
+ [DEBUG] Live text updated: Could a simple blood test tell you if you've got cancer from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Could a simple blood test tell you if you've got cancer?
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This from speaker
+ [DEBUG] Live text updated: This from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is from speaker
+ [DEBUG] Live text updated: This is from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News from speaker
+ [DEBUG] Live text updated: This is News from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Rev from speaker
+ [DEBUG] Live text updated: This is News Rev from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from speaker
+ [DEBUG] Live text updated: This is News Review from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from from speaker
+ [DEBUG] Live text updated: This is News Review from from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from B from speaker
+ [DEBUG] Live text updated: This is News Review from B from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from BB from speaker
+ [DEBUG] Live text updated: This is News Review from BB from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from BBC from speaker
+ [DEBUG] Live text updated: This is News Review from BBC from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from BBC Lear from speaker
+ [DEBUG] Live text updated: This is News Review from BBC Lear from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from BBC Learning from speaker
+ [DEBUG] Live text updated: This is News Review from BBC Learning from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from BBC Learning English from speaker
+ [DEBUG] Live text updated: This is News Review from BBC Learning English from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from BBC Learning English. from speaker
+ [DEBUG] Live text updated: This is News Review from BBC Learning English. from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from BBC Learning English. I from speaker
+ [DEBUG] Live text updated: This is News Review from BBC Learning English. I from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from BBC Learning English. I'm from speaker
+ [DEBUG] Live text updated: This is News Review from BBC Learning English. I'm from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  This is News Review from BBC Learning English. I'm Ne from speaker
+ [DEBUG] Live text updated: This is News Review from BBC Learning English. I'm Ne from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  This is News Review from BBC Learning English. I'm Neil.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And from speaker
+ [DEBUG] Live text updated: And from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I' from speaker
+ [DEBUG] Live text updated: And I' from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm from speaker
+ [DEBUG] Live text updated: And I'm from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth from speaker
+ [DEBUG] Live text updated: And I'm Beth from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. from speaker
+ [DEBUG] Live text updated: And I'm Beth. from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. M from speaker
+ [DEBUG] Live text updated: And I'm Beth. M from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make su from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make su from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you wat from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you wat from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to le from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to le from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to learn from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to learn from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to learn voc from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to learn voc from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to learn vocab from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to learn vocab from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to learn vocabular from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to learn vocabular from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to learn vocabulary from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to learn vocabulary from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to learn vocabulary to from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to learn vocabulary to from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to learn vocabulary to talk from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to learn vocabulary to talk from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this stor from speaker
+ [DEBUG] Live text updated: And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this stor from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don from speaker
+ [DEBUG] Live text updated: Don from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't from speaker
+ [DEBUG] Live text updated: Don't from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't for from speaker
+ [DEBUG] Live text updated: Don't for from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget from speaker
+ [DEBUG] Live text updated: Don't forget from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to from speaker
+ [DEBUG] Live text updated: Don't forget to from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to sub from speaker
+ [DEBUG] Live text updated: Don't forget to sub from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subs from speaker
+ [DEBUG] Live text updated: Don't forget to subs from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscri from speaker
+ [DEBUG] Live text updated: Don't forget to subscri from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to o from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to o from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our ch from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our ch from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our chann from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our chann from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, l from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, l from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this vide from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this vide from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and tr from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and tr from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and try from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and try from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and try the from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and try the from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and try the qu from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and try the qu from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and try the quiz from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and try the quiz from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and try the quiz on from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and try the quiz on from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and try the quiz on o from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and try the quiz on o from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and try the quiz on our from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and try the quiz on our from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and try the quiz on our web from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and try the quiz on our web from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and try the quiz on our webs from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and try the quiz on our webs from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Don't forget to subscribe to our channel, like this video, and try the quiz on our websit from speaker
+ [DEBUG] Live text updated: Don't forget to subscribe to our channel, like this video, and try the quiz on our websit from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Don't forget to subscribe to our channel, like this video, and try the quiz on our website.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Now from speaker
+ [DEBUG] Live text updated: Now from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Now, from speaker
+ [DEBUG] Live text updated: Now, from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Now, the from speaker
+ [DEBUG] Live text updated: Now, the from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Now, the stor from speaker
+ [DEBUG] Live text updated: Now, the stor from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Now, the story.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A from speaker
+ [DEBUG] Live text updated: A from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new from speaker
+ [DEBUG] Live text updated: A new from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new b from speaker
+ [DEBUG] Live text updated: A new b from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blo from speaker
+ [DEBUG] Live text updated: A new blo from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood from speaker
+ [DEBUG] Live text updated: A new blood from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test from speaker
+ [DEBUG] Live text updated: A new blood test from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can from speaker
+ [DEBUG] Live text updated: A new blood test can from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can ident from speaker
+ [DEBUG] Live text updated: A new blood test can ident from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can identif from speaker
+ [DEBUG] Live text updated: A new blood test can identif from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can identify from speaker
+ [DEBUG] Live text updated: A new blood test can identify from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can identify more from speaker
+ [DEBUG] Live text updated: A new blood test can identify more from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can identify more than from speaker
+ [DEBUG] Live text updated: A new blood test can identify more than from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can identify more than 5 from speaker
+ [DEBUG] Live text updated: A new blood test can identify more than 5 from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can identify more than 50 from speaker
+ [DEBUG] Live text updated: A new blood test can identify more than 50 from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can identify more than 50 typ from speaker
+ [DEBUG] Live text updated: A new blood test can identify more than 50 typ from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can identify more than 50 types from speaker
+ [DEBUG] Live text updated: A new blood test can identify more than 50 types from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can identify more than 50 types of from speaker
+ [DEBUG] Live text updated: A new blood test can identify more than 50 types of from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can identify more than 50 types of canc from speaker
+ [DEBUG] Live text updated: A new blood test can identify more than 50 types of canc from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  A new blood test can identify more than 50 types of cancer. from speaker
+ [DEBUG] Live text updated: A new blood test can identify more than 50 types of cancer. from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  A new blood test from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  can identify more than 50 types of cancer. from speaker
+ [DEBUG] Live text updated: can identify more than 50 types of cancer. from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  can identify more than 50 types of cancer.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not from speaker
+ [DEBUG] Live text updated: Not from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only from speaker
+ [DEBUG] Live text updated: Not only from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that from speaker
+ [DEBUG] Live text updated: Not only that from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, from speaker
+ [DEBUG] Live text updated: Not only that, from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in from speaker
+ [DEBUG] Live text updated: Not only that, in from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in 8 from speaker
+ [DEBUG] Live text updated: Not only that, in 8 from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in 85 from speaker
+ [DEBUG] Live text updated: Not only that, in 85 from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in 85% from speaker
+ [DEBUG] Live text updated: Not only that, in 85% from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in 85% of from speaker
+ [DEBUG] Live text updated: Not only that, in 85% of from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in 85% of cas from speaker
+ [DEBUG] Live text updated: Not only that, in 85% of cas from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in 85% of cases, from speaker
+ [DEBUG] Live text updated: Not only that, in 85% of cases, from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in 85% of cases, it from speaker
+ [DEBUG] Live text updated: Not only that, in 85% of cases, it from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in 85% of cases, it cor from speaker
+ [DEBUG] Live text updated: Not only that, in 85% of cases, it cor from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in 85% of cases, it corre from speaker
+ [DEBUG] Live text updated: Not only that, in 85% of cases, it corre from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in 85% of cases, it correctly from speaker
+ [DEBUG] Live text updated: Not only that, in 85% of cases, it correctly from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Not only that, in 85% of cases, it correctly located from speaker
+ [DEBUG] Live text updated: Not only that, in 85% of cases, it correctly located from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Not only that, from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  in 85% of cases, it correctly located from speaker
+ [DEBUG] Live text updated: in 85% of cases, it correctly located from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  in 85% of cases, it correctly located the from speaker
+ [DEBUG] Live text updated: in 85% of cases, it correctly located the from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  in 85% of cases, it correctly located the s from speaker
+ [DEBUG] Live text updated: in 85% of cases, it correctly located the s from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  in 85% of cases, it correctly located the source from speaker
+ [DEBUG] Live text updated: in 85% of cases, it correctly located the source from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  in 85% of cases, it correctly located the source of from speaker
+ [DEBUG] Live text updated: in 85% of cases, it correctly located the source of from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  in 85% of cases, it correctly located the source of the from speaker
+ [DEBUG] Live text updated: in 85% of cases, it correctly located the source of the from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  in 85% of cases, it correctly located the source of the dise from speaker
+ [DEBUG] Live text updated: in 85% of cases, it correctly located the source of the dise from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  in 85% of cases, it correctly located the source of the diseas from speaker
+ [DEBUG] Live text updated: in 85% of cases, it correctly located the source of the diseas from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  in 85% of cases, it correctly located the source of the disease.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The from speaker
+ [DEBUG] Live text updated: The from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sama from host
+ [DEBUG] Live text updated: Sama from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sama I from host
+ [DEBUG] Live text updated: Sama I from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sama Ibu from host
+ [DEBUG] Live text updated: Sama Ibu from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test from speaker
+ [DEBUG] Live text updated: The test from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works from speaker
+ [DEBUG] Live text updated: The test works from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sama Ibu d from host
+ [DEBUG] Live text updated: Sama Ibu d from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sama Ibu dulu from host
+ [DEBUG] Live text updated: Sama Ibu dulu from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sama Ibu dulu ya, from host
+ [DEBUG] Live text updated: Sama Ibu dulu ya, from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by from speaker
+ [DEBUG] Live text updated: The test works by from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by lo from speaker
+ [DEBUG] Live text updated: The test works by lo from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sama Ibu dulu ya, say from host
+ [DEBUG] Live text updated: Sama Ibu dulu ya, say from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sama Ibu dulu ya, sayang from host
+ [DEBUG] Live text updated: Sama Ibu dulu ya, sayang from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking from speaker
+ [DEBUG] Live text updated: The test works by looking from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Sama Ibu dulu ya, sayang ya from host
+ [DEBUG] Live text updated: Sama Ibu dulu ya, sayang ya from host
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Sama Ibu dulu ya, sayang ya?
+ from host
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from host
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking for from speaker
+ [DEBUG] Live text updated: The test works by looking for from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking for chang from speaker
+ [DEBUG] Live text updated: The test works by looking for chang from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking for changes from speaker
+ [DEBUG] Live text updated: The test works by looking for changes from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking for changes in from speaker
+ [DEBUG] Live text updated: The test works by looking for changes in from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking for changes in the from speaker
+ [DEBUG] Live text updated: The test works by looking for changes in the from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking for changes in the gen from speaker
+ [DEBUG] Live text updated: The test works by looking for changes in the gen from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking for changes in the genet from speaker
+ [DEBUG] Live text updated: The test works by looking for changes in the genet from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking for changes in the genetic from speaker
+ [DEBUG] Live text updated: The test works by looking for changes in the genetic from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking for changes in the genetic c from speaker
+ [DEBUG] Live text updated: The test works by looking for changes in the genetic c from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking for changes in the genetic code of from speaker
+ [DEBUG] Live text updated: The test works by looking for changes in the genetic code of from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  The test works by looking for changes in the genetic code of canc from speaker
+ [DEBUG] Live text updated: The test works by looking for changes in the genetic code of canc from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  The test works by looking for changes in the genetic code of cancers.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? The test works by looking for changes in the genetic code of cancers. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Research from speaker
+ [DEBUG] Live text updated: Research from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers from speaker
+ [DEBUG] Live text updated: Researchers from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at from speaker
+ [DEBUG] Live text updated: Researchers at from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford from speaker
+ [DEBUG] Live text updated: Researchers at Oxford from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University where from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University where from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University where the from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University where the from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University where the tri from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University where the tri from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University where the trial from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University where the trial from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University where the trial took from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University where the trial took from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University where the trial took place from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University where the trial took place from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University where the trial took place say from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University where the trial took place say from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University where the trial took place say res from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University where the trial took place say res from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University where the trial took place say results from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University where the trial took place say results from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University where the trial took place say results have from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University where the trial took place say results have from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Researchers at Oxford University where the trial took place say results have been from speaker
+ [DEBUG] Live text updated: Researchers at Oxford University where the trial took place say results have been from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Researchers at from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? The test works by looking for changes in the genetic code of cancers. Researchers at Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Oxford University where the trial took place say results have been from speaker
+ [DEBUG] Live text updated: Oxford University where the trial took place say results have been from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Oxford University where the trial took place say results have been enc from speaker
+ [DEBUG] Live text updated: Oxford University where the trial took place say results have been enc from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Oxford University where the trial took place say results have been encour from speaker
+ [DEBUG] Live text updated: Oxford University where the trial took place say results have been encour from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Oxford University where the trial took place say results have been encourag from speaker
+ [DEBUG] Live text updated: Oxford University where the trial took place say results have been encourag from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Oxford University where the trial took place say results have been encouraging from speaker
+ [DEBUG] Live text updated: Oxford University where the trial took place say results have been encouraging from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Oxford University where the trial took place say results have been encouraging so from speaker
+ [DEBUG] Live text updated: Oxford University where the trial took place say results have been encouraging so from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Oxford University where the trial took place say results have been encouraging so f from speaker
+ [DEBUG] Live text updated: Oxford University where the trial took place say results have been encouraging so f from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  Oxford University where the trial took place say results have been encouraging so far, from speaker
+ [DEBUG] Live text updated: Oxford University where the trial took place say results have been encouraging so far, from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  Oxford University where the trial from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? The test works by looking for changes in the genetic code of cancers. Researchers at Oxford University where the trial Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  took place say results have been encouraging so far, but from speaker
+ [DEBUG] Live text updated: took place say results have been encouraging so far, but from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  took place say results have been encouraging so far, but there from speaker
+ [DEBUG] Live text updated: took place say results have been encouraging so far, but there from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  took place say results have been encouraging so far, but there's from speaker
+ [DEBUG] Live text updated: took place say results have been encouraging so far, but there's from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  took place say results have been encouraging so far, but there's more from speaker
+ [DEBUG] Live text updated: took place say results have been encouraging so far, but there's more from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  took place say results have been encouraging so far, but there's more to from speaker
+ [DEBUG] Live text updated: took place say results have been encouraging so far, but there's more to from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  took place say results have been encouraging so far, but there's more to do from speaker
+ [DEBUG] Live text updated: took place say results have been encouraging so far, but there's more to do from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  took place say results have been encouraging so far, but there's more to do.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? The test works by looking for changes in the genetic code of cancers. Researchers at Oxford University where the trial took place say results have been encouraging so far, but there's more to do. Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You from speaker
+ [DEBUG] Live text updated: You from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've from speaker
+ [DEBUG] Live text updated: You've from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been from speaker
+ [DEBUG] Live text updated: You've been from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been look from speaker
+ [DEBUG] Live text updated: You've been look from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at from speaker
+ [DEBUG] Live text updated: You've been looking at from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the from speaker
+ [DEBUG] Live text updated: You've been looking at the from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the head from speaker
+ [DEBUG] Live text updated: You've been looking at the head from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the headlin from speaker
+ [DEBUG] Live text updated: You've been looking at the headlin from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the headlines, from speaker
+ [DEBUG] Live text updated: You've been looking at the headlines, from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the headlines, Beth from speaker
+ [DEBUG] Live text updated: You've been looking at the headlines, Beth from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the headlines, Beth. from speaker
+ [DEBUG] Live text updated: You've been looking at the headlines, Beth. from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the headlines, Beth. Wh from speaker
+ [DEBUG] Live text updated: You've been looking at the headlines, Beth. Wh from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the headlines, Beth. What's from speaker
+ [DEBUG] Live text updated: You've been looking at the headlines, Beth. What's from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the headlines, Beth. What's the from speaker
+ [DEBUG] Live text updated: You've been looking at the headlines, Beth. What's the from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the headlines, Beth. What's the voc from speaker
+ [DEBUG] Live text updated: You've been looking at the headlines, Beth. What's the voc from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the headlines, Beth. What's the vocab from speaker
+ [DEBUG] Live text updated: You've been looking at the headlines, Beth. What's the vocab from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the headlines, Beth. What's the vocabular from speaker
+ [DEBUG] Live text updated: You've been looking at the headlines, Beth. What's the vocabular from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  You've been looking at the headlines, Beth. What's the vocabulary from speaker
+ [DEBUG] Live text updated: You've been looking at the headlines, Beth. What's the vocabulary from speaker
+ [WebSocket] Object
+ [DEBUG] Final transcription:  You've been looking at the headlines, Beth. What's the vocabulary?
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? The test works by looking for changes in the genetic code of cancers. Researchers at Oxford University where the trial took place say results have been encouraging so far, but there's more to do. You've been looking at the headlines, Beth. What's the vocabulary? Object
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  We from speaker
+ [DEBUG] Live text updated: We from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  We have from speaker
+ [DEBUG] Live text updated: We have from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  We have show from speaker
+ [DEBUG] Live text updated: We have show from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  We have show prom from speaker
+ [DEBUG] Live text updated: We have show prom from speaker
+ [WebSocket] Object
+ [DEBUG] Non-final transcription:  We have show promis from speaker
+ [DEBUG] Live text updated: We have show promis from speaker
+ [WebSocket] {type: 'transcription', text: ' We have show promise,', is_final: false, timestamp: '2026-02-13T09:09:42.699Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  We have show promise, from speaker
+ [DEBUG] Live text updated: We have show promise, from speaker
+ [WebSocket] {type: 'transcription', text: ' We have show promise, mi', is_final: false, timestamp: '2026-02-13T09:09:42.937Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  We have show promise, mi from speaker
+ [DEBUG] Live text updated: We have show promise, mi from speaker
+ [WebSocket] {type: 'transcription', text: ' We have show promise, mirac', is_final: false, timestamp: '2026-02-13T09:09:43.066Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  We have show promise, mirac from speaker
+ [DEBUG] Live text updated: We have show promise, mirac from speaker
+ [WebSocket] {type: 'transcription', text: ' We have show promise, miracle,', is_final: false, timestamp: '2026-02-13T09:09:43.353Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  We have show promise, miracle, from speaker
+ [DEBUG] Live text updated: We have show promise, miracle, from speaker
+ [WebSocket] {type: 'transcription', text: ' We have show promise, miracle, and', is_final: false, timestamp: '2026-02-13T09:09:43.986Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  We have show promise, miracle, and from speaker
+ [DEBUG] Live text updated: We have show promise, miracle, and from speaker
+ [WebSocket] {type: 'transcription', text: ' We have show promise, miracle, and world', is_final: false, timestamp: '2026-02-13T09:09:44.903Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  We have show promise, miracle, and world from speaker
+ [DEBUG] Live text updated: We have show promise, miracle, and world from speaker
+ [WebSocket] {type: 'transcription', text: ' We have show promise, miracle, and world first', is_final: false, timestamp: '2026-02-13T09:09:45.255Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  We have show promise, miracle, and world first from speaker
+ [DEBUG] Live text updated: We have show promise, miracle, and world first from speaker
+ [WebSocket] {type: 'transcription', text: ' We have show promise, miracle, and world first.\n', is_final: true, timestamp: '2026-02-13T09:09:45.567Z', input_source: 'speaker'}
+ [DEBUG] Final transcription:  We have show promise, miracle, and world first.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? The test works by looking for changes in the genetic code of cancers. Researchers at Oxford University where the trial took place say results have been encouraging so far, but there's more to do. You've been looking at the headlines, Beth. What's the vocabulary? We have show promise, miracle, and world first. {correctionEnabled: false}
+ [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T09:09:45.567Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] {type: 'transcription', text: ' This', is_final: false, timestamp: '2026-02-13T09:09:46.056Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This from speaker
+ [DEBUG] Live text updated: This from speaker
+ [WebSocket] {type: 'transcription', text: ' This is', is_final: false, timestamp: '2026-02-13T09:09:46.144Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is from speaker
+ [DEBUG] Live text updated: This is from speaker
+ [WebSocket] {type: 'transcription', text: ' This is News', is_final: false, timestamp: '2026-02-13T09:09:46.529Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is News from speaker
+ [DEBUG] Live text updated: This is News from speaker
+ [WebSocket] {type: 'transcription', text: ' This is News Rev', is_final: false, timestamp: '2026-02-13T09:09:46.742Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is News Rev from speaker
+ [DEBUG] Live text updated: This is News Rev from speaker
+ [WebSocket] {type: 'transcription', text: ' This is News Review', is_final: false, timestamp: '2026-02-13T09:09:46.885Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is News Review from speaker
+ [DEBUG] Live text updated: This is News Review from speaker
+ [WebSocket] {type: 'transcription', text: ' This is News Review from', is_final: false, timestamp: '2026-02-13T09:09:47.033Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is News Review from from speaker
+ [DEBUG] Live text updated: This is News Review from from speaker
+ [WebSocket] {type: 'transcription', text: ' This is News Review from B', is_final: false, timestamp: '2026-02-13T09:09:47.518Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is News Review from B from speaker
+ [DEBUG] Live text updated: This is News Review from B from speaker
+ [WebSocket] {type: 'transcription', text: ' This is News Review from BB', is_final: false, timestamp: '2026-02-13T09:09:47.642Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is News Review from BB from speaker
+ [DEBUG] Live text updated: This is News Review from BB from speaker
+ [WebSocket] {type: 'transcription', text: ' This is News Review from BBC', is_final: false, timestamp: '2026-02-13T09:09:47.811Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is News Review from BBC from speaker
+ [DEBUG] Live text updated: This is News Review from BBC from speaker
+ [WebSocket] {type: 'transcription', text: ' This is News Review from BBC Le', is_final: false, timestamp: '2026-02-13T09:09:48.057Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is News Review from BBC Le from speaker
+ [DEBUG] Live text updated: This is News Review from BBC Le from speaker
+ [WebSocket] {type: 'transcription', text: ' This is News Review from BBC Learning', is_final: false, timestamp: '2026-02-13T09:09:48.235Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is News Review from BBC Learning from speaker
+ [DEBUG] Live text updated: This is News Review from BBC Learning from speaker
+ [WebSocket] {type: 'transcription', text: ' This is News Review from BBC Learning English', is_final: false, timestamp: '2026-02-13T09:09:48.497Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is News Review from BBC Learning English from speaker
+ [DEBUG] Live text updated: This is News Review from BBC Learning English from speaker
+ [WebSocket] {type: 'transcription', text: ' This is News Review from BBC Learning English.\n', is_final: true, timestamp: '2026-02-13T09:09:48.782Z', input_source: 'speaker'}
+ [DEBUG] Final transcription:  This is News Review from BBC Learning English.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? The test works by looking for changes in the genetic code of cancers. Researchers at Oxford University where the trial took place say results have been encouraging so far, but there's more to do. You've been looking at the headlines, Beth. What's the vocabulary? We have show promise, miracle, and world first. This is News Review from BBC Learning English. {correctionEnabled: false}
+ [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T09:09:48.782Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] {type: 'transcription', text: ' Let', is_final: false, timestamp: '2026-02-13T09:09:58.246Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Let from speaker
+ [DEBUG] Live text updated: Let from speaker
+ [WebSocket] {type: 'transcription', text: " Let's", is_final: false, timestamp: '2026-02-13T09:09:58.380Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Let's from speaker
+ [DEBUG] Live text updated: Let's from speaker
+ [WebSocket] {type: 'transcription', text: " Let's lo", is_final: false, timestamp: '2026-02-13T09:09:58.493Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Let's lo from speaker
+ [DEBUG] Live text updated: Let's lo from speaker
+ [WebSocket] {type: 'transcription', text: " Let's look", is_final: false, timestamp: '2026-02-13T09:09:58.629Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Let's look from speaker
+ [DEBUG] Live text updated: Let's look from speaker
+ [WebSocket] {type: 'transcription', text: " Let's look at", is_final: false, timestamp: '2026-02-13T09:09:58.890Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Let's look at from speaker
+ [DEBUG] Live text updated: Let's look at from speaker
+ [WebSocket] {type: 'transcription', text: " Let's look at o", is_final: false, timestamp: '2026-02-13T09:09:59.162Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Let's look at o from speaker
+ [DEBUG] Live text updated: Let's look at o from speaker
+ [WebSocket] {type: 'transcription', text: " Let's look at our", is_final: false, timestamp: '2026-02-13T09:09:59.208Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Let's look at our from speaker
+ [DEBUG] Live text updated: Let's look at our from speaker
+ [WebSocket] {type: 'transcription', text: " Let's look at our first", is_final: false, timestamp: '2026-02-13T09:09:59.313Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Let's look at our first from speaker
+ [DEBUG] Live text updated: Let's look at our first from speaker
+ [WebSocket] {type: 'transcription', text: " Let's look at our first head", is_final: false, timestamp: '2026-02-13T09:09:59.692Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Let's look at our first head from speaker
+ [DEBUG] Live text updated: Let's look at our first head from speaker
+ [WebSocket] {type: 'transcription', text: " Let's look at our first headlin", is_final: false, timestamp: '2026-02-13T09:09:59.968Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Let's look at our first headlin from speaker
+ [DEBUG] Live text updated: Let's look at our first headlin from speaker
+ [WebSocket] {type: 'transcription', text: " Let's look at our first headline.\n", is_final: true, timestamp: '2026-02-13T09:10:00.172Z', input_source: 'speaker'}
+ [DEBUG] Final transcription:  Let's look at our first headline.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? The test works by looking for changes in the genetic code of cancers. Researchers at Oxford University where the trial took place say results have been encouraging so far, but there's more to do. You've been looking at the headlines, Beth. What's the vocabulary? We have show promise, miracle, and world first. This is News Review from BBC Learning English. Let's look at our first headline. {correctionEnabled: false}
+ [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T09:10:00.172Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] {type: 'transcription', text: ' This', is_final: false, timestamp: '2026-02-13T09:10:00.551Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This from speaker
+ [DEBUG] Live text updated: This from speaker
+ [WebSocket] {type: 'transcription', text: ' This is', is_final: false, timestamp: '2026-02-13T09:10:00.704Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is from speaker
+ [DEBUG] Live text updated: This is from speaker
+ [WebSocket] {type: 'transcription', text: ' This is from', is_final: false, timestamp: '2026-02-13T09:10:00.984Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is from from speaker
+ [DEBUG] Live text updated: This is from from speaker
+ [WebSocket] {type: 'transcription', text: ' This is from B', is_final: false, timestamp: '2026-02-13T09:10:01.242Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is from B from speaker
+ [DEBUG] Live text updated: This is from B from speaker
+ [WebSocket] {type: 'transcription', text: ' This is from BB', is_final: false, timestamp: '2026-02-13T09:10:01.562Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is from BB from speaker
+ [DEBUG] Live text updated: This is from BB from speaker
+ [WebSocket] {type: 'transcription', text: ' This is from BBC', is_final: false, timestamp: '2026-02-13T09:10:01.779Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is from BBC from speaker
+ [DEBUG] Live text updated: This is from BBC from speaker
+ [WebSocket] {type: 'transcription', text: ' This is from BBC New', is_final: false, timestamp: '2026-02-13T09:10:02.049Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  This is from BBC New from speaker
+ [DEBUG] Live text updated: This is from BBC New from speaker
+ [WebSocket] {type: 'transcription', text: ' This is from BBC News.\n', is_final: true, timestamp: '2026-02-13T09:10:02.283Z', input_source: 'speaker'}
+ [DEBUG] Final transcription:  This is from BBC News.
+ from speaker
+ [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? The test works by looking for changes in the genetic code of cancers. Researchers at Oxford University where the trial took place say results have been encouraging so far, but there's more to do. You've been looking at the headlines, Beth. What's the vocabulary? We have show promise, miracle, and world first. This is News Review from BBC Learning English. Let's look at our first headline. This is from BBC News. {correctionEnabled: false}
+ [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T09:10:02.286Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  from speaker
+ [WebSocket] {type: 'transcription', text: ' M', is_final: false, timestamp: '2026-02-13T09:10:03.798Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  M from speaker
+ [DEBUG] Live text updated: M from speaker
+ [WebSocket] {type: 'transcription', text: ' Mult', is_final: false, timestamp: '2026-02-13T09:10:04.002Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Mult from speaker
+ [DEBUG] Live text updated: Mult from speaker
+ [WebSocket] {type: 'transcription', text: ' Multican', is_final: false, timestamp: '2026-02-13T09:10:04.184Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Multican from speaker
+ [DEBUG] Live text updated: Multican from speaker
+ [WebSocket] {type: 'transcription', text: ' Multicancer', is_final: false, timestamp: '2026-02-13T09:10:04.427Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Multicancer from speaker
+ [DEBUG] Live text updated: Multicancer from speaker
+ [WebSocket] {type: 'transcription', text: ' Multicancer b', is_final: false, timestamp: '2026-02-13T09:10:04.550Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Multicancer b from speaker
+ [DEBUG] Live text updated: Multicancer b from speaker
+ [WebSocket] {type: 'transcription', text: ' Multicancer blood', is_final: false, timestamp: '2026-02-13T09:10:04.708Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Multicancer blood from speaker
+ [DEBUG] Live text updated: Multicancer blood from speaker
+ [WebSocket] {type: 'transcription', text: ' Multicancer blood test', is_final: false, timestamp: '2026-02-13T09:10:04.985Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Multicancer blood test from speaker
+ [DEBUG] Live text updated: Multicancer blood test from speaker
+ [WebSocket] {type: 'transcription', text: ' Multicancer blood test sh', is_final: false, timestamp: '2026-02-13T09:10:05.375Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Multicancer blood test sh from speaker
+ [DEBUG] Live text updated: Multicancer blood test sh from speaker
+ [WebSocket] {type: 'transcription', text: ' Multicancer blood test shows', is_final: false, timestamp: '2026-02-13T09:10:05.511Z', input_source: 'speaker'}
+ [DEBUG] Non-final transcription:  Multicancer blood test shows from speaker
+ [DEBUG] Live text updated: Multicancer blood test shows from speaker
+ [WebSocket] {type: 'transcription', text: ' Multicancer blood test shows real', is_final: false, timestamp: '2026-02-13T09:10:05.761Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  Multicancer blood test shows real from speaker
+processor.js:307 [DEBUG] Live text updated: Multicancer blood test shows real from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' Multicancer blood test shows real prom', is_final: false, timestamp: '2026-02-13T09:10:06.124Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  Multicancer blood test shows real prom from speaker
+processor.js:307 [DEBUG] Live text updated: Multicancer blood test shows real prom from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' Multicancer blood test shows real promise', is_final: false, timestamp: '2026-02-13T09:10:06.364Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  Multicancer blood test shows real promise from speaker
+processor.js:307 [DEBUG] Live text updated: Multicancer blood test shows real promise from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' Multicancer blood test shows real promise in', is_final: false, timestamp: '2026-02-13T09:10:06.554Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  Multicancer blood test shows real promise in from speaker
+processor.js:307 [DEBUG] Live text updated: Multicancer blood test shows real promise in from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' Multicancer blood test shows real promise in N', is_final: false, timestamp: '2026-02-13T09:10:06.868Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  Multicancer blood test shows real promise in N from speaker
+processor.js:307 [DEBUG] Live text updated: Multicancer blood test shows real promise in N from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' Multicancer blood test shows real promise in NH', is_final: false, timestamp: '2026-02-13T09:10:07.122Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  Multicancer blood test shows real promise in NH from speaker
+processor.js:307 [DEBUG] Live text updated: Multicancer blood test shows real promise in NH from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' Multicancer blood test shows real promise in NHS', is_final: false, timestamp: '2026-02-13T09:10:07.264Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  Multicancer blood test shows real promise in NHS from speaker
+processor.js:307 [DEBUG] Live text updated: Multicancer blood test shows real promise in NHS from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' Multicancer blood test shows real promise in NHS stud', is_final: false, timestamp: '2026-02-13T09:10:07.512Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  Multicancer blood test shows real promise in NHS stud from speaker
+processor.js:307 [DEBUG] Live text updated: Multicancer blood test shows real promise in NHS stud from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' Multicancer blood test shows real promise in NHS study.\n', is_final: true, timestamp: '2026-02-13T09:10:07.755Z', input_source: 'speaker'}
+processor.js:235 [DEBUG] Final transcription:  Multicancer blood test shows real promise in NHS study.
+ from speaker
+processor.js:277 [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? The test works by looking for changes in the genetic code of cancers. Researchers at Oxford University where the trial took place say results have been encouraging so far, but there's more to do. You've been looking at the headlines, Beth. What's the vocabulary? We have show promise, miracle, and world first. This is News Review from BBC Learning English. Let's look at our first headline. This is from BBC News. Multicancer blood test shows real promise in NHS study. {correctionEnabled: false}
+processor.js:232 [WebSocket] {type: 'transcription', text: '', is_final: false, timestamp: '2026-02-13T09:10:07.755Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So', is_final: false, timestamp: '2026-02-13T09:10:08.920Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So from speaker
+processor.js:307 [DEBUG] Live text updated: So from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the', is_final: false, timestamp: '2026-02-13T09:10:09.164Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the from speaker
+processor.js:307 [DEBUG] Live text updated: So the from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the head', is_final: false, timestamp: '2026-02-13T09:10:09.314Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the head from speaker
+processor.js:307 [DEBUG] Live text updated: So the head from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline', is_final: false, timestamp: '2026-02-13T09:10:09.565Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says', is_final: false, timestamp: '2026-02-13T09:10:09.898Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says that', is_final: false, timestamp: '2026-02-13T09:10:10.156Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says that this', is_final: false, timestamp: '2026-02-13T09:10:10.375Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says that this blo', is_final: false, timestamp: '2026-02-13T09:10:10.694Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blo from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blo from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says that this blood', is_final: false, timestamp: '2026-02-13T09:10:10.729Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blood from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blood from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says that this blood test', is_final: false, timestamp: '2026-02-13T09:10:10.978Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blood test from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blood test from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says that this blood test sh', is_final: false, timestamp: '2026-02-13T09:10:11.476Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blood test sh from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blood test sh from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says that this blood test shows', is_final: false, timestamp: '2026-02-13T09:10:11.709Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blood test shows from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blood test shows from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says that this blood test shows prom', is_final: false, timestamp: '2026-02-13T09:10:12.316Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blood test shows prom from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blood test shows prom from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says that this blood test shows promis', is_final: false, timestamp: '2026-02-13T09:10:12.588Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blood test shows promis from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blood test shows promis from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says that this blood test shows promise.', is_final: false, timestamp: '2026-02-13T09:10:12.758Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blood test shows promise. from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blood test shows promise. from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline says that this blood test shows promise. And that', is_final: false, timestamp: '2026-02-13T09:10:13.260Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blood test shows promise. And that from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blood test shows promise. And that from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: " So the headline says that this blood test shows promise. And that's", is_final: false, timestamp: '2026-02-13T09:10:13.399Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blood test shows promise. And that's from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blood test shows promise. And that's from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: " So the headline says that this blood test shows promise. And that's the", is_final: false, timestamp: '2026-02-13T09:10:13.518Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blood test shows promise. And that's the from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blood test shows promise. And that's the from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: " So the headline says that this blood test shows promise. And that's the ex", is_final: false, timestamp: '2026-02-13T09:10:13.736Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  So the headline says that this blood test shows promise. And that's the ex from speaker
+processor.js:307 [DEBUG] Live text updated: So the headline says that this blood test shows promise. And that's the ex from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: ' So the headline', is_final: true, timestamp: '2026-02-13T09:10:13.876Z', input_source: 'speaker'}
+processor.js:235 [DEBUG] Final transcription:  So the headline from speaker
+processor.js:277 [DEBUG] Finalized text accumulated: No s Emang bisa ya? Kedengaran enggak? Gue coba tuh. Marta. Sepertinya enggak bisa deh. Apakah dari speaker atau dari host? Make it a habit. A 10-minute AI routine every morning. You'll be unrecognizable by Christmas. You in? So this is how I became the most dangerous person in the world. Iya. Could a simple blood test tell you if you've got cancer? This is News Review from BBC Learning English. I'm Neil. And I'm Beth. Make sure you watch to the end to learn vocabulary to talk about this story. Don't forget to subscribe to our channel, like this video, and try the quiz on our website. Now, the story. A new blood test can identify more than 50 types of cancer. Not only that, in 85% of cases, it correctly located the source of the disease. Sama Ibu dulu ya, sayang ya? The test works by looking for changes in the genetic code of cancers. Researchers at Oxford University where the trial took place say results have been encouraging so far, but there's more to do. You've been looking at the headlines, Beth. What's the vocabulary? We have show promise, miracle, and world first. This is News Review from BBC Learning English. Let's look at our first headline. This is from BBC News. Multicancer blood test shows real promise in NHS study. So the headline {correctionEnabled: false}
+processor.js:232 [WebSocket] {type: 'transcription', text: " says that this blood test shows promise. And that's the express", is_final: false, timestamp: '2026-02-13T09:10:13.877Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  says that this blood test shows promise. And that's the express from speaker
+processor.js:307 [DEBUG] Live text updated: says that this blood test shows promise. And that's the express from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: " says that this blood test shows promise. And that's the expression", is_final: false, timestamp: '2026-02-13T09:10:14.111Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  says that this blood test shows promise. And that's the expression from speaker
+processor.js:307 [DEBUG] Live text updated: says that this blood test shows promise. And that's the expression from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: " says that this blood test shows promise. And that's the expression we", is_final: false, timestamp: '2026-02-13T09:10:14.399Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  says that this blood test shows promise. And that's the expression we from speaker
+processor.js:307 [DEBUG] Live text updated: says that this blood test shows promise. And that's the expression we from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: " says that this blood test shows promise. And that's the expression we're", is_final: false, timestamp: '2026-02-13T09:10:14.577Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  says that this blood test shows promise. And that's the expression we're from speaker
+processor.js:307 [DEBUG] Live text updated: says that this blood test shows promise. And that's the expression we're from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: " says that this blood test shows promise. And that's the expression we're lo", is_final: false, timestamp: '2026-02-13T09:10:14.622Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  says that this blood test shows promise. And that's the expression we're lo from speaker
+processor.js:307 [DEBUG] Live text updated: says that this blood test shows promise. And that's the expression we're lo from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: " says that this blood test shows promise. And that's the expression we're looking", is_final: false, timestamp: '2026-02-13T09:10:14.692Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  says that this blood test shows promise. And that's the expression we're looking from speaker
+processor.js:307 [DEBUG] Live text updated: says that this blood test shows promise. And that's the expression we're looking from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: " says that this blood test shows promise. And that's the expression we're looking at", is_final: false, timestamp: '2026-02-13T09:10:14.797Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  says that this blood test shows promise. And that's the expression we're looking at from speaker
+processor.js:307 [DEBUG] Live text updated: says that this blood test shows promise. And that's the expression we're looking at from speaker
+processor.js:232 [WebSocket] {type: 'transcription', text: " says that this blood test shows promise. And that's the expression we're looking at. It", is_final: false, timestamp: '2026-02-13T09:10:15.221Z', input_source: 'speaker'}
+processor.js:238 [DEBUG] Non-final transcription:  says that this blood test shows promise. And that's the expression we're looking at. It from speaker
+processor.js:307 [DEBUG] Live text updated: says that this blood test shows promise. And that's the expression we're looking at. It from speaker

@@ -41,15 +41,23 @@ const StatusIndicator = ({ connected }) => {
     `;
 };
 
-const LiveText = ({ finalizedText, liveText, corrections, correctionEnabled }) => {
+const LiveTextDisplayer = ({ finalizedSentences, liveTextHost, liveTextSpeaker, corrections, correctionEnabled }) => {
     const liveTextRef = useRef(null);
-    const hasContent = finalizedText || liveText;
+    const hasContent = finalizedSentences.length > 0 || liveTextHost || liveTextSpeaker;
     
     useEffect(() => {
         if (liveTextRef.current) {
             liveTextRef.current.scrollTop = liveTextRef.current.scrollHeight;
         }
-    }, [finalizedText, liveText]);
+    }, [finalizedSentences, liveTextHost, liveTextSpeaker]);
+    
+    const getSourceBadge = (source) => {
+        if (!source) return null;
+        const isHost = source.toLowerCase() === 'host';
+        const badgeClass = isHost ? 'source-badge-host' : 'source-badge-speakers';
+        const emoji = isHost ? '🎤' : '🔊';
+        return html`<span class="${badgeClass}">${emoji} ${source}</span>`;
+    };
     
     if (!hasContent) {
         return html`
@@ -59,39 +67,48 @@ const LiveText = ({ finalizedText, liveText, corrections, correctionEnabled }) =
         `;
     }
 
-    const sentences = splitIntoSentences(finalizedText);
+    // Show only the last 10 finalized sentences to avoid clutter
+    const recentSentences = finalizedSentences.slice(-10);
 
     return html`
         <div class="live-text active" ref=${liveTextRef}>
-            ${sentences.map((sentence, index) => {
-                const isLatest = index === sentences.length - 1;
+            ${recentSentences.map((sentenceObj, index) => {
+                const isLatest = index === recentSentences.length - 1;
                 const style = isLatest 
                      ? { opacity: '1', fontWeight: '600', fontSize: '24px' }
                     : { opacity: '0.7', fontWeight: 'normal', fontSize: '18px' };
-                const correction = corrections[sentence];
+                const correction = corrections[sentenceObj.text];
                 
                 return html`
-                    <div class="live-text-line" style=${style}>
+                    <div class="live-text-line" style=${style} key=${sentenceObj.id}>
+                        ${getSourceBadge(sentenceObj.source)}
                         ${correctionEnabled && correction ? html`
                             ${correction.status === 'good' ? html`
                                 <span class="correction-badge good">✓</span>
-                                <span class="finalized-text">${sentence}</span>
+                                <span class="finalized-text">${sentenceObj.text}</span>
                             ` : correction.status === 'bad' ? html`
                                 <span class="correction-badge bad">✗</span>
-                                <span class="finalized-text original">${sentence}</span>
+                                <span class="finalized-text original">${sentenceObj.text}</span>
                                 <span class="correction-suggestion">→ ${correction.corrected}</span>
                             ` : html`
-                                <span class="finalized-text">${sentence}</span>
+                                <span class="finalized-text">${sentenceObj.text}</span>
                             `}
                         ` : html`
-                            <span class="finalized-text">${sentence}</span>
+                            <span class="finalized-text">${sentenceObj.text}</span>
                         `}
                     </div>
                 `;
             })}
-            ${liveText && html`
+            ${liveTextHost && html`
                 <div class="live-text-line" style=${{ opacity: '1', fontStyle: 'normal' }}>
-                    <span class="live-text-updating">${liveText}</span>
+                    ${getSourceBadge('host')}
+                    <span class="live-text-updating">${liveTextHost}</span>
+                </div>
+            `}
+            ${liveTextSpeaker && html`
+                <div class="live-text-line" style=${{ opacity: '1', fontStyle: 'normal' }}>
+                    ${getSourceBadge('speaker')}
+                    <span class="live-text-updating">${liveTextSpeaker}</span>
                 </div>
             `}
         </div>
@@ -191,8 +208,9 @@ const App = () => {
     const [connected, setConnected] = useState(false);
     const [transcriptions, setTranscriptions] = useState([]);
     const [currentSentence, setCurrentSentence] = useState(null);
-    const [finalizedText, setFinalizedText] = useState('');
-    const [liveText, setLiveText] = useState('');
+    const [finalizedSentences, setFinalizedSentences] = useState([]);
+    const [liveTextHost, setLiveTextHost] = useState('');
+    const [liveTextSpeaker, setLiveTextSpeaker] = useState('');
     const [finalizedTranslation, setFinalizedTranslation] = useState('');
     const [translationEnabled, setTranslationEnabled] = useState(true);
     const [correctionEnabled, setCorrectionEnabled] = useState(false);
@@ -219,12 +237,13 @@ const App = () => {
 
             if (data.type === 'transcription') {
                 console.log('[WebSocket]', data);
+                const source = data.input_source || 'Unknown';
                 if (data.is_final) {
-                    console.log('[DEBUG] Final transcription:', data.text);
-                    handleFinalTranscription(data.text, data.timestamp);
+                    console.log('[DEBUG] Final transcription:', data.text, 'from', source);
+                    handleFinalTranscription(data.text, data.timestamp, source);
                 } else {
-                    console.log('[DEBUG] Non-final transcription:', data.text);
-                    handleLiveTranscription(data.text);
+                    console.log('[DEBUG] Non-final transcription:', data.text, 'from', source);
+                    handleLiveTranscription(data.text, source);
                 }
             }
             
@@ -252,44 +271,78 @@ const App = () => {
         };
     }, []);
 
-    const handleFinalTranscription = (text, timestamp) => {
+    const handleFinalTranscription = (text, timestamp, source) => {
         if (!text || text.trim().length === 0) return;
         
         const trimmedText = text.trim();
+        const isCorrectionEnabled = correctionEnabledRef.current;
+        const currentCorrections = correctionsRef.current;
         
-        setFinalizedText(prev => {
-            const newFinalized = prev ? prev + ' ' + trimmedText : trimmedText;
-            const isCorrectionEnabled = correctionEnabledRef.current;
-            const currentCorrections = correctionsRef.current;
-            console.log('[DEBUG] Finalized text accumulated:', newFinalized, {correctionEnabled: isCorrectionEnabled});
-            
-            if (isCorrectionEnabled) {
-                console.log('[DEBUG] Correction enabled, processing sentences...');
-                const sentences = splitIntoSentences(newFinalized);
-                sentences.forEach(sentence => {
-                    if (sentence && !currentCorrections[sentence]) {
-                        requestCorrection(sentence);
-                    }
-                });
-            }
-            
-            return newFinalized;
-        });
+        // Split the finalized text into actual sentences
+        const sentences = splitIntoSentences(trimmedText);
         
-        setLiveText('');
+        if (sentences.length === 0) {
+            // If no sentences found, store as-is
+            setFinalizedSentences(prev => {
+                const newSentence = {
+                    text: trimmedText,
+                    source: source,
+                    timestamp: timestamp || new Date().toISOString(),
+                    id: Date.now() + Math.random()
+                };
+                return [...prev, newSentence];
+            });
+        } else {
+            // Store each sentence separately with the same source and timestamp
+            setFinalizedSentences(prev => {
+                const newSentences = sentences.map((sentence, index) => ({
+                    text: sentence,
+                    source: source,
+                    timestamp: timestamp || new Date().toISOString(),
+                    id: Date.now() + Math.random() + index
+                }));
+                
+                console.log('[DEBUG] Finalized sentences added:', newSentences);
+                
+                // Request corrections for each sentence if enabled
+                if (isCorrectionEnabled) {
+                    newSentences.forEach(sentenceObj => {
+                        if (!currentCorrections[sentenceObj.text]) {
+                            requestCorrection(sentenceObj.text);
+                        }
+                    });
+                }
+                
+                return [...prev, ...newSentences];
+            });
+        }
+        
+        if (source.toLowerCase() === 'host') {
+            setLiveTextHost('');
+        } else {
+            setLiveTextSpeaker('');
+        }
         
         addTranscription(trimmedText, timestamp);
     };
     
-    const handleLiveTranscription = (text) => {
+    const handleLiveTranscription = (text, source) => {
         if (!text || text.trim().length === 0) {
-            setLiveText('');
+            if (source.toLowerCase() === 'host') {
+                setLiveTextHost('');
+            } else {
+                setLiveTextSpeaker('');
+            }
             return;
         }
         
         const trimmedText = text.trim();
-        setLiveText(trimmedText);
-        console.log('[DEBUG] Live text updated:', trimmedText);
+        if (source.toLowerCase() === 'host') {
+            setLiveTextHost(trimmedText);
+        } else {
+            setLiveTextSpeaker(trimmedText);
+        }
+        console.log('[DEBUG] Live text updated:', trimmedText, 'from', source);
     };
 
     const addTranscription = (text, timestamp) => {
@@ -395,9 +448,10 @@ const App = () => {
                 <div class="split-view">
                     <div class="card live-view">
                         <h2>📝 Live Transcription</h2>
-                        <${LiveText} 
-                            finalizedText=${finalizedText}
-                            liveText=${liveText}
+                        <${LiveTextDisplayer} 
+                            finalizedSentences=${finalizedSentences}
+                            liveTextHost=${liveTextHost}
+                            liveTextSpeaker=${liveTextSpeaker}
                             corrections=${corrections}
                             correctionEnabled=${correctionEnabled}
                         />
