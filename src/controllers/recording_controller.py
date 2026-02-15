@@ -35,21 +35,39 @@ class RecordingController(QObject):
         """Check if currently recording."""
         return self._recording
     
-    def start_recording(self, host_device_id: int, samplerate: float, channels: int, speaker_device_id: int = None):
+    def start_recording(self, host_device_id: int, host_device_info: dict, speaker_device_id: int = None, speaker_device_info: dict = None):
         """Start recording audio to file(s)."""
         if self._recording:
             self.error_occurred.emit("Already recording")
             return False
         
+        # Clean up any existing recorders first
+        if self._host_recorder is not None:
+            self._host_recorder.stop()
+            self._host_recorder.wait(1000)
+            self._host_recorder = None
+        
+        if self._speaker_recorder is not None:
+            self._speaker_recorder.stop()
+            self._speaker_recorder.wait(1000)
+            self._speaker_recorder = None
+        
         try:
             os.makedirs(self._base_dir, exist_ok=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            # Standardize on 48000 Hz for better compatibility
+            samplerate = 48000
+            
+            # Get optimal channels for host device
+            host_channels = min(host_device_info.get("max_input_channels", 1), 2)
+            host_channels = max(1, host_channels)
             
             # Create host recorder
             host_filename = f"recording_host_{timestamp}.wav"
             host_filepath = os.path.join(self._base_dir, host_filename)
             
-            self._host_recorder = RecorderWorker(host_device_id, samplerate, channels, host_filepath)
+            self._host_recorder = RecorderWorker(host_device_id, samplerate, host_channels, host_filepath)
             self._host_recorder.status.connect(lambda msg: self.status_changed.emit(f"[HOST] {msg}"))
             self._host_recorder.error.connect(lambda msg: self._on_error(msg, "host"))
             self._host_recorder.saved.connect(lambda path: self._on_saved(path, "host"))
@@ -58,11 +76,15 @@ class RecordingController(QObject):
             self._host_recorder.start()
             
             # Create speaker recorder if device is provided
-            if speaker_device_id is not None:
+            if speaker_device_id is not None and speaker_device_info is not None:
+                # Get optimal channels for speaker device (may differ from host)
+                speaker_channels = min(speaker_device_info.get("max_input_channels", 1), 2)
+                speaker_channels = max(1, speaker_channels)
+                
                 speaker_filename = f"recording_speaker_{timestamp}.wav"
                 speaker_filepath = os.path.join(self._base_dir, speaker_filename)
                 
-                self._speaker_recorder = RecorderWorker(speaker_device_id, samplerate, channels, speaker_filepath)
+                self._speaker_recorder = RecorderWorker(speaker_device_id, samplerate, speaker_channels, speaker_filepath)
                 self._speaker_recorder.status.connect(lambda msg: self.status_changed.emit(f"[SPEAKER] {msg}"))
                 self._speaker_recorder.error.connect(lambda msg: self._on_error(msg, "speaker"))
                 self._speaker_recorder.saved.connect(lambda path: self._on_saved(path, "speaker"))

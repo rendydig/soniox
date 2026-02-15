@@ -42,6 +42,17 @@ class TranscriptionController(QObject):
             self.error_occurred.emit("Already transcribing")
             return False
         
+        # Clean up any existing workers first
+        if self._host_worker is not None:
+            self._host_worker.stop()
+            self._host_worker.wait(1000)
+            self._host_worker = None
+        
+        if self._speaker_worker is not None:
+            self._speaker_worker.stop()
+            self._speaker_worker.wait(1000)
+            self._speaker_worker = None
+        
         try:
             self._current_mode = mode
             self._target_lang = target_lang
@@ -58,6 +69,9 @@ class TranscriptionController(QObject):
             
             # Create speaker worker if device is provided
             if speaker_device_id is not None:
+                # Small delay to prevent simultaneous audio stream initialization
+                from PySide6.QtCore import QThread
+                QThread.msleep(100)
                 self._speaker_worker = SonioxWorker(speaker_device_id, mode=mode, target_lang=target_lang, input_source="speaker")
                 self._speaker_worker.transcription_update.connect(self._on_transcription_update)
                 self._speaker_worker.translation_update.connect(self._on_translation_update)

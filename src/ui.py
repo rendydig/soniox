@@ -130,7 +130,7 @@ class MainWindow(QMainWindow):
         
         self.transcription_controller.status_changed.connect(self._update_status)
         self.transcription_controller.error_occurred.connect(self._on_transcription_error)
-        self.transcription_controller.transcription_update.connect(self._on_update_transcription)
+        self.transcription_controller.transcription_update.connect(self._on_transcription_update)
         self.transcription_controller.translation_update.connect(self._on_translation_update)
         self.transcription_controller.session_started.connect(self._on_transcription_started)
         self.transcription_controller.session_stopped.connect(self._on_transcription_stopped)
@@ -195,12 +195,10 @@ class MainWindow(QMainWindow):
         self.transcription_controller.start_session(host_device_id, speaker_device_id, mode=mode, target_lang=target_lang)
         
         if self.auto_record_checkbox.isChecked():
-            dev_info = self.device_controller.get_device_info(host_device_id)
-            if dev_info:
-                samplerate = dev_info.get("default_samplerate") or 44100
-                channels = min(dev_info.get("max_input_channels", 1), 2)
-                channels = max(1, channels)
-                self.recording_controller.start_recording(host_device_id, samplerate, channels, speaker_device_id)
+            host_dev_info = self.device_controller.get_device_info(host_device_id)
+            speaker_dev_info = self.device_controller.get_device_info(speaker_device_id) if speaker_device_id is not None else None
+            if host_dev_info:
+                self.recording_controller.start_recording(host_device_id, host_dev_info, speaker_device_id, speaker_dev_info)
                 self.record_btn.setText("Recording (auto)")
                 self.record_btn.setEnabled(False)
 
@@ -212,8 +210,8 @@ class MainWindow(QMainWindow):
         if self.auto_record_checkbox.isChecked() and self.recording_controller.is_recording():
             self.recording_controller.stop_recording()
 
-    def _on_update_transcription(self, text, is_final, input_source):
-        print(f"[DEBUG] [{input_source}] _on_update_transcription called: is_final={is_final}, text='{text[:50] if text else ''}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
+    def _on_transcription_update(self, text, is_final, input_source):
+        print(f"[DEBUG] [{input_source}] _on_transcription_update called: is_final={is_final}, text='{text[:50] if text else ''}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
         
         # Always send as "transcription" type (original English text)
         # Translation results are sent separately via _on_translation_update
@@ -413,10 +411,25 @@ class MainWindow(QMainWindow):
         """Clean up resources on window close."""
         try:
             self._memory_monitor_timer.stop()
-            self.recording_controller.cleanup()
+            
+            # Stop transcription first to stop audio streams
             self.transcription_controller.cleanup()
+            
+            # Stop recording
+            self.recording_controller.cleanup()
+            
+            # Stop translation
             self.translation_controller.cleanup()
+            
+            # Stop websocket
             self.websocket_client.stop()
-        except Exception:
-            pass
+            
+            # Give threads time to finish
+            from PySide6.QtCore import QThread
+            QThread.msleep(500)
+            
+        except Exception as e:
+            print(f"[Cleanup] Error during cleanup: {e}")
+        
+        event.accept()
         return super().closeEvent(event)

@@ -45,6 +45,14 @@ class SonioxWorker(QThread):
         except Exception as e:
             self.error.emit(f"Worker error: {e}", self._input_source)
         finally:
+            # Ensure stream closed exactly once from worker thread
+            if self._stream is not None:
+                try:
+                    self._stream.stop()
+                    self._stream.close()
+                except Exception:
+                    pass
+                self._stream = None
             loop.close()
 
     async def _stream_audio(self):
@@ -104,13 +112,8 @@ class SonioxWorker(QThread):
                             await asyncio.sleep(0.01)
                     await ws.send("")
                 finally:
-                    if self._stream is not None:
-                        try:
-                            self._stream.stop()
-                            self._stream.close()
-                        except:
-                            pass
-                        self._stream = None
+                    # Don't close stream here; it is done in run()
+                    pass
 
             async def receiver():
                 async for msg in ws:
@@ -230,8 +233,9 @@ class RecorderWorker(QThread):
         self._channels = channels
         self._filepath = filepath
         self._stop_flag = False
-        self._q: "queue.Queue[np.ndarray]" = queue.Queue(maxsize=64)
+        self._q: "queue.Queue[np.ndarray]" = queue.Queue(maxsize=128)
         self._stream = None
+        self._blocksize = 2048
 
     def stop(self):
         self._stop_flag = True
@@ -239,29 +243,42 @@ class RecorderWorker(QThread):
     def run(self):
         try:
             self.status.emit("Opening audio stream...")
+            
+            # Check device compatibility
+            try:
+                device_info = sd.query_devices(self._device_id)
+                if device_info['max_input_channels'] < self._channels:
+                    self.error.emit(f"Device only supports {device_info['max_input_channels']} channels, requested {self._channels}")
+                    return
+            except Exception as e:
+                self.error.emit(f"Failed to query device: {e}")
+                return
 
             with sf.SoundFile(
                 self._filepath,
                 mode="w",
                 samplerate=self._samplerate,
                 channels=self._channels,
-                subtype="PCM_16",
+                subtype="PCM_24",
                 format="WAV",
             ) as wav_file:
 
                 def callback(indata, frames, time_info, status):
                     if status:
                         self.status.emit(f"Audio status: {status}")
+                    if self._stop_flag:
+                        return
                     try:
                         self._q.put_nowait(indata.copy())
                     except queue.Full:
-                        pass
+                        self.status.emit("Warning: Audio queue full, dropping frames")
 
                 self._stream = sd.InputStream(
                     samplerate=self._samplerate,
                     channels=self._channels,
                     device=self._device_id,
-                    dtype="int16",
+                    dtype="float32",
+                    blocksize=self._blocksize,
                     callback=callback,
                 )
                 self._stream.start()
