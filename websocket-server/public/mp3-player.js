@@ -10,8 +10,10 @@ class MP3Player {
         this.currentSubtitleIndex = -1;
         this.romajiSubtitles = [];
         this.currentRomajiIndex = -1;
-        this.translationSubtitles = [];
+        this.translationEnSubtitles = [];
+        this.translationIdSubtitles = [];
         this.currentTranslationIndex = -1;
+        this.currentTranslationLang = 'en';
         
         this.audioPlayer = document.getElementById('audioPlayer');
         this.playPauseBtn = document.getElementById('playPauseBtn');
@@ -32,9 +34,14 @@ class MP3Player {
         this.refreshBtn = document.getElementById('refreshBtn');
         this.currentTrackEl = document.getElementById('currentTrack');
         this.trackDetailsEl = document.getElementById('trackDetails');
-        this.subtitleDisplay = document.getElementById('subtitleDisplay');
-        this.romajiDisplay = document.getElementById('romajiDisplay');
-        this.translationDisplay = document.getElementById('translationDisplay');
+        this.subtitleList = document.getElementById('subtitleList');
+        this.translationLanguageSelector = document.getElementById('translationLanguage');
+        this.showSubtitleCheckbox = document.getElementById('showSubtitle');
+        this.showRomajiCheckbox = document.getElementById('showRomaji');
+        this.showTranslationCheckbox = document.getElementById('showTranslation');
+        this.currentActiveIndex = -1;
+        this.playlistToggleBtn = document.getElementById('playlistToggleBtn');
+        this.playlistSidebar = document.getElementById('playlistSidebar');
         
         this.initWebSocket();
         this.initEventListeners();
@@ -155,14 +162,13 @@ class MP3Player {
         return subtitles;
     }
 
-    async loadSubtitles(srtUrl, romajiUrl, translationUrl) {
+    async loadSubtitles(srtUrl, romajiUrl, translationEnUrl, translationIdUrl) {
         if (!srtUrl) {
             this.subtitles = [];
-            this.subtitleDisplay.querySelector('.subtitle-text').textContent = '';
             this.romajiSubtitles = [];
-            this.romajiDisplay.style.display = 'none';
-            this.translationSubtitles = [];
-            this.translationDisplay.style.display = 'none';
+            this.translationEnSubtitles = [];
+            this.translationIdSubtitles = [];
+            this.renderSubtitleList();
             return;
         }
         
@@ -183,107 +189,146 @@ class MP3Player {
                 const romajiText = await response.text();
                 this.romajiSubtitles = this.parseSRT(romajiText);
                 this.currentRomajiIndex = -1;
-                this.romajiDisplay.style.display = 'block';
                 console.log(`Loaded ${this.romajiSubtitles.length} romaji subtitles`);
             } catch (error) {
                 console.error('Error loading romaji subtitles:', error);
                 this.romajiSubtitles = [];
-                this.romajiDisplay.style.display = 'none';
             }
         } else {
             this.romajiSubtitles = [];
-            this.romajiDisplay.style.display = 'none';
         }
         
-        if (translationUrl) {
+        let hasEnTranslation = false;
+        let hasIdTranslation = false;
+        
+        if (translationEnUrl) {
             try {
-                const response = await fetch(translationUrl);
+                const response = await fetch(translationEnUrl);
                 const translationText = await response.text();
-                this.translationSubtitles = this.parseSRT(translationText);
-                this.currentTranslationIndex = -1;
-                this.translationDisplay.style.display = 'block';
-                console.log(`Loaded ${this.translationSubtitles.length} translation subtitles`);
+                this.translationEnSubtitles = this.parseSRT(translationText);
+                hasEnTranslation = true;
+                console.log(`Loaded ${this.translationEnSubtitles.length} English translation subtitles`);
             } catch (error) {
-                console.error('Error loading translation subtitles:', error);
-                this.translationSubtitles = [];
-                this.translationDisplay.style.display = 'none';
+                console.error('Error loading English translation subtitles:', error);
+                this.translationEnSubtitles = [];
             }
         } else {
-            this.translationSubtitles = [];
-            this.translationDisplay.style.display = 'none';
+            this.translationEnSubtitles = [];
         }
+        
+        if (translationIdUrl) {
+            try {
+                const response = await fetch(translationIdUrl);
+                const translationText = await response.text();
+                this.translationIdSubtitles = this.parseSRT(translationText);
+                hasIdTranslation = true;
+                console.log(`Loaded ${this.translationIdSubtitles.length} Indonesian translation subtitles`);
+            } catch (error) {
+                console.error('Error loading Indonesian translation subtitles:', error);
+                this.translationIdSubtitles = [];
+            }
+        } else {
+            this.translationIdSubtitles = [];
+        }
+        
+        if (hasEnTranslation || hasIdTranslation) {
+            this.currentTranslationIndex = -1;
+            
+            if (hasEnTranslation && hasIdTranslation) {
+                this.translationLanguageSelector.style.display = 'block';
+                this.currentTranslationLang = 'en';
+                this.translationLanguageSelector.value = 'en';
+            } else if (hasEnTranslation) {
+                this.translationLanguageSelector.style.display = 'none';
+                this.currentTranslationLang = 'en';
+            } else if (hasIdTranslation) {
+                this.translationLanguageSelector.style.display = 'none';
+                this.currentTranslationLang = 'id';
+            }
+        } else {
+            this.translationLanguageSelector.style.display = 'none';
+        }
+        
+        this.renderSubtitleList();
     }
 
+    renderSubtitleList() {
+        if (this.subtitles.length === 0) {
+            this.subtitleList.innerHTML = '<div class="empty-subtitle-state">No subtitles available</div>';
+            return;
+        }
+        
+        const showSubtitle = this.showSubtitleCheckbox.checked;
+        const showRomaji = this.showRomajiCheckbox.checked && this.romajiSubtitles.length > 0;
+        const showTranslation = this.showTranslationCheckbox.checked && 
+            (this.translationEnSubtitles.length > 0 || this.translationIdSubtitles.length > 0);
+        
+        const activeTranslationSubtitles = this.currentTranslationLang === 'en' 
+            ? this.translationEnSubtitles 
+            : this.translationIdSubtitles;
+        
+        this.subtitleList.innerHTML = this.subtitles.map((subtitle, index) => {
+            const romaji = this.romajiSubtitles[index] || null;
+            const translation = activeTranslationSubtitles[index] || null;
+            
+            let content = '';
+            
+            if (showSubtitle) {
+                content += `<div class="subtitle-line-text">${subtitle.text}</div>`;
+            }
+            
+            if (showRomaji && romaji) {
+                content += `<div class="subtitle-line-romaji">${romaji.text}</div>`;
+            }
+            
+            if (showTranslation && translation) {
+                content += `<div class="subtitle-line-translation">${translation.text}</div>`;
+            }
+            
+            return `
+                <div class="subtitle-line-item" data-index="${index}" data-start="${subtitle.start}" data-end="${subtitle.end}">
+                    ${content}
+                </div>
+            `;
+        }).join('');
+        
+        document.querySelectorAll('.subtitle-line-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const start = parseFloat(item.dataset.start);
+                this.audioPlayer.currentTime = start;
+            });
+        });
+    }
+    
     updateSubtitle() {
         const currentTime = this.audioPlayer.currentTime;
         
-        if (this.subtitles.length > 0) {
-            const subtitleText = this.subtitleDisplay.querySelector('.subtitle-text');
-            
-            let foundSubtitle = false;
-            for (let i = 0; i < this.subtitles.length; i++) {
-                const subtitle = this.subtitles[i];
-                if (currentTime >= subtitle.start && currentTime <= subtitle.end) {
-                    if (this.currentSubtitleIndex !== i) {
-                        this.currentSubtitleIndex = i;
-                        subtitleText.textContent = subtitle.text;
-                        subtitleText.style.opacity = '1';
-                    }
-                    foundSubtitle = true;
-                    break;
-                }
-            }
-            
-            if (!foundSubtitle && this.currentSubtitleIndex !== -1) {
-                this.currentSubtitleIndex = -1;
-                subtitleText.style.opacity = '0';
+        if (this.subtitles.length === 0) return;
+        
+        let foundIndex = -1;
+        for (let i = 0; i < this.subtitles.length; i++) {
+            const subtitle = this.subtitles[i];
+            if (currentTime >= subtitle.start && currentTime <= subtitle.end) {
+                foundIndex = i;
+                break;
             }
         }
         
-        if (this.romajiSubtitles.length > 0) {
-            const romajiText = this.romajiDisplay.querySelector('.romaji-text');
+        if (foundIndex !== this.currentActiveIndex) {
+            const previousActive = this.subtitleList.querySelector('.subtitle-line-item.active');
+            if (previousActive) {
+                previousActive.classList.remove('active');
+            }
             
-            let foundRomaji = false;
-            for (let i = 0; i < this.romajiSubtitles.length; i++) {
-                const romaji = this.romajiSubtitles[i];
-                if (currentTime >= romaji.start && currentTime <= romaji.end) {
-                    if (this.currentRomajiIndex !== i) {
-                        this.currentRomajiIndex = i;
-                        romajiText.textContent = romaji.text;
-                        romajiText.style.opacity = '1';
-                    }
-                    foundRomaji = true;
-                    break;
+            if (foundIndex !== -1) {
+                const activeItem = this.subtitleList.querySelector(`.subtitle-line-item[data-index="${foundIndex}"]`);
+                if (activeItem) {
+                    activeItem.classList.add('active');
+                    activeItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }
             
-            if (!foundRomaji && this.currentRomajiIndex !== -1) {
-                this.currentRomajiIndex = -1;
-                romajiText.style.opacity = '0';
-            }
-        }
-        
-        if (this.translationSubtitles.length > 0) {
-            const translationText = this.translationDisplay.querySelector('.translation-text');
-            
-            let foundTranslation = false;
-            for (let i = 0; i < this.translationSubtitles.length; i++) {
-                const translation = this.translationSubtitles[i];
-                if (currentTime >= translation.start && currentTime <= translation.end) {
-                    if (this.currentTranslationIndex !== i) {
-                        this.currentTranslationIndex = i;
-                        translationText.textContent = translation.text;
-                        translationText.style.opacity = '1';
-                    }
-                    foundTranslation = true;
-                    break;
-                }
-            }
-            
-            if (!foundTranslation && this.currentTranslationIndex !== -1) {
-                this.currentTranslationIndex = -1;
-                translationText.style.opacity = '0';
-            }
+            this.currentActiveIndex = foundIndex;
         }
     }
 
@@ -300,7 +345,7 @@ class MP3Player {
         this.currentTrackEl.textContent = track.name;
         this.trackDetailsEl.textContent = `Track ${index + 1} of ${this.tracks.length}`;
         
-        await this.loadSubtitles(track.srtUrl, track.srtRomajiUrl, track.srtEnUrl);
+        await this.loadSubtitles(track.srtUrl, track.srtRomajiUrl, track.srtEnUrl, track.srtIdUrl);
         
         this.renderPlaylist();
     }
@@ -415,6 +460,21 @@ class MP3Player {
         this.audioPlayer.playbackRate = speed;
     }
 
+    switchTranslationLanguage() {
+        this.currentTranslationLang = this.translationLanguageSelector.value;
+        this.currentTranslationIndex = -1;
+        this.renderSubtitleList();
+    }
+    
+    toggleSubtitleVisibility() {
+        this.renderSubtitleList();
+    }
+
+    togglePlaylist() {
+        this.playlistSidebar.classList.toggle('closed');
+        document.body.classList.toggle('playlist-closed');
+    }
+
     initEventListeners() {
         this.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
         this.nextBtn.addEventListener('click', () => this.playNext());
@@ -425,6 +485,11 @@ class MP3Player {
         this.progressBar.addEventListener('input', (e) => this.seekTo(e));
         this.volumeSlider.addEventListener('input', () => this.updateVolume());
         this.speedSlider.addEventListener('change', () => this.updateSpeed());
+        this.translationLanguageSelector.addEventListener('change', () => this.switchTranslationLanguage());
+        this.showSubtitleCheckbox.addEventListener('change', () => this.toggleSubtitleVisibility());
+        this.showRomajiCheckbox.addEventListener('change', () => this.toggleSubtitleVisibility());
+        this.showTranslationCheckbox.addEventListener('change', () => this.toggleSubtitleVisibility());
+        this.playlistToggleBtn.addEventListener('click', () => this.togglePlaylist());
         
         this.audioPlayer.addEventListener('play', () => {
             this.isPlaying = true;

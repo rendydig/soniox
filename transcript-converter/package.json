@@ -4,7 +4,8 @@
   "description": "Convert YouTube transcript HTML to SRT format",
   "main": "convert-to-srt.js",
   "scripts": {
-    "convert": "node convert-to-srt.js"
+    "convert": "node convert-to-srt.js",
+    "convert-romaji": "node convert-romaji-raw.js"
   },
   "dependencies": {
     "jsdom": "^23.0.0"

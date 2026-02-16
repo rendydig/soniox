@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="audio-player.css">
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -20,28 +22,68 @@
         <main>
             <div class="player-section">
                 <div class="now-playing">
-                    <div class="album-art">
+                    <!-- <div class="album-art">
                         <span class="material-icons" style="font-size: 80px;">album</span>
-                    </div>
-                    <div class="track-info">
-                        <h2 id="currentTrack">No track selected</h2>
-                        <p id="trackDetails">Select a track to play</p>
+                    </div> -->
+
+                    <div class="player-content">
+                        <div class="controls">
+                            <button id="prevBtn" class="control-btn" title="Previous">
+                                <span class="material-icons">skip_previous</span>
+                            </button>
+                            <button id="playPauseBtn" class="control-btn play-btn" title="Play">
+                                <span id="playIcon" class="material-icons" style="font-size: 32px;">play_arrow</span>
+                                <span id="pauseIcon" class="material-icons"
+                                    style="font-size: 32px; display: none;">pause</span>
+                            </button>
+                            <button id="nextBtn" class="control-btn" title="Next">
+                                <span class="material-icons">skip_next</span>
+                            </button>
+                            <button id="repeatBtn" class="control-btn" title="Repeat Off">
+                                <span id="repeatOffIcon" class="material-icons">repeat</span>
+                                <span id="repeatAllIcon" class="material-icons" style="display: none;">repeat</span>
+                                <span id="repeatOneIcon" class="material-icons" style="display: none;">repeat_one</span>
+                            </button>
+                            <div class="volume-control">
+                                <span class="material-icons">volume_up</span>
+                                <input type="range" id="volumeSlider" min="0" max="100" value="70" step="1">
+                            </div>
+                            <div class="speed-control">
+                                <span class="material-icons">speed</span>
+                                <select id="speedSlider" class="speed-dropdown">
+                                    <option value="0.5">0.5x</option>
+                                    <option value="0.6">0.6x</option>
+                                    <option value="0.7">0.7x</option>
+                                    <option value="0.8">0.8x</option>
+                                    <option value="0.9">0.9x</option>
+                                    <option value="1.0" selected>1.0x</option>
+                                    <option value="1.1">1.1x</option>
+                                    <option value="1.2">1.2x</option>
+                                    <option value="1.3">1.3x</option>
+                                    <option value="1.4">1.4x</option>
+                                    <option value="1.5">1.5x</option>
+                                    <option value="1.6">1.6x</option>
+                                    <option value="1.7">1.7x</option>
+                                    <option value="1.8">1.8x</option>
+                                    <option value="1.9">1.9x</option>
+                                    <option value="2.0">2.0x</option>
+                                </select>
+                            </div>
+                            <button id="playlistToggleBtn" class="control-btn" title="Toggle Playlist">
+                                <span class="material-icons">queue_music</span>
+                            </button>
+                        </div>
+
+                        <div class="track-info">
+                            <h2 id="currentTrack">No track selected</h2>
+                            <p id="trackDetails">Select a track to play</p>
+                        </div>
                     </div>
                 </div>
 
                 <audio id="audioPlayer" preload="metadata"></audio>
 
-                <div class="subtitle-container">
-                    <div id="subtitleDisplay" class="subtitle-display">
-                        <p class="subtitle-text"></p>
-                    </div>
-                    <div id="romajiDisplay" class="romaji-display" style="display: none;">
-                        <p class="romaji-text"></p>
-                    </div>
-                    <div id="translationDisplay" class="translation-display" style="display: none;">
-                        <p class="translation-text"></p>
-                    </div>
-                </div>
+
 
                 <div class="progress-container">
                     <div class="time-display">
@@ -51,64 +93,51 @@
                     <input type="range" id="progressBar" min="0" max="100" value="0" step="0.1">
                 </div>
 
-                <div class="controls">
-                    <button id="prevBtn" class="control-btn" title="Previous">
-                        <span class="material-icons">skip_previous</span>
-                    </button>
-                    <button id="playPauseBtn" class="control-btn play-btn" title="Play">
-                        <span id="playIcon" class="material-icons" style="font-size: 32px;">play_arrow</span>
-                        <span id="pauseIcon" class="material-icons" style="font-size: 32px; display: none;">pause</span>
-                    </button>
-                    <button id="nextBtn" class="control-btn" title="Next">
-                        <span class="material-icons">skip_next</span>
-                    </button>
-                    <button id="repeatBtn" class="control-btn" title="Repeat Off">
-                        <span id="repeatOffIcon" class="material-icons">repeat</span>
-                        <span id="repeatAllIcon" class="material-icons" style="display: none;">repeat</span>
-                        <span id="repeatOneIcon" class="material-icons" style="display: none;">repeat_one</span>
-                    </button>
-                    <div class="volume-control">
-                        <span class="material-icons">volume_up</span>
-                        <input type="range" id="volumeSlider" min="0" max="100" value="70" step="1">
-                    </div>
-                    <div class="speed-control">
-                        <span class="material-icons">speed</span>
-                        <select id="speedSlider" class="speed-dropdown">
-                            <option value="0.5">0.5x</option>
-                            <option value="0.6">0.6x</option>
-                            <option value="0.7">0.7x</option>
-                            <option value="0.8">0.8x</option>
-                            <option value="0.9">0.9x</option>
-                            <option value="1.0" selected>1.0x</option>
-                            <option value="1.1">1.1x</option>
-                            <option value="1.2">1.2x</option>
-                            <option value="1.3">1.3x</option>
-                            <option value="1.4">1.4x</option>
-                            <option value="1.5">1.5x</option>
-                            <option value="1.6">1.6x</option>
-                            <option value="1.7">1.7x</option>
-                            <option value="1.8">1.8x</option>
-                            <option value="1.9">1.9x</option>
-                            <option value="2.0">2.0x</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
 
-            <div class="playlist-section">
-                <div class="playlist-header">
-                    <h3>Playlist</h3>
-                    <button id="refreshBtn" class="refresh-btn" title="Refresh">
-                        <span class="material-icons">refresh</span>
-                    </button>
+            </div>
+            <div class="subtitle-container">
+                <div class="transcription-controls">
+                    <div class="transcription-options">
+                        <label class="transcription-toggle">
+                            <input type="checkbox" id="showSubtitle" checked>
+                            <span>Original</span>
+                        </label>
+                        <label class="transcription-toggle">
+                            <input type="checkbox" id="showRomaji" checked>
+                            <span>Romaji</span>
+                        </label>
+                        <label class="transcription-toggle">
+                            <input type="checkbox" id="showTranslation" checked>
+                            <span>Translation</span>
+                        </label>
+                    </div>
+                    <select id="translationLanguage" class="translation-language-selector" style="display: none;">
+                        <option value="en">English</option>
+                        <option value="id">Indonesia</option>
+                    </select>
                 </div>
-                <div id="playlist" class="playlist">
-                    <div class="loading">Loading tracks...</div>
+                <div id="subtitleList" class="subtitle-list">
+                    <div class="empty-subtitle-state">No subtitles available</div>
                 </div>
             </div>
         </main>
     </div>
 
+    <div class="playlist-sidebar" id="playlistSidebar">
+        <div class="playlist-section">
+            <div class="playlist-header">
+                <h3>Playlist</h3>
+                <button id="refreshBtn" class="refresh-btn" title="Refresh">
+                    <span class="material-icons">refresh</span>
+                </button>
+            </div>
+            <div id="playlist" class="playlist">
+                <div class="loading">Loading tracks...</div>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="mp3-player.js"></script>
 </body>
+
 </html>

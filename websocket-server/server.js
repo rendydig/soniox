@@ -123,12 +123,22 @@ wss.on('connection', (ws, req) => {
             
             const srtEnFileName = file.replace('.mp3', '.srt.en');
             const srtEnFilePath = path.join(SRT_PATH, srtEnFileName);
-            let hasTranslation = false;
+            let hasEnTranslation = false;
             try {
               await fs.access(srtEnFilePath);
-              hasTranslation = true;
+              hasEnTranslation = true;
             } catch (err) {
-              hasTranslation = false;
+              hasEnTranslation = false;
+            }
+            
+            const srtIdFileName = file.replace('.mp3', '.srt.id');
+            const srtIdFilePath = path.join(SRT_PATH, srtIdFileName);
+            let hasIdTranslation = false;
+            try {
+              await fs.access(srtIdFilePath);
+              hasIdTranslation = true;
+            } catch (err) {
+              hasIdTranslation = false;
             }
             
             return {
@@ -138,7 +148,8 @@ wss.on('connection', (ws, req) => {
               url: `/mp3-live/${encodeURIComponent(file)}`,
               srtUrl: hasSrt ? `/srt/${encodeURIComponent(srtFileName)}` : null,
               srtRomajiUrl: hasRomaji ? `/srt/${encodeURIComponent(srtRomajiFileName)}` : null,
-              srtEnUrl: hasTranslation ? `/srt/${encodeURIComponent(srtEnFileName)}` : null
+              srtEnUrl: hasEnTranslation ? `/srt/${encodeURIComponent(srtEnFileName)}` : null,
+              srtIdUrl: hasIdTranslation ? `/srt/${encodeURIComponent(srtIdFileName)}` : null
             };
           }));
           
