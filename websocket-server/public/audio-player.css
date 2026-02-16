@@ -509,6 +509,17 @@ input[type="range"]::-moz-range-thumb:hover {
     transform: scale(0.95);
 }
 
+.control-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.control-btn:disabled:hover {
+    color: #4b5563;
+    background: none;
+}
+
 .play-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -957,6 +968,30 @@ input[type="range"]::-moz-range-thumb:hover {
     display: flex;
     gap: 8px;
     justify-content: flex-end;
+    align-items: center;
+}
+
+.recognition-language-selector {
+    padding: 8px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.recognition-language-selector:hover {
+    border-color: #667eea;
+    background: #f9fafb;
+}
+
+.recognition-language-selector:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .practice-control-btn {
@@ -1028,6 +1063,71 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .subtitle-line-item.matched.active {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.subtitle-line-item.practice-active {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-left-color: #3b82f6;
+    border-left-width: 4px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    opacity: 1;
+    animation: practice-pulse 2s infinite;
+}
+
+@keyframes practice-pulse {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5);
+    }
+}
+
+.subtitle-line-item.practice-active .subtitle-line-text {
+    color: #1e40af;
+    font-weight: 600;
+}
+
+.subtitle-line-item.practice-active .subtitle-line-romaji {
+    color: #1e3a8a;
+}
+
+.subtitle-line-item.practice-active .subtitle-line-translation {
+    color: #1e40af;
+}
+
+.subtitle-line-item.practice-wrong {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-left-color: #ef4444;
+    border-left-width: 4px;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    opacity: 1;
+    animation: wrong-shake 0.5s ease-in-out;
+}
+
+@keyframes wrong-shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-10px);
+    }
+    75% {
+        transform: translateX(10px);
+    }
+}
+
+.subtitle-line-item.practice-wrong .subtitle-line-text {
+    color: #991b1b;
+    font-weight: 600;
+}
+
+.subtitle-line-item.practice-wrong .subtitle-line-romaji {
+    color: #7f1d1d;
+}
+
+.subtitle-line-item.practice-wrong .subtitle-line-translation {
+    color: #991b1b;
 }
 
 @media (max-width: 768px) {

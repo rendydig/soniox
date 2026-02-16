@@ -1,4 +1,5 @@
 import { WebSocketManager } from './websocket-manager.js';
+import { PracticeModeManager } from './practice-mode.js';
 
 class MP3Player {
     constructor() {
@@ -58,91 +59,20 @@ class MP3Player {
         this.practiceStatus = document.getElementById('practiceStatus');
         this.recognitionTextEl = document.getElementById('recognitionText');
         this.clearRecognitionBtn = document.getElementById('clearRecognitionBtn');
+        this.recognitionLanguageSelector = document.getElementById('recognitionLanguage');
+        
+        this.currentPracticeLineIndex = -1;
+        this.lastSpeechTime = null;
+        this.silenceCheckInterval = null;
+        this.pendingSpeechText = '';
+        
+        this.practiceModeManager = new PracticeModeManager(this);
+        this.practiceModeManager.initSpeechRecognition();
         
         this.initWebSocket();
         this.initEventListeners();
-        this.initSpeechRecognition();
     }
 
-    initSpeechRecognition() {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        
-        if (!SpeechRecognition) {
-            console.error('Speech Recognition API not supported in this browser');
-            this.micToggleBtn.disabled = true;
-            this.micToggleBtn.title = 'Speech recognition not supported';
-            return;
-        }
-        
-        this.recognition = new SpeechRecognition();
-        this.recognition.continuous = true;
-        this.recognition.interimResults = true;
-        this.recognition.maxAlternatives = 1;
-        this.recognition.lang = 'en-US';
-        
-        this.recognition.onstart = () => {
-            console.log('Speech recognition started');
-            this.isRecognizing = true;
-            this.updatePracticeStatus('Listening...', 'listening');
-        };
-        
-        this.recognition.onresult = (event) => {
-            let interimTranscript = '';
-            let finalTranscript = '';
-            
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                const transcript = event.results[i][0].transcript;
-                if (event.results[i].isFinal) {
-                    finalTranscript += transcript + ' ';
-                } else {
-                    interimTranscript += transcript;
-                }
-            }
-            
-            if (finalTranscript) {
-                this.recognitionText += finalTranscript;
-                this.recognitionTextEl.textContent = this.recognitionText || 'Listening...';
-                this.compareWithSubtitle(finalTranscript.trim());
-            } else if (interimTranscript) {
-                this.recognitionTextEl.textContent = (this.recognitionText + interimTranscript) || 'Listening...';
-            }
-        };
-        
-        this.recognition.onerror = (event) => {
-            console.error('Speech recognition error:', event.error);
-            
-            if (event.error === 'no-speech') {
-                this.updatePracticeStatus('No speech detected', 'warning');
-            } else if (event.error === 'network') {
-                this.updatePracticeStatus('Network error', 'error');
-            } else if (event.error === 'not-allowed') {
-                this.updatePracticeStatus('Microphone access denied', 'error');
-                this.stopPracticeMode();
-            } else {
-                this.updatePracticeStatus('Error: ' + event.error, 'error');
-            }
-        };
-        
-        this.recognition.onend = () => {
-            console.log('Speech recognition ended');
-            this.isRecognizing = false;
-            
-            if (this.practiceMode) {
-                this.recognitionRestartTimeout = setTimeout(() => {
-                    if (this.practiceMode) {
-                        try {
-                            this.recognition.start();
-                            this.updatePracticeStatus('Restarting...', 'listening');
-                        } catch (error) {
-                            console.error('Error restarting recognition:', error);
-                        }
-                    }
-                }, 300);
-            } else {
-                this.updatePracticeStatus('Stopped', 'ready');
-            }
-        };
-    }
 
     initWebSocket() {
         this.wsManager = new WebSocketManager(
@@ -468,6 +398,7 @@ class MP3Player {
         await this.loadSubtitles(track.srtUrl, track.srtRomajiUrl, track.srtEnUrl, track.srtIdUrl);
         
         this.renderPlaylist();
+        this.practiceModeManager.updateMicButtonState();
     }
 
     async playTrack(index) {
@@ -486,6 +417,7 @@ class MP3Player {
         await this.loadSubtitles(track.srtUrl, track.srtRomajiUrl, track.srtEnUrl, track.srtIdUrl);
         
         this.renderPlaylist();
+        this.practiceModeManager.updateMicButtonState();
     }
 
     togglePlayPause() {
@@ -610,116 +542,6 @@ class MP3Player {
         return div.innerHTML;
     }
     
-    togglePracticeMode() {
-        this.practiceMode = !this.practiceMode;
-        
-        if (this.practiceMode) {
-            this.startPracticeMode();
-        } else {
-            this.stopPracticeMode();
-        }
-    }
-    
-    startPracticeMode() {
-        this.practicePanel.style.display = 'block';
-        this.micToggleBtn.classList.add('active');
-        this.micToggleBtn.title = 'Practice Mode (On)';
-        this.micToggleBtn.querySelector('.material-icons').textContent = 'mic';
-        
-        this.recognitionText = '';
-        this.recognitionTextEl.textContent = 'Starting microphone...';
-        this.updatePracticeStatus('Starting...', 'listening');
-        
-        try {
-            this.recognition.start();
-        } catch (error) {
-            console.error('Error starting recognition:', error);
-            this.updatePracticeStatus('Failed to start', 'error');
-        }
-    }
-    
-    stopPracticeMode() {
-        this.practiceMode = false;
-        this.practicePanel.style.display = 'none';
-        this.micToggleBtn.classList.remove('active');
-        this.micToggleBtn.title = 'Practice Mode (Off)';
-        this.micToggleBtn.querySelector('.material-icons').textContent = 'mic_off';
-        
-        if (this.recognitionRestartTimeout) {
-            clearTimeout(this.recognitionRestartTimeout);
-            this.recognitionRestartTimeout = null;
-        }
-        
-        if (this.isRecognizing) {
-            try {
-                this.recognition.stop();
-            } catch (error) {
-                console.error('Error stopping recognition:', error);
-            }
-        }
-        
-        this.updatePracticeStatus('Ready', 'ready');
-    }
-    
-    updatePracticeStatus(text, type) {
-        this.practiceStatus.textContent = text;
-        this.practiceStatus.className = 'status-badge status-' + type;
-    }
-    
-    clearRecognitionText() {
-        this.recognitionText = '';
-        this.recognitionTextEl.textContent = this.practiceMode ? 'Listening...' : 'Click microphone to start...';
-    }
-    
-    normalizeText(text) {
-        return text
-            .toLowerCase()
-            .replace(/[.,!?;:"'()\[\]{}]/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-    }
-    
-    calculateSimilarity(str1, str2) {
-        const words1 = str1.split(' ');
-        const words2 = str2.split(' ');
-        
-        let matchCount = 0;
-        const maxLength = Math.max(words1.length, words2.length);
-        
-        for (let word of words1) {
-            if (words2.includes(word)) {
-                matchCount++;
-            }
-        }
-        
-        return matchCount / maxLength;
-    }
-    
-    compareWithSubtitle(spokenText) {
-        if (this.subtitles.length === 0 || !spokenText) return;
-        
-        const normalizedSpoken = this.normalizeText(spokenText);
-        
-        for (let i = 0; i < this.subtitles.length; i++) {
-            const subtitle = this.subtitles[i];
-            const normalizedSubtitle = this.normalizeText(subtitle.text);
-            
-            const similarity = this.calculateSimilarity(normalizedSpoken, normalizedSubtitle);
-            
-            if (similarity >= 0.7) {
-                this.markSubtitleAsMatched(i);
-                this.updatePracticeStatus('Match found! (' + Math.round(similarity * 100) + '%)', 'success');
-                
-                setTimeout(() => {
-                    if (this.practiceMode) {
-                        this.updatePracticeStatus('Listening...', 'listening');
-                    }
-                }, 2000);
-                
-                break;
-            }
-        }
-    }
     
     markSubtitleAsMatched(index) {
         const checkmark = this.subtitleList.querySelector(`.subtitle-checkmark[data-index="${index}"]`);
@@ -737,6 +559,7 @@ class MP3Player {
     toggleSubtitleVisibility() {
         this.renderSubtitleList();
     }
+    
 
     togglePlaylist() {
         this.playlistSidebar.classList.toggle('closed');
@@ -801,8 +624,9 @@ class MP3Player {
         this.showRomajiCheckbox.addEventListener('change', () => this.toggleSubtitleVisibility());
         this.showTranslationCheckbox.addEventListener('change', () => this.toggleSubtitleVisibility());
         this.playlistToggleBtn.addEventListener('click', () => this.togglePlaylist());
-        this.micToggleBtn.addEventListener('click', () => this.togglePracticeMode());
-        this.clearRecognitionBtn.addEventListener('click', () => this.clearRecognitionText());
+        this.micToggleBtn.addEventListener('click', () => this.practiceModeManager.togglePracticeMode());
+        this.clearRecognitionBtn.addEventListener('click', () => this.practiceModeManager.clearRecognitionText());
+        this.recognitionLanguageSelector.addEventListener('change', () => this.practiceModeManager.changeRecognitionLanguage());
         
         this.audioPlayer.addEventListener('play', () => {
             this.isPlaying = true;
@@ -841,6 +665,7 @@ class MP3Player {
         
         this.updateVolume();
         this.updateSpeed();
+        this.practiceModeManager.updateMicButtonState();
     }
 }
 
