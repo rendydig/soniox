@@ -113,6 +113,63 @@ main {
     font-size: 0.875rem;
 }
 
+.subtitle-container {
+    margin-bottom: 20px;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.subtitle-display {
+    width: 100%;
+    text-align: center;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-radius: 12px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.subtitle-text {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: #1f2937;
+    font-weight: 500;
+    transition: opacity 0.3s ease;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+}
+
+.romaji-display {
+    width: 100%;
+    text-align: center;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, rgba(234, 179, 8, 0.05) 0%, rgba(249, 115, 22, 0.05) 100%);
+    border-radius: 12px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.romaji-text {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #92400e;
+    font-weight: 400;
+    font-style: italic;
+    transition: opacity 0.3s ease;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+}
+
 .progress-container {
     margin-bottom: 20px;
 }

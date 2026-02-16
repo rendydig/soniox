@@ -13,12 +13,14 @@ const PORT = process.env.PORT || 8765;
 const WEB_PORT = process.env.WEB_PORT || 3000;
 const RECORDINGS_PATH = path.join(__dirname, '..', 'recordings');
 const MP3_LIVE_PATH = path.join(__dirname, '..', 'transcript-converter', 'mp3-live');
+const SRT_PATH = path.join(__dirname, '..', 'transcript-converter', 'result-transcripts');
 
 const clients = new Set();
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/recordings', express.static(RECORDINGS_PATH));
 app.use('/mp3-live', express.static(MP3_LIVE_PATH));
+app.use('/srt', express.static(SRT_PATH));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -98,11 +100,45 @@ wss.on('connection', (ws, req) => {
           const tracks = await Promise.all(audioFiles.map(async (file) => {
             const filePath = path.join(MP3_LIVE_PATH, file);
             const stats = await fs.stat(filePath);
+            
+            const srtFileName = file.replace('.mp3', '.srt');
+            const srtFilePath = path.join(SRT_PATH, srtFileName);
+            let hasSrt = false;
+            try {
+              await fs.access(srtFilePath);
+              hasSrt = true;
+            } catch (err) {
+              hasSrt = false;
+            }
+            
+            const srtRomajiFileName = file.replace('.mp3', '.srt.romaji');
+            const srtRomajiFilePath = path.join(SRT_PATH, srtRomajiFileName);
+            let hasRomaji = false;
+            try {
+              await fs.access(srtRomajiFilePath);
+              hasRomaji = true;
+            } catch (err) {
+              hasRomaji = false;
+            }
+            
+            const srtEnFileName = file.replace('.mp3', '.srt.en');
+            const srtEnFilePath = path.join(SRT_PATH, srtEnFileName);
+            let hasTranslation = false;
+            try {
+              await fs.access(srtEnFilePath);
+              hasTranslation = true;
+            } catch (err) {
+              hasTranslation = false;
+            }
+            
             return {
               name: file,
               size: stats.size,
               modified: stats.mtime,
-              url: `/mp3-live/${encodeURIComponent(file)}`
+              url: `/mp3-live/${encodeURIComponent(file)}`,
+              srtUrl: hasSrt ? `/srt/${encodeURIComponent(srtFileName)}` : null,
+              srtRomajiUrl: hasRomaji ? `/srt/${encodeURIComponent(srtRomajiFileName)}` : null,
+              srtEnUrl: hasTranslation ? `/srt/${encodeURIComponent(srtEnFileName)}` : null
             };
           }));
           

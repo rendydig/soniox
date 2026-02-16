@@ -6,6 +6,12 @@ class MP3Player {
         this.currentIndex = -1;
         this.repeatMode = 'off';
         this.isPlaying = false;
+        this.subtitles = [];
+        this.currentSubtitleIndex = -1;
+        this.romajiSubtitles = [];
+        this.currentRomajiIndex = -1;
+        this.translationSubtitles = [];
+        this.currentTranslationIndex = -1;
         
         this.audioPlayer = document.getElementById('audioPlayer');
         this.playPauseBtn = document.getElementById('playPauseBtn');
@@ -22,11 +28,13 @@ class MP3Player {
         this.durationEl = document.getElementById('duration');
         this.volumeSlider = document.getElementById('volumeSlider');
         this.speedSlider = document.getElementById('speedSlider');
-        this.speedValue = document.getElementById('speedValue');
         this.playlist = document.getElementById('playlist');
         this.refreshBtn = document.getElementById('refreshBtn');
         this.currentTrackEl = document.getElementById('currentTrack');
         this.trackDetailsEl = document.getElementById('trackDetails');
+        this.subtitleDisplay = document.getElementById('subtitleDisplay');
+        this.romajiDisplay = document.getElementById('romajiDisplay');
+        this.translationDisplay = document.getElementById('translationDisplay');
         
         this.initWebSocket();
         this.initEventListeners();
@@ -120,7 +128,166 @@ class MP3Player {
         return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     }
 
-    playTrack(index) {
+    parseSRT(srtText) {
+        const subtitles = [];
+        const blocks = srtText.trim().split(/\n\s*\n/);
+        
+        for (const block of blocks) {
+            const lines = block.split('\n');
+            if (lines.length < 3) continue;
+            
+            const timeLine = lines[1];
+            const timeMatch = timeLine.match(/(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-+>\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})/);
+            
+            if (timeMatch) {
+                const startTime = parseInt(timeMatch[1]) * 3600 + parseInt(timeMatch[2]) * 60 + parseInt(timeMatch[3]) + parseInt(timeMatch[4]) / 1000;
+                const endTime = parseInt(timeMatch[5]) * 3600 + parseInt(timeMatch[6]) * 60 + parseInt(timeMatch[7]) + parseInt(timeMatch[8]) / 1000;
+                const text = lines.slice(2).join('\n');
+                
+                subtitles.push({
+                    start: startTime,
+                    end: endTime,
+                    text: text
+                });
+            }
+        }
+        
+        return subtitles;
+    }
+
+    async loadSubtitles(srtUrl, romajiUrl, translationUrl) {
+        if (!srtUrl) {
+            this.subtitles = [];
+            this.subtitleDisplay.querySelector('.subtitle-text').textContent = '';
+            this.romajiSubtitles = [];
+            this.romajiDisplay.style.display = 'none';
+            this.translationSubtitles = [];
+            this.translationDisplay.style.display = 'none';
+            return;
+        }
+        
+        try {
+            const response = await fetch(srtUrl);
+            const srtText = await response.text();
+            this.subtitles = this.parseSRT(srtText);
+            this.currentSubtitleIndex = -1;
+            console.log(`Loaded ${this.subtitles.length} subtitles`);
+        } catch (error) {
+            console.error('Error loading subtitles:', error);
+            this.subtitles = [];
+        }
+        
+        if (romajiUrl) {
+            try {
+                const response = await fetch(romajiUrl);
+                const romajiText = await response.text();
+                this.romajiSubtitles = this.parseSRT(romajiText);
+                this.currentRomajiIndex = -1;
+                this.romajiDisplay.style.display = 'block';
+                console.log(`Loaded ${this.romajiSubtitles.length} romaji subtitles`);
+            } catch (error) {
+                console.error('Error loading romaji subtitles:', error);
+                this.romajiSubtitles = [];
+                this.romajiDisplay.style.display = 'none';
+            }
+        } else {
+            this.romajiSubtitles = [];
+            this.romajiDisplay.style.display = 'none';
+        }
+        
+        if (translationUrl) {
+            try {
+                const response = await fetch(translationUrl);
+                const translationText = await response.text();
+                this.translationSubtitles = this.parseSRT(translationText);
+                this.currentTranslationIndex = -1;
+                this.translationDisplay.style.display = 'block';
+                console.log(`Loaded ${this.translationSubtitles.length} translation subtitles`);
+            } catch (error) {
+                console.error('Error loading translation subtitles:', error);
+                this.translationSubtitles = [];
+                this.translationDisplay.style.display = 'none';
+            }
+        } else {
+            this.translationSubtitles = [];
+            this.translationDisplay.style.display = 'none';
+        }
+    }
+
+    updateSubtitle() {
+        const currentTime = this.audioPlayer.currentTime;
+        
+        if (this.subtitles.length > 0) {
+            const subtitleText = this.subtitleDisplay.querySelector('.subtitle-text');
+            
+            let foundSubtitle = false;
+            for (let i = 0; i < this.subtitles.length; i++) {
+                const subtitle = this.subtitles[i];
+                if (currentTime >= subtitle.start && currentTime <= subtitle.end) {
+                    if (this.currentSubtitleIndex !== i) {
+                        this.currentSubtitleIndex = i;
+                        subtitleText.textContent = subtitle.text;
+                        subtitleText.style.opacity = '1';
+                    }
+                    foundSubtitle = true;
+                    break;
+                }
+            }
+            
+            if (!foundSubtitle && this.currentSubtitleIndex !== -1) {
+                this.currentSubtitleIndex = -1;
+                subtitleText.style.opacity = '0';
+            }
+        }
+        
+        if (this.romajiSubtitles.length > 0) {
+            const romajiText = this.romajiDisplay.querySelector('.romaji-text');
+            
+            let foundRomaji = false;
+            for (let i = 0; i < this.romajiSubtitles.length; i++) {
+                const romaji = this.romajiSubtitles[i];
+                if (currentTime >= romaji.start && currentTime <= romaji.end) {
+                    if (this.currentRomajiIndex !== i) {
+                        this.currentRomajiIndex = i;
+                        romajiText.textContent = romaji.text;
+                        romajiText.style.opacity = '1';
+                    }
+                    foundRomaji = true;
+                    break;
+                }
+            }
+            
+            if (!foundRomaji && this.currentRomajiIndex !== -1) {
+                this.currentRomajiIndex = -1;
+                romajiText.style.opacity = '0';
+            }
+        }
+        
+        if (this.translationSubtitles.length > 0) {
+            const translationText = this.translationDisplay.querySelector('.translation-text');
+            
+            let foundTranslation = false;
+            for (let i = 0; i < this.translationSubtitles.length; i++) {
+                const translation = this.translationSubtitles[i];
+                if (currentTime >= translation.start && currentTime <= translation.end) {
+                    if (this.currentTranslationIndex !== i) {
+                        this.currentTranslationIndex = i;
+                        translationText.textContent = translation.text;
+                        translationText.style.opacity = '1';
+                    }
+                    foundTranslation = true;
+                    break;
+                }
+            }
+            
+            if (!foundTranslation && this.currentTranslationIndex !== -1) {
+                this.currentTranslationIndex = -1;
+                translationText.style.opacity = '0';
+            }
+        }
+    }
+
+    async playTrack(index) {
         if (index < 0 || index >= this.tracks.length) return;
         
         this.currentIndex = index;
@@ -132,6 +299,8 @@ class MP3Player {
         
         this.currentTrackEl.textContent = track.name;
         this.trackDetailsEl.textContent = `Track ${index + 1} of ${this.tracks.length}`;
+        
+        await this.loadSubtitles(track.srtUrl, track.srtRomajiUrl, track.srtEnUrl);
         
         this.renderPlaylist();
     }
@@ -244,7 +413,6 @@ class MP3Player {
     updateSpeed() {
         const speed = parseFloat(this.speedSlider.value);
         this.audioPlayer.playbackRate = speed;
-        this.speedValue.textContent = `${speed.toFixed(1)}x`;
     }
 
     initEventListeners() {
@@ -256,7 +424,7 @@ class MP3Player {
         
         this.progressBar.addEventListener('input', (e) => this.seekTo(e));
         this.volumeSlider.addEventListener('input', () => this.updateVolume());
-        this.speedSlider.addEventListener('input', () => this.updateSpeed());
+        this.speedSlider.addEventListener('change', () => this.updateSpeed());
         
         this.audioPlayer.addEventListener('play', () => {
             this.isPlaying = true;
@@ -270,7 +438,10 @@ class MP3Player {
             this.pauseIcon.style.display = 'none';
         });
         
-        this.audioPlayer.addEventListener('timeupdate', () => this.updateProgress());
+        this.audioPlayer.addEventListener('timeupdate', () => {
+            this.updateProgress();
+            this.updateSubtitle();
+        });
         
         this.audioPlayer.addEventListener('loadedmetadata', () => {
             this.durationEl.textContent = this.formatTime(this.audioPlayer.duration);
