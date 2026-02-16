@@ -88,7 +88,7 @@ export class PracticeModeManager {
     }
 
     updateMicButtonState() {
-        if (this.player.currentIndex === -1) {
+        if (this.player.playlistManager.getCurrentIndex() === -1) {
             this.player.micToggleBtn.disabled = true;
             this.player.micToggleBtn.title = 'Load a track to enable practice mode';
         } else {
@@ -122,7 +122,7 @@ export class PracticeModeManager {
         this.player.recognitionTextEl.textContent = 'Starting microphone...';
         this.updatePracticeStatus('Starting...', 'listening');
         
-        if (this.player.subtitles.length > 0) {
+        if (this.player.subtitleManager.subtitles.length > 0) {
             this.player.currentPracticeLineIndex = 0;
             this.loadPracticeLine(0);
         } else {
@@ -204,32 +204,32 @@ export class PracticeModeManager {
     }
 
     loadPracticeLine(index) {
-        if (index < 0 || index >= this.player.subtitles.length) {
+        if (index < 0 || index >= this.player.subtitleManager.subtitles.length) {
             return;
         }
         
-        const previousActive = this.player.subtitleList.querySelector('.subtitle-line-item.practice-active');
+        const previousActive = this.player.subtitleManager.subtitleList.querySelector('.subtitle-line-item.practice-active');
         if (previousActive) {
             previousActive.classList.remove('practice-active');
         }
         
-        const practiceItem = this.player.subtitleList.querySelector(`.subtitle-line-item[data-index="${index}"]`);
+        const practiceItem = this.player.subtitleManager.subtitleList.querySelector(`.subtitle-line-item[data-index="${index}"]`);
         if (practiceItem) {
             practiceItem.classList.add('practice-active');
             practiceItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             
-            const subtitleText = this.player.subtitles[index].text;
+            const subtitleText = this.player.subtitleManager.subtitles[index].text;
             this.updatePracticeStatus(`Practice: "${subtitleText.substring(0, 50)}${subtitleText.length > 50 ? '...' : ''}"`, 'listening');
         }
     }
     
     compareWithCurrentLine(spokenText) {
-        if (this.player.subtitles.length === 0 || !spokenText || this.player.currentPracticeLineIndex === -1) {
+        if (this.player.subtitleManager.subtitles.length === 0 || !spokenText || this.player.currentPracticeLineIndex === -1) {
             return;
         }
         
         const normalizedSpoken = normalizeText(spokenText);
-        const currentSubtitle = this.player.subtitles[this.player.currentPracticeLineIndex];
+        const currentSubtitle = this.player.subtitleManager.subtitles[this.player.currentPracticeLineIndex];
         const normalizedSubtitle = normalizeText(currentSubtitle.text);
         
         const similarity = calculateSimilarity(normalizedSpoken, normalizedSubtitle);
@@ -240,18 +240,18 @@ export class PracticeModeManager {
         this.player.recognitionTextEl.textContent = 'Listening...';
         
         if (similarity >= 0.7) {
-            const practiceItem = this.player.subtitleList.querySelector(`.subtitle-line-item[data-index="${this.player.currentPracticeLineIndex}"]`);
+            const practiceItem = this.player.subtitleManager.subtitleList.querySelector(`.subtitle-line-item[data-index="${this.player.currentPracticeLineIndex}"]`);
             if (practiceItem) {
                 practiceItem.classList.remove('practice-wrong');
             }
             
-            this.player.markSubtitleAsMatched(this.player.currentPracticeLineIndex);
+            this.player.subtitleManager.markSubtitleAsMatched(this.player.currentPracticeLineIndex);
             this.updatePracticeStatus('Match found! (' + Math.round(similarity * 100) + '%)', 'success');
             
             setTimeout(() => {
                 if (this.player.practiceMode) {
                     const nextIndex = this.player.currentPracticeLineIndex + 1;
-                    if (nextIndex < this.player.subtitles.length) {
+                    if (nextIndex < this.player.subtitleManager.subtitles.length) {
                         this.player.currentPracticeLineIndex = nextIndex;
                         this.loadPracticeLine(nextIndex);
                     } else {
@@ -261,7 +261,7 @@ export class PracticeModeManager {
                 }
             }, 2000);
         } else {
-            const practiceItem = this.player.subtitleList.querySelector(`.subtitle-line-item[data-index="${this.player.currentPracticeLineIndex}"]`);
+            const practiceItem = this.player.subtitleManager.subtitleList.querySelector(`.subtitle-line-item[data-index="${this.player.currentPracticeLineIndex}"]`);
             if (practiceItem) {
                 practiceItem.classList.add('practice-wrong');
             }
@@ -270,7 +270,7 @@ export class PracticeModeManager {
             
             setTimeout(() => {
                 if (this.player.practiceMode) {
-                    const currentItem = this.player.subtitleList.querySelector(`.subtitle-line-item[data-index="${this.player.currentPracticeLineIndex}"]`);
+                    const currentItem = this.player.subtitleManager.subtitleList.querySelector(`.subtitle-line-item[data-index="${this.player.currentPracticeLineIndex}"]`);
                     if (currentItem) {
                         currentItem.classList.remove('practice-wrong');
                     }
