@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Player - Recordings</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="audio-player.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 Audio Player</h1>
+            <div class="connection-status">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </header>
+
+        <main>
+            <div class="player-section">
+                <div class="now-playing">
+                    <div class="album-art">
+                        <span class="material-icons" style="font-size: 80px;">album</span>
+                    </div>
+                    <div class="track-info">
+                        <h2 id="currentTrack">No track selected</h2>
+                        <p id="trackDetails">Select a recording to play</p>
+                    </div>
+                </div>
+
+                <audio id="audioPlayer" preload="metadata"></audio>
+
+                <div class="progress-container">
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span>
+                        <span id="duration">0:00</span>
+                    </div>
+                    <input type="range" id="progressBar" min="0" max="100" value="0" step="0.1">
+                </div>
+
+                <div class="controls">
+                    <button id="prevBtn" class="control-btn" title="Previous">
+                        <span class="material-icons">skip_previous</span>
+                    </button>
+                    <button id="playPauseBtn" class="control-btn play-btn" title="Play">
+                        <span id="playIcon" class="material-icons" style="font-size: 32px;">play_arrow</span>
+                        <span id="pauseIcon" class="material-icons" style="font-size: 32px; display: none;">pause</span>
+                    </button>
+                    <button id="nextBtn" class="control-btn" title="Next">
+                        <span class="material-icons">skip_next</span>
+                    </button>
+                    <button id="repeatBtn" class="control-btn" title="Repeat Off">
+                        <span id="repeatOffIcon" class="material-icons">repeat</span>
+                        <span id="repeatAllIcon" class="material-icons" style="display: none;">repeat</span>
+                        <span id="repeatOneIcon" class="material-icons" style="display: none;">repeat_one</span>
+                    </button>
+                    <div class="volume-control">
+                        <span class="material-icons">volume_up</span>
+                        <input type="range" id="volumeSlider" min="0" max="100" value="70" step="1">
+                    </div>
+                    <div class="speed-control">
+                        <span class="material-icons">speed</span>
+                        <input type="range" id="speedSlider" min="0.5" max="2" value="1" step="0.1">
+                        <span id="speedValue" class="speed-value">1x</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="playlist-section">
+                <div class="playlist-header">
+                    <h3>Playlist</h3>
+                    <button id="refreshBtn" class="refresh-btn" title="Refresh">
+                        <span class="material-icons">refresh</span>
+                    </button>
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="host">Host</button>
+                    <button class="filter-btn" data-filter="speaker">Speaker</button>
+                </div>
+                <div id="playlist" class="playlist">
+                    <div class="loading">Loading recordings...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="audio-player.js"></script>
+</body>
+</html>

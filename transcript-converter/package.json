@@ -1,0 +1,12 @@
+{
+  "name": "transcript-to-srt-converter",
+  "version": "1.0.0",
+  "description": "Convert YouTube transcript HTML to SRT format",
+  "main": "convert-to-srt.js",
+  "scripts": {
+    "convert": "node convert-to-srt.js"
+  },
+  "dependencies": {
+    "jsdom": "^23.0.0"
+  }
+}
