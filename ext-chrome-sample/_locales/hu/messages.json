@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "\"$itemTitle$\" opció hozzáadása a jobb klikk menühöz a beviteli mezőkhöz",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "\"$itemTitle$\" opció hozzáadása a jobb klikk menühöz a kijelölt szöveg felolvasásához bármely weboldalon",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "\"$itemTitle$\" opció hozzáadása a jobb klikk menühöz a teljes oldal felolvasásához",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "Speciális felolvasás (minden weboldalon)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "Speciális beállítások"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "Fejlett hangvezérlés"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "Miután befejeztem a beszédet, automatikusan nyomja meg az Entert $delayInSeconds$ másodperc után",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "Összes nyelv"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy (Semleges)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "Hangfelvételi hiba..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "Hang automatikus kiválasztása nyelv alapján"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "Nem találod a kívánt hangot vagy nyelvet?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "Bizonyos funkciók, mint például az automatikus szövegkiemelés és a hangnavigációs vezérlők, nem feltétlenül érhetők el az alapértelmezett ChatGPT hang használatakor."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "Hangbemeneti eszköz ellenőrzése..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "Bevitel törlése, amikor ezt mondom: $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "Bezárás"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "Lépjen kapcsolatba velünk"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "Utolsó bevitel törlése, amikor ezt mondom: $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "Hibák észlelése..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "Diktálás"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "Nincs még fiókja?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "Nyomd meg ide üzenet diktálásához a VoiceWave segítségével."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo (Férfi)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "Szerkesztés"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "E-mail cím..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "Tetszik ez a bővítmény?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "Lejárat"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "A beszédfelismerő indítása sikertelen. Valószínűleg nincs internetkapcsolat. Kérjük, ellenőrizze az internetkapcsolatát, és próbálja újra. Egyéb esetben próbálja meg megváltoztatni a hangvezérlés nyelvét a beállításokban."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "Elfelejtette a jelszavát?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "Általános beállítások"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "Prémium előfizetés"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "Értem"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "Van egy javaslata?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "Problémája van?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "Új üzenetek automatikus felolvasása"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "Felolvasás"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "Szöveg kiemelése felolvasás közben"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "Helytelen bejelentkezési adatok, vagy az előfizetése lejárt. Kérjük, lépjen kapcsolatba velünk, ha segítségre van szüksége."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "VoiceWave vezérlőpanel hozzáadása a felülethez"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "Hanggal írás"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "Úgy tűnik, hogy ez a bővítmény nem talált csatlakoztatott mikrofont. Kérjük, győződjön meg arról, hogy a mikrofonja csatlakoztatva van és megfelelően működik."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "Úgy tűnik, a mikrofon hozzáférés meg van tagadva. A beszédfelismerés engedélyezéséhez kérjük, lépjen a böngésző mikrofonbeállításaiba, és engedélyezze a kiegészítő számára a mikrofon hozzáférést."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "Billentyűzet"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "Billentyűparancsok"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "Tudj meg többet további hangok telepítéséről"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "Hallgatok..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "Betöltés..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "Írjon nekünk: $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "Manuálisan frissítse a kiválasztók konfigurációját a távoli szerverről. Ez biztosítja, hogy a támogatott weboldalakhoz a legújabb integrációs szabályokkal rendelkezzen."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "Menü"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "Mikrofon hozzáférés megtagadva..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "Mikrofon hozzáférési hiba..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "Mikrofon használatban..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "Mikrofon engedély szükséges..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "Segítségre van szüksége?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "Hálózati hiba..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "Következő"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "Következő mondat"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "Nem található mikrofon..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova (Női hang)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "Most már használhatja a fejlett hangvezérlést a $linksToAIs$ és más támogatott webhelyeken! Egyszerűen látogasson el a webhelyre, kattintson a $iconOfMicrophone$ ikonra, vagy nyomja meg a $toggleKey$ billentyűt a billentyűzeten (a beviteli mezőn kívül) a hangvezérlés aktiválásához, és kezdjen el beszélni.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "VoiceWave minden weboldalon"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Bármely weboldalon kattintson jobb gombbal a beviteli mezőre, válassza a \"Hangalapú gépelés\" lehetőséget a menüből, kattintson a $iconOfMicrophone$ ikonra, és kezdjen el beszélni a billentyűzet használata nélküli gépeléshez.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Kattintson a jobb gombbal a beviteli mezőre bármelyik weboldalon, válassza a \"$itemTitle$\" opciót a menüből, kattintson a $iconOfMicrophone$ ikonra, és kezdjen el diktálni.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx (Mély férfi hang)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "Jelszó..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "Szünet"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "Személyre szabott élmény: hangok, felolvasási beállítások, gyorsbillentyűk stb."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "Hangmagasság"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "Csomag"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "Lejátszás / Folytatás"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "Kérjük, győződjön meg arról, hogy a billentyűt jelenleg nem használja más alkalmazás."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "Kérjük, tudassa velünk"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "Kérjük, értékeljen minket 5 csillagra"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "Kérjük, jelentkezzen be a fiókjába."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "Tartsd nyomva a $keyboardKey$ billentyűt hosszú hangbevitelhez több mondattal",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "Nyomja meg a kívánt billentyűt"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "Nyomd meg a $keyboardKey$ billentyűt (beviteli mezőn kívül) a hangvezérlés be-/kikapcsolásához",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "Előző mondat"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "Gyors választás"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "Felolvasás a VoiceWave-vel"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "Bővebben..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "Újrajátszás"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "Hibák/problémák bejelentése"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Visszaállítás"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "Üzenet küldése a billentyű felengedésekor"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "Beállítások"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "Beállítások a következőhöz: $hostName$",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer (Lágy női hang)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "Gyorsbillentyűk"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "Mutasson egy $listenIcon$ gombot minden üzenet mellett",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "Bejelentkezés"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "Kijelentkezés"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "Beszédbemenet megszakítva..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "A beszédbemenet megszakadt vagy meg lett szakítva. Kérjük, győződjön meg arról, hogy működő internetkapcsolattal rendelkezik, a mikrofonja csatlakoztatva van, és a mikrofon hozzáférés engedélyezve van ehhez a kiegészítőhöz."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "Beszéd nyelve"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "Sebesség"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "Már csak $offerPrice$/hónaptól.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "Leállítás"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "Felolvasás leállítása, amikor ezt mondom: $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "Hangvezérlés leállítása, amikor ezt mondom: $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "Előfizetés"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "Már előfizetett?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "Szövegfelolvasó hang"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "A kiegészítő sikeresen frissítve lett!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "A kiegészítőnek engedélyre van szüksége a mikrofon eléréséhez. Kérjük, ellenőrizze a felugró ablakot vagy a böngésző sávját, ahol megjelenik a mikrofon hozzáférés engedélyezésére vonatkozó kérés. Kattintson az \"Engedélyezés\" gombra a beszédfelismerés engedélyezéséhez."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "A hang magassága vagy mélysége."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "A hang sebessége."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "A hang hangereje."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "A kiegészítő problémát tapasztal a hang rögzítése során. Győződjön meg arról, hogy a mikrofon csatlakoztatva van és megfelelően működik. Ellenőrizze a böngésző mikrofonengedélyeit, és próbálja meg újraindítani a böngészőt."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "Ez a bővítmény nem érhető el ezen az oldalon."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "Ez a funkció kiemeli a felolvasott mondatot vagy kifejezést, megkönnyítve a követést azáltal, hogy vizuálisan megjelöli a szöveget."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "Ez a funkció csak Elite felhasználók számára érhető el."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "Ez egy béta funkció. Még optimalizálás alatt áll, és lehetnek hibák vagy korlátozások."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "A következő mondatra való ugráshoz hallgatás közben nyomd meg a $keyboardKey$ billentyűt (beviteli mezőn kívül)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Az előző mondatra való ugráshoz hallgatás közben nyomd meg a $keyboardKey$ billentyűt (beviteli mezőn kívül)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "Kattintson a jobb gombbal bárhová az oldalon, és válassza a \"$itemTitle$\" opciót. A VoiceWave felolvassa az oldal teljes szövegét.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "Jelölje ki a kívánt szöveget, kattintson a jobb gombbal, és válassza a \"$itemTitle$\" lehetőséget a helyi menüből. Csak a kiemelt szöveget fogja hallani.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "Enter aktiválása, amikor ezt mondom: $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "Mikrofon elérésének megkísérlése..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "Kikapcsolás"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "Mikrofon kikapcsolása válasz hallgatásakor"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "Mikrofon kikapcsolása másik lapra váltáskor"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "Hangvezérlés kikapcsolása a billentyű felengedésekor"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "Bekapcsolás"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "Nem sikerült hozzáférni a mikrofonhoz. Kérjük, győződjön meg arról, hogy a mikrofonja csatlakoztatva van, és a mikrofon hozzáférés engedélyezve van ezen az oldalon, majd próbálja újra."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "Választók frissítése"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "Választók konfigurációjának frissítése távoli szerverről"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "Váltson VoiceWave Prémiumra a korlátlan hozzáférésért az összes Prémium funkcióhoz."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "Használati útmutató"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "Alapértelmezett ChatGPT hang használata"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "Hang"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "Hangbevitel"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "Üzenet diktálása"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "Hangalapú gépelés (minden weboldalon)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "Hangerő"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "Üdvözöljük!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "Üdvözöljük! Vágjunk bele a kiegészítő személyre szabásába. Most ingyenes hozzáférése van az összes prémium funkcióhoz."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "Az alapértelmezett ChatGPT hang használatakor bizonyos funkciók, mint például az automatikus szövegkiemelés és a hangnavigációs vezérlők, nem állnak rendelkezésre, és a kiválasztott TTS hang nem lesz automatikusan alkalmazva."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "Működik"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "A mikrofonod jelenleg használatban van a(z) $hostName$ oldalon beszédfelismeréshez.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ vagy írjon nekünk a $emailUsLink$ címre",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "Felolvasás"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "Oldal felolvasása"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "Hang gépelés"
+   },
+   "extensionDescription": {
+      "message": "A ChatGPT hangvezérlése lehetővé teszi, hogy beszéljen a ChatGPT-vel, és hangbeszélgetést folytathasson."
+   },
+   "extensionName": {
+      "message": "Hangvezérlés a ChatGPT-hez"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: ChatGPT hangvezérlés"
+   }
+}

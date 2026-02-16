@@ -42,6 +42,11 @@ class MP3Player {
         this.currentActiveIndex = -1;
         this.playlistToggleBtn = document.getElementById('playlistToggleBtn');
         this.playlistSidebar = document.getElementById('playlistSidebar');
+        this.repeatLoopActive = false;
+        this.repeatLoopStart = 0;
+        this.repeatLoopEnd = 0;
+        this.repeatLoopDelaying = false;
+        this.repeatLoopDelayTimeout = null;
         
         this.initWebSocket();
         this.initEventListeners();
@@ -287,15 +292,31 @@ class MP3Player {
             
             return `
                 <div class="subtitle-line-item" data-index="${index}" data-start="${subtitle.start}" data-end="${subtitle.end}">
-                    ${content}
+                    <div class="subtitle-content">
+                        ${content}
+                    </div>
+                    <button class="subtitle-repeat-btn" data-index="${index}" data-start="${subtitle.start}" data-end="${subtitle.end}" title="Repeat this subtitle">
+                        <span class="material-icons">repeat</span>
+                    </button>
                 </div>
             `;
         }).join('');
         
         document.querySelectorAll('.subtitle-line-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const start = parseFloat(item.dataset.start);
-                this.audioPlayer.currentTime = start;
+            item.addEventListener('click', (e) => {
+                if (!e.target.closest('.subtitle-repeat-btn')) {
+                    const start = parseFloat(item.dataset.start);
+                    this.audioPlayer.currentTime = start;
+                }
+            });
+        });
+        
+        document.querySelectorAll('.subtitle-repeat-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const start = parseFloat(btn.dataset.start);
+                const end = parseFloat(btn.dataset.end);
+                this.toggleSubtitleRepeat(start, end, btn);
             });
         });
     }
@@ -304,6 +325,10 @@ class MP3Player {
         const currentTime = this.audioPlayer.currentTime;
         
         if (this.subtitles.length === 0) return;
+        
+        if (this.repeatLoopActive) {
+            return;
+        }
         
         let foundIndex = -1;
         for (let i = 0; i < this.subtitles.length; i++) {
@@ -475,6 +500,49 @@ class MP3Player {
         document.body.classList.toggle('playlist-closed');
     }
 
+    toggleSubtitleRepeat(start, end, buttonElement) {
+        if (this.repeatLoopActive && this.repeatLoopStart === start && this.repeatLoopEnd === end) {
+            this.repeatLoopActive = false;
+            this.repeatLoopStart = 0;
+            this.repeatLoopEnd = 0;
+            this.repeatLoopDelaying = false;
+            if (this.repeatLoopDelayTimeout) {
+                clearTimeout(this.repeatLoopDelayTimeout);
+                this.repeatLoopDelayTimeout = null;
+            }
+            document.querySelectorAll('.subtitle-repeat-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+        } else {
+            if (this.repeatLoopDelayTimeout) {
+                clearTimeout(this.repeatLoopDelayTimeout);
+                this.repeatLoopDelayTimeout = null;
+            }
+            this.repeatLoopActive = true;
+            this.repeatLoopStart = start;
+            this.repeatLoopEnd = end;
+            this.repeatLoopDelaying = false;
+            this.audioPlayer.currentTime = start;
+            document.querySelectorAll('.subtitle-repeat-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            buttonElement.classList.add('active');
+        }
+    }
+
+    checkRepeatLoop() {
+        if (this.repeatLoopActive && !this.repeatLoopDelaying && this.audioPlayer.currentTime >= this.repeatLoopEnd) {
+            this.repeatLoopDelaying = true;
+            this.audioPlayer.pause();
+            
+            this.repeatLoopDelayTimeout = setTimeout(() => {
+                this.audioPlayer.currentTime = this.repeatLoopStart;
+                this.audioPlayer.play();
+                this.repeatLoopDelaying = false;
+            }, 2000);
+        }
+    }
+
     initEventListeners() {
         this.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
         this.nextBtn.addEventListener('click', () => this.playNext());
@@ -506,6 +574,7 @@ class MP3Player {
         this.audioPlayer.addEventListener('timeupdate', () => {
             this.updateProgress();
             this.updateSubtitle();
+            this.checkRepeatLoop();
         });
         
         this.audioPlayer.addEventListener('loadedmetadata', () => {

@@ -1,0 +1,193 @@
+{
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "联系我们"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "还没有账户？"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "电子邮件..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "喜欢这个扩展？"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "到期时间"
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "忘记密码？"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "升级高级版"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "有建议？"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "遇到问题？"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "凭据错误或您的订阅已过期。如需帮助，请联系我们。"
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "将 VoiceWave 控制面板添加到界面"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "语音输入"
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "发送邮件至 $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "菜单"
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "需要帮助？"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "密码..."
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "套餐"
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "请告诉我们"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "请给我们 5 星好评"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "请登录您的账户。"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "报告错误/问题"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "重置"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "设置"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "$hostName$ 的设置",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "在每条消息旁显示 $listenIcon$ 按钮",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "登录"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "退出登录"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "仅需 $offerPrice$/月起。",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "订阅"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "已经订阅？"
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "此扩展在当前页面不可用。"
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "关闭"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "开启"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "升级到 VoiceWave Premium，无限使用所有高级功能。"
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "使用指南"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "欢迎！"
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ 或发送邮件至 $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "extensionDescription": {
+      "message": "向 ChatGPT、Gemini、DeepSeek、Claude 及所有网站口述消息。让消息和文本朗读给您听。为 AI 聊天机器人及所有网站提供强大的语音输入、语音输出功能。"
+   },
+   "extensionName": {
+      "message": "VoiceWave：ChatGPT、DeepSeek、Gemini 等的语音模式"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave：ChatGPT、DeepSeek 和其他 AI 聊天机器人的语音模式"
+   }
+}

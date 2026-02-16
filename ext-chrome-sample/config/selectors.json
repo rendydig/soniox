@@ -1,0 +1,267 @@
+{
+    "version": "5",
+    "entries": [
+      {
+        "hostnames": ["chatgpt.com", "chat.openai.com"],
+        "rules": {
+          "container": "form:has([contenteditable=\"true\"], textarea)",
+          "textarea": "[contenteditable=\"true\"]",
+          "submit": "button[data-testid=\"send-button\"]:not(:disabled)",
+          "listenButtonContainers": "[data-testid*=\"conversation-turn\"]:not(:has(listen-button)) .select-none.flex.items-center:has(button)",
+          "playable": "*[data-message-author-role]",
+          "allPlayableNodes": "*[data-message-author-role]",
+          "latestDefaultListenButton": "button[data-testid*=\"voice-play\"]",
+          "loading": "[data-testid=\"stop-button\"]",
+          "streamPlayable": true,
+          "highlightFixing": true,
+          "extraStyles": [
+            "listen-button { padding: 6px !important; }"
+          ],
+          "integrationStyles": [
+            ".controls { top: -42.5px !important; right: 0 !important; }"
+          ],
+          "messageRole": {
+            "rules": [
+              { "getAttributeValue": "data-message-author-role" }
+            ]
+          }
+        }
+      },
+      {
+        "hostnames": ["chat.deepseek.com"],
+        "rules": {
+          "container": "div.aaff8b8f, *:has(> * > textarea.ds-textarea__textarea)",
+          "textarea": "textarea._27c9245, textarea.ds-textarea__textarea, textarea[placeholder*=\"DeepSeek\"]",
+          "submit": "div.bf38813a [role=\"button\"]:has(svg path[d^=\"M8.3125\"]):not([aria-disabled=\"true\"]):not(.ds-icon-button--disabled)",
+          "listenButtonContainers": ".ds-message ~ * .ds-flex:has(.ds-icon-button):not(:has(listen-button))",
+          "playable": ".ds-message",
+          "allPlayableNodes": ".ds-message",
+          "loading": [
+            "div.bf38813a [role=\"button\"][aria-disabled=\"true\"]:has(svg path[d^=\"M8.3125\"])",
+            ".dad65929 > div:has(.ds-message):last-child:not(:has(.ds-markdown))",
+            "[role=\"button\"] [class*=\"ds-loading\"]",
+            ".ds-loading",
+            "[class*=\"animate-spin\"]",
+            "[aria-busy=\"true\"]"
+          ],
+          "streamPlayable": false,
+          "extraStyles": [
+            "listen-button { width: 18px !important; height: 18px !important; margin-top: -2px !important; margin-left: 5px !important; }",
+            "*:has(> svg [d=\"M1.00008 2.41429C0.609551 2.02376 0.609551 1.3906 1.00008 1.00008C1.3906 0.609551 2.02376 0.609551 2.41429 1.00007L8.00008 6.58586L13.5859 1.00008C13.9764 0.609551 14.6096 0.609551 15.0001 1.00008C15.3906 1.3906 15.3906 2.02376 15.0001 2.41429L8.8486 8.56576C8.37997 9.03439 7.62018 9.03439 7.15155 8.56576L1.00008 2.41429Z\"]) { top: -80px !important; right: 0 !important; }"
+          ],
+          "integrationStyles": [
+            ".controls { top: -40px !important; right: 0 !important; }"
+          ],
+          "messageRole": {
+            "rules": [
+              { "hasClass": "d29f3d7d", "role": "user" },
+              { "hasClass": "_4f9bf79", "role": "assistant" }
+            ]
+          }
+        }
+      },
+      {
+        "hostnames": ["poe.com"],
+        "rules": {
+          "container": "*:has(> * > * > textarea)",
+          "textarea": "textarea",
+          "submit": "*:has(textarea) [class*=\"MessageSendButton\"]:not(:disabled)",
+          "listenButtonContainers": "section[class*=\"ChatMessageActionBar\"]:not(:has(listen-button)), *[class^=\"ChatMessage\"]:has(>[class*=\"LeftSideMessageHeader\"]) [class*=\"ChatMessageActionBar\"]:not(:has(listen-button))",
+          "playable": "[class*=\"Message_leftSideMessageBubble\"] [class*=\"Markdown_markdownContainer\"]",
+          "allPlayableNodes": "[class*=\"Message_leftSideMessageBubble\"] [class*=\"Markdown_markdownContainer\"]",
+          "loading": [
+            "button[class*=\"ChatStopMessageButton\"]",
+            "button[class*=\"StopMessageButton\"]",
+            "[class*=\"ChatBreakpoint_chatBreakpoint\"] [class*=\"ChatMessageInputContainer\"] button:has([class*=\"LoadingDots\"])",
+            "[aria-busy=\"true\"]",
+            "[class*=\"Message_animating\"]"
+          ],
+          "streamPlayable": false,
+          "extraStyles": [
+            "[class*=\"ChatMessageVoiceInputButton\"] { visibility: hidden; margin: 0 -7.5px; }",
+            "aside { z-index: 0; }",
+            "footer { margin-top: 20px; }",
+            "listen-button { display: flex; align-items: center; padding: 0 !important; margin: 0 !important; }",
+            "listen-button svg { width: 18px !important; height: 18px !important; }",
+            "*[class^=\"ChatMessage\"]:has(>[class*=\"LeftSideChatMessageHeader\"]) [class*=\"DropdownMenuButton\"] > button { visibility: visible !important; }",
+            "*:has(> * > * > textarea) { position: relative !important; }"
+          ],
+          "integrationStyles": [
+            ".controls { top: -42.5px !important; right: 4px !important; }"
+          ],
+          "messageRole": {
+            "rules": []
+          }
+        }
+      },
+      {
+        "hostnames": ["chat.mistral.ai", "mistral.ai"],
+        "rules": {
+          "container": "form:has(div[contenteditable=\"true\"].ProseMirror)",
+          "textarea": "div[contenteditable=\"true\"].ProseMirror[data-placeholder]",
+          "submit": "button[aria-label=\"Voice Mode\"]",
+          "listenButtonContainers": "div[data-message-author-role=\"assistant\"] .flex.flex-row.items-center.gap-2:has(> button[aria-label=\"Like\"]):not(:has(listen-button))",
+          "playable": "div[data-message-author-role=\"assistant\"] div[data-message-part-type=\"answer\"]",
+          "allPlayableNodes": "div[data-message-author-role]",
+          "loading": [
+            "button[aria-label=\"Stop\"]",
+            "button[aria-label*=\"stop\"]",
+            "button[aria-label*=\"Stop\"]",
+            "div[data-message-author-role=\"assistant\"]:not(:has(div[data-message-part-type=\"answer\"]))",
+            "[aria-busy=\"true\"]",
+            ".lucide-loader",
+            "[class*=\"animate-spin\"]",
+            "button:has(.sonner-loading-wrapper)"
+          ],
+          "streamPlayable": false,
+          "extraStyles": [
+            "listen-button { padding: 7px !important; }",
+            "form:has(div.ProseMirror) { position: relative !important; }"
+          ],
+          "integrationStyles": [
+            ".controls { position: absolute !important; top: -50px !important; right: 0px !important; z-index: 9999 !important; }"
+          ],
+          "messageRole": {
+            "rules": [
+              { "getAttributeValue": "data-message-author-role" }
+            ]
+          }
+        }
+      },
+      {
+        "hostnames": ["claude.ai"],
+        "rules": {
+          "container": "fieldset.flex-col *:has(> * > * > [contenteditable=\"true\"]), *:has(> * > * > * > [contenteditable=\"true\"])",
+          "textarea": "[contenteditable=\"true\"]",
+          "listenButtonContainers": "[data-is-streaming].group .absolute > * > .items-stretch:not(:has(listen-button))",
+          "playable": "[data-is-streaming]",
+          "allPlayableNodes": "[data-test-render-count]",
+          "loading": "[data-is-streaming=\"true\"]",
+          "extraStyles": [
+            "*:has(> * > * > * > [contenteditable=\"true\"]) { position: relative !important; }",
+            "listen-button { padding: 7.5px 5px !important; }",
+            "listen-button svg { width: 16px !important; height: 16px !important; }"
+          ],
+          "integrationStyles": [
+            ".controls { top: -40px !important; right: 0 !important; }"
+          ],
+          "messageRole": {
+            "rules": [
+              { "hasChild": "div[data-testid=\"user-message\"]", "role": "user" }
+            ]
+          }
+        }
+      },
+      {
+        "hostnames": ["grok.com"],
+        "rules": {
+          "container": ".query-bar",
+          "textarea": ".tiptap[contenteditable=\"true\"], div[contenteditable=\"true\"].ProseMirror",
+          "submit": "button[type=\"submit\"][aria-label=\"Submit\"]:not([disabled])",
+          "listenButtonContainers": ".action-buttons .flex.items-center.gap-\\[2px\\]:not(:has(listen-button))",
+          "playable": "div[id^=\"response-\"].items-start .response-content-markdown",
+          "allPlayableNodes": "div[id^=\"response-\"] .message-bubble",
+          "loading": [
+            "button[aria-label=\"Stop\"]",
+            "button[aria-label*=\"stop\"]",
+            "[data-generating=\"true\"]",
+            ".action-buttons:not(.last-response)",
+            "[aria-busy=\"true\"]"
+          ],
+          "streamPlayable": true,
+          "extraStyles": [
+            "listen-button { padding: 7px !important; }",
+            ".flex-row > .-ml-4.flex:has(> button) button { opacity: 1 !important; }",
+            ".query-bar { position: relative !important; overflow: visible !important; }"
+          ],
+          "integrationStyles": [
+            ".controls { position: absolute !important; top: -40px !important; right: 0px !important; z-index: 9999 !important; }"
+          ],
+          "messageRole": {
+            "rules": [
+              { "closestHasClass": "items-end", "role": "user" },
+              { "closestHasClass": "items-start", "role": "assistant" }
+            ]
+          }
+        }
+      },
+      {
+        "hostnames": ["gemini.google.com"],
+        "rules": {
+          "container": ".input-area-container:has([contenteditable=\"true\"])",
+          "textarea": ".input-area-container:has([contenteditable=\"true\"]) [contenteditable=\"true\"]",
+          "listenButtonContainers": ".buttons-container-v2:not(:has(listen-button))",
+          "playable": "message-content .markdown-main-panel",
+          "allPlayableNodes": "message-content .markdown-main-panel,user-query-content",
+          "loading": "button:has([fonticon=\"stop\"])",
+          "streamPlayable": false,
+          "extraStyles": [
+            "listen-button { padding: 7px !important; margin-right: 100%; margin-top: 5px; }"
+          ],
+          "integrationStyles": [
+            ".controls { top: -40px !important; right: 0 !important; }"
+          ],
+          "messageRole": {
+            "rules": [
+              { "tagNameEquals": "user-query-content", "role": "user" }
+            ]
+          }
+        }
+      },
+      {
+        "hostnames": ["www.perplexity.ai"],
+        "rules": {
+          "container": "[class*=\"rounded-2xl\"]:has(#ask-input)",
+          "textarea": "#ask-input",
+          "submit": "button[data-testid=\"submit-button\"]:not(:disabled)",
+          "listenButtonContainers": "[class*=\"thread\"] .flex.justify-between .flex:nth-child(2):has(button):not(:has(listen-button))",
+          "playable": "[id*=\"markdown-content\"]",
+          "allPlayableNodes": "[id*=\"markdown-content\"]",
+          "loading": [
+            "button[data-testid=\"submit-button\"][disabled]",
+            "[class*=\"animate-pplxIndicator\"]"
+          ],
+          "streamPlayable": false,
+          "extraStyles": [
+            "listen-button { padding: 7px !important; }"
+          ],
+          "integrationStyles": [
+            ".controls { top: -40px !important; right: 0 !important; }"
+          ],
+          "messageRole": {
+            "rules": []
+          }
+        }
+      },
+      {
+        "hostnames": ["www.meta.ai"],
+        "rules": {
+          "container": "div[data-pagelet=\"KadabraPrivateComposer\"]",
+          "textarea": "div[data-lexical-editor=\"true\"][contenteditable=\"true\"]",
+          "submit": "div[aria-label=\"Send\"][role=\"button\"]",
+          "listenButtonContainers": "div:has(> div > span > div[aria-label=\"Copy\"][role=\"button\"]):not(:has(listen-button))",
+          "playable": "div.html-div[tabindex=\"-1\"]",
+          "allPlayableNodes": "div.html-div",
+          "loading": [
+            "div[aria-label*=\"Stop\"][role=\"button\"]",
+            "div[aria-disabled=\"true\"][aria-label=\"Send\"]",
+            "[aria-busy=\"true\"]"
+          ],
+          "streamPlayable": true,
+          "extraStyles": [
+            "listen-button { padding: 7px !important; }",
+            "div[data-pagelet=\"KadabraPrivateComposer\"] { position: relative !important; }"
+          ],
+          "integrationStyles": [
+            ".controls { position: absolute !important; top: -45px !important; right: 10px !important; z-index: 9999 !important; }"
+          ],
+          "messageRole": {
+            "rules": [
+              { "getAttributeValue": "data-message-author-role" }
+            ]
+          }
+        }
+      }
+    ]
+}
+

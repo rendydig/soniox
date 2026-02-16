@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "ለግቤት መስኮች በቀኝ-ጠቅታ ምናሌ ውስጥ \"$itemTitle$\" አማራጭ ያክሉ",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "በማንኛውም ድረ-ገጽ ላይ የተመረጠውን ጽሑፍ ጮክ ብሎ ለማንበብ \"$itemTitle$\" አማራጭን በቀኝ-ጠቅታ ምናሌ ውስጥ ያክሉ",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "ሙሉውን ገጽ ጮክ ብሎ ለማንበብ \"$itemTitle$\" አማራጭን በቀኝ-ጠቅታ ምናሌ ውስጥ ያክሉ",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "የላቀ ጮክ ብሎ ማንበብ (ለሁሉም ድረ-ገጾች)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "የላቀ ቅንብሮች"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "የላቀ የድምጽ መቆጣጠሪያ"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "ከተናገርኩ በኋላ፣ ከ$delayInSeconds$ ሰከንድ(ዎች) በኋላ ኤንተር በራስ-ሰር እንዲገባ አድርግ",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "ሁሉም ቋንቋዎች"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "አሎይ (ገለልተኛ)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "የድምፅ መቅረጽ ስህተት..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "ቋንቋን በመለየት ድምጽን በራስ-ሰር ምረጥ"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "የሚመርጡትን ድምጽ ወይም ቋንቋ ማግኘት አልቻሉም?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "ነባሪውን የChatGPT ድምጽ በሚጠቀሙበት ጊዜ እንደ በራስ-ሰር የጽሑፍ ማድመቂያ እና የድምጽ አሰሳ መቆጣጠሪያዎች ያሉ አንዳንድ ባህሪያት ላይገኙ ይችላሉ።"
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "የድምፅ ግብዓት መሳሪያዎን በማረጋገጥ ላይ..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "$triggerWord$ ስል ግቤቱን አጽዳ",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "ዝጋ"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "ያግኙን"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "$triggerWord$ ስል የመጨረሻውን ግቤት ሰርዝ",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "ስህተቶችን በማግኘት ላይ..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "አቀላለፍ"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "መለያ የለዎትም?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "VoiceWave በመጠቀም በድምጽዎ መልዕክት ለማቀላለፍ እዚህ ይጫኑ።"
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "ኢኮ (ወንድ)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "አርትዕ"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "ኢሜይል..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "ይህን ማራዘሚያ እየደሰተዎት ነው?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "የማብቂያ ጊዜ"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "የንግግር ለይቶ ማወቂያውን ማስጀመር አልተሳካም። ምናልባት ከበይነመረብ ጋር አልተገናኙም። እባክዎ የበይነመረብ ግንኙነትዎን ያረጋግጡ እና እንደገና ይሞክሩ። አለበለዚያ፣ ከቅንብሮች የድምፅ መቆጣጠሪያ ቋንቋዎን መቀየር ይሞክሩ።"
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "የይለፍ ቃልዎን ረስተውታል?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "አጠቃላይ ቅንብሮች"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "ፕሪሚየም ይሁኑ"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "ገባኝ"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "አስተያየት አለዎት?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "ችግር አጋጥሞዎታል?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "አዲስ መልዕክቶችን በራስ-ሰር በድምጽ አንብብ"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "ጮክ ብሎ አንብብ"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "በድምጽ በሚነበብበት ጊዜ ጽሑፉን አድምቅ"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "የተሳሳተ መግቢያ ወይም የደንበኝነት ምዝገባዎ አልፏል። እርዳታ ከፈለጉ እባክዎ ያግኙን።"
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "የVoiceWave መቆጣጠሪያ ፓነልን ወደ በይነገጹ ጨምር"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "በድምፅ መተየብ"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "ይህ ቅጥያ የተገናኘ ማይክሮፎን ማግኘት አልቻለም። እባክዎ ማይክሮፎንዎ ተገናኝቶ በትክክል እየሰራ መሆኑን ያረጋግጡ።"
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "የማይክሮፎን መዳረሻ የተከለከለ ይመስላል። የንግግር ለይቶ ማወቅን ለማንቃት፣ እባክዎ ወደ አሳሽዎ የማይክሮፎን ቅንብሮች ይሂዱ እና ቅጥያው ማይክሮፎኑን እንዲደርስ ይፍቀዱ።"
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "ቁልፍ ሰሌዳ"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "የቁልፍ ሰሌዳ አቋራጮች"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "ተጨማሪ ድምጾችን እንዴት እንደሚጭኑ ይወቁ"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "በማዳመጥ ላይ..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "በመጫን ላይ..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "$emailUsLink$ ላይ ኢሜይል ይላኩልን",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "የመምረጫዎችን ውቅር ከሩቅ አገልግሎት ሰጪ በእጅ አዘምን። ይህ ለሚደገፉ ድረ-ገጾች የቅርብ ጊዜውን የውህደት ደንቦች እንዳሎት ያረጋግጣል።"
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "ምናሌ"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "የማይክሮፎን መዳረሻ ተከልክሏል..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "የማይክሮፎን መዳረሻ ስህተት..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "ማይክሮፎን በአገልግሎት ላይ..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "የማይክሮፎን ፈቃድ ያስፈልጋል..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "እርዳታ ይፈልጋሉ?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "የአውታረመረብ ስህተት..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "ቀጣይ"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "ቀጣይ ዓረፍተ ነገር"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "ማይክሮፎን አልተገኘም..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "ኖቫ (ሴት)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "አሁን የላቀ የድምጽ መቆጣጠሪያን በ$linksToAIs$ እና በሌሎች የሚደገፉ ድረ-ገጾች ላይ መጠቀም ይችላሉ! ወደ ድረ-ገጹ ይሂዱ፣ የ$iconOfMicrophone$ አዶውን ይጫኑ፣ ወይም የድምጽ መቆጣጠሪያን ለማንቃት እና ማውራት ለመጀመር (ከግቤት መስክ ውጭ) ከቁልፍ ሰሌዳው ላይ $toggleKey$ ይጫኑ።",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "VoiceWave ለሁሉም ድረ-ገጾች"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "በማንኛውም ድረ-ገጽ ላይ በግቤት መስክ ላይ በቀኝ ይጫኑ፣ ከዝርዝሩ ውስጥ \"በድምጽ መተየብ\" ይምረጡ፣ የ$iconOfMicrophone$ አዶውን ይጫኑ፣ እና ቁልፍ ሰሌዳ ሳይጠቀሙ ለመተየብ ማውራት ይጀምሩ።",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "በማንኛውም ድረ-ገጽ ላይ በግቤት መስኩ ላይ ቀኝ-ጠቅ ያድርጉ፣ ከምናሌው \"$itemTitle$\" ይምረጡ፣ $iconOfMicrophone$ አዶውን ጠቅ ያድርጉ፣ እና መናገር ይጀምሩ።",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "ኦኒክስ (ጥልቅ ወንድ)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "የይለፍ ቃል..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "ለአፍታ አቁም"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "ልምድዎን ያበጁ፡ ድምጾች፣ የንባብ ቅንብሮች፣ አቋራጮች፣ ወዘተ።"
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "ድምጽ ከፍታ"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "እቅድ"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "አጫውት / ቀጥል"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "እባክዎ ቁልፉ በአሁኑ ጊዜ በሌሎች መተግበሪያዎች እንደማይጠቀም ያረጋግጡ።"
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "እባክዎ ያሳውቁን"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "እባክዎ 5 ኮከቦች ይስጡን"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "እባክዎ ወደ መለያዎ ይግቡ።"
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "ብዙ ዓረፍተ ነገሮችን የያዘ ረጅም የድምጽ ግቤት ለማድረግ $keyboardKey$ ቁልፍን ተጭነው ይያዙት",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "የሚፈልጉትን ቁልፍ ይጫኑ"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "የድምጽ መቆጣጠሪያውን ለማብራት/ለማጥፋት (ከግቤት መስክ ውጭ) $keyboardKey$ ቁልፍን ይጫኑ",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "ቀዳሚ ዓረፍተ ነገር"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "ፈጣን ምርጫዎች"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "በVoiceWave ጮክ ብሎ አንብብ"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "ተጨማሪ አንብብ..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "እንደገና አጫውት"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "ስህተቶችን/ችግሮችን ሪፖርት ያድርጉ"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "ዳግም አስጀምር"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "ቁልፉ ሲለቀቅ መልዕክቱን ላክ"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "ቅንብሮች"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "ለ$hostName$ ቅንብሮች",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "ሺመር (ለስላሳ ሴት)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "አቋራጮች"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "ከእያንዳንዱ መልዕክት አጠገብ $listenIcon$ ቁልፍ አሳይ",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "ግባ"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "ውጣ"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "የንግግር ግብዓት ተቋርጧል..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "የንግግር ግብዓት ተቋርጧል ወይም ተሰርዟል። እባክዎ የሚሰራ የበይነመረብ ግንኙነት እንዳለዎት፣ ማይክሮፎንዎ ተገናኝቶ መሆኑን እና የማይክሮፎን መዳረሻ ለዚህ ቅጥያ መፈቀዱን ያረጋግጡ።"
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "የንግግር ቋንቋ"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "ፍጥነት"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "በወር $offerPrice$ ብቻ ይጀምሩ።",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "አቁም"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "$triggerWord$ ስል ጮክ ብሎ ማንበብን አቁም",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "$triggerWord$ ስል የድምጽ ቁጥጥርን አቁም",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "ይመዝገቡ"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "ቀደም ብለው ተመዝግበዋል?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "ጽሑፍ-ወደ-ድምጽ ድምጽ"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "ቅጥያው በተሳካ ሁኔታ ተዘምኗል!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "ቅጥያው ማይክሮፎኑን ለመድረስ ፈቃድዎን ይፈልጋል። እባክዎ የማይክሮፎን መዳረሻን ለመፍቀድ ጥያቄ ለማግኘት የብቅ-ባይ ወይም የአሳሽ አሞሌውን ያረጋግጡ። የንግግር ለይቶ ማወቅን ለማንቃት \"ፍቀድ\" የሚለውን ጠቅ ያድርጉ።"
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "የድምጹ ከፍተኛነት ወይም ዝቅተኛነት።"
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "ድምጹ የሚናገርበት ፍጥነት።"
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "የድምጹ መጠን።"
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "ይህ ቅጥያ ድምፅ መቅረጽ ላይ ችግር እያጋጠመው ነው። ማይክሮፎንዎ ተገናኝቶ በትክክል እየሰራ መሆኑን ያረጋግጡ። የአሳሽዎን የማይክሮፎን ፈቃዶች ያረጋግጡ እና አሳሹን እንደገና ማስጀመር ይሞክሩ።"
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "ይህ ማራዘሚያ በዚህ ገጽ ላይ አይገኝም።"
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "ይህ ባህሪ በድምጽ የሚነበበውን ሀረግ ወይም ዓረፍተ ነገር በማድመቅ፣ ጽሑፉን በእይታ በማመልከት ከተነገሩት ቃላት ጋር መከተልን ቀላል ያደርገዋል።"
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "ይህ ባህሪ ለኤሊት ተጠቃሚዎች ብቻ ነው።"
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "ይህ የቤታ ባህሪ ነው። አሁንም በማሻሻል ላይ ነው እና አንዳንድ ችግሮች ወይም ገደቦች ሊኖሩት ይችላል።"
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "በማዳመጥ ላይ እያሉ ወደ ቀጣዩ ዓረፍተ ነገር ለመሄድ $keyboardKey$ ቁልፍን (ከግቤት መስክ ውጭ) ይጫኑ",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "በማዳመጥ ላይ እያሉ ወደ ቀዳሚው ዓረፍተ ነገር ለመሄድ $keyboardKey$ ቁልፍን (ከግቤት መስክ ውጭ) ይጫኑ",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "በገጹ ላይ በማንኛውም ቦታ ቀኝ-ጠቅ ያድርጉ እና \"$itemTitle$\" አማራጭን ይምረጡ። VoiceWave የዚያን ገጽ አጠቃላይ ጽሑፍ ጮክ ብሎ ያነባል።",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "የሚፈልጉትን ጽሑፍ ይምረጡ፣ በቀኝ ይጫኑ፣ እና ከዝርዝሩ ውስጥ \"$itemTitle$\" አማራጩን ይምረጡ። ያድመቁትን ጽሑፍ ብቻ ይሰማሉ።",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "$triggerWord$ ስል ኤንተር እንዲገባ አድርግ",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "ማይክሮፎንዎን ለመድረስ በመሞከር ላይ..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "አጥፋ"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "ምላሽ ሲሰማ ማይክሮፎኑን አጥፋ"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "ወደ ሌላ ትር ሲቀይሩ ማይክሮፎኑን አጥፋ"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "ቁልፉ ሲለቀቅ የድምጽ መቆጣጠሪያውን አጥፋ"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "አብራ"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "ማይክሮፎንዎን መድረስ አልተቻለም። እባክዎ ማይክሮፎንዎ ተገናኝቶ መሆኑን እና የማይክሮፎን መዳረሻ ለዚህ ድረ-ገጽ መፈቀዱን ያረጋግጡ እና እንደገና ይሞክሩ።"
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "መምረጫዎችን አዘምን"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "የመምረጫዎችን ውቅር ከሩቅ አገልግሎት ሰጪ አዘምን"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "ለሁሉም የፕሪሚየም ባህሪያት ያልተገደበ መዳረሻ ወደ VoiceWave Premium ያሻሽሉ።"
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "የአጠቃቀም መመሪያ"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "ነባሪውን የChatGPT ድምጽ ተጠቀም"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "ድምጽ"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "በድምጽ መተየብ"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "መልእክት አንብብ"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "በድምጽ መተየብ (ለሁሉም ድረ-ገጾች)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "ድምጽ መጠን"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "እንኳን ደህና መጡ!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "እንኳን ደህና መጡ! ቅጥያዎን ለማበጀት እንጀምር። አሁን ለሁሉም ፕሪሚየም ባህሪያት ነጻ መዳረሻ አለዎት።"
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "ነባሪውን የChatGPT ድምጽ በሚጠቀሙበት ጊዜ፣ እንደ ራስ-ሰር የጽሑፍ ማድመቂያ እና የድምፅ አሰሳ መቆጣጠሪያዎች ያሉ አንዳንድ ባህሪያት ላይገኙ ይችላሉ እና የተመረጠው የTTS ድምጽ በራስ-ሰር አይተገበርም።"
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "የሚሰራበት"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "የእርስዎ ማይክሮፎን በአሁኑ ጊዜ በ$hostName$ ላይ ለድምፅ ማወቂያ ጥቅም ላይ እየዋለ ነው።",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ ወይም በ $emailUsLink$ ኢሜይል ያግኙን",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "በድምፅ አንብብ"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "ገጹን በድምፅ አንብብ"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "በድምፅ ይተይቡ"
+   },
+   "extensionDescription": {
+      "message": "ከDeepSeek፣ ChatGPT እና ሌሎች AI ቻትቦቶች ጋር በድምፅ ይወያዩ። የድምፅ ሁነታን፣ የንግግር ማወቂያን፣ ጽሁፍ-ወደ-ንግግርን እና ሌሎችንም ያግብሩ።"
+   },
+   "extensionName": {
+      "message": "VoiceWave: ለChatGPT፣ DeepSeek፣ Claude እና ሌሎች የድምፅ ሁነታ"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: ለChatGPT፣ DeepSeek እና ሌሎች AI ቻትቦቶች የድምፅ ሁነታ"
+   }
+}

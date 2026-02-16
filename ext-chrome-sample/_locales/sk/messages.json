@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "Pridať možnosť \"$itemTitle$\" do kontextovej ponuky pre vstupné polia",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "Pridať možnosť \"$itemTitle$\" do kontextového menu pre čítanie vybraného textunahlas na akejkoľvek webovej stránke",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "Pridať možnosť \"$itemTitle$\" do kontextovej ponuky na prečítanie celej stránky nahlas",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "Pokročilé čítanie nahlas (pre všetky webové stránky)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "Pokročilé nastavenia"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "Pokročilé hlasové ovládanie"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "Po dokončení reči automaticky stlačiť enter po $delayInSeconds$ sekunde/sekúndach",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "Všetky jazyky"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy (Neutrálny)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "Chyba pri zachytávaní zvuku..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "Automaticky vybrať hlas detekciou jazyka"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "Nemôžete nájsť svoj preferovaný hlas alebo jazyk?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "Niektoré funkcie, ako napríklad automatické zvýrazňovanie textu a ovládacie prvky zvukovej navigácie, nemusia byť dostupné pri používaní predvoleného hlasu ChatGPT."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "Kontrola zvukového vstupného zariadenia..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "Vymazať vstup, keď poviem $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "Zavrieť"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "Kontaktujte nás"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "Vymazať posledný vstup, keď poviem $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "Zisťovanie chýb..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "Diktovanie"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "Nemáte účet?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "Stlačte sem pre diktovanie správy pomocou VoiceWave."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo (Mužský)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "Upraviť"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "E-mail..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "Páči sa vám toto rozšírenie?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "Platnosť do"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "Nepodarilo sa spustiť rozpoznávanie reči. Pravdepodobne nie ste pripojení k internetu. Skontrolujte pripojenie k internetu a skúste to znova. Inak skúste zmeniť jazyk hlasového ovládania v nastaveniach."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "Zabudli ste heslo?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "Všeobecné nastavenia"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "Prejsť na Premium"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "Rozumiem"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "Máte návrh?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "Máte problém?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "Automaticky prečítať nahlas nové správy"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "Prečítať nahlas"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "Zvýrazniť text pri čítaní nahlas"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "Nesprávne prihlasovacie údaje alebo vaše predplatné vypršalo. Ak potrebujete pomoc, kontaktujte nás."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "Pridať ovládací panel VoiceWave do rozhrania"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "Hlasové písanie"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "Zdá sa, že toto rozšírenie nenašlo žiadny pripojený mikrofón. Uistite sa, že váš mikrofón je pripojený a funguje správne."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "Zdá sa, že prístup k mikrofónu je zamietnutý. Ak chcete povoliť rozpoznávanie reči, prejdite do nastavení mikrofónu prehliadača a povoľte rozšíreniu prístup k mikrofónu."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "Klávesnica"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "Klávesové skratky"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "Zistite, ako nainštalovať viac hlasov"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "Počúvam..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "Načítava sa..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "Napíšte nám na $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "Manuálne aktualizujte konfiguráciu selektorov zo vzdialeného servera. To zabezpečí, že máte najnovšie pravidlá integrácie pre podporované webové stránky."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "Menu"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "Prístup k mikrofónu bol zamietnutý..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "Chyba prístupu k mikrofónu..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "Mikrofón sa používa..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "Vyžaduje sa povolenie mikrofónu..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "Potrebujete pomoc?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "Chyba siete..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "Ďalej"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "Ďalšia veta"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "Nebol zistený žiadny mikrofón..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova (ženský)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "Teraz môžete používať pokročilé hlasové ovládanie na $linksToAIs$ a ďalších podporovaných webových stránkach! Stačí prejsť na webovú stránku, kliknúť na ikonu $iconOfMicrophone$ alebo stlačiť $toggleKey$ na klávesnici (mimo vstupného poľa), aby ste aktivovali hlasové ovládanie a začali hovoriť.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "VoiceWave pre všetky webové stránky"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Na akejkoľvek webovej stránke jednoducho kliknite pravým tlačidlom myši na vstupné pole, vyberte z ponuky \"Hlasové písanie\", kliknite na ikonu $iconOfMicrophone$ a začnite hovoriť, aby ste písali bez použitia klávesnice.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Kliknite pravým tlačidlom myši na vstupné pole na ľubovoľnej webovej stránke, vyberte z ponuky \"$itemTitle$\", kliknite na ikonu $iconOfMicrophone$ a začnite diktovať.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx (hlboký mužský)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "Heslo..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "Pozastaviť"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "Prispôsobte si prácu: hlasy, nastavenia čítania nahlas, skratky atď."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "Výška"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "Plán"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "Prehrať / Pokračovať"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "Uistite sa, že kláves momentálne nepoužíva žiadna iná aplikácia."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "Prosím, dajte nám vedieť"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "Ohodnoťte nás 5 hviezdičkami"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "Prosím, prihláste sa do svojho účtu."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "Stlačte a podržte kláves $keyboardKey$ pre dlhý hlasový vstup s viacerými vetami",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "Stlačte požadovanú klávesu"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "Stlačte kláves $keyboardKey$ (mimo vstupného poľa) pre zapnutie/vypnutie hlasového ovládania",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "Predchádzajúca veta"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "Rýchly výber"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "Čítať nahlas s VoiceWave"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "Čítať viac..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "Prehrať znova"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "Nahlásiť chyby/problémy"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Obnoviť"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "Odoslať správu pri uvoľnení klávesu"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "Nastavenia"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "Nastavenia pre $hostName$",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer (jemný ženský)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "Skratky"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "Zobraziť tlačidlo $listenIcon$ vedľa každej správy",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "Prihlásiť sa"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "Odhlásiť sa"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "Hlasový vstup bol prerušený..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "Hlasový vstup bol prerušený alebo zrušený. Uistite sa, že máte funkčné pripojenie k internetu, váš mikrofón je pripojený a prístup k mikrofónu je pre toto rozšírenie povolený."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "Jazyk reči"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "Rýchlosť"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "Už od $offerPrice$/mesiac.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "Zastaviť"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "Zastaviť čítanie nahlas, keď poviem $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "Zastaviť hlasové ovládanie, keď poviem $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "Predplatiť"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "Už máte predplatné?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "Hlas prevodu textu na reč"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "Rozšírenie bolo úspešne aktualizované!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "Rozšírenie potrebuje vaše povolenie na prístup k mikrofónu. Skontrolujte vyskakovacie okno alebo lištu prehliadača, kde sa zobrazí žiadosť o povolenie prístupu k mikrofónu. Kliknutím na \"Povoliť\" aktivujete rozpoznávanie reči."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "Výška alebo hĺbka hlasu."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "Rýchlosť, akou hlas hovorí."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "Hlasitosť hlasu."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "Toto rozšírenie má problém so zachytávaním zvuku. Uistite sa, že váš mikrofón je pripojený a funguje správne. Skontrolujte povolenia mikrofónu v prehliadači a skúste reštartovať prehliadač."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "Toto rozšírenie nie je na tejto stránke dostupné."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "Táto funkcia zvýrazňuje frázu alebo vetu, ktorá je práve prečítaná nahlas, čo uľahčuje sledovanie hovoreného slova vizuálnym označením textu."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "Táto funkcia je dostupná len pre Elite používateľov."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "Toto je beta funkcia. Stále sa optimalizuje a môže mať niektoré chyby alebo omedzenia."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Pre prechod na nasledujúcu vetu počas počúvania stlačte kláves $keyboardKey$ (mimo vstupného poľa)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Pre prechod na predchádzajúcu vetu počas počúvania stlačte kláves $keyboardKey$ (mimo vstupného poľa)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "Kliknite pravým tlačidlom myši kdekoľvek na stránke a vyberte možnosť \"$itemTitle$\". VoiceWave prečíta celý text na tejto stránkenahlas.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "Vyberte požadovaný text, kliknite pravým tlačidlom myši a zvoľte možnosť \"$itemTitle$\" z kontextovej ponuky. Počujete len text, ktorý ste vyznačili.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "Stlačiť enter, keď poviem $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "Pokúšam sa získať prístup k mikrofónu..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "Vypnúť"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "Vypnúť mikrofón pri počúvaní odpovede"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "Vypnúť mikrofón pri prepnutí na inú kartu"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "Vypnúť hlasové ovládanie pri uvoľnení klávesu"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "Zapnúť"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "Nie je možné získať prístup k vášmu mikrofónu. Uistite sa, že váš mikrofón je pripojený a prístup k mikrofónu je pre túto stránku povolený, a skúste to znova."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "Aktualizovať selektory"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "Aktualizovať konfiguráciu selektorov zo vzdialeného servera"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "Prejdite na VoiceWave Premium a získajte neobmedzený prístup ku všetkým prémiovým funkciám."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "Návod na použitie"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "Použiť predvolený hlas ChatGPT"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "Hlas"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "Hlasové písanie"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "Diktovať správu"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "Hlasové písanie (pre všetky webové stránky)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "Hlasitosť"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "Vitajte!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "Vitajte! Poďme si prispôsobiť vaše rozšírenie. Teraz máte bezplatný prístup ku všetkým prémiovým funkciám."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "Pri používaní predvoleného hlasu ChatGPT nemusia byť k dispozícii niektoré funkcie, ako je automatické zvýrazňovanie textu a ovládacie prvky pre navigáciu zvuku, a vybraný TTS hlas nebude aplikovaný automaticky."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "Funguje na"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "Váš mikrofón sa momentálne používa na $hostName$ na rozpoznávanie reči.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ alebo nám napíšte na $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "Prečítať nahlas"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "Prečítať stránku nahlas"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "Hlasové písanie"
+   },
+   "extensionDescription": {
+      "message": "Hlasové ovládanie pre ChatGPT vám umožňuje hovoriť s ChatGPT a viesť hlasovú konverzáciu."
+   },
+   "extensionName": {
+      "message": "Hlasové ovládanie pre ChatGPT"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: Hlasové ovládanie ChatGPT"
+   }
+}

@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "Ajouter l'option « $itemTitle$ » au menu contextuel pour les champs de saisie",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "Ajouter l'option « $itemTitle$ » au menu contextuel pour lire le texte sélectionné à voix haute sur n'importe quelle page Web",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "Ajouter l'option « $itemTitle$ » au menu contextuel pour lire la page entière à haute voix",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "Lecture avancée à voix haute (pour tous les sites web)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "Paramètres avancés"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "Contrôle vocal avancé"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "Après avoir fini de parler, déclencher automatiquement Entrée après $delayInSeconds$ seconde(s)",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "Toutes les langues"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy (Neutre)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "Erreur de capture audio..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "Choisir automatiquement la voix en détectant la langue"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "Vous ne trouvez pas la voix ou la langue souhaitée ?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "Certaines fonctionnalités, telles que la mise en surbrillance automatique du texte et les contrôles de navigation audio, peuvent ne pas être disponibles lors de l'utilisation de la voix ChatGPT par défaut."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "Vérification de votre périphérique d'entrée audio..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "Effacer la saisie quand je dis $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "Fermer"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "Nous contacter"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "Supprimer la dernière saisie quand je dis $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "Détection des erreurs..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "Dictée"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "Vous n'avez pas de compte ?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "Appuyez ici pour dicter un message en utilisant VoiceWave."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo (Masculin)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "Modifier"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "E-mail..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "Vous appréciez cette extension ?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "Expiration"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "Échec du démarrage du reconnaisseur vocal. Vous n'êtes probablement pas connecté à Internet. Veuillez vérifier votre connexion Internet et réessayer. Sinon, essayez de changer la langue de contrôle vocal dans les paramètres."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "Mot de passe oublié ?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "Paramètres généraux"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "Passer à Premium"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "Compris"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "Une suggestion ?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "Un problème ?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "Lire automatiquement les nouveaux messages à voix haute"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "Lecture à haute voix"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "Surligner le texte pendant la lecture à voix haute"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "Identifiants incorrects ou votre abonnement a expiré. Veuillez nous contacter si vous avez besoin d'assistance."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "Ajouter le panneau de contrôle VoiceWave à l'interface"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "Saisie vocale"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "Il semble que cette extension n'ait trouvé aucun microphone connecté. Veuillez vous assurer que votre microphone est connecté et fonctionne correctement."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "Il semble que l'accès au microphone soit refusé. Pour activer la reconnaissance vocale, veuillez accéder aux paramètres du microphone de votre navigateur et autoriser l'extension à accéder au microphone."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "Clavier"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "Raccourcis clavier"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "Découvrez comment installer d'autres voix"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "À l'écoute..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "Chargement..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "Écrivez-nous à $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "Mettre à jour manuellement la configuration des sélecteurs depuis le serveur distant. Cela garantit que vous disposez des dernières règles d'intégration pour les sites web pris en charge."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "Menu"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "Accès au microphone refusé..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "Erreur d'accès au microphone..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "Microphone en cours d'utilisation..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "Autorisation du microphone requise..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "Besoin d'aide ?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "Erreur réseau..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "Suivant"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "Phrase suivante"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "Aucun microphone détecté..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova (Voix féminine)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "Vous pouvez maintenant utiliser le contrôle vocal avancé sur $linksToAIs$ et d'autres sites web pris en charge ! Rendez-vous simplement sur le site web, cliquez sur l'icône $iconOfMicrophone$, ou appuyez sur $toggleKey$ depuis le clavier (en dehors du champ de saisie) pour activer le contrôle vocal et commencer à parler.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "VoiceWave pour tous les sites Web"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Sur n'importe quel site web, faites simplement un clic droit sur le champ de saisie, choisissez « Saisie vocale » dans le menu, cliquez sur l'icône $iconOfMicrophone$ et commencez à parler pour saisir sans utiliser le clavier.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Faites un clic droit sur le champ de saisie de n'importe quel site web, choisissez « $itemTitle$ » dans le menu, cliquez sur l'icône $iconOfMicrophone$ et commencez à dicter.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx (Voix masculine grave)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "Mot de passe..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "Pause"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "Personnalisez votre expérience : voix, paramètres de lecture à voix haute, raccourcis, etc."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "Hauteur"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "Forfait"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "Lecture / Reprendre"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "Veuillez vous assurer que la touche n'est pas actuellement utilisée par d'autres applications."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "Faites-le nous savoir"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "Notez-nous 5 étoiles"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "Veuillez vous connecter à votre compte."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "Maintenez la touche $keyboardKey$ enfoncée pour une saisie vocale longue avec plusieurs phrases",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "Appuyez sur la touche souhaitée"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "Appuyez sur la touche $keyboardKey$ (en dehors du champ de saisie) pour activer/désactiver le contrôle vocal",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "Phrase précédente"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "Choix rapides"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "Lire à voix haute avec VoiceWave"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "En savoir plus..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "Rejouer"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "Signaler des bugs/problèmes"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Réinitialiser"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "Envoyer le message lorsque la touche est relâchée"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "Paramètres"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "Paramètres pour $hostName$",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer (Voix féminine douce)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "Raccourcis"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "Afficher un bouton $listenIcon$ à côté de chaque message",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "Se connecter"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "Se déconnecter"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "Entrée vocale interrompue..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "L'entrée vocale a été interrompue ou annulée. Veuillez vous assurer que vous disposez d'une connexion Internet fonctionnelle, que votre microphone est connecté et que l'accès au microphone est autorisé pour cette extension."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "Langue de la parole"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "Vitesse"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "À partir de seulement $offerPrice$/mois.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "Arrêter"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "Arrêter la lecture à haute voix quand je dis $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "Arrêter le contrôle vocal quand je dis $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "S'abonner"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "Déjà abonné ?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "Voix de synthèse vocale"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "L'extension a été mise à jour avec succès !"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "L'extension a besoin de votre autorisation pour accéder au microphone. Veuillez vérifier la fenêtre contextuelle ou la barre du navigateur pour une demande d'autorisation d'accès au microphone. Cliquez sur « Autoriser » pour activer la reconnaissance vocale."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "La hauteur de la voix (aigüe ou grave)."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "La vitesse à laquelle la voix parle."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "Le volume de la voix."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "Cette extension rencontre des difficultés à capturer l'audio. Assurez-vous que votre microphone est connecté et fonctionne correctement. Vérifiez les autorisations du microphone de votre navigateur et essayez de redémarrer le navigateur."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "Cette extension n'est pas disponible sur cette page."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "Cette fonctionnalité met en surbrillance la phrase ou la phrase en cours de lecture à voix haute, facilitant le suivi des mots prononcés en marquant visuellement le texte."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "Cette fonctionnalité est uniquement disponible pour les utilisateurs Elite."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "Ceci est une fonctionnalité bêta. Elle est encore en cours d'optimisation et peut présenter des bugs ou des limitations."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Pour passer à la phrase suivante pendant l'écoute, appuyez sur la touche $keyboardKey$ (en dehors du champ de saisie)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Pour revenir à la phrase précédente pendant l'écoute, appuyez sur la touche $keyboardKey$ (en dehors du champ de saisie)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "Faites un clic droit n'importe où sur la page et choisissez l'option « $itemTitle$ ». VoiceWave lira à haute voix tout le texte de cette page.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "Sélectionnez le texte désiré, faites un clic droit et choisissez l'option « $itemTitle$ » dans le menu contextuel. Vous n'entendrez que le texte que vous avez surligné.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "Déclencher Entrée quand je dis $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "Tentative d'accès à votre microphone..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "Désactiver"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "Désactiver le microphone lors de l'écoute de la réponse"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "Désactiver le microphone lors du passage à un autre onglet"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "Désactiver le contrôle vocal lorsque la touche est relâchée"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "Activer"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "Impossible d'accéder à votre microphone. Veuillez vous assurer que votre microphone est connecté et que l'accès au microphone est autorisé pour ce site, puis réessayez."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "Mettre à jour les sélecteurs"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "Mettre à jour la configuration des sélecteurs depuis le serveur distant"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "Passez à VoiceWave Premium pour un accès illimité à toutes les fonctionnalités Premium."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "Guide d'utilisation"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "Utiliser la voix ChatGPT par défaut"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "Voix"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "Saisie vocale"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "Dicter un message"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "Saisie vocale (pour tous les sites web)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "Volume"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "Bienvenue !"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "Bienvenue ! Plongeons dans la personnalisation de votre extension. Vous avez désormais un accès gratuit à toutes les fonctionnalités premium."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "Lors de l'utilisation de la voix ChatGPT par défaut, certaines fonctionnalités, telles que la mise en surbrillance automatique du texte et les contrôles de navigation audio, peuvent ne pas être disponibles et la voix TTS sélectionnée ne sera pas appliquée automatiquement."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "Fonctionne sur"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "Votre microphone est actuellement utilisé sur $hostName$ pour la reconnaissance vocale.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ ou envoyez-nous un e-mail à $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "Lire à voix haute"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "Lire la page à voix haute"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "Saisie vocale"
+   },
+   "extensionDescription": {
+      "message": "Parlez à ChatGPT et écoutez les réponses dans une voix naturelle. Contrôlez ChatGPT par la voix dans plusieurs langues."
+   },
+   "extensionName": {
+      "message": "Contrôle vocal pour ChatGPT"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: Contrôle vocal pour ChatGPT"
+   }
+}

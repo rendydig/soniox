@@ -1,0 +1,11 @@
+{
+   "extensionDescription": {
+      "message": "与 DeepSeek、ChatGPT 和其他 AI 聊天机器人进行语音聊天。启用语音模式、语音识别、文本转语音等功能。"
+   },
+   "extensionName": {
+      "message": "VoiceWave：ChatGPT、DeepSeek 及其他 AI 聊天机器人的语音模式"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave：ChatGPT、DeepSeek 及其他 AI 聊天机器人的语音模式"
+   }
+}

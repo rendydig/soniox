@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "Afegir l'opció \"$itemTitle$\" al menú contextual per als camps d'entrada",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "Afegiu l'opció \"$itemTitle$\" al menú contextual per llegir en veu alta el text seleccionat en qualsevol pàgina web",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "Afegir l'opció \"$itemTitle$\" al menú contextual per llegir tota la pàgina en veu alta",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "Lectura avançada en veu alta (per a tots els llocs web)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "Configuració avançada"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "Control de veu avançat"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "Després d'acabar de parlar, activar intro automàticament després de $delayInSeconds$ segon(s)",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "Tots els idiomes"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy (Neutre)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "Error de captura d'àudio..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "Triar automàticament la veu detectant l'idioma"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "No trobes la teva veu o idioma preferit?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "Certes funcions, com ara el ressaltat automàtic de text i els controls de navegació d'àudio, podrien no estar disponibles quan s'utilitza la veu per defecte de ChatGPT."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "Comprovant el vostre dispositiu d'entrada d'àudio..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "Esborrar entrada quan digui $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "Tanca"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "Contacta'ns"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "Eliminar última entrada quan digui $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "Detectant errors..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "Dictat"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "No teniu un compte?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "Premeu aquí per dictar un missatge utilitzant VoiceWave."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo (Masculí)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "Editar"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "Correu electrònic..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "T'agrada aquesta extensió?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "Caducitat"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "No s'ha pogut iniciar el reconeixedor de veu. Probablement no esteu connectat a Internet. Comproveu la vostra connexió a Internet i torneu-ho a provar. En cas contrari, proveu de canviar l'idioma de control per veu des de la configuració."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "Heu oblidat la contrasenya?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "Configuració general"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "Passa a Premium"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "Entesos"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "Tens algun suggeriment?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "Tens algun problema?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "Llegir els missatges nous en veu alta automàticament"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "Lectura en veu alta"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "Ressaltar el text mentre es llegeix en veu alta"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "Credencials incorrectes o la vostra subscripció ha caducat. Si us plau, contacteu-nos si necessiteu ajuda."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "Afegeix el Panell de Control de VoiceWave a la interfície"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "Escriptura per veu"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "Sembla que aquesta extensió no ha pogut trobar cap micròfon connectat. Assegureu-vos que el vostre micròfon estigui connectat i funcioni correctament."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "Sembla que l'accés al micròfon està denegat. Per habilitar el reconeixement de veu, aneu a la configuració del micròfon del vostre navegador i permeteu que l'extensió accedeixi al micròfon."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "Teclat"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "Dreceres de teclat"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "Aprèn com instal·lar més veus"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "Escoltant..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "Carregant..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "Envieu-nos un correu a $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "Actualitza manualment la configuració dels selectors des del servidor remot. Això garanteix que tingueu les últimes regles d'integració per als llocs web compatibles."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "Menú"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "Accés al micròfon denegat..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "Error d'accés al micròfon..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "Micròfon en ús..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "Es necessita permís del micròfon..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "Necessiteu ajuda?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "Error de xarxa..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "Següent"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "Frase següent"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "No s'ha detectat cap micròfon..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova (Femenina)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "Ara pots utilitzar el control de veu avançat a $linksToAIs$ i altres llocs web compatibles! Només cal que vagis al lloc web, fes clic a la icona $iconOfMicrophone$, o prem $toggleKey$ des del teclat (fora del camp d'entrada) per activar el control de veu i començar a parlar.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "VoiceWave per a tots els llocs web"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "A qualsevol lloc web, feu clic amb el botó dret al camp d'entrada, trieu \"Escriptura per veu\" del menú, feu clic a la icona $iconOfMicrophone$ i comenceu a parlar per escriure sense utilitzar el teclat.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Feu clic amb el botó dret sobre el camp d'entrada de qualsevol lloc web, trieu \"$itemTitle$\" del menú, feu clic a la icona $iconOfMicrophone$ i comenceu a dictar.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx (Masculina Greu)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "Contrasenya..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "Pausa"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "Personalitzeu la vostra experiència: veus, configuració de lectura en veu alta, dreceres, etc."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "To"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "Pla"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "Reprodueix / Reprèn"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "Assegureu-vos que la tecla no estigui actualment en ús per cap altra aplicació."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "Si us plau, fes-nos-ho saber"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "Si us plau, valora'ns amb 5 estrelles"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "Si us plau, inicieu sessió al vostre compte."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "Mantingueu premuda la tecla $keyboardKey$ per a entrades de veu llargues amb múltiples frases",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "Premeu la tecla desitjada"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "Premeu la tecla $keyboardKey$ (fora del camp d'entrada) per activar/desactivar el control per veu",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "Frase anterior"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "Opcions ràpides"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "Llegeix en veu alta amb VoiceWave"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "Llegeix més..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "Reproduir"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "Informa d'errors/problemes"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Restablir"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "Envia el missatge quan s'alliberi la tecla"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "Configuració"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "Configuració per a $hostName$",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer (Femenina Suau)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "Dreceres"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "Mostra un botó $listenIcon$ al costat de cada missatge",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "Iniciar sessió"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "Tancar sessió"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "Entrada de veu interrompuda..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "L'entrada de veu s'ha interromput o cancel·lat. Assegureu-vos que teniu una connexió a Internet que funcioni i que el vostre micròfon està connectat i que l'accés al micròfon està permès per a aquesta extensió."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "Idioma de veu"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "Velocitat"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "A partir de només $offerPrice$/mes.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "Atura"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "Aturar lectura en veu alta quan digui $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "Aturar control per veu quan digui $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "Subscriu-te"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "Ja esteu subscrit?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "Veu de text a veu"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "L'extensió s'ha actualitzat correctament!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "L'extensió necessita el vostre permís per accedir al micròfon. Comproveu la finestra emergent o la barra del navegador per veure una sol·licitud de permís d'accés al micròfon. Feu clic a \"Permetre\" per habilitar el reconeixement de veu."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "El to agut o greu de la veu."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "La velocitat a la qual parla la veu."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "El volum de la veu."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "Aquesta extensió té problemes per capturar l'àudio. Assegureu-vos que el vostre micròfon està connectat i funciona correctament. Comproveu els permisos del micròfon del navegador i proveu de reiniciar el navegador."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "Aquesta extensió no està disponible en aquesta pàgina."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "Aquesta funció ressalta la frase o l'oració que s'està llegint en veu alta, facilitant el seguiment de les paraules pronunciades mitjançant el marcatge visual del text."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "Aquesta funcionalitat només està disponible per als usuaris Elite."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "Aquesta és una funcionalitat en versió beta. Encara s'està optimitzant i pot tenir alguns errors o limitacions."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Per anar a la frase següent mentre s'escolta, premeu la tecla $keyboardKey$ (fora del camp d'entrada)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Per anar a la frase anterior mentre s'escolta, premeu la tecla $keyboardKey$ (fora del camp d'entrada)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "Feu clic amb el botó dret a qualsevol lloc de la pàgina i trieu l'opció \"$itemTitle$\". VoiceWave llegirà en veu alta tot el text d'aquesta pàgina.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "Seleccioneu el text desitjat, feu clic amb el botó dret i trieu l'opció \"$itemTitle$\" del menú contextual. Només escoltareu el text que heu ressaltat.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "Activar intro quan digui $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "Intentant accedir al vostre micròfon..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "Desactivar"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "Desactiva el micròfon en escoltar la resposta"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "Desactiva el micròfon en canviar a una altra pestanya"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "Desactiva el control per veu quan s'alliberi la tecla"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "Activar"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "No s'ha pogut accedir al vostre micròfon. Assegureu-vos que el vostre micròfon està connectat i que l'accés al micròfon està permès per a aquest lloc, i torneu-ho a provar."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "Actualitza selectors"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "Actualitza la configuració dels selectors des del servidor remot"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "Actualitzeu a VoiceWave Premium per obtenir accés il·limitat a totes les funcions Premium."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "Guia d'ús"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "Utilitzar la veu per defecte de ChatGPT"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "Veu"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "Escriptura per veu"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "Dictar un missatge"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "Escriptura per veu (per a tots els llocs web)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "Volum"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "Benvingut!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "Benvingut! Comencem a personalitzar la vostra extensió. Ara teniu accés gratuït a totes les funcions premium."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "Quan s'utilitza la veu predeterminada de ChatGPT, algunes funcions, com ara el ressaltat automàtic de text i els controls de navegació d'àudio, podrien no estar disponibles i la veu TTS seleccionada no s'aplicarà automàticament."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "Funciona a"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "El vostre micròfon està actualment en ús a $hostName$ per al reconeixement de veu.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ o envia'ns un correu a $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "Llegir en veu alta"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "Llegir la pàgina en veu alta"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "Escriptura per veu"
+   },
+   "extensionDescription": {
+      "message": "El control de veu per a ChatGPT et permet parlar amb ChatGPT i mantenir una conversa de veu."
+   },
+   "extensionName": {
+      "message": "Control de veu per a ChatGPT"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: control de veu ChatGPT"
+   }
+}

@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "入力フィールド用の右クリックメニューに「$itemTitle$」オプションを追加",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "任意のウェブページで選択したテキストを音読するために、右クリックメニューに「$itemTitle$」オプションを追加",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "ページ全体を読み上げるための「$itemTitle$」オプションを右クリックメニューに追加",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "高度な読み上げ機能(すべてのウェブサイト対応)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "詳細設定"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "高度な音声コントロール"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "音声入力終了後、$delayInSeconds$秒後に自動的にEnterキーを実行",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "すべての言語"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy（ニュートラル）"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "音声キャプチャエラー..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "言語を検出して自動的に音声を選択"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "お好みの音声や言語が見つかりませんか?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "デフォルトのChatGPT音声を使用する場合、自動テキスト強調表示やオーディオナビゲーションコントロールなどの一部の機能が利用できない場合があります。"
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "オーディオ入力デバイスを確認中..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "$triggerWord$と言ったら入力をクリア",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "閉じる"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "お問い合わせ"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "$triggerWord$と言ったら最後の入力を削除",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "エラーを検出中..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "音声入力"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "アカウントをお持ちでないですか?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "ここを押してVoiceWaveを使ってメッセージを音声入力できます。"
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo（男性）"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "編集"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "メールアドレス..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "この拡張機能を気に入っていますか?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "有効期限"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "音声認識を開始できませんでした。おそらくインターネットに接続されていません。インターネット接続を確認して、もう一度お試しください。それでも解決しない場合は、設定から音声制御言語を変更してみてください。"
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "パスワードをお忘れですか?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "一般設定"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "プレミアムプランへ"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "了解"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "ご提案がありますか?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "問題が発生しましたか?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "新しいメッセージを自動的に読み上げる"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "読み上げ"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "読み上げ中にテキストを強調表示"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "認証情報が正しくないか、サブスクリプションの有効期限が切れています。サポートが必要な場合はお問い合わせください。"
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "VoiceWave コントロールパネルをインターフェースに追加"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "音声入力"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "この拡張機能は接続されたマイクを検出できませんでした。マイクが接続され、正常に動作していることを確認してください。"
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "マイクへのアクセスが拒否されているようです。音声認識を有効にするには、ブラウザのマイク設定に移動し、この拡張機能にマイクへのアクセスを許可してください。"
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "キーボード"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "キーボードショートカット"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "追加の音声をインストールする方法を見る"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "聴取中..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "読み込み中..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "$emailUsLink$までメールでお問い合わせください",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "リモートサーバーからセレクター設定を手動で更新します。これにより、サポートされているウェブサイトの最新の統合ルールを取得できます。"
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "メニュー"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "マイクへのアクセスが拒否されました..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "マイクアクセスエラー..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "マイク使用中..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "マイクの許可が必要です..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "ヘルプが必要ですか?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "ネットワークエラー..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "次へ"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "次の文"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "マイクが検出されません..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova(女性)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "$linksToAIs$ やその他の対応ウェブサイトで高度な音声コントロールが利用できるようになりました!ウェブサイトにアクセスして、$iconOfMicrophone$ アイコンをクリックするか、入力フィールドの外でキーボードから $toggleKey$ を押して音声コントロールを起動し、話し始めてください。",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "すべてのウェブサイト向けVoiceWave"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "任意のウェブサイトで入力フィールドを右クリックし、メニューから「音声入力」を選択し、$iconOfMicrophone$アイコンをクリックして話し始めるだけで、キーボードを使わずに入力できます。",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "任意のウェブサイトで入力フィールドを右クリックし、メニューから「$itemTitle$」を選択し、$iconOfMicrophone$アイコンをクリックして音声入力を開始してください。",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx(低音男性)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "パスワード..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "一時停止"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "音声、読み上げ設定、ショートカットなどをカスタマイズして、あなたの体験をパーソナライズできます。"
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "ピッチ"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "プラン"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "再生 / 再開"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "そのキーが他のアプリケーションで使用されていないことを確認してください。"
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "ぜひお聞かせください"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "★5つの評価をお願いします"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "アカウントにサインインしてください。"
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "$keyboardKey$ キーを長押しすると、複数の文を含む長い音声入力ができます",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "使用するキーを押してください"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "入力フィールド外で $keyboardKey$ キーを押すと音声コントロールのオン/オフを切り替えます",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "前の文"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "クイック選択"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "VoiceWaveで読み上げ"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "続きを読む..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "再生"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "バグ・問題を報告"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "リセット"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "キーを離したときにメッセージを送信"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "設定"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "$hostName$ の設定",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer(ソフト女性)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "ショートカット"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "各メッセージの横に $listenIcon$ ボタンを表示",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "サインイン"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "サインアウト"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "音声入力が中断されました..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "音声入力が中断またはキャンセルされました。インターネット接続が機能していること、マイクが接続されていること、この拡張機能へのマイクアクセスが許可されていることを確認してください。"
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "音声認識言語"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "速度"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "月額わずか$offerPrice$から。",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "停止"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "$triggerWord$と言ったら読み上げを停止",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "$triggerWord$と言ったら音声制御を停止",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "登録する"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "既に登録済みですか?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "音声読み上げの声"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "拡張機能が正常に更新されました!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "この拡張機能はマイクにアクセスするための許可が必要です。ポップアップまたはブラウザバーでマイクアクセスを許可するリクエストを確認してください。「許可」をクリックして音声認識を有効にしてください。"
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "音声の高さまたは低さ。"
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "音声が話す速度。"
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "音声の音量。"
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "この拡張機能は音声のキャプチャに問題が発生しています。マイクが接続され、正常に動作していることを確認してください。ブラウザのマイク許可を確認し、ブラウザを再起動してみてください。"
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "この拡張機能はこのページでは利用できません。"
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "この機能は、読み上げられているフレーズや文を強調表示し、音声に合わせてテキストを視覚的にマークすることで、より簡単に追従できるようにします。"
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "この機能はEliteユーザー専用です。"
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "これはベータ機能です。まだ最適化中のため、バグや制限がある場合があります。"
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "聴取中に次の文に進むには、入力フィールド外で $keyboardKey$ キーを押してください",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "聴取中に前の文に戻るには、入力フィールド外で $keyboardKey$ キーを押してください",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "ページ上の任意の場所で右クリックし、「$itemTitle$」オプションを選択してください。VoiceWaveがそのページのテキスト全体を読み上げます。",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "読み上げたいテキストを選択し、右クリックして、コンテキストメニューから「$itemTitle$」オプションを選択してください。ハイライトしたテキストのみが読み上げられます。",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "$triggerWord$と言ったらEnterキーを実行",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "マイクにアクセスしています..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "オフにする"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "応答を聴いているときにマイクをオフにする"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "別のタブに切り替えたときにマイクをオフにする"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "キーを離したときに音声コントロールをオフにする"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "オンにする"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "マイクにアクセスできません。マイクが接続されていること、このサイトへのマイクアクセスが許可されていることを確認して、もう一度お試しください。"
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "セレクタを更新"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "リモートサーバーからセレクタ設定を更新"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "VoiceWave Premiumにアップグレードして、すべてのプレミアム機能を無制限にご利用ください。"
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "使い方ガイド"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "デフォルトのChatGPT音声を使用"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "音声"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "音声入力"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "メッセージを音声入力"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "音声入力(すべてのウェブサイト対応)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "音量"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "ようこそ!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "ようこそ!拡張機能のカスタマイズを始めましょう。すべてのプレミアム機能に無料でアクセスできるようになりました。"
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "デフォルトのChatGPT音声を使用する場合、自動テキストハイライトや音声ナビゲーションコントロールなどの特定の機能が利用できない場合があり、選択したTTS音声が自動的に適用されません。"
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "動作環境"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "現在、$hostName$ で音声認識のためにマイクが使用されています。",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ またはメールでお問い合わせください $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "読み上げ"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "ページを読み上げ"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "音声入力"
+   },
+   "extensionDescription": {
+      "message": "ChatGPT に話しかけると、自然な声で応答が聞こえます。 多言語での ChatGPT の音声制御。 音声認識と音声合成 (TTS)。"
+   },
+   "extensionName": {
+      "message": "ChatGPTの音声コントロール"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: ChatGPTの音声コントロール"
+   }
+}

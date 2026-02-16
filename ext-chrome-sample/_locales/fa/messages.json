@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "افزودن گزینه «$itemTitle$» در منوی راست کلیک برای فیلدهای ورودی",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "افزودن گزینه «$itemTitle$» به منوی کلیک راست برای خواندن متن انتخاب‌شده با صدای بلند در هر صفحه وب",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "افزودن گزینه «$itemTitle$» به منوی راست کلیک برای خواندن کل صفحه با صدای بلند",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "خواندن پیشرفته با صدای بلند (برای همه وب‌سایت‌ها)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "تنظیمات پیشرفته"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "کنترل صوتی پیشرفته"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "پس از پایان صحبت من، به طور خودکار پس از $delayInSeconds$ ثانیه، اینتر فعال شود",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "تمام زبان‌ها"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "آلیاژ (خنثی)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "خطا در ضبط صدا..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "انتخاب خودکار صدا با تشخیص زبان"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "صدا یا زبان مورد نظر خود را پیدا نمی‌کنید؟"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "برخی ویژگی‌ها مانند برجسته‌سازی خودکار متن و کنترل‌های ناوبری صوتی ممکن است هنگام استفاده از صدای پیش‌فرض ChatGPT در دسترس نباشند."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "در حال بررسی دستگاه ورودی صدای شما..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "پاک کردن ورودی وقتی که می‌گویم $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "بستن"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "تماس با ما"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "حذف آخرین ورودی وقتی که می‌گویم $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "در حال شناسایی خطاها..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "دیکته"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "حساب کاربری ندارید؟"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "اینجا را فشار دهید تا با استفاده از VoiceWave پیامی را دیکته کنید."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "اکو (مردانه)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "ویرایش"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "ایمیل..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "از این افزونه لذت می‌برید؟"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "تاریخ انقضا"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "راه‌اندازی تشخیص‌دهنده گفتار با شکست مواجه شد. احتمالاً شما به اینترنت متصل نیستید. لطفاً اتصال اینترنت خود را بررسی کنید و دوباره امتحان کنید. در غیر این صورت، سعی کنید زبان کنترل صوتی خود را از تنظیمات تغییر دهید."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "رمز عبور خود را فراموش کرده‌اید؟"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "تنظیمات عمومی"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "خرید اشتراک ویژه"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "متوجه شدم"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "پیشنهادی دارید؟"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "مشکلی دارید؟"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "خواندن خودکار پیام‌های جدید به صورت بلند"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "خواندن با صدای بلند"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "برجسته‌سازی متن هنگام خواندن با صدای بلند"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "اطلاعات ورود نادرست است یا اشتراک شما منقضی شده است. در صورت نیاز به کمک، لطفاً با ما تماس بگیرید."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "افزودن پنل کنترل VoiceWave به رابط کاربری"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "تایپ صوتی"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "به نظر می‌رسد این افزونه نتوانسته هیچ میکروفون متصلی را پیدا کند. لطفاً اطمینان حاصل کنید که میکروفون شما متصل و به درستی کار می‌کند."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "به نظر می‌رسد دسترسی به میکروفون رد شده است. برای فعال‌سازی تشخیص گفتار، لطفاً به تنظیمات میکروفون مرورگر خود بروید و به افزونه اجازه دسترسی به میکروفون را بدهید."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "صفحه‌کلید"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "میانبرهای صفحه‌کلید"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "نحوه نصب صداهای بیشتر را بیاموزید"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "در حال گوش دادن..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "در حال بارگذاری..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "برای ما ایمیل بفرستید: $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "به‌روزرسانی دستی پیکربندی انتخابگرها از سرور راه دور. این اطمینان می‌دهد که آخرین قوانین یکپارچه‌سازی برای وب‌سایت‌های پشتیبانی‌شده را دارید."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "منو"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "دسترسی به میکروفون رد شد..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "خطای دسترسی به میکروفون..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "میکروفون در حال استفاده..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "مجوز میکروفون مورد نیاز است..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "نیاز به کمک دارید؟"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "خطای شبکه..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "بعدی"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "جمله بعدی"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "میکروفونی شناسایی نشد..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "نووا (صدای زنانه)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "اکنون می‌توانید از کنترل صوتی پیشرفته در $linksToAIs$ و سایر وب‌سایت‌های پشتیبانی‌شده استفاده کنید! فقط به وب‌سایت بروید، روی آیکون $iconOfMicrophone$ کلیک کنید، یا کلید $toggleKey$ را از صفحه‌کلید (خارج از فیلد ورودی) فشار دهید تا کنترل صوتی فعال شود و شروع به صحبت کنید.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "VoiceWave برای تمام وب‌سایت‌ها"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "در هر وب‌سایتی فقط روی فیلد ورودی کلیک راست کنید، گزینه «تایپ صوتی» را از منو انتخاب کنید، روی آیکون $iconOfMicrophone$ کلیک کنید و شروع به صحبت کنید تا بدون استفاده از صفحه‌کلید تایپ کنید.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "روی فیلد ورودی در هر وب‌سایتی راست کلیک کنید، گزینه «$itemTitle$» را از منو انتخاب کنید، روی آیکون $iconOfMicrophone$ کلیک کنید و شروع به دیکته کنید.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "اونیکس (صدای عمیق مردانه)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "رمز عبور..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "مکث"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "تجربه خود را شخصی‌سازی کنید: صداها، تنظیمات خواندن با صدای بلند، میانبرها و غیره."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "زیر و بمی صدا"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "طرح"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "پخش / ادامه"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "لطفاً اطمینان حاصل کنید که این کلید در حال حاضر توسط برنامه‌های دیگر استفاده نمی‌شود."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "لطفاً به ما اطلاع دهید"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "لطفاً به ما ۵ ستاره بدهید"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "لطفاً وارد حساب کاربری خود شوید."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "کلید $keyboardKey$ را برای ورودی صوتی طولانی با چندین جمله فشار داده و نگه دارید",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "کلید مورد نظر را فشار دهید"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "کلید $keyboardKey$ را (خارج از فیلد ورودی) فشار دهید تا کنترل صوتی روشن/خاموش شود",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "جمله قبلی"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "انتخاب‌های سریع"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "خواندن با صدای بلند با VoiceWave"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "ادامه مطلب..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "پخش مجدد"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "گزارش باگ‌ها/مشکلات"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "بازنشانی"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "ارسال پیام هنگام رها کردن کلید"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "تنظیمات"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "تنظیمات برای $hostName$",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "شیمر (صدای ملایم زنانه)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "میانبرها"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "نمایش دکمه $listenIcon$ در کنار هر پیام",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "ورود"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "خروج"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "ورودی گفتاری قطع شد..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "ورودی گفتاری قطع یا لغو شد. لطفاً مطمئن شوید که اتصال اینترنت فعالی دارید و میکروفون شما متصل است و دسترسی به میکروفون برای این افزونه مجاز است."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "زبان گفتار"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "سرعت"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "از فقط $offerPrice$ در ماه شروع می‌شود.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "توقف"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "توقف خواندن با صدای بلند وقتی که می‌گویم $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "توقف کنترل صوتی وقتی که می‌گویم $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "اشتراک"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "قبلاً اشتراک دارید؟"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "صدای تبدیل متن به گفتار"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "افزونه با موفقیت به‌روزرسانی شد!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "افزونه به مجوز شما برای دسترسی به میکروفون نیاز دارد. لطفاً پنجره بازشو یا نوار مرورگر را برای درخواست اجازه دسترسی به میکروفون بررسی کنید. روی «اجازه دادن» کلیک کنید تا تشخیص گفتار فعال شود."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "بلندی یا پایینی صدا."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "سرعت صحبت کردن صدا."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "حجم صدا."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "این افزونه در ضبط صدا با مشکل مواجه است. مطمئن شوید که میکروفون شما متصل و به درستی کار می‌کند. مجوزهای میکروفون مرورگر خود را بررسی کنید و مرورگر را مجدداً راه‌اندازی کنید."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "این افزونه در این صفحه در دسترس نیست."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "این ویژگی عبارت یا جمله‌ای که به صورت بلند خوانده می‌شود را برجسته می‌کند و با علامت‌گذاری بصری متن، دنبال کردن کلمات گفته شده را آسان‌تر می‌سازد."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "این ویژگی فقط برای کاربران ممتاز (Elite) در دسترس است."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "این یک ویژگی آزمایشی است. هنوز در حال بهینه‌سازی است و ممکن است دارای برخی اشکالات یا محدودیت‌ها باشد."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "برای رفتن به جمله بعدی در حین گوش دادن، کلید $keyboardKey$ را (خارج از فیلد ورودی) فشار دهید",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "برای رفتن به جمله قبلی در حین گوش دادن، کلید $keyboardKey$ را (خارج از فیلد ورودی) فشار دهید",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "در هر جایی از صفحه راست کلیک کنید و گزینه «$itemTitle$» را انتخاب کنید. VoiceWave تمام متن آن صفحه را با صدای بلند می‌خواند.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "متن مورد نظر را انتخاب کنید، کلیک راست کرده و گزینه «$itemTitle$» را از منوی زمینه انتخاب کنید. شما فقط متنی را که برجسته کرده‌اید خواهید شنید.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "فعال کردن اینتر وقتی که می‌گویم $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "تلاش برای دسترسی به میکروفون شما..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "خاموش کردن"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "خاموش کردن میکروفون هنگام شنیدن پاسخ"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "خاموش کردن میکروفون هنگام تغییر به برگه دیگر"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "خاموش کردن کنترل صوتی هنگام رها کردن کلید"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "روشن کردن"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "امکان دسترسی به میکروفون شما وجود ندارد. لطفاً مطمئن شوید که میکروفون شما متصل است و دسترسی به میکروفون برای این سایت مجاز است و دوباره امتحان کنید."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "به‌روزرسانی انتخابگرها"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "به‌روزرسانی پیکربندی انتخابگرها از سرور راه دور"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "برای دسترسی نامحدود به تمام امکانات ویژه، به VoiceWave Premium ارتقا دهید."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "راهنمای استفاده"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "استفاده از صدای پیش‌فرض ChatGPT"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "صدا"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "تایپ صوتی"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "دیکته پیام"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "تایپ صوتی (برای همه وب‌سایت‌ها)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "حجم صدا"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "خوش آمدید!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "خوش آمدید! بیایید به شخصی‌سازی افزونه شما بپردازیم. اکنون دسترسی رایگان به تمام ویژگی‌های ممتاز را دارید."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "هنگام استفاده از صدای پیش‌فرض ChatGPT، برخی ویژگی‌ها مانند برجسته‌سازی خودکار متن و کنترل‌های ناوبری صوتی ممکن است در دسترس نباشند و صدای TTS انتخاب‌شده به‌طور خودکار اعمال نخواهد شد."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "کار می‌کند روی"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "میکروفون شما در حال حاضر در $hostName$ برای تشخیص گفتار استفاده می‌شود.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ یا برای ما ایمیل بفرستید به $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "خواندن با صدای بلند"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "خواندن صفحه با صدای بلند"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "تایپ صوتی"
+   },
+   "extensionDescription": {
+      "message": "کنترل صوتی برای ChatGPT به شما امکان می دهد با ChatGPT صحبت کنید و مکالمه صوتی داشته باشید."
+   },
+   "extensionName": {
+      "message": "کنترل صوتی برای ChatGPT"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: کنترل صوتی ChatGPT"
+   }
+}

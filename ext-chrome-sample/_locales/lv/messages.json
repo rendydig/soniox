@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "Pievienot opciju \"$itemTitle$\" peles labās pogas izvēlnē ievades laukiem",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "Pievienot opciju \"$itemTitle$\" konteksta izvēlnei, lai nolasītu izvēlēto tekstu jebkurā tīmekļa lapā",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "Pievienot opciju \"$itemTitle$\" peles labās pogas izvēlnē, lai nolasītu visu lapu skaļi",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "Uzlabota skaļa lasīšana (visām vietnēm)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "Papildu iestatījumi"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "Uzlabota balss vadība"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "Kad esmu pabeidzis runāt, automātiski aktivizēt enter pēc $delayInSeconds$ sekundes(-ēm)",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "Visas valodas"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy (Neitrāla)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "Audio ierakstīšanas kļūda..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "Automātiski izvēlēties balsi, nosakot valodu"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "Nevarat atrast vēlamo balsi vai valodu?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "Dažas funkcijas, piemēram, automātiska teksta izcelšana un audio navigācijas vadīklas, var nebūt pieejamas, lietojot noklusējuma ChatGPT balsi."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "Pārbauda jūsu audio ievades ierīci..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "Notīrīt ievadi, kad es saku $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "Aizvērt"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "Sazinieties ar mums"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "Dzēst pēdējo ievadi, kad es saku $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "Kļūdu noteikšana..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "Diktēšana"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "Nav konta?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "Nospiediet šeit, lai diktētu ziņojumu, izmantojot VoiceWave."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo (Vīrietis)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "Rediģēt"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "E-pasts..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "Patīk šis paplašinājums?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "Derīguma termiņš"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "Neizdevās palaist runas atpazinēju. Visticamāk, jūs neesat savienots ar internetu. Lūdzu, pārbaudiet interneta savienojumu un mēģiniet vēlreiz. Pretējā gadījumā mēģiniet mainīt balss vadības valodu iestatījumos."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "Aizmirsāt paroli?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "Vispārīgie iestatījumi"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "Iegādāties Premium"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "Sapratu"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "Ir ierosinājums?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "Radusies problēma?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "Automātiski nolasīt jaunus ziņojumus skaļi"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "Lasīt skaļi"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "Izcelt tekstu, lasot skaļi"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "Nepareizi pieteikšanās dati vai jūsu abonements ir beidzies. Lūdzu, sazinieties ar mums, ja nepieciešama palīdzība."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "Pievienot VoiceWave vadības paneli saskarnei"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "Balss rakstīšana"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "Šķiet, ka šis paplašinājums nevarēja atrast nevienu pievienotu mikrofonu. Lūdzu, pārliecinieties, ka jūsu mikrofons ir pievienots un darbojas pareizi."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "Šķiet, ka mikrofona piekļuve ir liegta. Lai iespējotu runas atpazīšanu, lūdzu, dodieties uz pārlūkprogrammas mikrofona iestatījumiem un atļaujiet paplašinājumam piekļuvi mikrofonam."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "Tastatūra"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "Tastatūras īsinājumtaustiņi"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "Uzziniet, kā instalēt vairāk balsu"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "Klausos..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "Ielādē..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "Rakstiet mums uz $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "Manuāli atjaunināt selektoru konfigurāciju no attālinātā servera. Tas nodrošina, ka jums ir jaunākie integrācijas noteikumi atbalstītajām vietnēm."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "Izvēlne"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "Mikrofona piekļuve liegta..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "Mikrofona piekļuves kļūda..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "Mikrofons tiek izmantots..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "Nepieciešama mikrofona atļauja..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "Nepieciešama palīdzība?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "Tīkla kļūda..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "Tālāk"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "Nākamais teikums"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "Mikrofons nav noteikts..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova (Sieviešu balss)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "Tagad jūs varat izmantot uzlabotu balss vadību vietnēs $linksToAIs$ un citās atbalstītās vietnēs! Vienkārši dodieties uz vietni, noklikšķiniet uz $iconOfMicrophone$ ikonas vai nospiediet $toggleKey$ no tastatūras (ārpus ievades lauka), lai aktivizētu balss vadību un sāktu runāt.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "VoiceWave visām vietnēm"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Jebkurā vietnē vienkārši noklikšķiniet ar peles labo pogu uz ievades lauka, izvēlnē atlasiet \"Balss rakstīšana\", noklikšķiniet uz $iconOfMicrophone$ ikonas un sāciet runāt, lai rakstītu bez tastatūras izmantošanas.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Noklikšķiniet ar peles labo pogu uz ievades lauka jebkurā vietnē, izvēlieties \"$itemTitle$\" no izvēlnes, noklikšķiniet uz $iconOfMicrophone$ ikonas un sāciet diktēt.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx (Dziļa vīrieša balss)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "Parole..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "Pauzēt"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "Personalizējiet savu pieredzi: balsis, lasīšanas skaļi iestatījumi, saīsnes u.c."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "Augstums"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "Plāns"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "Atskaņot / Turpināt"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "Lūdzu, pārliecinieties, ka taustiņu pašlaik neizmanto citas lietojumprogrammas."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "Lūdzu, paziņojiet mums"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "Lūdzu, novērtējiet mūs ar 5 zvaigznēm"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "Lūdzu, piesakieties savā kontā."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "Nospiediet un turiet taustiņu $keyboardKey$, lai veiktu garu balss ievadi ar vairākiem teikumiem",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "Nospiediet vēlamo taustiņu"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "Nospiediet taustiņu $keyboardKey$ (ārpus ievades lauka), lai ieslēgtu/izslēgtu balss vadību",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "Iepriekšējais teikums"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "Ātrās izvēles"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "Lasīt skaļi ar VoiceWave"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "Lasīt vairāk..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "Atkārtot"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "Ziņot par kļūdām/problēmām"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Atiestatīt"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "Nosūtīt ziņojumu, kad taustiņš tiek atlaists"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "Iestatījumi"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "Iestatījumi priekš $hostName$",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer (Maiga sieviešu balss)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "Īsinājumtaustiņi"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "Rādīt $listenIcon$ pogu blakus katram ziņojumam",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "Pierakstīties"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "Izrakstīties"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "Runas ievade pārtraukta..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "Runas ievade tika pārtraukta vai atcelta. Lūdzu, pārliecinieties, ka jums ir darbojas interneta savienojums un jūsu mikrofons ir pievienots, un šim paplašinājumam ir atļauta mikrofona piekļuve."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "Runas valoda"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "Ātrums"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "Sākot no tikai $offerPrice$/mēnesī.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "Apturēt"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "Pārtraukt lasīšanu skaļi, kad es saku $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "Pārtraukt balss vadību, kad es saku $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "Abonēt"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "Jau esat abonējis?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "Teksta pārvēršanas runā balss"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "Paplašinājums ir veiksmīgi atjaunināts!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "Paplašinājumam ir nepieciešama jūsu atļauja, lai piekļūtu mikrofonam. Lūdzu, pārbaudiet uznirstošo logu vai pārlūkprogrammas joslu, lai atrastu pieprasījumu atļaut mikrofona piekļuvi. Noklikšķiniet uz \"Atļaut\", lai iespējotu runas atpazīšanu."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "Balss augstums vai zemums."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "Ātrums, ar kādu balss runā."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "Balss skaļums."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "Šim paplašinājumam ir problēmas ar audio ierakstīšanu. Pārliecinieties, ka jūsu mikrofons ir pievienots un darbojas pareizi. Pārbaudiet pārlūkprogrammas mikrofona atļaujas un mēģiniet restartēt pārlūkprogrammu."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "Šis paplašinājums nav pieejams šajā lapā."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "Šī funkcija izceļ frāzi vai teikumu, kas tiek lasīts skaļi, atvieglojot līdzīšanu runātajiem vārdiem, vizuāli atzīmējot tekstu."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "Šī funkcija ir pieejama tikai Elite lietotājiem."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "Šī ir beta funkcija. Tā joprojām tiek optimizēta un tai var būt kļūdas vai ierobežojumi."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Lai pārietu uz nākamo teikumu klausoties, nospiediet taustiņu $keyboardKey$ (ārpus ievades lauka)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Lai pārietu uz iepriekšējo teikumu klausoties, nospiediet taustiņu $keyboardKey$ (ārpus ievades lauka)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "Noklikšķiniet ar peles labo pogu jebkurā vietā lapā un izvēlieties opciju \"$itemTitle$\". VoiceWave nolasīs visu lapas tekstu.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "Atlasiet vēlamo tekstu, noklikšķiniet ar peles labo pogu un izvēlnē atlasiet opciju \"$itemTitle$\". Jūs dzirdēsiet tikai to tekstu, ko esat iezīmējis.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "Aktivizēt enter, kad es saku $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "Mēģinu piekļūt jūsu mikrofonam..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "Izslēgt"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "Izslēgt mikrofonu, klausoties atbildi"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "Izslēgt mikrofonu, pārslēdzoties uz citu cilni"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "Izslēgt balss vadību, kad taustiņš tiek atlaists"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "Ieslēgt"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "Nevar piekļūt jūsu mikrofonam. Lūdzu, pārliecinieties, ka jūsu mikrofons ir pievienots un šai vietnei ir atļauta mikrofona piekļuve, un mēģiniet vēlreiz."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "Atjaunināt selektorus"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "Atjaunināt selektoru konfigurāciju no attālā servera"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "Jauniniet uz VoiceWave Premium, lai iegūtu neierobežotu piekļuvi visām Premium funkcijām."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "Lietošanas pamācība"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "Lietot noklusējuma ChatGPT balsi"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "Balss"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "Balss rakstīšana"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "Diktēt ziņojumu"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "Balss rakstīšana (visām vietnēm)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "Skaļums"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "Laipni lūdzam!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "Laipni lūdzam! Iesim personalizēt jūsu paplašinājumu. Jums tagad ir bezmaksas piekļuve visām premium funkcijām."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "Izmantojot noklusējuma ChatGPT balsi, dažas funkcijas, piemēram, automātiska teksta izcēlums un audio navigācijas vadīklas, var nebūt pieejamas, un izvēlētā TTS balss netiks automātiski pielietota."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "Darbojas ar"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "Jūsu mikrofons pašlaik tiek izmantots vietnē $hostName$ runas atpazīšanai.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ vai rakstiet mums uz $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "Lasīt skaļi"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "Lasīt lapu skaļi"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "Balss rakstīšana"
+   },
+   "extensionDescription": {
+      "message": "ChatGPT balss vadība ļauj runāt ar ChatGPT un sarunāties ar balsi."
+   },
+   "extensionName": {
+      "message": "ChatGPT balss vadība"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: ChatGPT balss vadība"
+   }
+}

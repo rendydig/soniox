@@ -1,0 +1,311 @@
+{
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "Išplėstinis garsinis skaitymas (visoms svetainėms)"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "Išplėstinė balso valdymo funkcija"
+   },
+   "Close": {
+      "description": "Close",
+      "message": "Uždaryti"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "Susisiekite su mumis"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "Neturite paskyros?"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "El. paštas..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "Patinka šis plėtinys?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "Galiojimo pabaiga"
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "Pamiršote slaptažodį?"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "Įsigyti Premium"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "Supratau"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "Turite pasiūlymą?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "Kilo problema?"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "Neteisingi prisijungimo duomenys arba jūsų prenumerata pasibaigė. Prašome susisiekti su mumis, jei reikia pagalbos."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "Pridėti VoiceWave valdymo skydelį prie sąsajos"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "Balso rašymas"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "Atrodo, kad šis plėtinys nerado jokio prijungto mikrofono. Įsitikinkite, kad jūsų mikrofonas yra prijungtas ir veikia tinkamai."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "Įkeliama..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "Rašykite mums adresu $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "Meniu"
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "Reikia pagalbos?"
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "Toliau"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "Kitas sakinys"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "Mikrofonas neaptiktas..."
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "Dabar galite naudoti išplėstinę balso valdymo funkciją $linksToAIs$ ir kitose palaikomose svetainėse! Tiesiog apsilankykite svetainėje, spustelėkite $iconOfMicrophone$ piktogramą arba paspauskite $toggleKey$ klaviatūroje (ne įvesties lauke), kad suaktyvintumėte balso valdymą ir pradėtumėte kalbėti.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Bet kurioje svetainėje tiesiog spustelėkite dešiniuoju pelės mygtuku įvesties laukelį, meniu pasirinkite \"Balso rašymas\", spustelėkite $iconOfMicrophone$ piktogramą ir pradėkite kalbėti, kad rašytumėte nenaudodami klaviatūros.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "Slaptažodis..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "Pristabdyti"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "Planas"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "Groti / Tęsti"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "Įsitikinkite, kad klavišas šiuo metu nėra naudojamas jokių kitų programų."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "Praneškite mums"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "Įvertinkite mus 5 žvaigždutėmis"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "Prašome prisijungti prie savo paskyros."
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "Paspauskite norimą klavišą"
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "Ankstesnis sakinys"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "Skaityti garsiai su VoiceWave"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "Skaityti daugiau..."
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "Pranešti apie klaidas/problemas"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Atkurti"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "Nustatymai"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "Nustatymai svetainei $hostName$",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "Rodyti $listenIcon$ mygtuką šalia kiekvieno pranešimo",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "Prisijungti"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "Atsijungti"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "Pradedant nuo tik $offerPrice$/mėn.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "Sustabdyti"
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "Prenumeruoti"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "Jau prenumeruojate?"
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "Šis plėtinys nepasiekiamas šiame puslapyje."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "Ši funkcija prieinama tik Elite naudotojams."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "Tai beta funkcija. Ji vis dar optimizuojama ir gali turėti klaidų ar apribojimų."
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "Pažymėkite norimą tekstą, spustelėkite dešiniuoju pelės mygtuku ir kontekstiniame meniu pasirinkite parinktį \"$itemTitle$\". Išgirsite tik jūsų pažymėtą tekstą.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "Išjungti"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "Įjungti"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "Pereikite prie VoiceWave Premium ir gaukite neribotą prieigą prie visų Premium funkcijų."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "Naudojimo instrukcija"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "Balso rašymas (visoms svetainėms)"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "Sveiki!"
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ arba rašykite mums adresu $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "extensionDescription": {
+      "message": "ChatGPT valdymas balsu leidžia kalbėtis su ChatGPT ir kalbėtis balsu."
+   },
+   "extensionName": {
+      "message": "ChatGPT valdymas balsu"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: ChatGPT balso valdymas"
+   }
+}

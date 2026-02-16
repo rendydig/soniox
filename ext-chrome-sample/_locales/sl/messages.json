@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "Dodaj možnost \"$itemTitle$\" v meni desnega klika za vnosna polja",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "Dodaj možnost \"$itemTitle$\" v desni meni za glasno branje izbranega besedila na kateri koli spletni strani",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "Dodaj možnost \"$itemTitle$\" v meni desnega klika za branje celotne strani na glas",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "Napredno branje na glas (za vse spletne strani)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "Napredne nastavitve"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "Napredna glasovna kontrola"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "Ko končam z govorom, samodejno sproži enter po $delayInSeconds$ sekund(ah)",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "Vsi jeziki"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy (Nevtralen)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "Napaka pri zajemanju zvoka..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "Samodejno izberi glas z zaznavo jezika"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "Ne najdete svojega želenega glasu ali jezika?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "Nekatere funkcije, kot so samodejno poudarjanje besedila in kontrole za avdio navigacijo, morda ne bodo na voljo pri uporabi privzetega ChatGPT glasu."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "Preverjanje vaše naprave za zvočni vnos..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "Počisti vnos, ko rečem $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "Zapri"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "Kontaktirajte nas"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "Izbriši zadnji vnos, ko rečem $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "Zaznavanje napak..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "Narekovanje"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "Nimate računa?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "Pritisnite tukaj, da narekujete sporočilo z uporabo VoiceWave."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo (Moški)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "Uredi"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "E-pošta..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "Vam je ta razširitev všeč?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "Potek"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "Prepoznavalnika govora ni bilo mogoče zagnati. Verjetno niste povezani z internetom. Preverite svojo internetno povezavo in poskusite znova. V nasprotnem primeru poskusite spremeniti jezik glasovnega nadzora v nastavitvah."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "Ste pozabili geslo?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "Splošne nastavitve"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "Postani Premium"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "Razumem"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "Imate predlog?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "Imate težavo?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "Samodejno preberi nova sporočila na glas"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "Branje na glas"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "Poudari besedilo med branjem na glas"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "Napačne prijavne podatke ali je vaša naročnina potekla. Prosimo, kontaktirajte nas, če potrebujete pomoč."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "Dodaj nadzorno ploščo VoiceWave v vmesnik"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "Glasovno tipkanje"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "Videti je, da ta razširitev ni našla nobenega povezanega mikrofona. Prosimo, prepričajte se, da je vaš mikrofon povezan in deluje pravilno."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "Zdi se, da je dostop do mikrofona zavrnjen. Če želite omogočiti prepoznavanje govora, pojdite v nastavitve mikrofona v brskalniku in dovolite razširitvi dostop do mikrofona."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "Tipkovnica"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "Tipkovne bližnjice"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "Naučite se, kako namestiti več glasov"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "Poslušam..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "Nalaganje..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "Pišite nam na $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "Ročno posodobi konfiguracijo izbirnikov z oddaljenega strežnika. To zagotavlja, da imate najnovejša pravila integracije za podprte spletne strani."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "Meni"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "Dostop do mikrofona zavrnjen..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "Napaka pri dostopu do mikrofona..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "Mikrofon v uporabi..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "Potrebno je dovoljenje za mikrofon..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "Potrebujete pomoč?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "Napaka omrežja..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "Naprej"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "Naslednji stavek"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "Mikrofon ni zaznan..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova (Ženski)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "Zdaj lahko uporabljate napredno glasovno kontrolo na $linksToAIs$ in drugih podprtih spletnih straneh! Odprite spletno stran, kliknite ikono $iconOfMicrophone$ ali pritisnite $toggleKey$ na tipkovnici (izven vnosnega polja), da aktivirate glasovno kontrolo in začnete govoriti.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "VoiceWave za vse spletne strani"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Na kateri koli spletni strani preprosto kliknite z desno tipko miške na vnosno polje, v meniju izberite \"Glasovno tipkanje\", kliknite ikono $iconOfMicrophone$ in začnite govoriti, da tipkate brez uporabe tipkovnice.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Kliknite desno na vnosno polje na katerikoli spletni strani, izberite \"$itemTitle$\" iz menija, kliknite ikono $iconOfMicrophone$ in začnite narekovanje.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx (Globok moški)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "Geslo..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "Premor"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "Prilagodite svojo izkušnjo: glasovi, nastavitve branja na glas, bližnjice itd."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "Tonska višina"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "Paket"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "Predvajaj / Nadaljuj"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "Prosimo, prepričajte se, da tipka trenutno ni v uporabi s strani drugih aplikacij."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "Sporočite nam"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "Ocenite nas s 5 zvezdicami"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "Prosimo, prijavite se v svoj račun."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "Pritisnite in držite tipko $keyboardKey$ za dolg glasovni vnos z več stavki",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "Pritisnite želeno tipko"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "Pritisnite tipko $keyboardKey$ (zunaj vnosnega polja), da vklopite/izklopite glasovno upravljanje",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "Prejšnji stavek"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "Hitre izbire"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "Beri na glas z VoiceWave"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "Preberi več..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "Predvajaj ponovno"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "Prijavite napake/težave"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Ponastavi"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "Pošlji sporočilo, ko se tipka sprosti"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "Nastavitve"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "Nastavitve za $hostName$",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer (Mehak ženski)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "Bližnjice"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "Prikaži gumb $listenIcon$ poleg vsake sporočilo",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "Prijavi se"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "Odjavi se"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "Govorni vnos prekinjen..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "Govorni vnos je bil prekinjen ali preklican. Prepričajte se, da imate delujočo internetno povezavo, da je vaš mikrofon priključen in da je dostop do mikrofona dovoljen za to razširitev."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "Jezik govora"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "Hitrost"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "Že od samo $offerPrice$/mesec.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "Ustavi"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "Ustavi branje na glas, ko rečem $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "Ustavi glasovno upravljanje, ko rečem $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "Naroči se"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "Ste že naročeni?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "Glas za pretvorbo besedila v govor"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "Razširitev je bila uspešno posodobljena!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "Razširitev potrebuje vaše dovoljenje za dostop do mikrofona. Preverite pojavno okno ali vrstico brskalnika za zahtevo za dostop do mikrofona. Kliknite \"Dovoli\", da omogočite prepoznavanje govora."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "Višina ali globina glasu."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "Hitrost, s katero glas govori."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "Glasnost glasu."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "Ta razširitev ima težave pri zajemanju zvoka. Prepričajte se, da je vaš mikrofon priključen in pravilno deluje. Preverite dovoljenja za mikrofon v brskalniku in poskusite znova zagnati brskalnik."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "Ta razširitev ni na voljo na tej strani."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "Ta funkcija poudari frazo ali stavek, ki se bere na glas, kar olajša sledenje govorjenim besedam z vizualnim označevanjem besedila."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "Ta funkcija je na voljo samo za Elite uporabnike."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "To je beta funkcija. Še vedno se optimizira in lahko vsebuje napake ali omejitve."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Za prehod na naslednji stavek med poslušanjem pritisnite tipko $keyboardKey$ (zunaj vnosnega polja)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Za prehod na prejšnji stavek med poslušanjem pritisnite tipko $keyboardKey$ (zunaj vnosnega polja)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "Kliknite desno kjerkoli na strani in izberite možnost \"$itemTitle$\". VoiceWave bo prebral celotno besedilo te strani na glas.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "Izberite želeno besedilo, kliknite z desno tipko miške in v kontekstnem meniju izberite možnost \"$itemTitle$\". Slišali boste samo besedilo, ki ste ga označili.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "Sproži enter, ko rečem $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "Poskušam dostopati do vašega mikrofona..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "Izklopi"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "Izklopi mikrofon pri poslušanju odgovora"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "Izklopi mikrofon pri preklopu na drug zavihek"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "Izklopi glasovno upravljanje, ko se tipka sprosti"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "Vklopi"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "Dostop do mikrofona ni mogoč. Prepričajte se, da je vaš mikrofon priključen in da je dostop do mikrofona dovoljen za to spletno mesto, nato poskusite znova."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "Posodobi selektorje"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "Posodobi konfiguracijo selektorjev z oddaljenega strežnika"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "Nadgradite na VoiceWave Premium za neomejen dostop do vseh Premium funkcij."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "Navodila za uporabo"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "Uporabi privzeti ChatGPT glas"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "Glas"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "Glasovno tipkanje"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "Narekuj sporočilo"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "Glasovno tipkanje (za vse spletne strani)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "Glasnost"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "Dobrodošli!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "Dobrodošli! Lotimo se prilagajanja vaše razširitve. Zdaj imate brezplačen dostop do vseh premium funkcij."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "Pri uporabi privzetega glasu ChatGPT nekatere funkcije, kot so samodejno poudarjanje besedila in kontrolniki za krmarjenje po zvoku, morda ne bodo na voljo in izbrani glas TTS ne bo samodejno uporabljen."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "Deluje na"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "Vaš mikrofon je trenutno v uporabi na $hostName$ za prepoznavanje govora.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ ali nam pišite na $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "Preberi na glas"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "Preberi stran na glas"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "Glasovno tipkanje"
+   },
+   "extensionDescription": {
+      "message": "Glasovni nadzor za ChatGPT vam omogoča pogovor s ChatGPT in glasovni pogovor."
+   },
+   "extensionName": {
+      "message": "Glasovni nadzor za ChatGPT"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: glasovni nadzor ChatGPT"
+   }
+}

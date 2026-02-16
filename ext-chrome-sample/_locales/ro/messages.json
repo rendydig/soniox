@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "Adaugă opțiunea \"$itemTitle$\" în meniul clic dreapta pentru câmpurile de intrare",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "Adăugați opțiunea \"$itemTitle$\" în meniul de clic dreapta pentru citirea cu voce tare a textului selectat pe orice pagină web",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "Adaugă opțiunea \"$itemTitle$\" în meniul clic dreapta pentru a citi cu voce tare întreaga pagină",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "Citire avansată cu voce tare (pentru toate site-urile)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "Setări avansate"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "Control vocal avansat"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "După ce termin de vorbit, declanșează automat enter după $delayInSeconds$ secundă/secunde",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "Toate limbile"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy (Neutru)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "Eroare la capturarea audio..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "Alege automat vocea detectând limba"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "Nu găsești vocea sau limba preferată?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "Anumite funcții, cum ar fi evidențierea automată a textului și controalele de navigare audio, pot să nu fie disponibile când se utilizează vocea implicită ChatGPT."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "Se verifică dispozitivul dvs. de intrare audio..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "Șterge textul când spun $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "Închide"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "Contactează-ne"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "Șterge ultima intrare când spun $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "Se detectează erorile..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "Dictare"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "Nu aveți un cont?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "Apăsați aici pentru a dicta un mesaj folosind VoiceWave."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo (Masculin)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "Editează"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "Email..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "Îți place această extensie?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "Expirare"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "Nu s-a putut porni sistemul de recunoaștere vocală. Probabil nu sunteți conectat la internet. Vă rugăm să verificați conexiunea la internet și să încercați din nou. În caz contrar, încercați să schimbați limba de control vocal din setări."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "Ați uitat parola?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "Setări generale"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "Treceți la Premium"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "Am înțeles"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "Ai o sugestie?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "Întâmpini o problemă?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "Citește automat cu voce tare mesajele noi"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "Citire cu voce tare"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "Evidențiază textul în timpul citirii cu voce tare"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "Credențiale incorecte sau abonamentul dumneavoastră a expirat. Vă rugăm să ne contactați dacă aveți nevoie de asistență."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "Adaugă Panoul de Control VoiceWave la interfață"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "Tastare vocală"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "Se pare că această extensie nu a putut găsi niciun microfon conectat. Vă rugăm să vă asigurați că microfonul dvs. este conectat și funcționează corect."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "Se pare că accesul la microfon este refuzat. Pentru a activa recunoașterea vocală, vă rugăm să accesați setările microfonului din browser și să permiteți extensiei accesul la microfon."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "Tastatură"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "Comenzi rapide de la tastatură"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "Află cum să instalezi mai multe voci"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "Ascult..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "Se încarcă..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "Trimiteți-ne un email la $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "Actualizează manual configurația selectorilor de pe serverul la distanță. Acest lucru asigură că ai cele mai recente reguli de integrare pentru site-urile web acceptate."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "Meniu"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "Acces la microfon refuzat..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "Eroare de acces la microfon..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "Microfonul este în uz..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "Este necesară permisiunea pentru microfon..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "Aveți nevoie de ajutor?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "Eroare de rețea..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "Următorul"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "Propoziția următoare"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "Nu a fost detectat niciun microfon..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova (Voce Feminină)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "Acum poți utiliza controlul vocal avansat pe $linksToAIs$ și alte site-uri web compatibile! Doar accesează site-ul web, dă click pe pictograma $iconOfMicrophone$, sau apasă $toggleKey$ de pe tastatură (în afara câmpului de introducere) pentru a activa controlul vocal și a începe să vorbești.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "VoiceWave pentru toate site-urile web"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Pe orice site web, faceți clic dreapta pe câmpul de introducere, alegeți \"Tastare vocală\" din meniu, faceți clic pe pictograma $iconOfMicrophone$ și începeți să vorbiți pentru a scrie fără a folosi tastatura.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Dă clic dreapta pe câmpul de intrare pe orice site web, alege \"$itemTitle$\" din meniu, apasă pe pictograma $iconOfMicrophone$ și începe să dictezi.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx (Voce Masculină Gravă)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "Parolă..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "Pauză"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "Personalizați-vă experiența: voci, setări de citire cu voce tare, scurtături, etc."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "Tonalitate"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "Plan"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "Redare / Continuare"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "Vă rugăm să vă asigurați că tasta nu este utilizată în prezent de alte aplicații."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "Te rugăm să ne anunți"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "Te rugăm să ne acorzi 5 stele"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "Vă rugăm să vă autentificați în contul dumneavoastră."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "Apăsați și mențineți apăsată tasta $keyboardKey$ pentru introducere vocală lungă cu mai multe propoziții",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "Apăsați tasta dorită"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "Apăsați tasta $keyboardKey$ (în afara câmpului de text) pentru a activa/dezactiva controlul vocal",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "Propoziția anterioară"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "Opțiuni rapide"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "Citire cu voce tare cu VoiceWave"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "Citește mai mult..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "Redare"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "Raportează erori/probleme"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Resetare"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "Trimite mesajul când tasta este eliberată"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "Setări"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "Setări pentru $hostName$",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer (Voce Feminină Blândă)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "Comenzi rapide"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "Afișează un buton $listenIcon$ lângă fiecare mesaj",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "Autentificare"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "Deconectare"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "Introducere vocală întreruptă..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "Introducerea vocală a fost întreruptă sau anulată. Vă rugăm să vă asigurați că aveți o conexiune la internet funcțională, microfonul este conectat și accesul la microfon este permis pentru această extensie."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "Limba vorbirii"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "Viteză"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "Începând de la doar $offerPrice$/lună.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "Oprire"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "Oprește citirea cu voce tare când spun $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "Oprește controlul vocal când spun $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "Abonează-te"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "V-ați abonat deja?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "Voce text-to-speech"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "Extensia a fost actualizată cu succes!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "Extensia necesită permisiunea dvs. pentru a accesa microfonul. Vă rugăm să verificați fereastra pop-up sau bara browserului pentru o solicitare de acces la microfon. Faceți clic pe \"Permite\" pentru a activa recunoașterea vocală."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "Înălțimea sau gradul de joasă al vocii."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "Viteza cu care vorbește vocea."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "Volumul vocii."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "Această extensie întâmpină probleme la capturarea audio. Asigurați-vă că microfonul dvs. este conectat și funcționează corect. Verificați permisiunile microfonului din browser și încercați să reporniți browserul."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "Această extensie nu este disponibilă pe această pagină."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "Această funcție evidențiază fraza sau propoziția citită cu voce tare, facilitând urmărirea cuvintelor rostite prin marcarea vizuală a textului."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "Această funcție este disponibilă doar pentru utilizatorii Elite."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "Aceasta este o funcție beta. Este încă în curs de optimizare și poate prezenta unele erori sau limitări."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Pentru a trece la propoziția următoare în timpul ascultării, apăsați tasta $keyboardKey$ (în afara câmpului de text)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Pentru a trece la propoziția anterioară în timpul ascultării, apăsați tasta $keyboardKey$ (în afara câmpului de text)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "Dă clic dreapta oriunde pe pagină și alege opțiunea \"$itemTitle$\". VoiceWave va citi cu voce tare întregul text al paginii.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "Selectați textul dorit, faceți clic dreapta și alegeți opțiunea \"$itemTitle$\" din meniul contextual. Veți auzi doar textul pe care l-ați evidențiat.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "Declanșează enter când spun $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "Se încearcă accesarea microfonului..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "Dezactivează"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "Dezactivează microfonul când ascultați răspunsul"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "Dezactivează microfonul când schimbați la o altă filă"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "Dezactivează controlul vocal când tasta este eliberată"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "Activează"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "Nu se poate accesa microfonul dvs. Vă rugăm să vă asigurați că microfonul este conectat și accesul la microfon este permis pentru acest site, apoi încercați din nou."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "Actualizează selectoarele"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "Actualizează configurația selectoarelor de pe serverul distant"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "Treceți la VoiceWave Premium pentru acces nelimitat la toate funcțiile Premium."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "Ghid de utilizare"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "Utilizează vocea implicită ChatGPT"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "Voce"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "Tastare vocală"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "Dictează un mesaj"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "Tastare vocală (pentru toate site-urile)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "Volum"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "Bun venit!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "Bun venit! Să începem personalizarea extensiei dvs. Acum aveți acces gratuit la toate funcțiile premium."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "Când utilizați vocea implicită ChatGPT, anumite funcții, cum ar fi evidențierea automată a textului și controalele de navigare audio, pot să nu fie disponibile, iar vocea TTS selectată nu va fi aplicată automat."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "Funcționează pe"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "Microfonul dvs. este în uz pe $hostName$ pentru recunoaștere vocală.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ sau trimite-ne un email la $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "Citește cu voce tare"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "Citește pagina cu voce tare"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "Dictare vocală"
+   },
+   "extensionDescription": {
+      "message": "Control vocal pentru ChatGPT vă permite să vorbiți cu ChatGPT și să aveți o conversație vocală."
+   },
+   "extensionName": {
+      "message": "Control vocal pentru ChatGPT"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: Control vocal pentru ChatGPT"
+   }
+}

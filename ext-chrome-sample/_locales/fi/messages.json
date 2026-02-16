@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "Lisää \"$itemTitle$\" -vaihtoehto hiiren oikean painikkeen valikkoon syöttökentille",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "Lisää \"$itemTitle$\" -vaihtoehto hiiren oikean painikkeen valikkoon valitun tekstin lukemiseksi ääneen millä tahansa verkkosivulla",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "Lisää \"$itemTitle$\" -vaihtoehto hiiren oikean painikkeen valikkoon koko sivun lukemiseksi ääneen",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "Edistynyt tekstin lukeminen ääneen (kaikille verkkosivustoille)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "Lisäasetukset"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "Edistynyt ääniohjaus"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "Kun lopetan puhumisen, lähetä automaattisesti Enter $delayInSeconds$ sekunnin kuluttua",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "Kaikki kielet"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy (Neutraali)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "Äänen tallennusvirhe..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "Valitse ääni automaattisesti tunnistamalla kieli"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "Etkö löydä haluamaasi ääntä tai kieltä?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "Tietyt ominaisuudet, kuten automaattinen tekstin korostus ja äänen navigointiohjaimet, eivät välttämättä ole käytettävissä käytettäessä ChatGPT:n oletusääntä."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "Tarkistetaan äänensyöttölaitettasi..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "Tyhjennä syöttö kun sanon $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "Sulje"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "Ota yhteyttä"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "Poista viimeisin syöttö kun sanon $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "Tunnistetaan virheitä..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "Sanelu"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "Eikö sinulla ole tiliä?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "Paina tästä sanellaksesi viestin VoiceWaven avulla."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo (Mies)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "Muokkaa"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "Sähköposti..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "Pidätkö tästä laajennuksesta?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "Vanheneminen"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "Puheentunnistuksen käynnistäminen epäonnistui. Todennäköisesti et ole yhteydessä internetiin. Tarkista internet-yhteytesi ja yritä uudelleen. Muussa tapauksessa kokeile muuttaa ääniohjauksen kieltä asetuksista."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "Unohditko salasanasi?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "Yleiset asetukset"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "Siirry Premium-tilaukseen"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "Selvä"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "Onko sinulla ehdotus?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "Onko sinulla ongelma?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "Lue uudet viestit ääneen automaattisesti"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "Lue ääneen"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "Korosta tekstiä lukemisen aikana"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "Virheelliset kirjautumistiedot tai tilauksesi on vanhentunut. Ole hyvä ja ota meihin yhteyttä, jos tarvitset apua."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "Lisää VoiceWave-ohjauspaneeli käyttöliittymään"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "Äänikirjoitus"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "Laajennus ei löytänyt yhdistettyä mikrofonia. Varmista, että mikrofoni on kytketty ja toimii oikein."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "Näyttää siltä, että mikrofonin käyttöoikeus on evätty. Ottaaksesi puheentunnistuksen käyttöön, siirry selaimesi mikrofoniasetuksiin ja salli laajennuksen käyttää mikrofonia."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "Näppäimistö"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "Pikanäppäimet"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "Opi asentamaan lisää ääniä"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "Kuuntelee..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "Ladataan..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "Lähetä sähköpostia osoitteeseen $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "Päivitä valitsinten määritykset manuaalisesti etäpalvelimelta. Tämä varmistaa, että sinulla on uusimmat integrointisäännöt tuetuille verkkosivustoille."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "Valikko"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "Mikrofonin käyttöoikeus evätty..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "Mikrofonin käyttöoikeusvirhe..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "Mikrofoni käytössä..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "Mikrofonin käyttölupa tarvitaan..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "Tarvitsetko apua?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "Verkkovirhe..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "Seuraava"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "Seuraava lause"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "Mikrofonia ei havaittu..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova (naisääni)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "Nyt voit käyttää edistynyttä ääniohjausta sivustoilla $linksToAIs$ ja muilla tuetuilla verkkosivustoilla! Siirry vain verkkosivustolle, napsauta $iconOfMicrophone$ -kuvaketta tai paina $toggleKey$ näppäimistöltä (syöttökentän ulkopuolella) aktivoidaksesi ääniohjauksen ja aloita puhuminen.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "VoiceWave kaikilla verkkosivustoilla"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Millä tahansa verkkosivustolla napsauta hiiren oikealla painikkeella syöttökenttää, valitse \"Äänikirjoitus\" valikosta, napsauta $iconOfMicrophone$ -kuvaketta ja ala puhua kirjoittaaksesi ilman näppäimistöä.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Napsauta hiiren oikeaa painiketta syöttökentässä millä tahansa verkkosivustolla, valitse valikosta \"$itemTitle$\", napsauta $iconOfMicrophone$ -kuvaketta ja aloita sanelu.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx (syvä miesääni)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "Salasana..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "Keskeytä"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "Personoi kokemuksesi: äänet, lukuasetukset, pikanäppäimet jne."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "Sävelkorkeus"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "Tilaus"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "Toista / Jatka"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "Varmista, että näppäin ei ole tällä hetkellä käytössä muissa sovelluksissa."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "Kerro meille"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "Anna meille 5 tähteä"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "Ole hyvä ja kirjaudu sisään tilillesi."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "Pidä $keyboardKey$-näppäintä painettuna pitkää äänisyötettä varten useilla lauseilla",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "Paina haluamaasi näppäintä"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "Paina $keyboardKey$-näppäintä (syöttökentän ulkopuolella) kytkeäksesi ääniohjauksen päälle/pois",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "Edellinen lause"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "Pika-valinnat"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "Lue ääneen VoiceWavella"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "Lue lisää..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "Toista uudelleen"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "Ilmoita virheistä/ongelmista"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Palauta"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "Lähetä viesti, kun näppäin vapautetaan"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "Asetukset"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "Asetukset sivustolle $hostName$",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer (pehmeä naisääni)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "Pikanäppäimet"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "Näytä $listenIcon$ -painike jokaisen viestin vieressä",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "Kirjaudu sisään"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "Kirjaudu ulos"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "Puhesyöte keskeytyi..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "Puhesyöte keskeytyi tai peruutettiin. Varmista, että sinulla on toimiva internet-yhteys ja mikrofonisi on kytketty sekä mikrofonin käyttöoikeus on sallittu tälle laajennukselle."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "Puheen kieli"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "Nopeus"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "Alkaen vain $offerPrice$/kuukausi.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "Pysäytä"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "Lopeta ääneen lukeminen kun sanon $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "Lopeta ääniohjaus kun sanon $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "Tilaa"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "Oletko jo tilannut?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "Tekstistä puheeksi -ääni"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "Laajennus on päivitetty onnistuneesti!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "Laajennus tarvitsee luvan käyttää mikrofonia. Tarkista ponnahdusikkunasta tai selaimen palkista mikrofonin käyttöoikeuspyyntö. Napsauta \"Salli\" ottaaksesi puheentunnistuksen käyttöön."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "Äänen korkeus tai mataluus."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "Nopeus, jolla ääni puhuu."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "Äänen voimakkuus."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "Laajennuksella on ongelmia äänen tallennuksessa. Varmista, että mikrofonisi on kytketty ja toimii oikein. Tarkista selaimesi mikrofonin käyttöoikeudet ja yritä käynnistää selain uudelleen."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "Tämä laajennus ei ole saatavilla tällä sivulla."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "Tämä ominaisuus korostaa ääneen luettavaa lausetta tai virkettä, mikä helpottaa puhuttujen sanojen seuraamista merkitsemällä tekstin visuaalisesti."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "Tämä ominaisuus on saatavilla vain Elite-käyttäjille."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "Tämä on beta-ominaisuus. Sitä optimoidaan edelleen, ja siinä saattaa olla virheitä tai rajoituksia."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Siirtyäksesi seuraavaan lauseeseen kuunneltaessa, paina $keyboardKey$-näppäintä (syöttökentän ulkopuolella)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Siirtyäksesi edelliseen lauseeseen kuunneltaessa, paina $keyboardKey$-näppäintä (syöttökentän ulkopuolella)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "Napsauta hiiren oikeaa painiketta missä tahansa sivulla ja valitse \"$itemTitle$\" -vaihtoehto. VoiceWave lukee koko sivun tekstin ääneen.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "Valitse haluamasi teksti, napsauta hiiren oikealla painikkeella ja valitse \"$itemTitle$\" -vaihtoehto pikavalikosta. Kuulet vain korostamasi tekstin.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "Lähetä Enter kun sanon $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "Yritetään käyttää mikrofonia..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "Sammuta"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "Kytke mikrofoni pois päältä vastausta kuunneltaessa"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "Kytke mikrofoni pois päältä vaihdettaessa toiseen välilehteen"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "Kytke ääniohjauspois, kun näppäin vapautetaan"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "Käynnistä"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "Mikrofonia ei voida käyttää. Varmista, että mikrofonisi on kytketty ja mikrofonin käyttöoikeus on sallittu tälle sivustolle, ja yritä uudelleen."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "Päivitä valitsimet"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "Päivitä valitsimien asetukset etäpalvelimelta"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "Päivitä VoiceWave Premium -tilaukseen ja saat rajoittamattoman pääsyn kaikkiin Premium-ominaisuuksiin."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "Käyttöohje"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "Käytä ChatGPT:n oletusääntä"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "Ääni"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "Äänikirjoitus"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "Sanele viesti"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "Äänikirjoitus (kaikille verkkosivustoille)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "Äänenvoimakkuus"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "Tervetuloa!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "Tervetuloa! Aloitetaan laajennuksesi personointi. Sinulla on nyt maksuton pääsy kaikkiin premium-ominaisuuksiin."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "Käytettäessä ChatGPT:n oletusääntä tietyt ominaisuudet, kuten automaattinen tekstin korostus ja äänen navigointiohjaimet, eivät välttämättä ole käytettävissä, eikä valittua TTS-ääntä käytetä automaattisesti."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "Toimii sivustolla"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "Mikrofonisi on tällä hetkellä käytössä sivustolla $hostName$ puheen tunnistusta varten.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ tai lähetä meille sähköpostia osoitteeseen $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "Lue ääneen"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "Lue sivu ääneen"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "Äänikirjoitus"
+   },
+   "extensionDescription": {
+      "message": "Puheohjauksen avulla ChatGPT:lle voit puhua ChatGPT:lle ja käydä äänikeskusteluja."
+   },
+   "extensionName": {
+      "message": "Puheohjaus ChatGPT:lle"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: ChatGPT Voice Control"
+   }
+}

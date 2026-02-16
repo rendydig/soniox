@@ -1,0 +1,28 @@
+{
+   "action": {
+      "default_icon": "assets/icons/icon.png",
+      "default_popup": "index.html",
+      "default_title": "__MSG_extensionName__"
+   },
+   "background": {
+      "service_worker": "scripts/background.js",
+      "type": "module"
+   },
+   "default_locale": "en",
+   "description": "__MSG_extensionDescription__",
+   "host_permissions": [ "\u003Call_urls>" ],
+   "icons": {
+      "128": "assets/icons/icon.png"
+   },
+   "incognito": "split",
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgJaTWz7YPGcOBaXBdwelmuJifaxICf66XzPdmcUDIeJz2FH4VMqApEuL/oq4inrxpfbCXx9PK0arrEk/+RbW0+0DCQcpwtJApBOT6I12WgjzLrBBq8eaSe9h8gSNbdvz5/eqRThbKgb4lAAe9LGYTIACROvfRAwGktN2HfZWdCpQ24UgS4GdZYmoZhI7PPn7kIUun3RKSYqaesdOVJmJjOzHr620V+2kjp5VySdw3TVeFnh1BwNODhSDQABCBc7jK4R9TrqIWedRSdsshJ6eW2PdL5gXnRbFDFvZXmJ+6MKmandbagtuxss3SsvClHb440NSxb/Bm8eTx8Gwp1UyfwIDAQAB",
+   "manifest_version": 3,
+   "name": "__MSG_extensionName__",
+   "permissions": [ "tabs", "storage", "scripting", "contextMenus" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "6.0.1",
+   "web_accessible_resources": [ {
+      "matches": [ "\u003Call_urls>" ],
+      "resources": [ "index.html", "idle/*", "config/*" ]
+   } ]
+}

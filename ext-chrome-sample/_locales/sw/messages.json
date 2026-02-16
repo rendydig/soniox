@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "Ongeza chaguo la \"$itemTitle$\" kwenye menyu ya kubonyeza kulia kwa sehemu za kuingiza maandishi",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "Ongeza chaguo la \"$itemTitle$\" kwenye menyu ya kubofya kulia ili kusoma maandishi yaliyochaguliwa kwa sauti kwenye ukurasa wowote wa wavuti",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "Ongeza chaguo la \"$itemTitle$\" kwenye menyu ya kubonyeza kulia ili kusoma ukurasa mzima kwa sauti",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "Soma kwa sauti ya hali ya juu (kwa tovuti zote)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "Mipangilio ya kina"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "Udhibiti wa kina wa sauti"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "Baada ya kumaliza kusema, bonyeza enter kiotomatiki baada ya sekunde $delayInSeconds$",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "Lugha zote"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy (Wastani)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "Hitilafu ya kunasa sauti..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "Chagua sauti kiotomatiki kwa kugundua lugha"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "Je, huwezi kupata sauti au lugha unayopendelea?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "Vipengele fulani, kama vile kuangazia maandishi kiotomatiki na vidhibiti vya usogezaji wa sauti, huenda visiweze kupatikana unapotumia sauti ya kawaida ya ChatGPT."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "Inakagua kifaa chako cha pembejeo la sauti..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "Futa ingizo ninaposema $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "Funga"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "Wasiliana nasi"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "Futa ingizo la mwisho ninaposema $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "Inagundua hitilafu..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "Imla"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "Hauna akaunti?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "Bonyeza hapa ili kuimba ujumbe kwa kutumia VoiceWave."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo (Kiume)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "Hariri"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "Barua pepe..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "Unafurahia programu-jalizi hii?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "Kumalizika"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "Imeshindwa kuanzisha kitambua sauti. Labda hujaunganishwa kwenye intaneti. Tafadhali angalia muunganisho wako wa intaneti na jaribu tena. Vinginevyo, jaribu kubadilisha lugha ya udhibiti wa sauti kutoka kwenye mipangilio."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "Umesahau nywila yako?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "Mipangilio ya jumla"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "Nenda Premium"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "Nimeelewa"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "Una pendekezo?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "Una tatizo?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "Soma ujumbe mpya kwa sauti kiotomatiki"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "Soma kwa Sauti"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "Angazia maandishi unaposoma kwa sauti"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "Taarifa za kuingia si sahihi au usajili wako umeisha muda. Tafadhali wasiliana nasi ikiwa unahitaji msaada."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "Ongeza Paneli ya Kudhibiti VoiceWave kwenye kiolesura"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "Uandishi kwa sauti"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "Inaonekana kwamba kiendelezi hiki hakikuweza kupata maikrofoni yoyote iliyounganishwa. Tafadhali hakikisha kwamba maikrofoni yako imeunganishwa na inafanya kazi vizuri."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "Inaonekana ufikiaji wa maikrofoni umekataliwa. Ili kuwezesha utambuzi wa sauti, tafadhali nenda kwenye mipangilio ya maikrofoni ya kivinjari chako na uruhusu kipengele hiki kufikia maikrofoni."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "Kibodi"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "Njia za mkato za kibodi"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "Jifunze jinsi ya kusakinisha sauti zaidi"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "Inasikiliza..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "Inapakia..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "Tutumie barua pepe kwa $emailUsLink$",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "Sasisha usanidi wa vichaguzi mwenyewe kutoka kwenye seva ya mbali. Hii inahakikisha una kanuni za hivi karibuni za ujumuishaji kwa tovuti zinazotumika."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "Menyu"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "Ufikiaji wa maikrofoni umekataliwa..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "Hitilafu ya ufikiaji wa maikrofoni..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "Maikrofoni Inatumika..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "Ruhusa ya maikrofoni inahitajika..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "Unahitaji msaada?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "Hitilafu ya mtandao..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "Ifuatayo"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "Sentensi inayofuata"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "Hakuna maikrofoni iliyogunduliwa..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova (Kike)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "Sasa unaweza kutumia udhibiti wa kina wa sauti kwenye $linksToAIs$ na tovuti zingine zinazotumika! Nenda tu kwenye tovuti hiyo, bonyeza ikoni ya $iconOfMicrophone$, au bonyeza $toggleKey$ kwenye kibodi (nje ya sehemu ya kuingiza) ili kuamsha udhibiti wa sauti na kuanza kuzungumza.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "VoiceWave kwa Tovuti Zote"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Kwenye tovuti yoyote bonyeza kulia kwenye sehemu ya kuingiza, chagua \"Kuandika kwa sauti\" kutoka kwenye menyu, bonyeza ikoni ya $iconOfMicrophone$, na anza kusema ili kuandika bila kutumia kibodi.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Bonyeza kitufe cha kulia kwenye sehemu ya kuingiza maandishi kwenye tovuti yoyote, uchague \"$itemTitle$\" kutoka kwenye menyu, bonyeza ikoni ya $iconOfMicrophone$, na uanze kutamka.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx (Kiume Chenye Sauti Nzito)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "Nywila..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "Simamisha"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "Weka mapendeleo yako binafsi: sauti, mipangilio ya kusoma kwa sauti, njia za mkato, n.k."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "Toni"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "Mpango"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "Cheza / Endelea"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "Tafadhali hakikisha kwamba kitufe hakitumiki kwa sasa na programu nyingine yoyote."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "Tafadhali tufahamishe"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "Tafadhali tupe nyota 5"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "Tafadhali ingia kwenye akaunti yako."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "Bonyeza na ushikilie kitufe cha $keyboardKey$ kwa kuingiza sauti ndefu yenye sentensi nyingi",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "Bonyeza kitufe unachotaka"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "Bonyeza kitufe cha $keyboardKey$ (nje ya sehemu ya kuingiza) ili kuwasha/kuzima udhibiti wa sauti",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "Sentensi iliyotangulia"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "Chaguo za haraka"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "Soma kwa sauti na VoiceWave"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "Soma zaidi..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "Rudia"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "Ripoti hitilafu/matatizo"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Weka upya"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "Tuma ujumbe wakati kitufe kinaachwa"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "Mipangilio"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "Mipangilio ya $hostName$",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer (Kike Laini)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "Njia za Mkato"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "Onyesha kitufe cha $listenIcon$ karibu na kila ujumbe",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "Ingia"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "Toka"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "Pembejeo la sauti limekatizwa..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "Pembejeo la sauti limekatizwa au limefutwa. Tafadhali hakikisha una muunganisho wa intaneti unaofanya kazi na maikrofoni yako imeunganishwa na ufikiaji wa maikrofoni umeruhusu kwa kipengele hiki."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "Lugha ya usemi"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "Kasi"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "Kuanzia $offerPrice$ tu kwa mwezi.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "Acha"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "Acha kusoma kwa sauti ninaposema $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "Simamisha udhibiti wa sauti ninaposema $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "Jisajili"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "Umeshajisajili?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "Sauti ya maandishi-hadi-kusema"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "Kipengele kimesasishwa kwa mafanikio!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "Kipengele hiki kinahitaji ruhusa yako kufikia maikrofoni. Tafadhali angalia dirisha linalotokeza au bar ya kivinjari kwa ombi la kuruhusu ufikiaji wa maikrofoni. Bonyeza \"Ruhusu\" ili kuwezesha utambuzi wa sauti."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "Kiwango cha juu au chini cha sauti."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "Kasi ambayo sauti inazungumza."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "Sauti ya kiwango cha sauti."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "Kipengele hiki kinakabiliwa na shida za kunasa sauti. Hakikisha maikrofoni yako imeunganishwa na inafanya kazi vizuri. Angalia ruhusa za maikrofoni za kivinjari chako na jaribu kuanzisha upya kivinjari."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "Programu-jalizi hii haipatikani kwenye ukurasa huu."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "Kipengele hiki kinaangazia kifungu au sentensi inayosomwa kwa sauti, na kurahisisha kufuatilia maneno yanayozungumzwa kwa kuangazia maandishi kwa kuona."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "Kipengele hiki kinapatikana kwa watumiaji wa Elite tu."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "Hii ni kipengele cha beta. Bado inaboreshwa na inaweza kuwa na hitilafu au vikwazo."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Ili kwenda kwenye sentensi inayofuata wakati wa kusikiliza, bonyeza kitufe cha $keyboardKey$ (nje ya sehemu ya kuingiza)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Ili kurudi kwenye sentensi iliyopita wakati wa kusikiliza, bonyeza kitufe cha $keyboardKey$ (nje ya sehemu ya kuingiza)",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "Bonyeza kitufe cha kulia mahali popote kwenye ukurasa na uchague chaguo la \"$itemTitle$\". VoiceWave itasoma maandishi yote ya ukurasa huo kwa sauti.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "Chagua maandishi unayotaka, bonyeza kulia, na uchague chaguo la \"$itemTitle$\" kwenye menyu ya muktadha. Utasikia tu maandishi uliyoyaangazia.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "Bonyeza enter ninaposema $triggerWord$",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "Inajaribu kufikia maikrofoni yako..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "Zima"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "Zima maikrofoni wakati wa kusikia jibu"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "Zima maikrofoni wakati wa kubadili kwenda kichupo kingine"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "Zima udhibiti wa sauti wakati kitufe kinaachwa"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "Washa"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "Haiwezekani kufikia maikrofoni yako. Tafadhali hakikisha maikrofoni yako imeunganishwa na ufikiaji wa maikrofoni umeruhusu kwa tovuti hii na jaribu tena."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "Sasisha Vichaguzi"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "Sasisha usanidi wa vichaguzi kutoka kwenye seva ya mbali"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "Pandisha hadi VoiceWave Premium ili kupata ufikiaji usio na kikomo wa vipengele vyote vya Premium."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "Mwongozo wa matumizi"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "Tumia sauti ya kawaida ya ChatGPT"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "Sauti"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "Kuandika kwa Sauti"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "Tamka ujumbe"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "Kuandika kwa sauti (kwa tovuti zote)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "Sauti"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "Karibu!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "Karibu! Hebu tuanze kubinafsisha kipengele chako. Sasa una ufikiaji wa bure kwa vipengele vyote vya premium."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "Unapotumia sauti chaguo-msingi ya ChatGPT, baadhi ya vipengele, kama vile kuangazia maandishi kiotomatiki na vidhibiti vya urambazaji wa sauti, huenda visiweze kupatikana na sauti ya TTS uliyochagua haitawekwa kiotomatiki."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "Inafanya kazi kwenye"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "Maikrofoni yako kwa sasa inatumika kwenye $hostName$ kwa utambuzi wa usemi.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ au tutumie barua pepe kwa $emailUsLink$",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "Soma kwa Sauti"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "Soma Ukurasa kwa Sauti"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "Uandishi kwa sauti"
+   },
+   "extensionDescription": {
+      "message": "Udhibiti wa Sauti kwa ChatGPT hukuwezesha kuzungumza na ChatGPT na kufanya mazungumzo ya sauti."
+   },
+   "extensionName": {
+      "message": "Udhibiti wa Sauti kwa ChatGPT"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: ChatGPT Udhibiti wa Sauti"
+   }
+}

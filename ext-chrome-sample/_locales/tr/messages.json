@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "Giriş alanları için sağ tıklama menüsüne \"$itemTitle$\" seçeneğini ekle",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "Herhangi bir web sayfasında seçili metni sesli okumak için sağ tıklama menüsüne \"$itemTitle$\" seçeneğini ekleyin",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "Tüm sayfayı sesli okumak için sağ tıklama menüsüne \"$itemTitle$\" seçeneğini ekle",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "Gelişmiş sesli okuma (tüm web siteleri için)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "Gelişmiş ayarlar"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "Gelişmiş ses kontrolü"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "Konuşmayı bitirdikten sonra $delayInSeconds$ saniye sonra otomatik olarak enter tuşunu tetikle",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "Tüm diller"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy (Nötr)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "Ses yakalama hatası..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "Dili algılayarak otomatik olarak ses seç"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "Tercih ettiğiniz sesi veya dili bulamıyor musunuz?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "Varsayılan ChatGPT sesi kullanılırken otomatik metin vurgulama ve ses gezinme kontrolleri gibi bazı özellikler kullanılamayabilir."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "Ses giriş cihazınız kontrol ediliyor..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "$triggerWord$ dediğimde girişi temizle",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "Kapat"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "Bize ulaşın"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "$triggerWord$ dediğimde son girişi sil",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "Hatalar tespit ediliyor..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "Dikte"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "Hesabınız yok mu?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "VoiceWave kullanarak sesli mesaj yazmak için buraya basın."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo (Erkek)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "Düzenle"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "E-posta..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "Bu eklentiyi beğendiniz mi?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "Son Kullanma"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "Konuşma tanıyıcısı başlatılamadı. Muhtemelen internete bağlı değilsiniz. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin. Aksi takdirde, ayarlardan sesli kontrol dilinizi değiştirmeyi deneyin."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "Şifrenizi mi unuttunuz?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "Genel ayarlar"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "Premium'a Geç"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "Anladım"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "Bir öneriniz mi var?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "Bir sorun mu yaşıyorsunuz?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "Yeni mesajları otomatik olarak sesli oku"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "Sesli Okuma"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "Sesli okurken metni vurgula"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "Hatalı bilgiler veya aboneliğinizin süresi dolmuş. Yardıma ihtiyacınız varsa lütfen bizimle iletişime geçin."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "Arayüze VoiceWave Kontrol Paneli ekle"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "Sesli yazma"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "Görünüşe göre bu uzantı bağlı bir mikrofon bulamadı. Lütfen mikrofonunuzun bağlı ve düzgün çalıştığından emin olun."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "Mikrofon erişimi reddedilmiş görünüyor. Konuşma tanımayı etkinleştirmek için lütfen tarayıcınızın mikrofon ayarlarına gidin ve eklentiye mikrofon erişimi verin."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "Klavye"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "Klavye kısayolları"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "Daha fazla ses nasıl yükleneceğini öğrenin"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "Dinliyor..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "Yükleniyor..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "$emailUsLink$ adresinden bize yazın",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "Seçici yapılandırmasını uzak sunucudan manuel olarak güncelleyin. Bu, desteklenen web siteleri için en güncel entegrasyon kurallarına sahip olmanızı sağlar."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "Menü"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "Mikrofon erişimi reddedildi..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "Mikrofon erişim hatası..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "Mikrofon Kullanımda..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "Mikrofon izni gerekiyor..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "Yardıma mı ihtiyacınız var?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "Ağ hatası..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "İleri"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "Sonraki cümle"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "Mikrofon algılanmadı..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova (Kadın)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "Artık $linksToAIs$ ve desteklenen diğer web sitelerinde gelişmiş ses kontrolünü kullanabilirsiniz! Web sitesine gidin, $iconOfMicrophone$ simgesine tıklayın veya ses kontrolünü etkinleştirmek için klavyeden (giriş alanının dışında) $toggleKey$ tuşuna basın ve konuşmaya başlayın.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "Tüm Web Siteleri için VoiceWave"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Herhangi bir web sitesinde giriş alanına sağ tıklayın, menüden \"Sesli yazma\"yı seçin, $iconOfMicrophone$ simgesine tıklayın ve klavye kullanmadan yazmak için konuşmaya başlayın.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "Herhangi bir web sitesinde giriş alanına sağ tıklayın, menüden \"$itemTitle$\" seçeneğini seçin, $iconOfMicrophone$ simgesine tıklayın ve dikte etmeye başlayın.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx (Derin Erkek)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "Şifre..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "Duraklat"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "Deneyiminizi kişiselleştirin: sesler, sesli okuma ayarları, kısayollar vb."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "Perde"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "Plan"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "Oynat / Devam Et"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "Lütfen tuşun şu anda başka bir uygulama tarafından kullanılmadığından emin olun."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "Lütfen bize bildirin"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "Lütfen bize 5 yıldız verin"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "Lütfen hesabınıza giriş yapın."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "Birden fazla cümle içeren uzun sesli giriş için $keyboardKey$ tuşuna basılı tutun",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "İstediğiniz tuşa basın"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "Ses kontrolünü açmak/kapatmak için (giriş alanının dışında) $keyboardKey$ tuşuna basın",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "Önceki cümle"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "Hızlı seçimler"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "VoiceWave ile sesli oku"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "Devamını oku..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "Tekrar Oynat"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "Hata/sorun bildirin"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "Sıfırla"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "Tuş bırakıldığında mesajı gönder"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "Ayarlar"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "$hostName$ için ayarlar",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer (Yumuşak Kadın)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "Kısayollar"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "Her mesajın yanında bir $listenIcon$ düğmesi göster",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "Giriş Yap"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "Çıkış Yap"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "Konuşma girişi kesildi..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "Konuşma girişi kesildi veya iptal edildi. Lütfen çalışan bir internet bağlantınız olduğundan ve mikrofonunuzun bağlı olduğundan ve bu eklenti için mikrofon erişimine izin verildiğinden emin olun."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "Konuşma dili"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "Hız"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "Ayda sadece $offerPrice$ ile başlayan fiyatlarla.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "Durdur"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "$triggerWord$ dediğimde sesli okumayı durdur",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "$triggerWord$ dediğimde sesli kontrolü durdur",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "Abone Ol"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "Zaten abone oldunuz mu?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "Metinden sese ses"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "Eklenti başarıyla güncellendi!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "Eklentinin mikrofona erişmek için izninize ihtiyacı var. Lütfen mikrofon erişimine izin verme isteği için açılır pencereyi veya tarayıcı çubuğunu kontrol edin. Konuşma tanımayı etkinleştirmek için \"İzin Ver\" seçeneğine tıklayın."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "Sesin tiz veya pes olma durumu."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "Sesin konuşma hızı."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "Sesin ses seviyesi."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "Bu eklenti ses yakalamakta sorun yaşıyor. Mikrofonunuzun bağlı ve düzgün çalıştığından emin olun. Tarayıcınızın mikrofon izinlerini kontrol edin ve tarayıcıyı yeniden başlatmayı deneyin."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "Bu eklenti bu sayfada kullanılamaz."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "Bu özellik, sesli okunan cümle veya ifadeyi vurgulayarak metni görsel olarak işaretler ve konuşulan kelimeleri takip etmeyi kolaylaştırır."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "Bu özellik yalnızca Elite kullanıcıları için kullanılabilir."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "Bu bir beta özelliğidir. Hala optimize ediliyor ve bazı hatalar veya sınırlamalar içerebilir."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Dinlerken sonraki cümleye gitmek için (giriş alanının dışında) $keyboardKey$ tuşuna basın",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "Dinlerken önceki cümleye gitmek için (giriş alanının dışında) $keyboardKey$ tuşuna basın",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "Sayfada herhangi bir yere sağ tıklayın ve \"$itemTitle$\" seçeneğini seçin. VoiceWave o sayfanın tüm metnini sesli olarak okuyacaktır.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "İstediğiniz metni seçin, sağ tıklayın ve bağlam menüsünden \"$itemTitle$\" seçeneğini seçin. Yalnızca vurguladığınız metni duyacaksınız.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "$triggerWord$ dediğimde enter tuşunu tetikle",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "Mikrofonunuza erişmeye çalışılıyor..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "Kapat"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "Yanıt dinlenirken mikrofonu kapat"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "Başka bir sekmeye geçerken mikrofonu kapat"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "Tuş bırakıldığında ses kontrolünü kapat"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "Aç"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "Mikrofonunuza erişilemiyor. Lütfen mikrofonunuzun bağlı olduğundan ve bu site için mikrofon erişimine izin verildiğinden emin olun ve tekrar deneyin."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "Seçicileri Güncelle"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "Uzak sunucudan seçici yapılandırmasını güncelle"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "Tüm Premium özelliklere sınırsız erişim için VoiceWave Premium'a yükseltin."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "Kullanım kılavuzu"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "Varsayılan ChatGPT sesini kullan"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "Ses"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "Sesli Yazma"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "Mesaj dikte et"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "Sesli yazma (tüm web siteleri için)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "Ses Seviyesi"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "Hoş Geldiniz!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "Hoş geldiniz! Hadi eklentinizi kişiselleştirmeye başlayalım. Artık tüm premium özelliklere ücretsiz erişiminiz var."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "Varsayılan ChatGPT sesi kullanıldığında, otomatik metin vurgulama ve ses gezinme kontrolleri gibi belirli özellikler kullanılamayabilir ve seçilen TTS sesi otomatik olarak uygulanmaz."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "Şurada çalışır"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "Mikrofonunuz şu anda $hostName$ üzerinde konuşma tanıma için kullanılıyor.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ veya $emailUsLink$ adresine e-posta gönderin",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "Sesli Oku"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "Sayfayı Sesli Oku"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "Sesli yazma"
+   },
+   "extensionDescription": {
+      "message": "ChatGPT ile konuşun ve yanıtları doğal bir sesle duyun. Birden çok dilde ChatGPT için ses kontrolü. Konuşma tanıma ve TTS."
+   },
+   "extensionName": {
+      "message": "ChatGPT için Ses Kontrolü"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: ChatGPT için Ses Kontrolü"
+   }
+}

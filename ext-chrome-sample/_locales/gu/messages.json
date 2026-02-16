@@ -1,0 +1,751 @@
+{
+   "Add_itemTitle_option_in_right_click_menu_for_input_fields": {
+      "description": "Add \"{{itemTitle}}\" option in right-click menu for input fields",
+      "message": "ઇનપુટ ફીલ્ડ્સ માટે જમણું-ક્લિક મેનુમાં \"$itemTitle$\" વિકલ્પ ઉમેરો",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_listen_to_selected_text_on_any_webpage": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to listen to selected text on any webpage",
+      "message": "કોઈપણ વેબપેજ પર પસંદ કરેલ ટેક્સ્ટ મોટેથી વાંચવા માટે જમણા-ક્લિક મેનૂમાં \"$itemTitle$\" વિકલ્પ ઉમેરો",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Add_itemTitle_option_to_the_right_click_menu_to_read_the_entire_page_aloud": {
+      "description": "Add \"{{itemTitle}}\" option to the right-click menu to read the entire page aloud",
+      "message": "સંપૂર્ણ પૃષ્ઠ મોટેથી વાંચવા માટે જમણું-ક્લિક મેનુમાં \"$itemTitle$\" વિકલ્પ ઉમેરો",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Advanced_read_aloud_for_all_websites": {
+      "description": "Advanced read aloud (for all websites)",
+      "message": "અદ્યતન વાંચન સાંભળો (તમામ વેબસાઇટ્સ માટે)"
+   },
+   "Advanced_settings": {
+      "description": "Advanced settings",
+      "message": "અદ્યતન સેટિંગ્સ"
+   },
+   "Advanced_voice_control": {
+      "description": "Advanced voice control",
+      "message": "અદ્યતન વૉઇસ કંટ્રોલ"
+   },
+   "After_I_finish_speaking_automatically_trigger_enter_after_delayInSeconds_second_s": {
+      "description": "After I finish speaking, automatically trigger enter after {{delayInSeconds}} second(s)",
+      "message": "હું બોલવાનું પૂર્ણ કરું પછી, $delayInSeconds$ સેકંડ પછી આપમેળે એન્ટર દબાવો",
+      "placeholders": {
+         "delayinseconds": {
+            "content": "$1",
+            "example": "delayInSeconds"
+         }
+      }
+   },
+   "All_languages": {
+      "description": "All languages",
+      "message": "બધી ભાષાઓ"
+   },
+   "Alloy__Neutral_": {
+      "description": "Alloy (Neutral)",
+      "message": "Alloy (તટસ્થ)"
+   },
+   "Audio_capturing_error": {
+      "description": "Audio capturing error...",
+      "message": "ઓડિયો કેપ્ચરિંગ ભૂલ..."
+   },
+   "Automatically_choose_voice_by_detecting_language": {
+      "description": "Automatically choose voice by detecting language",
+      "message": "ભાષા શોધીને આપમેળે વૉઇસ પસંદ કરો"
+   },
+   "Can_t_find_your_preferred_voice_or_language": {
+      "description": "Can't find your preferred voice or language?",
+      "message": "તમારી પસંદીદા વૉઇસ અથવા ભાષા મળી રહી નથી?"
+   },
+   "Certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_when_using_the_default_ChatGPT_voice": {
+      "description": "Certain features, such as automated text highlighting and audio navigation controls, may not be available when using the default ChatGPT voice.",
+      "message": "ડિફૉલ્ટ ChatGPT વૉઇસનો ઉપયોગ કરતી વખતે કેટલીક સુવિધાઓ, જેમ કે સ્વયંસંચાલિત ટેક્સ્ટ હાઇલાઇટિંગ અને ઑડિયો નેવિગેશન નિયંત્રણો, ઉપલબ્ધ ન હોઈ શકે."
+   },
+   "Checking_your_audio_input_device": {
+      "description": "Checking your audio input device...",
+      "message": "તમારા ઓડિયો ઇનપુટ ડિવાઇસને તપાસી રહ્યા છીએ..."
+   },
+   "Clear_input_when_I_say_triggerWord": {
+      "description": "Clear input when I say {{triggerWord}}",
+      "message": "જ્યારે હું $triggerWord$ કહું ત્યારે ઇનપુટ સાફ કરો",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Close": {
+      "description": "Close",
+      "message": "બંધ કરો"
+   },
+   "Contact_us": {
+      "description": "Contact us",
+      "message": "અમારો સંપર્ક કરો"
+   },
+   "Delete_last_input_when_I_say_triggerWord": {
+      "description": "Delete last input when I say {{triggerWord}}",
+      "message": "જ્યારે હું $triggerWord$ કહું ત્યારે છેલ્લો ઇનપુટ કાઢી નાખો",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Detecting_errors": {
+      "description": "Detecting errors...",
+      "message": "ભૂલો શોધી રહ્યા છીએ..."
+   },
+   "Dictation": {
+      "description": "Dictation settings section for speech-to-text configuration",
+      "message": "શ્રુતલેખન"
+   },
+   "Don_t_have_an_account": {
+      "description": "Don't have an account?",
+      "message": "એકાઉન્ટ નથી?"
+   },
+   "Easily_dictate_text_using_your_voice_activate_advanced_voice_mode_and_execute_voice_commands_for_a_hands_free_experience": {
+      "description": "Press here to dictate a message using VoiceWave.",
+      "message": "VoiceWave નો ઉપયોગ કરીને સંદેશ બોલવા માટે અહીં દબાવો."
+   },
+   "Echo__Male_": {
+      "description": "Echo (Male)",
+      "message": "Echo (પુરુષ)"
+   },
+   "Edit": {
+      "description": "Edit",
+      "message": "સંપાદિત કરો"
+   },
+   "Email": {
+      "description": "Email...",
+      "message": "ઇમેઇલ..."
+   },
+   "Enjoying_this_extension": {
+      "description": "Enjoying this extension?",
+      "message": "આ એક્સટેન્શનનો આનંદ માણી રહ્યા છો?"
+   },
+   "Expiration": {
+      "description": "Expiration",
+      "message": "સમાપ્તિ"
+   },
+   "Failed_to_start_the_speech_recognizer_Probably_you_are_not_connected_to_the_internet_Please_check_your_internet_connection_and_try_again_Otherwise_try_changing_your_voice_control_language_from_settings": {
+      "description": "Failed to start the speech recognizer. Probably you are not connected to the internet. Please check your internet connection and try again. Otherwise, try changing your voice control language from settings.",
+      "message": "સ્પીચ રેકગ્નાઇઝર શરૂ કરવામાં નિષ્ફળ. સંભવતઃ તમે ઇન્ટરનેટ સાથે કનેક્ટેડ નથી. કૃપા કરીને તમારું ઇન્ટરનેટ કનેક્શન તપાસો અને ફરીથી પ્રયાસ કરો. નહીં તો, સેટિંગ્સમાંથી તમારી વોઇસ કંટ્રોલ ભાષા બદલવાનો પ્રયાસ કરો."
+   },
+   "Forgot_your_password": {
+      "description": "Forgot your password?",
+      "message": "તમારો પાસવર્ડ ભૂલી ગયા?"
+   },
+   "General_settings": {
+      "description": "General settings",
+      "message": "સામાન્ય સેટિંગ્સ"
+   },
+   "Go_Premium": {
+      "description": "Go Premium",
+      "message": "પ્રીમિયમ લો"
+   },
+   "Got_it": {
+      "description": "Got it",
+      "message": "સમજાયું"
+   },
+   "Have_a_suggestion": {
+      "description": "Have a suggestion?",
+      "message": "કોઈ સૂચન છે?"
+   },
+   "Having_an_issue": {
+      "description": "Having an issue?",
+      "message": "કોઈ સમસ્યા છે?"
+   },
+   "Hear_messages_automatically": {
+      "description": "Read new messages aloud automatically as they appear",
+      "message": "નવા સંદેશાઓ આપમેળે મોટેથી વાંચો"
+   },
+   "Hearing_and_TTS": {
+      "description": "Settings section for reading aloud",
+      "message": "મોટેથી વાંચો"
+   },
+   "Highlight_text_while_reading_aloud": {
+      "description": "Highlight text while reading aloud",
+      "message": "મોટેથી વાંચતી વખતે ટેક્સ્ટ હાઇલાઇટ કરો"
+   },
+   "Incorrect_credentials_or_your_subscription_has_expired_Please_contact_us_if_you_need_assistance": {
+      "description": "Incorrect credentials or your subscription has expired. Please contact us if you need assistance.",
+      "message": "ખોટી માહિતી અથવા તમારું સબ્સ્ક્રિપ્શન સમાપ્ત થઈ ગયું છે. જો તમને સહાયની જરૂર હોય તો કૃપા કરીને અમારો સંપર્ક કરો."
+   },
+   "Integrate_advanced_voice_control_functionalities": {
+      "description": "ui option to add VoiceWave Control Panel to the interface",
+      "message": "ઇન્ટરફેસમાં VoiceWave કંટ્રોલ પેનલ ઉમેરો"
+   },
+   "Integrate_voice_typing_functionalities": {
+      "description": "Integrate voice typing functionalities.",
+      "message": "વૉઇસ ટાઇપિંગ"
+   },
+   "It_appears_that_this_extension_couldn_t_find_any_connected_microphone_Please_ensure_that_your_microphone_is_connected_and_working_properly": {
+      "description": "It appears that this extension couldn't find any connected microphone. Please ensure that your microphone is connected and working properly.",
+      "message": "એવું લાગે છે કે આ એક્સ્ટેન્શનને કોઈ કનેક્ટેડ માઇક્રોફોન મળ્યો નથી. કૃપા કરીને ખાતરી કરો કે તમારો માઇક્રોફોન કનેક્ટેડ છે અને યોગ્ય રીતે કામ કરી રહ્યો છે."
+   },
+   "It_seems_like_microphone_access_is_denied_To_enable_speech_recognition_please_go_to_your_browser_s_microphone_settings_and_allow_the_extension_access_to_the_microphone": {
+      "description": "It seems like microphone access is denied. To enable speech recognition, please go to your browser's microphone settings and allow the extension access to the microphone.",
+      "message": "એવું લાગે છે કે માઇક્રોફોન ઍક્સેસ નકારવામાં આવી છે. સ્પીચ રેકગ્નિશન સક્ષમ કરવા માટે, કૃપા કરીને તમારા બ્રાઉઝરની માઇક્રોફોન સેટિંગ્સમાં જાઓ અને એક્સટેન્શનને માઇક્રોફોન ઍક્સેસ કરવાની મંજૂરી આપો."
+   },
+   "Keyboard": {
+      "description": "Keyboard",
+      "message": "કીબોર્ડ"
+   },
+   "Keyboard_shortcuts": {
+      "description": "Keyboard shortcuts",
+      "message": "કીબોર્ડ શૉર્ટકટ્સ"
+   },
+   "Learn_how_to_install_more_voices": {
+      "description": "Learn how to install more voices",
+      "message": "વધુ વૉઇસ કેવી રીતે ઇન્સ્ટૉલ કરવી તે જાણો"
+   },
+   "Listening": {
+      "description": "Listening...",
+      "message": "સાંભળી રહ્યું છે..."
+   },
+   "Loading": {
+      "description": "Loading...",
+      "message": "લોડ થઈ રહ્યું છે..."
+   },
+   "Mail_us_at_emailUsLink": {
+      "description": "Mail us at {{emailUsLink}}",
+      "message": "$emailUsLink$ પર અમને મેઇલ કરો",
+      "placeholders": {
+         "emailuslink": {
+            "content": "$1",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "Manually_update_the_selectors_configuration_from_the_remote_server_This_ensures_you_have_the_latest_integration_rules_for_supported_websites": {
+      "description": "Manually update the selectors configuration from the remote server. This ensures you have the latest integration rules for supported websites.",
+      "message": "રિમોટ સર્વરથી સિલેક્ટર્સ કન્ફિગરેશન મેન્યુઅલી અપડેટ કરો. આ સુનિશ્ચિત કરે છે કે તમારી પાસે સપોર્ટેડ વેબસાઇટ્સ માટે નવીનતમ ઇન્ટિગ્રેશન નિયમો છે."
+   },
+   "Menu": {
+      "description": "Menu",
+      "message": "મેનૂ"
+   },
+   "Microphone_access_denied": {
+      "description": "Microphone access denied...",
+      "message": "માઇક્રોફોન ઍક્સેસ નકારાઈ..."
+   },
+   "Microphone_access_error": {
+      "description": "Microphone access error...",
+      "message": "માઇક્રોફોન ઍક્સેસ ભૂલ..."
+   },
+   "Microphone_in_Use": {
+      "description": "Microphone in Use...",
+      "message": "માઇક્રોફોન ઉપયોગમાં છે..."
+   },
+   "Microphone_permission_needed": {
+      "description": "Microphone permission needed...",
+      "message": "માઇક્રોફોન પરમિશન જરૂરી છે..."
+   },
+   "Need_help": {
+      "description": "Need help?",
+      "message": "મદદ જોઈએ છે?"
+   },
+   "Network_error": {
+      "description": "Network error...",
+      "message": "નેટવર્ક ભૂલ..."
+   },
+   "Next": {
+      "description": "Next as in next step",
+      "message": "આગળ"
+   },
+   "Next_sentence": {
+      "description": "Next sentence",
+      "message": "આગળનું વાક્ય"
+   },
+   "No_microphone_detected": {
+      "description": "No microphone detected...",
+      "message": "માઇક્રોફોન મળ્યો નથી..."
+   },
+   "Nova__Female_": {
+      "description": "Nova (Female)",
+      "message": "Nova (સ્ત્રી)"
+   },
+   "Now_you_can_use_advanced_voice_control_on_linksToAIs_and_other_supported_websites_Just_head_to_the_website_click_the_iconOfMicrophone_icon_or_press_toggleKey_from_the_keyboard_outside_the_input_field_to_activate_voice_control_and_begin_speaking": {
+      "description": "Now you can use advanced voice control on {{linksToAIs}} and other supported websites! Just head to the website, click the {{iconOfMicrophone}} icon, or press {{toggleKey}} from the keyboard (outside the input field) to activate voice control and begin speaking.",
+      "message": "હવે તમે $linksToAIs$ અને અન્ય સપોર્ટેડ વેબસાઇટ્સ પર અદ્યતન વૉઇસ કંટ્રોલનો ઉપયોગ કરી શકો છો! ફક્ત વેબસાઇટ પર જાઓ, $iconOfMicrophone$ આઇકન પર ક્લિક કરો, અથવા વૉઇસ કંટ્રોલને સક્રિય કરવા માટે કીબોર્ડ પરથી (ઇનપુટ ફીલ્ડની બહાર) $toggleKey$ દબાવો અને બોલવાનું શરૂ કરો.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "linkstoais": {
+            "content": "$1",
+            "example": "linksToAIs"
+         },
+         "togglekey": {
+            "content": "$3",
+            "example": "toggleKey"
+         }
+      }
+   },
+   "On_Page": {
+      "description": "On-Page option in settings - that is voicewave for all websites",
+      "message": "તમામ વેબસાઇટ્સ માટે VoiceWave"
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_Voice_typing_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"Voice typing\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "કોઈપણ વેબસાઇટ પર ઇનપુટ ફીલ્ડ પર જમણું-ક્લિક કરો, મેનૂમાંથી \"અવાજ ટાઇપિંગ\" પસંદ કરો, $iconOfMicrophone$ આઇકન પર ક્લિક કરો અને કીબોર્ડનો ઉપયોગ કર્યા વિના ટાઇપ કરવા માટે બોલવાનું શરૂ કરો.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$1",
+            "example": "iconOfMicrophone"
+         }
+      }
+   },
+   "On_any_website_just_right_click_on_the_input_field_choose_itemTitle_from_the_menu_click_the_iconOfMicrophone_icon_and_start_speaking_to_type_without_using_the_keyboard": {
+      "description": "On any website just right-click on the input field, choose \"{{itemTitle}}\" from the menu, click the {{iconOfMicrophone}} icon, and start speaking to type without using the keyboard.",
+      "message": "કોઈપણ વેબસાઈટ પર ઇનપુટ ફીલ્ડ પર જમણું-ક્લિક કરો, મેનુમાંથી \"$itemTitle$\" પસંદ કરો, $iconOfMicrophone$ આયકન પર ક્લિક કરો અને બોલવાનું શરૂ કરો.",
+      "placeholders": {
+         "iconofmicrophone": {
+            "content": "$2",
+            "example": "iconOfMicrophone"
+         },
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Onyx__Deep_Male_": {
+      "description": "Onyx (Deep Male)",
+      "message": "Onyx (ઊંડો પુરુષ)"
+   },
+   "Password": {
+      "description": "Password...",
+      "message": "પાસવર્ડ..."
+   },
+   "Pause": {
+      "description": "Pause",
+      "message": "થોભાવો"
+   },
+   "Personalize_your_experience_by_customizing_voice_commands_language_dictation_settings_keyboard_shortcuts_and_more": {
+      "description": "Personalize your experience by customizing voice commands, language, dictation settings, keyboard shortcuts, and more.",
+      "message": "તમારા અનુભવને વ્યક્તિગત બનાવો: અવાજો, મોટેથી વાંચવાની સેટિંગ્સ, શૉર્ટકટ્સ વગેરે."
+   },
+   "Pitch": {
+      "description": "Pitch",
+      "message": "પિચ"
+   },
+   "Plan": {
+      "description": "Plan",
+      "message": "પ્લાન"
+   },
+   "Play_Resume": {
+      "description": "Play / Resume",
+      "message": "ચલાવો / ફરી શરૂ કરો"
+   },
+   "Please_ensure_that_the_key_is_not_currently_in_use_by_any_other_applications": {
+      "description": "Please ensure that the key is not currently in use by any other applications.",
+      "message": "કૃપા કરીને ખાતરી કરો કે કી હાલમાં અન્ય કોઈ એપ્લિકેશન દ્વારા ઉપયોગમાં નથી."
+   },
+   "Please_let_us_know": {
+      "description": "Please let us know",
+      "message": "કૃપા કરીને અમને જણાવો"
+   },
+   "Please_rate_us_5_stars": {
+      "description": "Please rate us 5 stars",
+      "message": "કૃપા કરીને અમને 5 સ્ટાર રેટિંગ આપો"
+   },
+   "Please_sign_in_to_your_account": {
+      "description": "Please sign in to your account.",
+      "message": "કૃપા કરીને તમારા એકાઉન્ટમાં સાઇન ઇન કરો."
+   },
+   "Press_and_hold_the_keyboardKey_key_for_long_voice_input_with_multiple_sentences": {
+      "description": "Press and hold the {{keyboardKey}} key for long voice input with multiple sentences",
+      "message": "બહુવિધ વાક્યો સાથે લાંબા વૉઇસ ઇનપુટ માટે $keyboardKey$ કી દબાવી રાખો",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Press_desired_key": {
+      "description": "Press desired key",
+      "message": "ઇચ્છિત કી દબાવો"
+   },
+   "Press_the_keyboardKey_key_outside_input_field_to_turn_on_off_the_voice_control": {
+      "description": "Press the {{keyboardKey}} key (outside input field) to turn on/off the voice control",
+      "message": "વૉઇસ કંટ્રોલ ચાલુ/બંધ કરવા માટે (ઇનપુટ ફીલ્ડની બહાર) $keyboardKey$ કી દબાવો",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "Previous_sentence": {
+      "description": "Previous sentence",
+      "message": "પાછળનું વાક્ય"
+   },
+   "Quick_choices": {
+      "description": "Quick choices",
+      "message": "ઝડપી પસંદગીઓ"
+   },
+   "Read_aloud_with_VoiceWave": {
+      "description": "Read aloud with VoiceWave",
+      "message": "VoiceWave સાથે વાંચન સાંભળો"
+   },
+   "Read_more": {
+      "description": "Read more...",
+      "message": "વધુ વાંચો..."
+   },
+   "Replay": {
+      "description": "Replay",
+      "message": "ફરીથી ચલાવો"
+   },
+   "Report_bugs_issues": {
+      "description": "Report bugs/issues",
+      "message": "બગ્સ/સમસ્યાઓની જાણ કરો"
+   },
+   "Reset": {
+      "description": "Reset",
+      "message": "રીસેટ કરો"
+   },
+   "Send_message_when_the_key_is_released": {
+      "description": "Send message when the key is released",
+      "message": "કી છોડવામાં આવે ત્યારે સંદેશ મોકલો"
+   },
+   "Settings": {
+      "description": "Settings",
+      "message": "સેટિંગ્સ"
+   },
+   "Settings_for_hostName": {
+      "description": "Settings for {{hostName}}",
+      "message": "$hostName$ માટે સેટિંગ્સ",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "Shimmer__Soft_Female_": {
+      "description": "Shimmer (Soft Female)",
+      "message": "Shimmer (કોમળ સ્ત્રી)"
+   },
+   "Shortcuts": {
+      "description": "Shortcuts",
+      "message": "શૉર્ટકટ્સ"
+   },
+   "Show_a_listenIcon_button_for_each_message_to_listen_to_the_message": {
+      "description": "ui option to show a {{listenIcon}} button next to each message",
+      "message": "દરેક સંદેશની બાજુમાં $listenIcon$ બટન બતાવો",
+      "placeholders": {
+         "listenicon": {
+            "content": "$1",
+            "example": "listenIcon"
+         }
+      }
+   },
+   "Sign_in": {
+      "description": "Sign in",
+      "message": "સાઇન ઇન કરો"
+   },
+   "Sign_out": {
+      "description": "Sign out",
+      "message": "સાઇન આઉટ કરો"
+   },
+   "Speech_input_interrupted": {
+      "description": "Speech input interrupted...",
+      "message": "સ્પીચ ઇનપુટ વિક્ષેપિત થયું..."
+   },
+   "Speech_input_was_interrupted_or_cancelled_Please_make_sure_you_ve_a_working_internet_connection_and_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_extension": {
+      "description": "Speech input was interrupted or cancelled. Please make sure you've a working internet connection and your microphone is connected and microphone access is allowed for this extension.",
+      "message": "સ્પીચ ઇનપુટ વિક્ષેપિત અથવા રદ કરવામાં આવ્યું હતું. કૃપા કરીને ખાતરી કરો કે તમારી પાસે કાર્યરત ઇન્ટરનેટ કનેક્શન છે અને તમારું માઇક્રોફોન કનેક્ટેડ છે અને આ એક્સટેન્શન માટે માઇક્રોફોન ઍક્સેસ મંજૂર છે."
+   },
+   "Speech_language": {
+      "description": "Speech language",
+      "message": "ભાષણની ભાષા"
+   },
+   "Speed": {
+      "description": "Speed",
+      "message": "ગતિ"
+   },
+   "Starting_from_only_offerPrice_month": {
+      "description": "Starting from only {{offerPrice}}/month.",
+      "message": "માત્ર $offerPrice$/મહિનાથી શરૂ.",
+      "placeholders": {
+         "offerprice": {
+            "content": "$1",
+            "example": "offerPrice"
+         }
+      }
+   },
+   "Stop": {
+      "description": "Stop",
+      "message": "રોકો"
+   },
+   "Stop_reading_aloud_when_I_say_triggerWord": {
+      "description": "Stop reading aloud when I say {{triggerWord}}",
+      "message": "જ્યારે હું $triggerWord$ કહું ત્યારે મોટેથી વાંચવાનું બંધ કરો",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Stop_voice_control_when_I_say_triggerWord": {
+      "description": "Stop voice control when I say {{triggerWord}}",
+      "message": "જ્યારે હું $triggerWord$ કહું ત્યારે વૉઇસ કંટ્રોલ બંધ કરો",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Subscribe": {
+      "description": "Subscribe",
+      "message": "સબ્સ્ક્રાઇબ કરો"
+   },
+   "Subscribed_already": {
+      "description": "Subscribed already?",
+      "message": "પહેલેથી સબ્સ્ક્રાઇબ કર્યું છે?"
+   },
+   "Text_to_speech_voice": {
+      "description": "Text-to-speech voice",
+      "message": "ટેક્સ્ટ-ટુ-સ્પીચ વૉઇસ"
+   },
+   "The_extension_has_been_updated_successfully": {
+      "description": "The extension has been updated successfully!",
+      "message": "એક્સટેન્શન સફળતાપૂર્વક અપડેટ થઈ ગયું છે!"
+   },
+   "The_extension_needs_your_permission_to_access_the_microphone_Please_check_the_pop_up_or_browser_bar_for_a_request_to_allow_microphone_access_Click_Allow_to_enable_speech_recognition": {
+      "description": "The extension needs your permission to access the microphone. Please check the pop-up or browser bar for a request to allow microphone access. Click \"Allow\" to enable speech recognition.",
+      "message": "એક્સટેન્શનને માઇક્રોફોન ઍક્સેસ કરવા માટે તમારી પરમિશનની જરૂર છે. કૃપા કરીને માઇક્રોફોન ઍક્સેસની મંજૂરી માટેની વિનંતી માટે પોપ-અપ અથવા બ્રાઉઝર બાર તપાસો. સ્પીચ રેકગ્નિશન સક્ષમ કરવા માટે \"મંજૂરી આપો\" પર ક્લિક કરો."
+   },
+   "The_highness_or_lowness_of_the_voice": {
+      "description": "The highness or lowness of the voice.",
+      "message": "વૉઇસની ઊંચાઈ અથવા નીચાઈ."
+   },
+   "The_speed_at_which_the_voice_speaks": {
+      "description": "The speed at which the voice speaks.",
+      "message": "વૉઇસ જે ગતિએ બોલે છે."
+   },
+   "The_volume_of_the_voice": {
+      "description": "The volume of the voice.",
+      "message": "વૉઇસનું વૉલ્યુમ."
+   },
+   "This_extension_is_having_trouble_capturing_audio_Ensure_that_your_microphone_is_connected_and_working_properly_Check_your_browser_s_microphone_permissions_and_try_restarting_the_browser": {
+      "description": "This extension is having trouble capturing audio. Ensure that your microphone is connected and working properly. Check your browser's microphone permissions and try restarting the browser.",
+      "message": "આ એક્સટેન્શનને ઓડિયો કેપ્ચર કરવામાં મુશ્કેલી આવી રહી છે. ખાતરી કરો કે તમારું માઇક્રોફોન કનેક્ટેડ છે અને યોગ્ય રીતે કામ કરી રહ્યું છે. તમારા બ્રાઉઝરની માઇક્રોફોન પરમિશન્સ તપાસો અને બ્રાઉઝર રીસ્ટાર્ટ કરવાનો પ્રયાસ કરો."
+   },
+   "This_extension_is_not_available_on_this_page": {
+      "description": "This extension is not available on this page.",
+      "message": "આ એક્સટેન્શન આ પેજ પર ઉપલબ્ધ નથી."
+   },
+   "This_feature_highlights_the_phrase_or_sentence_being_read_aloud_making_it_easier_to_follow_along_with_the_spoken_words_by_visually_marking_the_text": {
+      "description": "This feature highlights the phrase or sentence being read aloud, making it easier to follow along with the spoken words by visually marking the text.",
+      "message": "આ સુવિધા મોટેથી વાંચવામાં આવતા શબ્દસમૂહ અથવા વાક્યને હાઇલાઇટ કરે છે, જે ટેક્સ્ટને દૃષ્ટિગત રીતે ચિહ્નિત કરીને બોલાયેલા શબ્દોને અનુસરવાનું સરળ બનાવે છે."
+   },
+   "This_feature_is_only_available_for_Elite_users": {
+      "description": "This feature is only available for Elite users.",
+      "message": "આ સુવિધા ફક્ત એલિટ વપરાશકર્તાઓ માટે ઉપલબ્ધ છે."
+   },
+   "This_is_a_beta_feature_It_is_still_being_optimized_and_may_have_some_bugs_or_limitations": {
+      "description": "This is a beta feature. It is still being optimized and may have some bugs or limitations.",
+      "message": "આ બીટા સુવિધા છે. તે હજુ ઑપ્ટિમાઇઝ થઈ રહી છે અને તેમાં કેટલાક બગ્સ અથવા મર્યાદાઓ હોઈ શકે છે."
+   },
+   "To_go_to_the_next_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the next sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "સાંભળતી વખતે આગળના વાક્ય પર જવા માટે, (ઇનપુટ ફીલ્ડની બહાર) $keyboardKey$ કી દબાવો",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_go_to_the_previous_sentence_while_listening_press_the_keyboardKey_key_outside_the_input_field": {
+      "description": "To go to the previous sentence while listening, press the {{keyboardKey}} key (outside the input field)",
+      "message": "સાંભળતી વખતે પહેલાના વાક્ય પર જવા માટે, (ઇનપુટ ફીલ્ડની બહાર) $keyboardKey$ કી દબાવો",
+      "placeholders": {
+         "keyboardkey": {
+            "content": "$1",
+            "example": "keyboardKey"
+         }
+      }
+   },
+   "To_listen_to_an_entire_webpage_right_click_anywhere_on_the_page_and_choose_the_itemTitle_option_This_feature_will_read_the_full_text_on_the_page_aloud_for_you": {
+      "description": "To listen to an entire webpage, right-click anywhere on the page and choose the \"{{itemTitle}}\" option. This feature will read the full text on the page aloud for you.",
+      "message": "પૃષ્ઠ પર ગમે ત્યાં જમણું-ક્લિક કરો અને \"$itemTitle$\" વિકલ્પ પસંદ કરો. VoiceWave તે પૃષ્ઠનો સંપૂર્ણ ટેક્સ્ટ મોટેથી વાંચશે.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "To_listen_to_specific_text_on_any_webpage_select_the_desired_text_right_click_and_choose_the_itemTitle_option_from_the_context_menu_This_feature_allows_you_to_hear_only_the_text_you_ve_highlighted": {
+      "description": "To listen to specific text on any webpage, select the desired text, right-click, and choose the \"{{itemTitle}}\" option from the context menu. This feature allows you to hear only the text you've highlighted.",
+      "message": "ઇચ્છિત ટેક્સ્ટ પસંદ કરો, જમણું-ક્લિક કરો અને સંદર્ભ મેનૂમાંથી \"$itemTitle$\" વિકલ્પ પસંદ કરો. તમે ફક્ત તમે હાઇલાઇટ કરેલ ટેક્સ્ટ જ સાંભળશો.",
+      "placeholders": {
+         "itemtitle": {
+            "content": "$1",
+            "example": "itemTitle"
+         }
+      }
+   },
+   "Trigger_enter_when_I_say_triggerWord": {
+      "description": "Trigger enter when I say {{triggerWord}}",
+      "message": "જ્યારે હું $triggerWord$ કહું ત્યારે એન્ટર દબાવો",
+      "placeholders": {
+         "triggerword": {
+            "content": "$1",
+            "example": "triggerWord"
+         }
+      }
+   },
+   "Trying_to_access_your_microphone": {
+      "description": "Trying to access your microphone...",
+      "message": "તમારા માઇક્રોફોનને ઍક્સેસ કરવાનો પ્રયાસ કરી રહ્યું છે..."
+   },
+   "Turn_off": {
+      "description": "Turn off",
+      "message": "બંધ કરો"
+   },
+   "Turn_off_the_microphone_when_hearing_response": {
+      "description": "Turn off the microphone when hearing response",
+      "message": "પ્રતિસાદ સાંભળતી વખતે માઇક્રોફોન બંધ કરો"
+   },
+   "Turn_off_the_microphone_when_switching_to_another_tab": {
+      "description": "Turn off the microphone when switching to another tab",
+      "message": "બીજા ટૅબ પર સ્વિચ કરતી વખતે માઇક્રોફોન બંધ કરો"
+   },
+   "Turn_off_voice_control_when_the_key_is_released": {
+      "description": "Turn off voice control when the key is released",
+      "message": "કી છોડવામાં આવે ત્યારે વૉઇસ કંટ્રોલ બંધ કરો"
+   },
+   "Turn_on": {
+      "description": "Turn on",
+      "message": "ચાલુ કરો"
+   },
+   "Unable_to_access_your_microphone_Please_make_sure_your_microphone_is_connected_and_microphone_access_is_allowed_for_this_site_and_try_again": {
+      "description": "Unable to access your microphone. Please make sure your microphone is connected and microphone access is allowed for this site and try again.",
+      "message": "તમારા માઇક્રોફોનને ઍક્સેસ કરવામાં અસમર્થ. કૃપા કરીને ખાતરી કરો કે તમારું માઇક્રોફોન કનેક્ટેડ છે અને આ સાઇટ માટે માઇક્રોફોન ઍક્સેસ મંજૂર છે અને ફરીથી પ્રયાસ કરો."
+   },
+   "Update_Selectors": {
+      "description": "Update Selectors",
+      "message": "સિલેક્ટર્સ અપડેટ કરો"
+   },
+   "Update_selectors_configuration_from_remote_server": {
+      "description": "Update selectors configuration from remote server",
+      "message": "રિમોટ સર્વરમાંથી સિલેક્ટર્સ કૉન્ફિગરેશન અપડેટ કરો"
+   },
+   "Upgrade_to_VoiceWave_Premium_for_unlimited_access_to_all_Premium_features": {
+      "description": "Upgrade to VoiceWave Premium for unlimited access to all Premium features.",
+      "message": "તમામ પ્રીમિયમ સુવિધાઓની અમર્યાદિત ઍક્સેસ માટે VoiceWave પ્રીમિયમમાં અપગ્રેડ કરો."
+   },
+   "Usage_guide": {
+      "description": "Usage guide",
+      "message": "ઉપયોગ માર્ગદર્શિકા"
+   },
+   "Use_default_ChatGPT_voice": {
+      "description": "Use default ChatGPT voice",
+      "message": "ડિફૉલ્ટ ChatGPT વૉઇસનો ઉપયોગ કરો"
+   },
+   "Voice": {
+      "description": "Voice",
+      "message": "અવાજ"
+   },
+   "Voice_Typing": {
+      "description": "Voice Typing",
+      "message": "વૉઇસ ટાઇપિંગ"
+   },
+   "Voice_typing": {
+      "description": "button in our control panel for dictating a message",
+      "message": "સંદેશ બોલો"
+   },
+   "Voice_typing_for_all_websites": {
+      "description": "Voice typing (for all websites)",
+      "message": "અવાજ ટાઇપિંગ (તમામ વેબસાઇટ્સ માટે)"
+   },
+   "Volume": {
+      "description": "Volume",
+      "message": "વૉલ્યુમ"
+   },
+   "Welcome": {
+      "description": "Welcome!",
+      "message": "સ્વાગત છે!"
+   },
+   "Welcome_Let_s_dive_into_personalizing_your_extension_You_now_have_complimentary_access_to_all_premium_features": {
+      "description": "Welcome! Let's dive into personalizing your extension. You now have complimentary access to all premium features.",
+      "message": "સ્વાગત છે! ચાલો તમારા એક્સટેન્શનને વ્યક્તિગત બનાવવામાં ગોતાખોરી કરીએ. તમારી પાસે હવે તમામ પ્રીમિયમ ફીચર્સની નિઃશુલ્ક ઍક્સેસ છે."
+   },
+   "When_using_the_default_ChatGPT_voice_certain_features_such_as_automated_text_highlighting_and_audio_navigation_controls_may_not_be_available_and_the_selected_TTS_voice_won_t_be_applied_automatically": {
+      "description": "When using the default ChatGPT voice, certain features, such as automated text highlighting and audio navigation controls, may not be available and the selected TTS voice won't be applied automatically.",
+      "message": "ડિફૉલ્ટ ChatGPT વૉઇસનો ઉપયોગ કરતી વખતે, કેટલીક વિશેષતાઓ, જેમ કે સ્વચાલિત ટેક્સ્ટ હાઇલાઇટિંગ અને ઓડિયો નેવિગેશન કંટ્રોલ્સ, ઉપલબ્ધ ન પણ હોઈ શકે અને પસંદ કરેલ TTS વૉઇસ આપમેળે લાગુ થશે નહીં."
+   },
+   "Works_on": {
+      "description": "Works on",
+      "message": "આના પર કામ કરે છે"
+   },
+   "Your_microphone_is_currently_in_use_on_hostName_for_speech_recognition": {
+      "description": "Your microphone is currently in use on {{hostName}} for speech recognition.",
+      "message": "તમારો માઇક્રોફોન હાલમાં $hostName$ પર વાણી ઓળખ માટે ઉપયોગમાં છે.",
+      "placeholders": {
+         "hostname": {
+            "content": "$1",
+            "example": "hostName"
+         }
+      }
+   },
+   "contactUsLink_or_mail_us_at_emailUsLink": {
+      "description": "{{contactUsLink}} or mail us at {{emailUsLink}}",
+      "message": "$contactUsLink$ અથવા અમને $emailUsLink$ પર મેઇલ કરો",
+      "placeholders": {
+         "contactuslink": {
+            "content": "$1",
+            "example": "contactUsLink"
+         },
+         "emailuslink": {
+            "content": "$2",
+            "example": "emailUsLink"
+         }
+      }
+   },
+   "contextMenu_readAloud": {
+      "description": "Context menu item for reading selected text aloud",
+      "message": "મોટેથી વાંચો"
+   },
+   "contextMenu_readPageAloud": {
+      "description": "Context menu item for reading the entire page aloud",
+      "message": "પેજ મોટેથી વાંચો"
+   },
+   "contextMenu_voiceTyping": {
+      "description": "Context menu item for voice typing in input fields",
+      "message": "વૉઇસ ટાઇપિંગ"
+   },
+   "extensionDescription": {
+      "message": "ChatGPT માટે વૉઇસ કંટ્રોલ તમને ChatGPT સાથે વાત કરવા અને વૉઇસ વાતચીત કરવા દે છે."
+   },
+   "extensionName": {
+      "message": "ChatGPT માટે અવાજ નિયંત્રણ"
+   },
+   "extensionTitle": {
+      "message": "VoiceWave: ChatGPT વૉઇસ કંટ્રોલ"
+   }
+}
