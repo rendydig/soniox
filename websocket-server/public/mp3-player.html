@@ -72,6 +72,9 @@
                             <button id="playlistToggleBtn" class="control-btn" title="Toggle Playlist">
                                 <span class="material-icons">queue_music</span>
                             </button>
+                            <button id="micToggleBtn" class="control-btn mic-btn" title="Practice Mode (Off)">
+                                <span class="material-icons">mic_off</span>
+                            </button>
                         </div>
 
                         <div class="track-info">
@@ -116,6 +119,28 @@
                         <option value="id">Indonesia</option>
                     </select>
                 </div>
+                
+                <div id="practicePanel" class="practice-panel" style="display: none;">
+                    <div class="practice-header">
+                        <h3>🎤 Practice Mode</h3>
+                        <div class="practice-status">
+                            <span id="practiceStatus" class="status-badge">Ready</span>
+                        </div>
+                    </div>
+                    <div class="practice-content">
+                        <div class="recognition-display">
+                            <div class="recognition-label">You said:</div>
+                            <div id="recognitionText" class="recognition-text">Click microphone to start...</div>
+                        </div>
+                        <div class="practice-controls">
+                            <button id="clearRecognitionBtn" class="practice-control-btn">
+                                <span class="material-icons">clear</span>
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="subtitleList" class="subtitle-list">
                     <div class="empty-subtitle-state">No subtitles available</div>
                 </div>
