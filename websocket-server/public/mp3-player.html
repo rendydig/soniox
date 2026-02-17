@@ -11,94 +11,14 @@
 
 <body>
     <div class="container">
-        <header>
-            <h1>Player and speech Trainer</h1>
-            <div class="connection-status">
-                <span class="status-indicator" id="statusIndicator"></span>
-                <span id="statusText">Connecting...</span>
-            </div>
-        </header>
-
         <main>
-            <div class="player-section">
-                <div class="now-playing">
-                    <!-- <div class="album-art">
-                        <span class="material-icons" style="font-size: 80px;">album</span>
-                    </div> -->
-
-                    <div class="player-content">
-                        <div class="controls">
-                            <button id="prevBtn" class="control-btn" title="Previous">
-                                <span class="material-icons">skip_previous</span>
-                            </button>
-                            <button id="playPauseBtn" class="control-btn play-btn" title="Play">
-                                <span id="playIcon" class="material-icons" style="font-size: 32px;">play_arrow</span>
-                                <span id="pauseIcon" class="material-icons"
-                                    style="font-size: 32px; display: none;">pause</span>
-                            </button>
-                            <button id="nextBtn" class="control-btn" title="Next">
-                                <span class="material-icons">skip_next</span>
-                            </button>
-                            <button id="repeatBtn" class="control-btn" title="Repeat Off">
-                                <span id="repeatOffIcon" class="material-icons">repeat</span>
-                                <span id="repeatAllIcon" class="material-icons" style="display: none;">repeat</span>
-                                <span id="repeatOneIcon" class="material-icons" style="display: none;">repeat_one</span>
-                            </button>
-                            <div class="volume-control">
-                                <span class="material-icons">volume_up</span>
-                                <input type="range" id="volumeSlider" min="0" max="100" value="70" step="1">
-                            </div>
-                            <div class="speed-control">
-                                <span class="material-icons">speed</span>
-                                <select id="speedSlider" class="speed-dropdown">
-                                    <option value="0.5">0.5x</option>
-                                    <option value="0.6">0.6x</option>
-                                    <option value="0.7">0.7x</option>
-                                    <option value="0.8">0.8x</option>
-                                    <option value="0.9">0.9x</option>
-                                    <option value="1.0" selected>1.0x</option>
-                                    <option value="1.1">1.1x</option>
-                                    <option value="1.2">1.2x</option>
-                                    <option value="1.3">1.3x</option>
-                                    <option value="1.4">1.4x</option>
-                                    <option value="1.5">1.5x</option>
-                                    <option value="1.6">1.6x</option>
-                                    <option value="1.7">1.7x</option>
-                                    <option value="1.8">1.8x</option>
-                                    <option value="1.9">1.9x</option>
-                                    <option value="2.0">2.0x</option>
-                                </select>
-                            </div>
-                           
-                            <button id="micToggleBtn" class="control-btn mic-btn" title="Practice Mode (Off)">
-                                <span class="material-icons">mic_off</span>
-                            </button>
-                        </div>
-
-                        <div class="track-info">
-                            <button id="playlistToggleBtn" class="control-btn" title="Toggle Playlist">
-                                <span class="material-icons">queue_music</span>
-                            </button>
-                            <h2 id="currentTrack">No track selected</h2>
-                            <p id="trackDetails">Select a track to play</p>
-                        </div>
-                    </div>
+            <header>
+                <h1>Player and speech Trainer</h1>
+                <div class="connection-status">
+                    <span class="status-indicator" id="statusIndicator"></span>
+                    <span id="statusText">Connecting...</span>
                 </div>
-
-                <audio id="audioPlayer" preload="metadata"></audio>
-
-
-
-                <div class="progress-container">
-                    <div class="time-display">
-                        <span id="currentTime">0:00</span>
-                        <span id="duration">0:00</span>
-                    </div>
-                    <input type="range" id="progressBar" min="0" max="100" value="0" step="0.1">
-                </div>
-
-
-            </div>
+            </header>
             <div class="subtitle-container">
                 <div class="transcription-controls">
                     <div class="transcription-options">
@@ -120,39 +40,136 @@
                         <option value="id">Indonesia</option>
                     </select>
                 </div>
-                
-                <div id="practicePanel" class="practice-panel" style="display: none;">
-                    <div class="practice-header">
-                        <h3>🎤 Practice Mode</h3>
-                        <div class="practice-status">
-                            <span id="practiceStatus" class="status-badge">Ready</span>
-                        </div>
-                    </div>
-                    <div class="practice-content">
-                        <div class="recognition-display">
-                            <div class="recognition-label">You said:</div>
-                            <div id="recognitionText" class="recognition-text">Click microphone to start...</div>
-                        </div>
-                        <div class="practice-controls">
-                            <select id="recognitionLanguage" class="recognition-language-selector">
-                                <option value="en-US">English (US)</option>
-                                <option value="en-GB">English (UK)</option>
-                                <option value="ja-JP">Japanese</option>
-                                <option value="id-ID">Indonesian</option>
-                                <option value="ko-KR">Korean</option>
-                                <option value="zh-CN">Chinese (Simplified)</option>
-                            </select>
-                            <button id="clearRecognitionBtn" class="practice-control-btn">
-                                <span class="material-icons">clear</span>
-                                Clear
-                            </button>
-                        </div>
-                    </div>
-                </div>
+
+
 
                 <div id="subtitleList" class="subtitle-list">
                     <div class="empty-subtitle-state">No subtitles available</div>
                 </div>
+            </div>
+            <div class="player-section">
+                <div class="now-playing">
+                    <!-- <div class="album-art">
+                        <span class="material-icons" style="font-size: 80px;">album</span>
+                    </div> -->
+
+                    <div class="player-content">
+                        <div class="controls">
+                            <div id="playbackControls" class="playback-controls-group">
+                                <button id="prevBtn" class="control-btn" title="Previous">
+                                    <span class="material-icons">skip_previous</span>
+                                </button>
+                                <button id="playPauseBtn" class="control-btn play-btn" title="Play">
+                                    <span id="playIcon" class="material-icons"
+                                        style="font-size: 32px;">play_arrow</span>
+                                    <span id="pauseIcon" class="material-icons"
+                                        style="font-size: 32px; display: none;">pause</span>
+                                </button>
+                                <button id="nextBtn" class="control-btn" title="Next">
+                                    <span class="material-icons">skip_next</span>
+                                </button>
+                                <button id="repeatBtn" class="control-btn" title="Repeat Off">
+                                    <span id="repeatOffIcon" class="material-icons">repeat</span>
+                                    <span id="repeatAllIcon" class="material-icons" style="display: none;">repeat</span>
+                                    <span id="repeatOneIcon" class="material-icons"
+                                        style="display: none;">repeat_one</span>
+                                </button>
+                                <div class="volume-control">
+                                    <span class="material-icons">volume_up</span>
+                                    <input type="range" id="volumeSlider" min="0" max="100" value="70" step="1">
+                                </div>
+                                <div class="speed-control">
+                                    <span class="material-icons">speed</span>
+                                    <select id="speedSlider" class="speed-dropdown">
+                                        <option value="0.5">0.5x</option>
+                                        <option value="0.6">0.6x</option>
+                                        <option value="0.7">0.7x</option>
+                                        <option value="0.8">0.8x</option>
+                                        <option value="0.9">0.9x</option>
+                                        <option value="1.0" selected>1.0x</option>
+                                        <option value="1.1">1.1x</option>
+                                        <option value="1.2">1.2x</option>
+                                        <option value="1.3">1.3x</option>
+                                        <option value="1.4">1.4x</option>
+                                        <option value="1.5">1.5x</option>
+                                        <option value="1.6">1.6x</option>
+                                        <option value="1.7">1.7x</option>
+                                        <option value="1.8">1.8x</option>
+                                        <option value="1.9">1.9x</option>
+                                        <option value="2.0">2.0x</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button id="micToggleBtn" class="control-btn mic-btn" title="Practice Mode (Off)">
+                                <span class="material-icons">mic_off</span>
+                            </button>
+                            <div id="practicePanel" class="practice-panel" style="display: none;">
+                                <div class="practice-header">
+                                    <div class="practice-title">
+                                        <span class="material-icons practice-icon">record_voice_over</span>
+                                        Practice Mode
+                                    </div>
+                                    <div class="practice-status">
+                                        <span id="practiceStatus" class="status-badge status-ready">Ready</span>
+                                    </div>
+                                </div>
+                                <div class="practice-content">
+                                    <div class="recognition-display">
+                                        <div class="recognition-header">
+                                            <span class="material-icons recognition-icon">chat_bubble</span>
+                                            <div class="recognition-label">Your Speech</div>
+                                        </div>
+                                        <div id="recognitionText" class="recognition-text">
+                                            <span class="recognition-placeholder">Click the microphone button to start
+                                                practicing...</span>
+                                        </div>
+                                    </div>
+                                    <div class="practice-controls">
+                                        <button id="clearRecognitionBtn" class="practice-control-btn clear-btn">
+                                            <span class="material-icons">delete</span>
+                                            <span>Clear</span>
+                                        </button>
+                                        <div class="language-selector-wrapper">
+                                            <span class="material-icons language-icon">language</span>
+                                            <select id="recognitionLanguage" class="recognition-language-selector">
+                                                <option value="en-US">🇺🇸 (US)</option>
+                                                <option value="en-GB">🇬🇧 (UK)</option>
+                                                <option value="ja-JP">🇯🇵 (JP)</option>
+                                                <option value="id-ID">🇮🇩 (ID)</option>
+                                                <option value="ko-KR">🇰🇷 (KR)</option>
+                                                <option value="zh-CN">🇨🇳 (CN)</option>
+                                            </select>
+                                        </div>
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="track-info">
+                            <button id="playlistToggleBtn" class="control-btn" title="Toggle Playlist">
+                                <span class="material-icons">queue_music</span>
+                            </button>
+                            <h2 id="currentTrack">No track selected</h2>
+                            <p id="trackDetails">Select a track to play</p>
+                        </div>
+                    </div>
+                </div>
+
+                <audio id="audioPlayer" preload="metadata"></audio>
+
+                <div id="progressContainer" class="progress-container">
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span>
+                        <span id="duration">0:00</span>
+                    </div>
+                    <input type="range" id="progressBar" min="0" max="100" value="0" step="0.1">
+                </div>
+
+
             </div>
         </main>
     </div>

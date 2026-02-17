@@ -113,10 +113,20 @@ export class PracticeModeManager {
     }
     
     startPracticeMode() {
-        this.player.practicePanel.style.display = 'block';
+        this.player.practicePanel.style.display = 'flex';
         this.player.micToggleBtn.classList.add('active');
         this.player.micToggleBtn.title = 'Practice Mode (On)';
         this.player.micToggleBtn.querySelector('.material-icons').textContent = 'mic';
+        
+        const playbackControls = document.getElementById('playbackControls');
+        if (playbackControls) {
+            playbackControls.classList.add('hidden');
+        }
+        
+        const progressContainer = document.getElementById('progressContainer');
+        if (progressContainer) {
+            progressContainer.classList.add('hidden');
+        }
         
         this.player.recognitionText = '';
         this.player.pendingSpeechText = '';
@@ -149,6 +159,16 @@ export class PracticeModeManager {
         this.player.micToggleBtn.classList.remove('active');
         this.player.micToggleBtn.title = 'Practice Mode (Off)';
         this.player.micToggleBtn.querySelector('.material-icons').textContent = 'mic_off';
+        
+        const playbackControls = document.getElementById('playbackControls');
+        if (playbackControls) {
+            playbackControls.classList.remove('hidden');
+        }
+        
+        const progressContainer = document.getElementById('progressContainer');
+        if (progressContainer) {
+            progressContainer.classList.remove('hidden');
+        }
         
         if (this.player.recognitionRestartTimeout) {
             clearTimeout(this.player.recognitionRestartTimeout);
@@ -220,9 +240,7 @@ export class PracticeModeManager {
         if (practiceItem) {
             practiceItem.classList.add('practice-active');
             practiceItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
             const subtitleText = this.player.subtitleManager.subtitles[index].text;
-            this.updatePracticeStatus(`Practice: "${subtitleText.substring(0, 50)}${subtitleText.length > 50 ? '...' : ''}"`, 'listening');
         }
     }
     
@@ -344,7 +362,7 @@ export class PracticeModeManager {
                 practiceItem.classList.add('practice-wrong');
             }
             
-            this.updatePracticeStatus(`Try again (${Math.round(similarity * 100)}% match)`, 'warning');
+            this.updatePracticeStatus(`Try again (${Math.round(similarity * 100)}%)`, 'warning');
             
             setTimeout(() => {
                 if (this.player.practiceMode) {

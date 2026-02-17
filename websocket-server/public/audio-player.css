@@ -12,12 +12,11 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
-    padding: 20px;
+    padding: 0px;
     color: #333;
 }
 
 .container {
-    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -27,6 +26,7 @@ header {
     align-items: center;
     margin-bottom: 30px;
     color: white;
+    padding: 20px;
 }
 
 header h1 {
@@ -69,11 +69,13 @@ header h1 {
 main {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding-bottom: 200px;
+    height: 100vh;
+    overflow: hidden;
+    width: calc(100% - var(--playlist-width));
+    transition: width 0.3s ease-in-out;
 }
 
-body.playlist-closed .player-section {
+body.playlist-closed main {
     width: 100%;
 }
 
@@ -88,12 +90,11 @@ body.playlist-closed .player-section {
     border-radius: 12px 12px 0 0;
     padding: 12px 20px;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-    width: calc(100% - var(--playlist-width));
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-    transition: width 0.3s ease-in-out;
+    height: 106px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .player-horizontal-layout {
@@ -181,6 +182,8 @@ body.playlist-closed .player-section {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
+    max-width: 300px;
 }
 
 .track-info p {
@@ -189,16 +192,19 @@ body.playlist-closed .player-section {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
+    max-width: 300px;
 }
 
 .subtitle-container {
-    margin-bottom: 20px;
+    flex: 1;
     border-radius: 12px;
-    padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     color: white;
+    padding: 10px;
+    overflow: hidden;
 }
 
 .transcription-controls {
@@ -492,6 +498,22 @@ input[type="range"]::-moz-range-thumb:hover {
     flex-wrap: wrap;
     flex: 1;
     padding: 8px 0;
+}
+
+.playback-controls-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.playback-controls-group.hidden {
+    display: none;
+}
+
+.progress-container.hidden {
+    display: none;
 }
 
 .control-btn {
@@ -883,27 +905,46 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 .practice-panel {
-    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-    border: 2px solid #d1d5db;
+    border-radius: 16px;
+    flex: 1;
+    min-width: 300px;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.practice-panel:hover {
+    border-color: #d1d5db;
 }
 
 .practice-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 12px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #d1d5db;
+    flex-direction: column;
+    gap: 10px;
+    width: 120px;
+}
+.practice-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.practice-icon {
+    font-size: 24px;
+    color: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .practice-header h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: 1.25rem;
+    font-weight: 700;
     color: #1f2937;
     margin: 0;
+    letter-spacing: -0.02em;
 }
 
 .practice-status {
@@ -912,129 +953,180 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 .status-badge {
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 7px;
+    font-weight: 700;
+    text-align: center;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .status-badge.status-ready {
-    background: #e5e7eb;
-    color: #6b7280;
+    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+    color: #4b5563;
 }
 
 .status-badge.status-listening {
-    background: #ef4444;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: white;
     animation: pulse 2s infinite;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
 .status-badge.status-success {
-    background: #10b981;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
 .status-badge.status-warning {
-    background: #f59e0b;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     color: white;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 }
 
 .status-badge.status-error {
-    background: #dc2626;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
     color: white;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
 }
 
 .practice-content {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
+    flex-direction: row;
+    width: 100%;
+    gap: 5px;
 }
 
 .recognition-display {
-    background: white;
-    border-radius: 8px;
-    padding: 16px;
-    min-height: 80px;
-    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    flex: 1;
+    transition: all 0.3s ease;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+.recognition-display:hover {
+    border-color: #d1d5db;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.recognition-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 8px;
+}
+
+.recognition-icon {
+    font-size: 12px;
+    color: #667eea;
 }
 
 .recognition-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #6b7280;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #4b5563;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
+    letter-spacing: 0.8px;
 }
 
 .recognition-text {
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: 1.1rem;
+    line-height: 1.7;
     color: #1f2937;
-    min-height: 40px;
     word-wrap: break-word;
+    font-weight: 500;
+    min-height: uns;
+}
+
+.recognition-placeholder {
+    color: #9ca3af;
+    font-style: italic;
+    font-weight: 400;
 }
 
 .practice-controls {
     display: flex;
-    gap: 8px;
-    justify-content: flex-end;
+    gap: 5px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.language-selector-wrapper {
+    display: flex;
     align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.language-icon {
+    font-size: 20px;
+    color: #667eea;
 }
 
 .recognition-language-selector {
-    padding: 8px 12px;
+    flex: 1;
+    padding: 5px 5px;
     border: 2px solid #e5e7eb;
-    border-radius: 8px;
+    border-radius: 10px;
     background: white;
     color: #374151;
-    font-size: 0.875rem;
+    font-size: 10px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     outline: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .recognition-language-selector:hover {
     border-color: #667eea;
     background: #f9fafb;
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.15);
+    transform: translateY(-1px);
 }
 
 .recognition-language-selector:focus {
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15), 0 4px 8px rgba(102, 126, 234, 0.2);
 }
 
 .practice-control-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
+    gap: 8px;
     border: none;
-    border-radius: 8px;
     background: white;
     color: #6b7280;
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
-    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .practice-control-btn .material-icons {
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .practice-control-btn:hover {
-    background: #f9fafb;
     border-color: #667eea;
-    color: #667eea;
+    color: white;
+    transform: translateY(-2px);
 }
 
 .practice-control-btn:active {
-    transform: scale(0.98);
+    transform: translateY(0) scale(0.98);
+}
+
+.clear-btn:hover {
+    color: #ef4444;
 }
 
 .subtitle-actions {
@@ -1177,11 +1269,26 @@ input[type="range"]::-moz-range-thumb:hover {
     }
     
     .practice-panel {
-        padding: 12px;
+        padding: 16px;
+        max-width: 100%;
     }
     
     .recognition-display {
-        padding: 12px;
-        min-height: 60px;
+        padding: 14px;
+        min-height: 80px;
+    }
+    
+    .practice-controls {
+        flex-direction: row;
+        align-items: stretch;
+    }
+    
+    .language-selector-wrapper {
+        width: 100%;
+    }
+    
+    .practice-control-btn {
+        width: 100%;
+        justify-content: center;
     }
 }

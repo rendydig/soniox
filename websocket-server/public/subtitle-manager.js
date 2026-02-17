@@ -357,12 +357,17 @@ export class SubtitleManager {
     
     getStorageKey() {
         if (!this.currentSrtUrl) return null;
-        return `subtitle_progress_${this.currentSrtUrl}`;
+        const key = `subtitle_progress_${this.currentSrtUrl}`;
+        console.log('[Storage] Generated key:', key);
+        return key;
     }
     
     saveMatchedProgress() {
         const key = this.getStorageKey();
-        if (!key) return;
+        if (!key) {
+            console.log('[Storage] No key available for saving progress');
+            return;
+        }
         
         try {
             const progressData = {
@@ -370,27 +375,32 @@ export class SubtitleManager {
                 lastUpdated: new Date().toISOString()
             };
             localStorage.setItem(key, JSON.stringify(progressData));
-            console.log(`Saved progress: ${this.matchedSubtitles.size} matched subtitles`);
+            console.log(`[Storage] Saved progress: ${this.matchedSubtitles.size} matched subtitles`, Array.from(this.matchedSubtitles));
         } catch (error) {
-            console.error('Error saving progress to localStorage:', error);
+            console.error('[Storage] Error saving progress to localStorage:', error);
         }
     }
     
     loadMatchedProgress() {
         const key = this.getStorageKey();
-        if (!key) return;
+        if (!key) {
+            console.log('[Storage] No key available for loading progress');
+            return;
+        }
         
         try {
             const stored = localStorage.getItem(key);
+            console.log('[Storage] Retrieved from localStorage:', stored);
             if (stored) {
                 const progressData = JSON.parse(stored);
                 this.matchedSubtitles = new Set(progressData.matchedIndices || []);
-                console.log(`Loaded progress: ${this.matchedSubtitles.size} matched subtitles`);
+                console.log(`[Storage] Loaded progress: ${this.matchedSubtitles.size} matched subtitles`, Array.from(this.matchedSubtitles));
             } else {
+                console.log('[Storage] No stored progress found');
                 this.matchedSubtitles.clear();
             }
         } catch (error) {
-            console.error('Error loading progress from localStorage:', error);
+            console.error('[Storage] Error loading progress from localStorage:', error);
             this.matchedSubtitles.clear();
         }
     }
