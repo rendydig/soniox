@@ -167,6 +167,10 @@ body.playlist-closed .player-section {
     flex: 0 0 auto;
     max-width: 300px;
     text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
 }
 
 .track-info h2 {
@@ -189,12 +193,12 @@ body.playlist-closed .player-section {
 
 .subtitle-container {
     margin-bottom: 20px;
-    background: white;
     border-radius: 12px;
     padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    color: white;
 }
 
 .transcription-controls {
@@ -221,7 +225,6 @@ body.playlist-closed .player-section {
     user-select: none;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #4b5563;
 }
 
 .transcription-toggle input[type="checkbox"] {
@@ -232,7 +235,7 @@ body.playlist-closed .player-section {
 }
 
 .transcription-toggle:hover {
-    color: #667eea;
+    color: #f1c40f;
 }
 
 .translation-language-selector {
@@ -318,6 +321,7 @@ body.playlist-closed .player-section {
     min-width: 0;
 }
 
+.subtitle-tts-btn,
 .subtitle-repeat-btn {
     background: #f3f4f6;
     border: none;
@@ -334,14 +338,22 @@ body.playlist-closed .player-section {
     height: 32px;
 }
 
+.subtitle-tts-btn .material-icons,
 .subtitle-repeat-btn .material-icons {
     font-size: 18px;
     user-select: none;
 }
 
+.subtitle-tts-btn:hover,
 .subtitle-repeat-btn:hover {
     background: #e5e7eb;
     color: #667eea;
+}
+
+.subtitle-tts-btn.speaking {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
 }
 
 .subtitle-repeat-btn.active {
@@ -350,6 +362,7 @@ body.playlist-closed .player-section {
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
 }
 
+.subtitle-tts-btn:active,
 .subtitle-repeat-btn:active {
     transform: scale(0.95);
 }

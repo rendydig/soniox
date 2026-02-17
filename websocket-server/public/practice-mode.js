@@ -45,6 +45,8 @@ export class PracticeModeManager {
                 this.player.pendingSpeechText += finalTranscript;
                 this.player.lastSpeechTime = Date.now();
                 this.player.recognitionTextEl.textContent = this.player.recognitionText || 'Listening...';
+                
+                this.checkImmediateMatch();
             } else if (interimTranscript) {
                 this.player.lastSpeechTime = Date.now();
                 this.player.recognitionTextEl.textContent = (this.player.recognitionText + interimTranscript) || 'Listening...';
@@ -123,8 +125,9 @@ export class PracticeModeManager {
         this.updatePracticeStatus('Starting...', 'listening');
         
         if (this.player.subtitleManager.subtitles.length > 0) {
-            this.player.currentPracticeLineIndex = 0;
-            this.loadPracticeLine(0);
+            const resumeIndex = this.player.subtitleManager.findFirstUnmatchedIndex();
+            this.player.currentPracticeLineIndex = resumeIndex;
+            this.loadPracticeLine(resumeIndex);
         } else {
             this.updatePracticeStatus('No subtitles loaded', 'error');
             this.player.currentPracticeLineIndex = -1;
@@ -223,6 +226,49 @@ export class PracticeModeManager {
         }
     }
     
+    checkImmediateMatch() {
+        if (!this.player.practiceMode || this.player.currentPracticeLineIndex === -1) {
+            return;
+        }
+        
+        const currentText = this.player.recognitionText.trim();
+        if (!currentText) {
+            return;
+        }
+        
+        const normalizedSpoken = normalizeText(currentText);
+        const currentSubtitle = this.player.subtitleManager.subtitles[this.player.currentPracticeLineIndex];
+        const normalizedSubtitle = normalizeText(currentSubtitle.text);
+        
+        const similarity = calculateSimilarity(normalizedSpoken, normalizedSubtitle);
+        
+        console.log(`Immediate check - Spoken: "${currentText}" vs Line ${this.player.currentPracticeLineIndex}: "${currentSubtitle.text}" - Similarity: ${Math.round(similarity * 100)}%`);
+        
+        if (similarity >= 0.7) {
+            this.player.recognitionText = '';
+            this.player.pendingSpeechText = '';
+            this.player.lastSpeechTime = null;
+            this.player.recognitionTextEl.textContent = 'Listening...';
+            
+            const practiceItem = this.player.subtitleManager.subtitleList.querySelector(`.subtitle-line-item[data-index="${this.player.currentPracticeLineIndex}"]`);
+            if (practiceItem) {
+                practiceItem.classList.remove('practice-wrong');
+            }
+            
+            this.player.subtitleManager.markSubtitleAsMatched(this.player.currentPracticeLineIndex);
+            this.updatePracticeStatus('Match found! (' + Math.round(similarity * 100) + '%)', 'success');
+            
+            const nextIndex = this.player.currentPracticeLineIndex + 1;
+            if (nextIndex < this.player.subtitleManager.subtitles.length) {
+                this.player.currentPracticeLineIndex = nextIndex;
+                this.loadPracticeLine(nextIndex);
+            } else {
+                this.updatePracticeStatus('Practice completed! 🎉', 'success');
+                this.player.currentPracticeLineIndex = -1;
+            }
+        }
+    }
+    
     compareWithCurrentLine(spokenText) {
         if (this.player.subtitleManager.subtitles.length === 0 || !spokenText || this.player.currentPracticeLineIndex === -1) {
             return;
@@ -232,9 +278,36 @@ export class PracticeModeManager {
         const currentSubtitle = this.player.subtitleManager.subtitles[this.player.currentPracticeLineIndex];
         const normalizedSubtitle = normalizeText(currentSubtitle.text);
         
-        const similarity = calculateSimilarity(normalizedSpoken, normalizedSubtitle);
+        let similarity = calculateSimilarity(normalizedSpoken, normalizedSubtitle);
+        let matchedText = currentSubtitle.text;
+        let matchSource = 'original';
         
         console.log(`Comparing spoken: "${spokenText}" with line ${this.player.currentPracticeLineIndex}: "${currentSubtitle.text}" - Similarity: ${Math.round(similarity * 100)}%`);
+        
+        if (similarity < 0.7) {
+            const similarContexts = this.player.subtitleManager.getSimilarContexts(this.player.currentPracticeLineIndex);
+            
+            if (similarContexts.length > 0) {
+                console.log(`Checking ${similarContexts.length} similar contexts for better match...`);
+                
+                for (const context of similarContexts) {
+                    const normalizedContext = normalizeText(context);
+                    const contextSimilarity = calculateSimilarity(normalizedSpoken, normalizedContext);
+                    
+                    console.log(`  - Similar context: "${context}" - Similarity: ${Math.round(contextSimilarity * 100)}%`);
+                    
+                    if (contextSimilarity > similarity) {
+                        similarity = contextSimilarity;
+                        matchedText = context;
+                        matchSource = 'similar';
+                    }
+                }
+                
+                if (matchSource === 'similar') {
+                    console.log(`Better match found in similar contexts: "${matchedText}" - Similarity: ${Math.round(similarity * 100)}%`);
+                }
+            }
+        }
         
         this.player.recognitionText = '';
         this.player.recognitionTextEl.textContent = 'Listening...';
@@ -246,7 +319,12 @@ export class PracticeModeManager {
             }
             
             this.player.subtitleManager.markSubtitleAsMatched(this.player.currentPracticeLineIndex);
-            this.updatePracticeStatus('Match found! (' + Math.round(similarity * 100) + '%)', 'success');
+            
+            const statusMessage = matchSource === 'similar' 
+                ? `Match found via similar context! (${Math.round(similarity * 100)}%)`
+                : `Match found! (${Math.round(similarity * 100)}%)`;
+            
+            this.updatePracticeStatus(statusMessage, 'success');
             
             setTimeout(() => {
                 if (this.player.practiceMode) {

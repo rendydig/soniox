@@ -12,7 +12,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>Podcast player</h1>
+            <h1>Player and speech Trainer</h1>
             <div class="connection-status">
                 <span class="status-indicator" id="statusIndicator"></span>
                 <span id="statusText">Connecting...</span>
@@ -69,15 +69,16 @@
                                     <option value="2.0">2.0x</option>
                                 </select>
                             </div>
-                            <button id="playlistToggleBtn" class="control-btn" title="Toggle Playlist">
-                                <span class="material-icons">queue_music</span>
-                            </button>
+                           
                             <button id="micToggleBtn" class="control-btn mic-btn" title="Practice Mode (Off)">
                                 <span class="material-icons">mic_off</span>
                             </button>
                         </div>
 
                         <div class="track-info">
+                            <button id="playlistToggleBtn" class="control-btn" title="Toggle Playlist">
+                                <span class="material-icons">queue_music</span>
+                            </button>
                             <h2 id="currentTrack">No track selected</h2>
                             <p id="trackDetails">Select a track to play</p>
                         </div>

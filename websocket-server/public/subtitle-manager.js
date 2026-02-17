@@ -10,12 +10,18 @@ export class SubtitleManager {
         this.currentTranslationIndex = -1;
         this.currentTranslationLang = 'en';
         this.currentActiveIndex = -1;
+        this.similarContexts = [];
+        this.currentSrtUrl = null;
+        this.matchedSubtitles = new Set();
         
         this.subtitleList = document.getElementById('subtitleList');
         this.translationLanguageSelector = document.getElementById('translationLanguage');
         this.showSubtitleCheckbox = document.getElementById('showSubtitle');
         this.showRomajiCheckbox = document.getElementById('showRomaji');
         this.showTranslationCheckbox = document.getElementById('showTranslation');
+        
+        this.speechSynthesis = window.speechSynthesis;
+        this.currentUtterance = null;
     }
 
     parseSRT(srtText) {
@@ -51,9 +57,15 @@ export class SubtitleManager {
             this.romajiSubtitles = [];
             this.translationEnSubtitles = [];
             this.translationIdSubtitles = [];
+            this.similarContexts = [];
+            this.currentSrtUrl = null;
+            this.matchedSubtitles.clear();
             this.renderSubtitleList();
             return;
         }
+        
+        this.currentSrtUrl = srtUrl;
+        this.loadMatchedProgress();
         
         try {
             const response = await fetch(srtUrl);
@@ -65,6 +77,8 @@ export class SubtitleManager {
             console.error('Error loading subtitles:', error);
             this.subtitles = [];
         }
+        
+        await this.loadSimilarContexts(srtUrl);
         
         if (romajiUrl) {
             try {
@@ -168,13 +182,21 @@ export class SubtitleManager {
                 content += `<div class="subtitle-line-translation">${translation.text}</div>`;
             }
             
+            const similarContexts = this.getSimilarContexts(index);
+            const isMatched = this.matchedSubtitles.has(index);
+            const matchedClass = isMatched ? 'matched' : '';
+            const checkmarkDisplay = isMatched ? 'inline-block' : 'none';
+         
             return `
-                <div class="subtitle-line-item" data-index="${index}" data-start="${subtitle.start}" data-end="${subtitle.end}">
+                <div class="subtitle-line-item ${matchedClass}" data-index="${index}" data-start="${subtitle.start}" data-end="${subtitle.end}">
                     <div class="subtitle-content">
                         ${content}
                     </div>
                     <div class="subtitle-actions">
-                        <span class="subtitle-checkmark" data-index="${index}" style="display: none;">✓</span>
+                        <span class="subtitle-checkmark" data-index="${index}" style="display: ${checkmarkDisplay};">✓</span>
+                        <button class="subtitle-tts-btn" data-index="${index}" data-text="${this.escapeHtml(subtitle.text)}" title="Play subtitle text">
+                            <span class="material-icons">volume_up</span>
+                        </button>
                         <button class="subtitle-repeat-btn" data-index="${index}" data-start="${subtitle.start}" data-end="${subtitle.end}" title="Repeat this subtitle">
                             <span class="material-icons">repeat</span>
                         </button>
@@ -198,6 +220,14 @@ export class SubtitleManager {
                 const start = parseFloat(btn.dataset.start);
                 const end = parseFloat(btn.dataset.end);
                 this.player.repeatLoopManager.toggleSubtitleRepeat(start, end, btn);
+            });
+        });
+        
+        document.querySelectorAll('.subtitle-tts-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const text = btn.dataset.text;
+                this.speakSubtitleText(text, btn);
             });
         });
     }
@@ -248,7 +278,20 @@ export class SubtitleManager {
             if (subtitleItem) {
                 subtitleItem.classList.add('matched');
             }
+            
+            this.matchedSubtitles.add(index);
+            this.saveMatchedProgress();
         }
+    }
+
+    findFirstUnmatchedIndex() {
+        for (let i = 0; i < this.subtitles.length; i++) {
+            const subtitleItem = this.subtitleList.querySelector(`.subtitle-line-item[data-index="${i}"]`);
+            if (subtitleItem && !subtitleItem.classList.contains('matched')) {
+                return i;
+            }
+        }
+        return 0;
     }
     
     toggleSubtitleVisibility() {
@@ -265,5 +308,150 @@ export class SubtitleManager {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+    
+    async loadSimilarContexts(srtUrl) {
+        this.similarContexts = [];
+        
+        if (!srtUrl) return;
+        
+        const jsonUrl = srtUrl.replace(/\.srt$/, '.srt.json');
+        
+        try {
+            const response = await fetch(jsonUrl);
+            if (!response.ok) {
+                console.log('No similar contexts file found:', jsonUrl);
+                return;
+            }
+            
+            const jsonData = await response.json();
+            
+            if (Array.isArray(jsonData)) {
+                this.similarContexts = jsonData;
+                console.log(`Loaded ${this.similarContexts.length} similar context entries`);
+            } else if (jsonData && typeof jsonData === 'object') {
+                this.similarContexts = [jsonData];
+                console.log(`Loaded 1 similar context entry (converted from object)`);
+            } else {
+                console.warn('Similar contexts file has invalid format');
+            }
+        } catch (error) {
+            console.log('Could not load similar contexts:', error.message);
+        }
+    }
+    
+    getSimilarContexts(index) {
+        if (this.similarContexts.length === 0) {
+            return [];
+        }
+        
+        const srtIndex = index + 1;
+        
+        const entry = this.similarContexts.find(item => item.index === srtIndex);
+        if (entry && Array.isArray(entry.similarContexts)) {
+            return entry.similarContexts;
+        }
+        
+        return [];
+    }
+    
+    getStorageKey() {
+        if (!this.currentSrtUrl) return null;
+        return `subtitle_progress_${this.currentSrtUrl}`;
+    }
+    
+    saveMatchedProgress() {
+        const key = this.getStorageKey();
+        if (!key) return;
+        
+        try {
+            const progressData = {
+                matchedIndices: Array.from(this.matchedSubtitles),
+                lastUpdated: new Date().toISOString()
+            };
+            localStorage.setItem(key, JSON.stringify(progressData));
+            console.log(`Saved progress: ${this.matchedSubtitles.size} matched subtitles`);
+        } catch (error) {
+            console.error('Error saving progress to localStorage:', error);
+        }
+    }
+    
+    loadMatchedProgress() {
+        const key = this.getStorageKey();
+        if (!key) return;
+        
+        try {
+            const stored = localStorage.getItem(key);
+            if (stored) {
+                const progressData = JSON.parse(stored);
+                this.matchedSubtitles = new Set(progressData.matchedIndices || []);
+                console.log(`Loaded progress: ${this.matchedSubtitles.size} matched subtitles`);
+            } else {
+                this.matchedSubtitles.clear();
+            }
+        } catch (error) {
+            console.error('Error loading progress from localStorage:', error);
+            this.matchedSubtitles.clear();
+        }
+    }
+    
+    clearMatchedProgress() {
+        const key = this.getStorageKey();
+        if (!key) return;
+        
+        try {
+            localStorage.removeItem(key);
+            this.matchedSubtitles.clear();
+            this.renderSubtitleList();
+            console.log('Cleared subtitle progress');
+        } catch (error) {
+            console.error('Error clearing progress from localStorage:', error);
+        }
+    }
+    
+    speakSubtitleText(text, button) {
+        if (!this.speechSynthesis) {
+            console.error('Speech Synthesis API not supported');
+            return;
+        }
+        
+        if (this.currentUtterance && this.speechSynthesis.speaking) {
+            this.speechSynthesis.cancel();
+            button.classList.remove('speaking');
+            button.querySelector('.material-icons').textContent = 'volume_up';
+            if (this.currentUtterance.text === text) {
+                this.currentUtterance = null;
+                return;
+            }
+        }
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        const recognitionLang = this.player.recognitionLanguageSelector ? 
+            this.player.recognitionLanguageSelector.value : 'en-US';
+        utterance.lang = recognitionLang;
+        
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
+        button.classList.add('speaking');
+        button.querySelector('.material-icons').textContent = 'volume_off';
+        
+        utterance.onend = () => {
+            button.classList.remove('speaking');
+            button.querySelector('.material-icons').textContent = 'volume_up';
+            this.currentUtterance = null;
+        };
+        
+        utterance.onerror = (event) => {
+            console.error('Speech synthesis error:', event);
+            button.classList.remove('speaking');
+            button.querySelector('.material-icons').textContent = 'volume_up';
+            this.currentUtterance = null;
+        };
+        
+        this.currentUtterance = utterance;
+        this.speechSynthesis.speak(utterance);
     }
 }
