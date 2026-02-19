@@ -254,11 +254,12 @@ export class PracticeModeManager {
             return;
         }
         
-        const normalizedSpoken = normalizeText(currentText);
+        const lang = this.player.recognition.lang || 'en-US';
+        const normalizedSpoken = normalizeText(currentText, lang);
         const currentSubtitle = this.player.subtitleManager.subtitles[this.player.currentPracticeLineIndex];
-        const normalizedSubtitle = normalizeText(currentSubtitle.text);
+        const normalizedSubtitle = normalizeText(currentSubtitle.text, lang);
         
-        const similarity = calculateSimilarity(normalizedSpoken, normalizedSubtitle);
+        const similarity = calculateSimilarity(normalizedSpoken, normalizedSubtitle, lang);
         
         console.log(`Immediate check - Spoken: "${currentText}" vs Line ${this.player.currentPracticeLineIndex}: "${currentSubtitle.text}" - Similarity: ${Math.round(similarity * 100)}%`);
         
@@ -292,11 +293,12 @@ export class PracticeModeManager {
             return;
         }
         
-        const normalizedSpoken = normalizeText(spokenText);
+        const lang = this.player.recognition.lang || 'en-US';
+        const normalizedSpoken = normalizeText(spokenText, lang);
         const currentSubtitle = this.player.subtitleManager.subtitles[this.player.currentPracticeLineIndex];
-        const normalizedSubtitle = normalizeText(currentSubtitle.text);
+        const normalizedSubtitle = normalizeText(currentSubtitle.text, lang);
         
-        let similarity = calculateSimilarity(normalizedSpoken, normalizedSubtitle);
+        let similarity = calculateSimilarity(normalizedSpoken, normalizedSubtitle, lang);
         let matchedText = currentSubtitle.text;
         let matchSource = 'original';
         
@@ -309,8 +311,8 @@ export class PracticeModeManager {
                 console.log(`Checking ${similarContexts.length} similar contexts for better match...`);
                 
                 for (const context of similarContexts) {
-                    const normalizedContext = normalizeText(context);
-                    const contextSimilarity = calculateSimilarity(normalizedSpoken, normalizedContext);
+                    const normalizedContext = normalizeText(context, lang);
+                    const contextSimilarity = calculateSimilarity(normalizedSpoken, normalizedContext, lang);
                     
                     console.log(`  - Similar context: "${context}" - Similarity: ${Math.round(contextSimilarity * 100)}%`);
                     
