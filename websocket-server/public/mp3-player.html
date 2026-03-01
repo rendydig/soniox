@@ -35,10 +35,56 @@
                             <span>Translation</span>
                         </label>
                     </div>
-                    <select id="translationLanguage" class="translation-language-selector" style="display: none;">
-                        <option value="en">English</option>
-                        <option value="id">Indonesia</option>
-                    </select>
+                    <div class="transcription-options">
+                        <select id="translationLanguage" class="translation-language-selector" style="display: none;">
+                            <option value="en">English</option>
+                            <option value="id">Indonesia</option>
+                        </select>
+                        <button id="ttsSettingsBtn" class="tts-settings-btn" title="TTS Voice Settings">
+                            <span class="material-icons">settings_voice</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="ttsSettingsPanel" class="tts-settings-panel" style="display: none;">
+                    <div class="tts-settings-header">
+                        <h3>TTS Voice Settings</h3>
+                        <button id="closeTtsSettings" class="close-tts-btn">
+                            <span class="material-icons">close</span>
+                        </button>
+                    </div>
+                    <div class="tts-settings-content">
+                        <div class="tts-voice-group">
+                            <label>English Voice:</label>
+                            <select id="voiceSelectEn" class="voice-select">
+                                <option value="">Default</option>
+                            </select>
+                        </div>
+                        <div class="tts-voice-group">
+                            <label>Japanese Voice:</label>
+                            <select id="voiceSelectJa" class="voice-select">
+                                <option value="">Default</option>
+                            </select>
+                        </div>
+                        <div class="tts-voice-group">
+                            <label>Chinese Voice:</label>
+                            <select id="voiceSelectZh" class="voice-select">
+                                <option value="">Default</option>
+                            </select>
+                        </div>
+                        <div class="tts-voice-group">
+                            <label>Korean Voice:</label>
+                            <select id="voiceSelectKo" class="voice-select">
+                                <option value="">Default</option>
+                            </select>
+                        </div>
+                        <div class="tts-voice-group">
+                            <label>Indonesian Voice:</label>
+                            <select id="voiceSelectId" class="voice-select">
+                                <option value="">Default</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
 

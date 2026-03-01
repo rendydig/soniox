@@ -266,6 +266,113 @@ body.playlist-closed main {
     border-color: #667eea;
 }
 
+.tts-settings-btn {
+    padding: 6px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tts-settings-btn:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.tts-settings-btn .material-icons {
+    font-size: 20px;
+}
+
+.tts-settings-panel {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tts-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.tts-settings-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.close-tts-btn {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.close-tts-btn:hover {
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+.close-tts-btn .material-icons {
+    font-size: 20px;
+}
+
+.tts-settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tts-voice-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tts-voice-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.voice-select {
+    padding: 8px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    background: white;
+    color: #1f2937;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.voice-select:hover {
+    border-color: #667eea;
+}
+
+.voice-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
 .subtitle-list {
     max-height: 400px;
     overflow-y: auto;

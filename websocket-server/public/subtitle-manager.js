@@ -22,6 +22,25 @@ export class SubtitleManager {
         
         this.speechSynthesis = window.speechSynthesis;
         this.currentUtterance = null;
+        this.availableVoices = [];
+        this.voicePreferences = {
+            'en-US': '',
+            'ja-JP': '',
+            'zh-CN': '',
+            'ko-KR': '',
+            'id-ID': ''
+        };
+        
+        this.ttsSettingsBtn = document.getElementById('ttsSettingsBtn');
+        this.ttsSettingsPanel = document.getElementById('ttsSettingsPanel');
+        this.closeTtsSettings = document.getElementById('closeTtsSettings');
+        this.voiceSelectEn = document.getElementById('voiceSelectEn');
+        this.voiceSelectJa = document.getElementById('voiceSelectJa');
+        this.voiceSelectZh = document.getElementById('voiceSelectZh');
+        this.voiceSelectKo = document.getElementById('voiceSelectKo');
+        this.voiceSelectId = document.getElementById('voiceSelectId');
+        
+        this.initializeTTSSettings();
     }
 
     parseSRT(srtText) {
@@ -419,6 +438,137 @@ export class SubtitleManager {
         }
     }
     
+    initializeTTSSettings() {
+        this.loadVoicePreferences();
+        this.loadAvailableVoices();
+        
+        if (this.speechSynthesis) {
+            this.speechSynthesis.addEventListener('voiceschanged', () => {
+                this.loadAvailableVoices();
+            });
+        }
+        
+        if (this.ttsSettingsBtn) {
+            this.ttsSettingsBtn.addEventListener('click', () => {
+                this.toggleTTSSettings();
+            });
+        }
+        
+        if (this.closeTtsSettings) {
+            this.closeTtsSettings.addEventListener('click', () => {
+                this.toggleTTSSettings();
+            });
+        }
+        
+        const voiceSelects = [
+            { element: this.voiceSelectEn, lang: 'en-US' },
+            { element: this.voiceSelectJa, lang: 'ja-JP' },
+            { element: this.voiceSelectZh, lang: 'zh-CN' },
+            { element: this.voiceSelectKo, lang: 'ko-KR' },
+            { element: this.voiceSelectId, lang: 'id-ID' }
+        ];
+        
+        voiceSelects.forEach(({ element, lang }) => {
+            if (element) {
+                element.addEventListener('change', () => {
+                    this.voicePreferences[lang] = element.value;
+                    this.saveVoicePreferences();
+                    console.log(`Voice preference for ${lang} set to: ${element.value}`);
+                });
+            }
+        });
+    }
+    
+    toggleTTSSettings() {
+        if (this.ttsSettingsPanel) {
+            const isVisible = this.ttsSettingsPanel.style.display !== 'none';
+            this.ttsSettingsPanel.style.display = isVisible ? 'none' : 'block';
+        }
+    }
+    
+    loadAvailableVoices() {
+        if (!this.speechSynthesis) return;
+        
+        this.availableVoices = this.speechSynthesis.getVoices();
+        console.log(`Loaded ${this.availableVoices.length} voices`);
+        
+        this.populateVoiceSelectors();
+    }
+    
+    populateVoiceSelectors() {
+        const voiceGroups = {
+            'en-US': { selector: this.voiceSelectEn, langs: ['en-US', 'en-GB', 'en'] },
+            'ja-JP': { selector: this.voiceSelectJa, langs: ['ja-JP', 'ja'] },
+            'zh-CN': { selector: this.voiceSelectZh, langs: ['zh-CN', 'zh-TW', 'zh'] },
+            'ko-KR': { selector: this.voiceSelectKo, langs: ['ko-KR', 'ko'] },
+            'id-ID': { selector: this.voiceSelectId, langs: ['id-ID', 'id'] }
+        };
+        
+        Object.entries(voiceGroups).forEach(([prefLang, { selector, langs }]) => {
+            if (!selector) return;
+            
+            const defaultOption = selector.querySelector('option[value=""]');
+            selector.innerHTML = '';
+            if (defaultOption) {
+                selector.appendChild(defaultOption);
+            }
+            
+            const matchingVoices = this.availableVoices.filter(voice => 
+                langs.some(lang => voice.lang.startsWith(lang))
+            );
+            
+            matchingVoices.forEach(voice => {
+                const option = document.createElement('option');
+                option.value = voice.name;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                selector.appendChild(option);
+            });
+            
+            if (this.voicePreferences[prefLang]) {
+                selector.value = this.voicePreferences[prefLang];
+            }
+        });
+    }
+    
+    saveVoicePreferences() {
+        try {
+            localStorage.setItem('tts_voice_preferences', JSON.stringify(this.voicePreferences));
+            console.log('Voice preferences saved:', this.voicePreferences);
+        } catch (error) {
+            console.error('Error saving voice preferences:', error);
+        }
+    }
+    
+    loadVoicePreferences() {
+        try {
+            const stored = localStorage.getItem('tts_voice_preferences');
+            if (stored) {
+                this.voicePreferences = JSON.parse(stored);
+                console.log('Voice preferences loaded:', this.voicePreferences);
+            }
+        } catch (error) {
+            console.error('Error loading voice preferences:', error);
+        }
+    }
+    
+    detectLanguage(text) {
+        const japaneseRegex = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/;
+        const koreanRegex = /[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/;
+        const chineseRegex = /[\u4E00-\u9FFF]/;
+        
+        if (japaneseRegex.test(text)) {
+            return 'ja-JP';
+        } else if (koreanRegex.test(text)) {
+            return 'ko-KR';
+        } else if (chineseRegex.test(text)) {
+            return 'zh-CN';
+        }
+        
+        const recognitionLang = this.player.recognitionLanguageSelector ? 
+            this.player.recognitionLanguageSelector.value : 'en-US';
+        return recognitionLang;
+    }
+    
     speakSubtitleText(text, button) {
         if (!this.speechSynthesis) {
             console.error('Speech Synthesis API not supported');
@@ -437,9 +587,23 @@ export class SubtitleManager {
         
         const utterance = new SpeechSynthesisUtterance(text);
         
-        const recognitionLang = this.player.recognitionLanguageSelector ? 
-            this.player.recognitionLanguageSelector.value : 'en-US';
-        utterance.lang = recognitionLang;
+        const detectedLang = this.detectLanguage(text);
+        utterance.lang = detectedLang;
+        
+        const preferredVoiceName = this.voicePreferences[detectedLang];
+        if (preferredVoiceName) {
+            const voice = this.availableVoices.find(v => v.name === preferredVoiceName);
+            if (voice) {
+                utterance.voice = voice;
+                console.log(`Using preferred voice: ${voice.name} for language: ${detectedLang}`);
+            } else {
+                console.log(`Preferred voice not found, using default for: ${detectedLang}`);
+            }
+        } else {
+            console.log(`No voice preference set for: ${detectedLang}, using default`);
+        }
+        
+        console.log(`Detected language: ${detectedLang} for text: ${text.substring(0, 30)}...`);
         
         utterance.rate = 0.9;
         utterance.pitch = 1.0;
