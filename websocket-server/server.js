@@ -34,6 +34,10 @@ app.get('/mp3-player', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'mp3-player.html'));
 });
 
+app.get('/roleplay-player', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'roleplay-player.html'));
+});
+
 wss.on('connection', (ws, req) => {
   const clientIp = req.socket.remoteAddress;
   console.log(`[WebSocket] New connection from ${clientIp}`);

@@ -1,0 +1,225 @@
+{
+  "title": "Daily Business Conversation: Boss and You",
+  "estimated_duration_minutes": 15,
+  "theme": "General daily business conversation",
+  "language": {
+    "source": "English",
+    "translation": "Indonesian"
+  },
+  "participants": [
+    "Boss",
+    "You"
+  ],
+  "dialogue": [
+    {
+      "turn": 1,
+      "time": "00:00",
+      "speaker": "Boss",
+      "english": "Good morning. How are you today, and are you ready for a busy schedule?",
+      "indonesian": "Selamat pagi. Bagaimana kabarmu hari ini, dan apakah kamu siap untuk jadwal yang padat?"
+    },
+    {
+      "turn": 2,
+      "time": "00:30",
+      "speaker": "You",
+      "english": "Good morning. I am doing well, thank you, and yes, I am ready to get started.",
+      "indonesian": "Selamat pagi. Saya baik, terima kasih, dan ya, saya siap untuk mulai bekerja."
+    },
+    {
+      "turn": 3,
+      "time": "01:00",
+      "speaker": "Boss",
+      "english": "Great. Before the day gets too busy, I want to review your main priorities for today.",
+      "indonesian": "Bagus. Sebelum hari ini menjadi terlalu sibuk, saya ingin meninjau prioritas utamamu untuk hari ini."
+    },
+    {
+      "turn": 4,
+      "time": "01:30",
+      "speaker": "You",
+      "english": "My main priorities are finishing the monthly report, following up with two clients, and checking progress with the operations team.",
+      "indonesian": "Prioritas utama saya adalah menyelesaikan laporan bulanan, menindaklanjuti dua klien, dan memeriksa perkembangan dengan tim operasional."
+    },
+    {
+      "turn": 5,
+      "time": "02:00",
+      "speaker": "Boss",
+      "english": "That sounds reasonable. Which task is the most urgent this morning?",
+      "indonesian": "Itu terdengar masuk akal. Tugas mana yang paling mendesak pagi ini?"
+    },
+    {
+      "turn": 6,
+      "time": "02:30",
+      "speaker": "You",
+      "english": "The monthly report is the most urgent because I want to send a clean draft before noon.",
+      "indonesian": "Laporan bulanan adalah yang paling mendesak karena saya ingin mengirim draf yang rapi sebelum tengah hari."
+    },
+    {
+      "turn": 7,
+      "time": "03:00",
+      "speaker": "Boss",
+      "english": "Good plan. Do you have everything you need, or is anything slowing you down?",
+      "indonesian": "Rencana yang bagus. Apakah kamu sudah memiliki semua yang dibutuhkan, atau ada sesuatu yang memperlambat pekerjaanmu?"
+    },
+    {
+      "turn": 8,
+      "time": "03:30",
+      "speaker": "You",
+      "english": "I have most of what I need. I am only waiting for the latest figures from the finance team.",
+      "indonesian": "Saya sudah memiliki sebagian besar yang saya butuhkan. Saya hanya menunggu angka terbaru dari tim keuangan."
+    },
+    {
+      "turn": 9,
+      "time": "04:00",
+      "speaker": "Boss",
+      "english": "All right. Once you receive them, please finalize the report and send me a summary with the key points.",
+      "indonesian": "Baik. Setelah kamu menerimanya, tolong finalkan laporannya dan kirimkan saya ringkasan dengan poin-poin utama."
+    },
+    {
+      "turn": 10,
+      "time": "04:30",
+      "speaker": "You",
+      "english": "Of course. I will keep the summary short and focus on results, open issues, and next steps.",
+      "indonesian": "Tentu. Saya akan membuat ringkasannya singkat dan fokus pada hasil, masalah yang masih terbuka, dan langkah selanjutnya."
+    },
+    {
+      "turn": 11,
+      "time": "05:00",
+      "speaker": "Boss",
+      "english": "Let us also talk about the client meeting this afternoon. Are you prepared for it?",
+      "indonesian": "Mari kita juga membahas rapat klien sore ini. Apakah kamu sudah siap untuk itu?"
+    },
+    {
+      "turn": 12,
+      "time": "05:30",
+      "speaker": "You",
+      "english": "Yes, I am preparing the agenda now. I also want to confirm their expectations before the meeting starts.",
+      "indonesian": "Ya, saya sedang menyiapkan agendanya sekarang. Saya juga ingin mengonfirmasi harapan mereka sebelum rapat dimulai."
+    },
+    {
+      "turn": 13,
+      "time": "06:00",
+      "speaker": "Boss",
+      "english": "Excellent. Please make sure the discussion stays focused on pricing, delivery timing, and service quality.",
+      "indonesian": "Sangat baik. Tolong pastikan diskusinya tetap fokus pada harga, waktu pengiriman, dan kualitas layanan."
+    },
+    {
+      "turn": 14,
+      "time": "06:30",
+      "speaker": "You",
+      "english": "Understood. I will prepare talking points for each topic so the meeting stays clear and productive.",
+      "indonesian": "Dipahami. Saya akan menyiapkan poin pembicaraan untuk setiap topik agar rapat tetap jelas dan produktif."
+    },
+    {
+      "turn": 15,
+      "time": "07:00",
+      "speaker": "Boss",
+      "english": "One more thing: I noticed the team has been under pressure this week. How do you think they are doing?",
+      "indonesian": "Satu hal lagi: saya melihat tim sedang berada di bawah tekanan minggu ini. Menurutmu bagaimana keadaan mereka?"
+    },
+    {
+      "turn": 16,
+      "time": "07:30",
+      "speaker": "You",
+      "english": "They are doing their best, but a few people look overloaded. I think we should rebalance some smaller tasks.",
+      "indonesian": "Mereka melakukan yang terbaik, tetapi beberapa orang terlihat terlalu terbebani. Saya rasa kita perlu menyeimbangkan ulang beberapa tugas kecil."
+    },
+    {
+      "turn": 17,
+      "time": "08:00",
+      "speaker": "Boss",
+      "english": "I agree. I do not want the team to lose momentum because of avoidable stress.",
+      "indonesian": "Saya setuju. Saya tidak ingin tim kehilangan momentum karena tekanan yang sebenarnya bisa dihindari."
+    },
+    {
+      "turn": 18,
+      "time": "08:30",
+      "speaker": "You",
+      "english": "I can speak with them after lunch, review workloads, and shift a few follow-up tasks where needed.",
+      "indonesian": "Saya bisa berbicara dengan mereka setelah makan siang, meninjau beban kerja, dan memindahkan beberapa tugas tindak lanjut jika diperlukan."
+    },
+    {
+      "turn": 19,
+      "time": "09:00",
+      "speaker": "Boss",
+      "english": "That would help. Please also encourage them to raise concerns earlier instead of waiting until the last minute.",
+      "indonesian": "Itu akan membantu. Tolong juga dorong mereka untuk menyampaikan kendala lebih awal, bukan menunggu sampai menit terakhir."
+    },
+    {
+      "turn": 20,
+      "time": "09:30",
+      "speaker": "You",
+      "english": "I will do that. Clear communication usually prevents small issues from becoming bigger problems.",
+      "indonesian": "Saya akan melakukannya. Komunikasi yang jelas biasanya mencegah masalah kecil menjadi masalah yang lebih besar."
+    },
+    {
+      "turn": 21,
+      "time": "10:00",
+      "speaker": "Boss",
+      "english": "Good. Is there anything you need from me today to move faster or make better decisions?",
+      "indonesian": "Bagus. Apakah ada sesuatu yang kamu butuhkan dari saya hari ini agar bisa bergerak lebih cepat atau membuat keputusan yang lebih baik?"
+    },
+    {
+      "turn": 22,
+      "time": "10:30",
+      "speaker": "You",
+      "english": "Yes, I may need your approval on the client discount range, just in case they ask during the discussion.",
+      "indonesian": "Ya, saya mungkin membutuhkan persetujuan Anda terkait rentang diskon untuk klien, jika mereka menanyakannya saat diskusi."
+    },
+    {
+      "turn": 23,
+      "time": "11:00",
+      "speaker": "Boss",
+      "english": "You can offer up to five percent without checking with me. Anything above that should come back to me first.",
+      "indonesian": "Kamu bisa menawarkan hingga lima persen tanpa perlu mengecek ke saya. Apa pun di atas itu harus dikonfirmasikan ke saya terlebih dahulu."
+    },
+    {
+      "turn": 24,
+      "time": "11:30",
+      "speaker": "You",
+      "english": "Noted. I will use that range carefully and make sure the discussion stays within our limits.",
+      "indonesian": "Baik, saya catat. Saya akan menggunakan rentang itu dengan hati-hati dan memastikan diskusinya tetap dalam batas kita."
+    },
+    {
+      "turn": 25,
+      "time": "12:00",
+      "speaker": "Boss",
+      "english": "By the way, how is the paperwork from yesterday? I know there were still a few documents waiting for review.",
+      "indonesian": "Ngomong-ngomong, bagaimana dokumen dari kemarin? Saya tahu masih ada beberapa dokumen yang menunggu untuk ditinjau."
+    },
+    {
+      "turn": 26,
+      "time": "12:30",
+      "speaker": "You",
+      "english": "Most of it is already reviewed. I only need final signatures on two documents, and then I can close them.",
+      "indonesian": "Sebagian besar sudah ditinjau. Saya hanya membutuhkan tanda tangan akhir pada dua dokumen, lalu saya bisa menyelesaikannya."
+    },
+    {
+      "turn": 27,
+      "time": "13:00",
+      "speaker": "Boss",
+      "english": "Leave them on my desk after lunch, and I will sign them before the afternoon meeting.",
+      "indonesian": "Letakkan dokumen itu di meja saya setelah makan siang, dan saya akan menandatanganinya sebelum rapat sore."
+    },
+    {
+      "turn": 28,
+      "time": "13:30",
+      "speaker": "You",
+      "english": "Perfect. I will organize them clearly so you can review them quickly.",
+      "indonesian": "Baik. Saya akan menyusunnya dengan rapi agar Anda bisa meninjaunya dengan cepat."
+    },
+    {
+      "turn": 29,
+      "time": "14:00",
+      "speaker": "Boss",
+      "english": "Please keep some space in your schedule today. Unexpected requests may come in, and I want us to stay flexible.",
+      "indonesian": "Tolong sisakan sedikit ruang dalam jadwalmu hari ini. Mungkin ada permintaan mendadak, dan saya ingin kita tetap fleksibel."
+    },
+    {
+      "turn": 30,
+      "time": "14:30",
+      "speaker": "You",
+      "english": "Understood. I will keep a buffer in the late afternoon and send you a midday update plus an end-of-day summary.",
+      "indonesian": "Dipahami. Saya akan menyisakan waktu cadangan di sore hari dan mengirimkan pembaruan saat tengah hari serta ringkasan di akhir hari."
+    }
+  ]
+}
