@@ -216,7 +216,7 @@ body.sidebar-collapsed .app-shell {
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     gap: 24px;
     padding: 40px 16px;
