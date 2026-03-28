@@ -103,6 +103,7 @@ export class PracticeModeManager {
     }
 
     togglePracticeMode() {
+        console.log({"Practice mode toggled":this.player.practiceMode})
         this.player.practiceMode = !this.player.practiceMode;
         
         if (this.player.practiceMode) {
@@ -207,6 +208,7 @@ export class PracticeModeManager {
     }
     
     startSilenceDetection() {
+        
         if (this.player.silenceCheckInterval) {
             clearInterval(this.player.silenceCheckInterval);
         }
@@ -331,7 +333,7 @@ export class PracticeModeManager {
         
         this.player.recognitionText = '';
         this.player.recognitionTextEl.textContent = 'Listening...';
-        
+       
         if (similarity >= 0.7) {
             const practiceItem = this.player.subtitleManager.subtitleList.querySelector(`.subtitle-line-item[data-index="${this.player.currentPracticeLineIndex}"]`);
             if (practiceItem) {
@@ -363,6 +365,10 @@ export class PracticeModeManager {
             if (practiceItem) {
                 practiceItem.classList.add('practice-wrong');
             }
+            
+            // Play wrong sound
+            const wrongSound = new Audio('assets/wav/wrong.mp3');
+            wrongSound.play().catch(err => console.error('Failed to play wrong sound:', err));
             
             this.updatePracticeStatus(`Try again (${Math.round(similarity * 100)}%)`, 'warning');
             

@@ -44,17 +44,15 @@
                 </div>
                 <div class="turn-instructions-panel">
                     <div class="mic-status-wrap">
-                        <span id="micStatusDot" class="mic-status-dot"></span>
+                        <span id="micStatusDot" class="mic-status-dot">
+                            <button id="retryBtn" class="retry-btn-inside" type="button" disabled>Retry</button>
+                        </span>
                         <strong id="turnPrompt">Loading turn</strong>
                         <span id="micStatusText">Microphone idle</span>
                     </div>
                     <span id="turnHint">The game will follow the conversation order from the JSON file.</span>
-                       <button id="retryBtn" class="secondary-btn" type="button" disabled>Retry</button>
-                    <div class="feedback-grids">
-                        <div id="transcriptSection">
-                            <label for="transcriptOutput">Transcript</label>
-                           
-                        </div>
+                    <div class="feedback-grids" style="display: none;">
+                       
                         <div id="resultSection">
                             <label for="resultOutput">Result</label>
                               <div id="resultOutput" class="output-box empty">Waiting for your turn.</div>
