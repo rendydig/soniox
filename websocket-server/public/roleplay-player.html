@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,18 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 </head>
+
 <body>
+    <div class="progress-panel">
+        <div class="progress-copy">
+            <span id="turnCounter"> 0 / 0</span>
+            <span id="stateLabel" class="state-pill">idle</span>
+        </div>
+        <div class="progress-track">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+    </div>
+
     <div class="app-shell">
         <header class="page-header">
             <div>
@@ -23,65 +35,52 @@
 
         <main class="main-grid">
             <section class="primary-panel">
-                <div class="progress-panel">
-                    <div class="progress-copy">
-                        <span id="turnCounter">Turn 0 / 0</span>
-                        <span id="stateLabel" class="state-pill">idle</span>
+
+                <div class="conversation-history-container" id="conversationHistory">
+                    <!-- Conversation turns will be dynamically added here -->
+                </div>
+                <div >
+                     <div id="transcriptOutput" class="output-box empty">Your speech will appear here.</div>
+                </div>
+                <div class="turn-instructions-panel">
+                    <div class="mic-status-wrap">
+                        <span id="micStatusDot" class="mic-status-dot"></span>
+                        <strong id="turnPrompt">Loading turn</strong>
+                        <span id="micStatusText">Microphone idle</span>
                     </div>
-                    <div class="progress-track">
-                        <div id="progressFill" class="progress-fill"></div>
+                    <span id="turnHint">The game will follow the conversation order from the JSON file.</span>
+                       <button id="retryBtn" class="secondary-btn" type="button" disabled>Retry</button>
+                    <div class="feedback-grids">
+                        <div id="transcriptSection">
+                            <label for="transcriptOutput">Transcript</label>
+                           
+                        </div>
+                        <div id="resultSection">
+                            <label for="resultOutput">Result</label>
+                              <div id="resultOutput" class="output-box empty">Waiting for your turn.</div>
+                        </div>
                     </div>
                 </div>
 
-                <article class="script-card">
-                    <div class="card-topline">
-                        <span id="speakerBadge" class="speaker-badge">Speaker</span>
-                        <span id="turnTime" class="turn-time">00:00</span>
-                    </div>
-                    <h2 id="englishLine" class="english-line">Please wait...</h2>
-                    <span id="replayBtn" class="material-icons" style=" cursor: pointer;">volume_up</span>
-                    <p id="translationLine" class="translation-line"></p>
-                    <div class="turn-instructions">
-                        <strong id="turnPrompt">Loading turn</strong>
-                        <span id="turnHint">The game will follow the conversation order from the JSON file.</span>
-                    </div>
-                   
-                </article>
-
                 <section class="controls-card">
                     <div class="control-row">
-                        
+
                         <!-- <button id="nextBtn" class="secondary-btn" type="button" disabled>Next turn</button> -->
-                        <button id="retryBtn" class="secondary-btn" type="button" disabled>Retry</button>
-                        <div id="resultOutput" class="output-box empty">Waiting for your turn.</div>
+                     
+                      
                     </div>
                     <div class="status-row">
-                        <div class="mic-status-wrap">
-                            <span id="micStatusDot" class="mic-status-dot"></span>
-                            <span id="micStatusText">Microphone idle</span>
-                        </div>
+                       
                         <span id="attemptInfo">Attempts: 0</span>
                     </div>
                 </section>
 
                 <section class="feedback-card">
-                    <div class="feedback-header">
-                        <h3>Feedback</h3>
-                        <span id="scoreLabel">Score: 0</span>
-                    </div>
-                    <div class="feedback-grid">
-                        <div>
-                            <label for="transcriptOutput">Transcript</label>
-                            <div id="transcriptOutput" class="output-box empty">Your speech will appear here.</div>
-                        </div>
-                        <div>
-                            <label for="resultOutput">Result</label>
-                            
-                        </div>
-                    </div>
+
                     <div class="manual-input-wrap">
                         <label for="manualInput">Manual fallback</label>
-                        <textarea id="manualInput" rows="3" placeholder="Type your answer here if microphone access is unavailable."></textarea>
+                        <textarea id="manualInput" rows="3"
+                            placeholder="Type your answer here if microphone access is unavailable."></textarea>
                         <button id="submitManualBtn" class="secondary-btn" type="button">Submit typed answer</button>
                     </div>
                     <div id="expectedWrap" class="expected-wrap hidden">
@@ -91,43 +90,56 @@
                 </section>
             </section>
 
-            <aside class="sidebar-panel">
-                <section class="stats-card">
-                    <h3>Session</h3>
-                    <div class="stats-list">
-                        <div class="stat-item">
-                            <span>Current speaker</span>
-                            <strong id="currentSpeakerStat">-</strong>
-                        </div>
-                        <div class="stat-item">
-                            <span>Completed turns</span>
-                            <strong id="completedTurnsStat">0</strong>
-                        </div>
-                        <div class="stat-item">
-                            <span>Streak</span>
-                            <strong id="streakStat">0</strong>
-                        </div>
-                        <div class="stat-item">
-                            <span>Conversation file</span>
-                            <strong id="fileNameStat">english-1.json</strong>
-                        </div>
-                    </div>
-                </section>
+            <aside class="sidebar-panel" id="sidebarPanel">
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                    <span class="toggle-score" id="toggleScore">0</span>
+                    <span class="material-icons">chevron_right</span>
+                </button>
+                <div class="sidebar-content">
+                    <section class="stats-card">
+                        <h3>Session</h3>
+                        <div class="stats-list">
+                            <div class="feedback-header">
+                                <h3>Feedback</h3>
+                                <span id="scoreLabel" class="scoreLabel">Score: 0</span>
+                            </div>
 
-                <section class="rules-card">
-                    <h3>Game flow</h3>
-                    <ol>
-                        <li>Bot turns are spoken automatically.</li>
-                        <li>Your turns start listening after the line appears.</li>
-                        <li>Stay silent for 1.5 seconds to auto-finish.</li>
-                        <li>Accepted answers score 1 point.</li>
-                        <li>After max retries, the expected line is revealed.</li>
-                    </ol>
-                </section>
+                            <div class="stat-item">
+                                <span>Current speaker</span>
+                                <strong id="currentSpeakerStat">-</strong>
+                            </div>
+                            <div class="stat-item">
+                                <span>Completed turns</span>
+                                <strong id="completedTurnsStat">0</strong>
+                            </div>
+                            <div class="stat-item">
+                                <span>Streak</span>
+                                <strong id="streakStat">0</strong>
+                            </div>
+                            <div class="stat-item">
+                                <span>Conversation file</span>
+                                <strong id="fileNameStat">english-1.json</strong>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="rules-card">
+                        <h3>Game flow</h3>
+                        <ol>
+                            <li>Bot turns are spoken automatically.</li>
+                            <li>Your turns start listening after the line appears.</li>
+                            <li>Stay silent for 1.5 seconds to auto-finish.</li>
+                            <li>Accepted answers score 1 point.</li>
+                            <li>After max retries, the expected line is revealed.</li>
+                        </ol>
+                    </section>
+                </div>
             </aside>
         </main>
     </div>
 
+    <script src="audio-cache-manager.js"></script>
     <script type="module" src="roleplay-player.js"></script>
 </body>
+
 </html>

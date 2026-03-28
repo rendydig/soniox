@@ -5,6 +5,7 @@ const ACCEPT_THRESHOLD = 0.78;
 const RETRY_THRESHOLD = 0.52;
 const MIN_WORD_COUNT = 2;
 const SILENCE_TIMEOUT_MS = 1500;
+const MOBILE_BREAKPOINT = 980;
 
 class RoleplayConversationPlayer {
     constructor() {
@@ -30,6 +31,9 @@ class RoleplayConversationPlayer {
         this.turnResolved = false;
         this.storageKey = '';
         this.currentFile = this.getConversationFile();
+        this.audioCacheManager = new AudioCacheManager();
+        this.sidebarCollapsed = false;
+        this.isFirstRender = true;
 
         this.elements = {
             title: document.getElementById('conversationTitle'),
@@ -37,14 +41,9 @@ class RoleplayConversationPlayer {
             turnCounter: document.getElementById('turnCounter'),
             stateLabel: document.getElementById('stateLabel'),
             progressFill: document.getElementById('progressFill'),
-            speakerBadge: document.getElementById('speakerBadge'),
-            turnTime: document.getElementById('turnTime'),
-            englishLine: document.getElementById('englishLine'),
-            translationLine: document.getElementById('translationLine'),
+            conversationHistory: document.getElementById('conversationHistory'),
             turnPrompt: document.getElementById('turnPrompt'),
             turnHint: document.getElementById('turnHint'),
-            replayBtn: document.getElementById('replayBtn'),
-            // nextBtn: document.getElementById('nextBtn'),
             retryBtn: document.getElementById('retryBtn'),
             micStatusDot: document.getElementById('micStatusDot'),
             micStatusText: document.getElementById('micStatusText'),
@@ -55,16 +54,20 @@ class RoleplayConversationPlayer {
             submitManualBtn: document.getElementById('submitManualBtn'),
             expectedWrap: document.getElementById('expectedWrap'),
             expectedOutput: document.getElementById('expectedOutput'),
-            scoreLabel: document.getElementById('scoreLabel'),
+            scoreLabel: document.querySelector('#scoreLabel'),
             currentSpeakerStat: document.getElementById('currentSpeakerStat'),
             completedTurnsStat: document.getElementById('completedTurnsStat'),
             streakStat: document.getElementById('streakStat'),
             fileNameStat: document.getElementById('fileNameStat'),
-            restartBtn: document.getElementById('restartBtn')
+            restartBtn: document.getElementById('restartBtn'),
+            sidebarPanel: document.getElementById('sidebarPanel'),
+            sidebarToggle: document.getElementById('sidebarToggle'),
+            toggleScore: document.getElementById('toggleScore')
         };
 
         this.bindEvents();
         this.initSpeechRecognition();
+        this.initSidebar();
         this.loadConversation();
     }
 
@@ -86,6 +89,12 @@ class RoleplayConversationPlayer {
             this.conversation = await response.json();
             this.dialogue = Array.isArray(this.conversation.dialogue) ? this.conversation.dialogue : [];
             this.storageKey = `roleplay-progress:${this.currentFile}`;
+            
+            // Initialize audio cache manager
+            await this.audioCacheManager.initialize(this.currentFile);
+            const cacheStats = this.audioCacheManager.getStats();
+            console.log('[AudioCache] Stats:', cacheStats);
+            
             this.restoreProgress();
             this.renderConversationMeta();
             this.renderTurn();
@@ -98,11 +107,49 @@ class RoleplayConversationPlayer {
     }
 
     bindEvents() {
-        this.elements.replayBtn.addEventListener('click', () => this.handleReplay());
-        // this.elements.nextBtn.addEventListener('click', () => this.advanceTurn());
         this.elements.retryBtn.addEventListener('click', () => this.handleRetry());
         this.elements.submitManualBtn.addEventListener('click', () => this.submitManualInput());
         this.elements.restartBtn.addEventListener('click', () => this.restartSession());
+        this.elements.sidebarToggle.addEventListener('click', () => this.toggleSidebar());
+    }
+
+    initSidebar() {
+        const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
+        this.sidebarCollapsed = isMobile;
+        this.updateSidebarState();
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                const nowMobile = window.innerWidth < MOBILE_BREAKPOINT;
+                const wasDesktop = !this.sidebarCollapsed;
+                const wasMobile = this.sidebarCollapsed;
+
+                if (nowMobile && wasDesktop) {
+                    this.sidebarCollapsed = true;
+                    this.updateSidebarState();
+                } else if (!nowMobile && wasMobile) {
+                    this.sidebarCollapsed = false;
+                    this.updateSidebarState();
+                }
+            }, 250);
+        });
+    }
+
+    toggleSidebar() {
+        this.sidebarCollapsed = !this.sidebarCollapsed;
+        this.updateSidebarState();
+    }
+
+    updateSidebarState() {
+        if (this.sidebarCollapsed) {
+            this.elements.sidebarPanel.classList.add('collapsed');
+            document.body.classList.add('sidebar-collapsed');
+        } else {
+            this.elements.sidebarPanel.classList.remove('collapsed');
+            document.body.classList.remove('sidebar-collapsed');
+        }
     }
 
     initSpeechRecognition() {
@@ -124,7 +171,7 @@ class RoleplayConversationPlayer {
             this.recognitionActive = true;
             this.shouldEvaluateOnRecognitionEnd = true;
             this.lastSpeechAt = Date.now();
-            this.updateMicStatus('Listening for your answer', 'listening');
+            this.updateMicStatus('Waiting for your answer', 'listening');
             this.startSilenceMonitor();
         };
 
@@ -233,13 +280,14 @@ class RoleplayConversationPlayer {
 
     restartSession() {
         this.stopRecognition();
-        window.speechSynthesis.cancel();
+        this.audioCacheManager.stop();
         this.currentTurnIndex = 0;
         this.score = 0;
         this.streak = 0;
         this.completedTurns = [];
         this.attemptsPerTurn = {};
         this.history = {};
+        this.isFirstRender = false;
         this.persistProgress();
         this.renderTurn();
     }
@@ -267,19 +315,16 @@ class RoleplayConversationPlayer {
         this.elements.expectedWrap.classList.add('hidden');
         this.elements.expectedOutput.textContent = '';
         this.elements.retryBtn.disabled = true;
-        // this.elements.nextBtn.disabled = true;
         this.updateTranscript('Your speech will appear here.', false, true);
         this.updateResult('Waiting for this turn to start.', false, true);
         this.updateStats(turn);
 
         const totalTurns = this.dialogue.length;
-        this.elements.turnCounter.textContent = `Turn ${this.currentTurnIndex + 1} / ${totalTurns}`;
-        this.elements.progressFill.style.width = `${((this.currentTurnIndex) / totalTurns) * 100}%`;
-        this.elements.speakerBadge.textContent = turn.speaker || 'Unknown';
-        this.elements.turnTime.textContent = turn.time || '--:--';
-        this.elements.englishLine.textContent = turn.english || '';
-        this.elements.translationLine.textContent = turn.indonesian || '';
+        this.elements.turnCounter.textContent = `${this.currentTurnIndex + 1} / ${totalTurns}`;
+        this.elements.progressFill.style.height = `${((this.currentTurnIndex) / totalTurns) * 100}%`;
         this.elements.attemptInfo.textContent = `Attempts: ${this.getAttemptsForTurn()}`;
+
+        this.renderConversationHistory();
 
         if (this.isUserTurn(turn)) {
             this.renderUserTurn(turn);
@@ -291,33 +336,57 @@ class RoleplayConversationPlayer {
     }
 
     renderBotTurn(turn) {
+        console.log('[Bot Turn] Starting bot turn:', turn.speaker, turn.english);
         this.setState('botSpeaking');
         this.elements.turnPrompt.textContent = `${turn.speaker} is speaking`;
-        this.elements.turnHint.textContent = 'Listen to the AI line. Next becomes available when playback finishes.';
         this.updateMicStatus('Microphone off during bot turn', 'idle');
-        this.speakLine(turn.english, {
+        
+        // Check if this is first render - browser may block autoplay
+        if (this.isFirstRender) {
+            this.isFirstRender = false;
+            this.elements.turnHint.textContent = 'Click the Replay button below to hear the audio.';
+            this.updateResult('Click the Replay button to start the audio (browser autoplay blocked on first load).', false);
+            this.botReadyForNext = false;
+            this.turnResolved = false;
+            this.elements.retryBtn.disabled = false;
+            this.elements.retryBtn.textContent = 'continue playing';
+            this.elements.retryBtn.onclick = () => {
+                this.elements.retryBtn.textContent = 'Retry';
+                this.elements.retryBtn.onclick = null;
+                this.playBotAudio(turn);
+            };
+            return;
+        }
+        
+        this.playBotAudio(turn);
+    }
+    
+    playBotAudio(turn) {
+        this.elements.turnHint.textContent = 'Listen to the AI line. Next becomes available when playback finishes.';
+        this.audioCacheManager.playAudio(turn.english, {
             onEnd: () => {
+                console.log('[Bot Turn] Speech ended, advancing to next turn');
                 this.botReadyForNext = true;
                 this.turnResolved = true;
                 this.updateResult('Bot turn completed. Advancing to next turn...', true);
-                // this.elements.nextBtn.disabled = false;
                 this.setState('turnResult');
                 setTimeout(() => this.advanceTurn(), 800);
             },
             onUnavailable: () => {
+                console.log('[Bot Turn] Audio unavailable');
                 this.botReadyForNext = true;
                 this.turnResolved = true;
-                this.updateResult('TTS is unavailable. Read the line and continue manually.', false);
-                // this.elements.nextBtn.disabled = false;
+                this.updateResult('Audio is unavailable. Read the line and continue manually.', false);
                 this.setState('turnResult');
-            }
+            },
+            useTTSFallback: true
         });
     }
 
     renderUserTurn() {
         this.setState('userListening');
         this.elements.turnPrompt.textContent = 'Your turn';
-        this.elements.turnHint.textContent = 'Speak the English line. Listening stops after 1.5 seconds of silence.';
+        this.elements.turnHint.textContent = 'Please speak, it will auto submit when you stop talking. Listening stops after 1.5 seconds of silence.';
         this.updateResult('Speak now, or use the typed fallback if needed.', false);
         this.updateMicStatus('Preparing microphone', 'idle');
         this.startUserTurn();
@@ -402,7 +471,7 @@ class RoleplayConversationPlayer {
                 this.updateResult('We did not catch that. Try again or type your answer.', false);
                 this.elements.retryBtn.disabled = false;
                 this.setState('turnResult');
-                this.updateMicStatus('Ready to retry', 'idle');
+                this.updateMicStatus('Click to retry talking', 'idle');
                 return;
             }
 
@@ -505,35 +574,110 @@ class RoleplayConversationPlayer {
 
     updateStats(turn) {
         this.elements.scoreLabel.textContent = `Score: ${this.score}`;
+        this.elements.toggleScore.textContent = String(this.score);
         this.elements.currentSpeakerStat.textContent = turn?.speaker || '-';
         this.elements.completedTurnsStat.textContent = String(this.completedTurns.length);
         this.elements.streakStat.textContent = String(this.streak);
     }
 
-    handleReplay() {
-        const turn = this.getCurrentTurn();
+    renderConversationHistory() {
+        this.elements.conversationHistory.innerHTML = '';
+
+        for (let i = 0; i <= this.currentTurnIndex; i++) {
+            const turn = this.dialogue[i];
+            if (!turn) continue;
+
+            const isCurrent = i === this.currentTurnIndex;
+            const turnCard = this.createTurnCard(turn, i, isCurrent);
+            this.elements.conversationHistory.appendChild(turnCard);
+        }
+
+        this.scrollToBottom();
+    }
+
+    createTurnCard(turn, turnIndex, isCurrent) {
+        const card = document.createElement('article');
+        card.className = `turn-card ${isCurrent ? 'current-turn' : 'history-turn'}`;
+        card.dataset.turnIndex = turnIndex;
+
+        const header = document.createElement('div');
+        header.className = 'turn-card-header';
+
+        const speakerBadge = document.createElement('span');
+        speakerBadge.className = 'speaker-badge';
+        speakerBadge.textContent = turn.speaker == "You" ? "Your turn " : turn.speaker;
+
+        const turnTime = document.createElement('span');
+        turnTime.className = 'turn-time';
+        turnTime.textContent = turn.time || '--:--';
+
+        header.appendChild(speakerBadge);
+        header.appendChild(turnTime);
+
+        const content = document.createElement('div');
+        content.className = 'turn-card-content';
+
+        const englishLine = document.createElement('h2');
+        englishLine.className = 'turn-card-english';
+        englishLine.textContent = turn.english || '';
+
+        const translationLine = document.createElement('p');
+        translationLine.className = 'turn-card-translation';
+        translationLine.textContent = turn.indonesian || '';
+
+        const replayBtn = document.createElement('button');
+        replayBtn.className = 'turn-card-replay';
+        replayBtn.innerHTML = '<span class="material-icons">volume_up</span> Replay';
+        replayBtn.addEventListener('click', () => this.handleHistoryReplay(turnIndex));
+
+        content.appendChild(englishLine);
+        content.appendChild(translationLine);
+        content.appendChild(replayBtn);
+
+        card.appendChild(header);
+        card.appendChild(content);
+
+        return card;
+    }
+
+    handleHistoryReplay(turnIndex) {
+        const turn = this.dialogue[turnIndex];
         if (!turn?.english) {
             return;
         }
 
-        if (this.isUserTurn(turn)) {
+        const isCurrent = turnIndex === this.currentTurnIndex;
+
+        if (isCurrent && this.isUserTurn(turn)) {
             this.cancelRecognition();
-            this.speakLine(turn.english, {
+            this.audioCacheManager.playAudio(turn.english, {
                 onEnd: () => {
                     if (!this.turnResolved) {
                         this.startUserTurn();
                     }
                 },
                 onUnavailable: () => {
-                    this.updateResult('Replay is unavailable in this browser. Please read the line and answer.', false);
-                }
+                    this.updateResult('Replay is unavailable. Please read the line and answer.', false);
+                },
+                useTTSFallback: true
             });
             return;
         }
 
-        // this.elements.nextBtn.disabled = true;
-        this.botReadyForNext = false;
-        this.renderBotTurn(turn);
+        this.audioCacheManager.playAudio(turn.english, {
+            onEnd: () => {},
+            onUnavailable: () => {
+                this.updateResult('Replay is unavailable.', false);
+            },
+            useTTSFallback: true
+        });
+    }
+
+    scrollToBottom() {
+        const container = this.elements.conversationHistory;
+        setTimeout(() => {
+            container.scrollTop = container.scrollHeight;
+        }, 100);
     }
 
     handleRetry() {
@@ -565,7 +709,7 @@ class RoleplayConversationPlayer {
         }
 
         this.cancelRecognition();
-        window.speechSynthesis.cancel();
+        this.audioCacheManager.stop();
         this.currentTurnIndex += 1;
         this.persistProgress();
         this.renderTurn();
@@ -575,19 +719,23 @@ class RoleplayConversationPlayer {
         this.setState('completed');
         this.updateMicStatus('Session completed', 'idle');
         this.elements.turnCounter.textContent = `Turn ${this.dialogue.length} / ${this.dialogue.length}`;
-        this.elements.progressFill.style.width = '100%';
-        this.elements.speakerBadge.textContent = 'Completed';
-        this.elements.turnTime.textContent = '--:--';
-        this.elements.englishLine.textContent = 'Conversation completed';
-        this.elements.translationLine.textContent = 'Great job finishing the roleplay session.';
+        this.elements.progressFill.style.height = '100%';
         this.elements.turnPrompt.textContent = 'Session finished';
-        this.elements.turnHint.textContent = 'You can restart the session at any time.';
+        this.elements.turnHint.textContent = 'You can restart the session at any time. All conversation history is shown above.';
         this.updateResult(`Final score: ${this.score} / ${this.dialogue.filter((turn) => this.isUserTurn(turn)).length}`, true);
         this.updateTranscript('All turns completed.', false);
-        // this.elements.nextBtn.disabled = true;
         this.elements.retryBtn.disabled = true;
         this.elements.expectedWrap.classList.add('hidden');
         this.elements.currentSpeakerStat.textContent = '-';
+        
+        this.elements.conversationHistory.innerHTML = '';
+        for (let i = 0; i < this.dialogue.length; i++) {
+            const turn = this.dialogue[i];
+            if (!turn) continue;
+            const turnCard = this.createTurnCard(turn, i, false);
+            this.elements.conversationHistory.appendChild(turnCard);
+        }
+        
         this.persistProgress();
     }
 
@@ -598,27 +746,32 @@ class RoleplayConversationPlayer {
 
     speakLine(text, { onEnd, onUnavailable }) {
         if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+            console.log('[TTS] Speech synthesis not available');
             if (typeof onUnavailable === 'function') {
                 onUnavailable();
             }
             return;
         }
 
+        console.log('[TTS] Starting speech:', text.substring(0, 50) + '...');
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
         utterance.rate = 0.96;
         utterance.onend = () => {
+            console.log('[TTS] Speech ended successfully');
             if (typeof onEnd === 'function') {
                 onEnd();
             }
         };
-        utterance.onerror = () => {
+        utterance.onerror = (event) => {
+            console.log('[TTS] Speech error:', event.error);
             if (typeof onUnavailable === 'function') {
                 onUnavailable();
             }
         };
         window.speechSynthesis.speak(utterance);
+        console.log('[TTS] Speech queued, speaking:', window.speechSynthesis.speaking, 'pending:', window.speechSynthesis.pending);
     }
 
     updateMicStatus(text, tone) {

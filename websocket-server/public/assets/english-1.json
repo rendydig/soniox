@@ -220,6 +220,20 @@
       "speaker": "You",
       "english": "Understood. I will keep a buffer in the late afternoon and send you a midday update plus an end-of-day summary.",
       "indonesian": "Dipahami. Saya akan menyisakan waktu cadangan di sore hari dan mengirimkan pembaruan saat tengah hari serta ringkasan di akhir hari."
-    }
+    },
+    {
+    "turn": 31,
+    "time": "15:00",
+    "speaker": "Boss",
+    "english": "Excellent. Thank you for the update and for staying organized today. I appreciate your support.",
+    "indonesian": "Sangat baik. Terima kasih atas pembaruannya dan karena tetap terorganisir hari ini. Saya menghargai dukunganmu."
+  },
+  {
+    "turn": 32,
+    "time": "15:30",
+    "speaker": "You",
+    "english": "You are welcome. Thank you for your guidance. I will keep you updated throughout the day.",
+    "indonesian": "Sama-sama. Terima kasih atas arahannya. Saya akan terus memberi Anda pembaruan sepanjang hari."
+  }
   ]
 }
