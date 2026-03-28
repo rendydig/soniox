@@ -217,10 +217,10 @@ export class ConversationManager {
 
         if (similarity >= ACCEPT_THRESHOLD) {
             this.turnResolved = true;
-            this.progress.incrementScore();
+            this.progress.addSimilarityScore(similarity);
             this.progress.incrementStreak();
             this.progress.markTurnCompleted(this.progress.currentTurnIndex);
-            this.ui.updateResult(`Accepted. Similarity ${(similarity * 100).toFixed(0)}%. You earned 1 point.`, true);
+            this.ui.updateResult(`Accepted. Similarity ${(similarity * 100).toFixed(0)}%. Average score: ${this.progress.score}%`, true);
             this.ui.elements.retryBtn.disabled = true;
             this.setState('turnResult');
             this.progress.persist();
@@ -323,7 +323,8 @@ export class ConversationManager {
         this.ui.elements.turnHint.textContent = 'You can restart the session at any time. All conversation history is shown above.';
         
         const userTurns = this.dialogue.filter((turn) => this.isUserTurn(turn)).length;
-        this.ui.updateResult(`Final score: ${this.progress.score} / ${userTurns}`, true);
+        const averageScore = this.progress.getAverageScore();
+        this.ui.updateResult(`Final average score: ${averageScore.toFixed(1)}%`, true);
         this.ui.updateTranscript('All turns completed.', false);
         this.ui.elements.retryBtn.disabled = true;
         this.ui.hideExpectedLine();
@@ -332,6 +333,13 @@ export class ConversationManager {
         this.ui.renderCompletedHistory(this.dialogue, (turnIndex) => this.handleHistoryReplay(turnIndex));
         
         this.progress.persist();
+        
+        this.ui.showCelebrationPopup({
+            averageScore: averageScore,
+            totalTurns: userTurns,
+            completedTurns: this.progress.completedTurns.length,
+            streak: this.progress.streak
+        });
     }
 
     restartSession() {

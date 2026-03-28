@@ -76,6 +76,10 @@ class RoleplayConversationPlayer {
         this.ui.elements.sidebarToggle.addEventListener('click', () => {
             this.ui.toggleSidebar();
         });
+        
+        document.addEventListener('celebration-restart', () => {
+            this.conversationManager.restartSession();
+        });
     }
 }
 

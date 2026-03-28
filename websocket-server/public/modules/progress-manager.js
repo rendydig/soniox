@@ -7,6 +7,7 @@ export class ProgressManager {
         this.completedTurns = [];
         this.attemptsPerTurn = {};
         this.history = {};
+        this.similarityScores = [];
     }
 
     setStorageKey(key) {
@@ -31,6 +32,7 @@ export class ProgressManager {
             this.completedTurns = Array.isArray(parsed.completedTurns) ? parsed.completedTurns : [];
             this.history = parsed.history || {};
             this.streak = Number.isFinite(parsed.streak) ? parsed.streak : 0;
+            this.similarityScores = Array.isArray(parsed.similarityScores) ? parsed.similarityScores : [];
         } catch (error) {
             window.localStorage.removeItem(this.storageKey);
         }
@@ -48,7 +50,8 @@ export class ProgressManager {
             completedTurns: this.completedTurns,
             lastPlayedAt: new Date().toISOString(),
             history: this.history,
-            streak: this.streak
+            streak: this.streak,
+            similarityScores: this.similarityScores
         }));
     }
 
@@ -59,6 +62,7 @@ export class ProgressManager {
         this.completedTurns = [];
         this.attemptsPerTurn = {};
         this.history = {};
+        this.similarityScores = [];
         this.persist();
     }
 
@@ -91,8 +95,24 @@ export class ProgressManager {
         });
     }
 
-    incrementScore() {
-        this.score += 1;
+    addSimilarityScore(similarity) {
+        this.similarityScores.push(similarity);
+        this.updateAverageScore();
+    }
+
+    updateAverageScore() {
+        if (this.similarityScores.length === 0) {
+            this.score = 0;
+            return;
+        }
+        const sum = this.similarityScores.reduce((acc, val) => acc + val, 0);
+        this.score = Math.round((sum / this.similarityScores.length) * 100);
+    }
+
+    getAverageScore() {
+        if (this.similarityScores.length === 0) return 0;
+        const sum = this.similarityScores.reduce((acc, val) => acc + val, 0);
+        return (sum / this.similarityScores.length) * 100;
     }
 
     incrementStreak() {
@@ -114,7 +134,9 @@ export class ProgressManager {
             streak: this.streak,
             completedTurns: this.completedTurns,
             attemptsPerTurn: this.attemptsPerTurn,
-            history: this.history
+            history: this.history,
+            similarityScores: this.similarityScores,
+            averageScore: this.getAverageScore()
         };
     }
 }

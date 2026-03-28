@@ -85,8 +85,8 @@ export class UIManager {
     }
 
     updateStats(turn, score, completedTurns, streak) {
-        this.elements.scoreLabel.textContent = `Score: ${score}`;
-        this.elements.toggleScore.textContent = String(score);
+        this.elements.scoreLabel.textContent = `Score: ${score}%`;
+        this.elements.toggleScore.textContent = `${score}%`;
         this.elements.currentSpeakerStat.textContent = turn?.speaker || '-';
         this.elements.completedTurnsStat.textContent = String(completedTurns);
         this.elements.streakStat.textContent = String(streak);
@@ -200,5 +200,97 @@ export class UIManager {
 
     getManualInputValue() {
         return this.elements.manualInput.value.trim();
+    }
+
+    showCelebrationPopup(stats) {
+        const overlay = document.createElement('div');
+        overlay.className = 'celebration-overlay';
+        overlay.id = 'celebrationOverlay';
+        
+        const card = document.createElement('div');
+        card.className = 'celebration-card';
+        
+        const sunIcon = document.createElement('div');
+        sunIcon.className = 'celebration-sun';
+        sunIcon.innerHTML = '☀️';
+        
+        const title = document.createElement('h2');
+        title.className = 'celebration-title';
+        title.textContent = '🎉 Session Complete! 🎉';
+        
+        const scoreDisplay = document.createElement('div');
+        scoreDisplay.className = 'celebration-score';
+        scoreDisplay.innerHTML = `
+            <div class="score-main">${stats.averageScore.toFixed(1)}%</div>
+            <div class="score-label">Average Similarity Score</div>
+        `;
+        
+        const statsGrid = document.createElement('div');
+        statsGrid.className = 'celebration-stats-grid';
+        statsGrid.innerHTML = `
+            <div class="celebration-stat">
+                <div class="stat-value">${stats.completedTurns}</div>
+                <div class="stat-label">Completed Turns</div>
+            </div>
+            <div class="celebration-stat">
+                <div class="stat-value">${stats.totalTurns}</div>
+                <div class="stat-label">Total Turns</div>
+            </div>
+            <div class="celebration-stat">
+                <div class="stat-value">${stats.streak}</div>
+                <div class="stat-label">Best Streak</div>
+            </div>
+        `;
+        
+        const ratingText = document.createElement('div');
+        ratingText.className = 'celebration-rating';
+        const rating = this.getRatingFromScore(stats.averageScore);
+        ratingText.innerHTML = `<strong>${rating.emoji} ${rating.text}</strong>`;
+        
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'celebration-buttons';
+        
+        const restartBtn = document.createElement('button');
+        restartBtn.className = 'celebration-restart-btn';
+        restartBtn.textContent = 'Restart';
+        restartBtn.onclick = () => {
+            overlay.remove();
+            const restartEvent = new CustomEvent('celebration-restart');
+            document.dispatchEvent(restartEvent);
+        };
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'celebration-close-btn';
+        closeBtn.textContent = 'Continue';
+        closeBtn.onclick = () => {
+            overlay.remove();
+        };
+        
+        buttonsContainer.appendChild(restartBtn);
+        buttonsContainer.appendChild(closeBtn);
+        
+        card.appendChild(sunIcon);
+        card.appendChild(title);
+        card.appendChild(scoreDisplay);
+        card.appendChild(statsGrid);
+        card.appendChild(ratingText);
+        card.appendChild(buttonsContainer);
+        overlay.appendChild(card);
+        
+        document.body.appendChild(overlay);
+        
+        setTimeout(() => {
+            overlay.classList.add('show');
+        }, 100);
+    }
+
+    getRatingFromScore(score) {
+        if (score >= 95) return { emoji: '🌟', text: 'Perfect! Outstanding Performance!' };
+        if (score >= 90) return { emoji: '⭐', text: 'Excellent! Nearly Perfect!' };
+        if (score >= 85) return { emoji: '🎯', text: 'Great Job! Very Accurate!' };
+        if (score >= 80) return { emoji: '👍', text: 'Good Work! Keep It Up!' };
+        if (score >= 75) return { emoji: '💪', text: 'Nice Effort! Getting Better!' };
+        if (score >= 70) return { emoji: '📈', text: 'Fair Performance! Room to Improve!' };
+        return { emoji: '🔄', text: 'Keep Practicing! You Can Do It!' };
     }
 }
