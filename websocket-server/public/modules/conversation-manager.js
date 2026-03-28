@@ -316,7 +316,7 @@ export class ConversationManager {
 
     renderCompletedState() {
         this.setState('completed');
-        this.ui.updateMicStatus('Session completed', 'idle');
+        this.ui.updateMicStatus('', 'idle'); // session is completed
         this.ui.elements.turnCounter.textContent = `Turn ${this.dialogue.length} / ${this.dialogue.length}`;
         this.ui.elements.progressFill.style.height = '100%';
         this.ui.elements.turnPrompt.textContent = 'Session finished';

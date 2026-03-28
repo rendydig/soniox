@@ -509,6 +509,7 @@ label,
     background: var(--warning);
 }
 
+
 .retry-btn-inside {
     position: absolute;
     width: 100%;
