@@ -44,7 +44,7 @@ class RoleplayConversationPlayer {
             turnPrompt: document.getElementById('turnPrompt'),
             turnHint: document.getElementById('turnHint'),
             replayBtn: document.getElementById('replayBtn'),
-            nextBtn: document.getElementById('nextBtn'),
+            // nextBtn: document.getElementById('nextBtn'),
             retryBtn: document.getElementById('retryBtn'),
             micStatusDot: document.getElementById('micStatusDot'),
             micStatusText: document.getElementById('micStatusText'),
@@ -99,7 +99,7 @@ class RoleplayConversationPlayer {
 
     bindEvents() {
         this.elements.replayBtn.addEventListener('click', () => this.handleReplay());
-        this.elements.nextBtn.addEventListener('click', () => this.advanceTurn());
+        // this.elements.nextBtn.addEventListener('click', () => this.advanceTurn());
         this.elements.retryBtn.addEventListener('click', () => this.handleRetry());
         this.elements.submitManualBtn.addEventListener('click', () => this.submitManualInput());
         this.elements.restartBtn.addEventListener('click', () => this.restartSession());
@@ -267,7 +267,7 @@ class RoleplayConversationPlayer {
         this.elements.expectedWrap.classList.add('hidden');
         this.elements.expectedOutput.textContent = '';
         this.elements.retryBtn.disabled = true;
-        this.elements.nextBtn.disabled = true;
+        // this.elements.nextBtn.disabled = true;
         this.updateTranscript('Your speech will appear here.', false, true);
         this.updateResult('Waiting for this turn to start.', false, true);
         this.updateStats(turn);
@@ -299,15 +299,16 @@ class RoleplayConversationPlayer {
             onEnd: () => {
                 this.botReadyForNext = true;
                 this.turnResolved = true;
-                this.updateResult('Bot turn completed. You can continue to the next turn.', true);
-                this.elements.nextBtn.disabled = false;
+                this.updateResult('Bot turn completed. Advancing to next turn...', true);
+                // this.elements.nextBtn.disabled = false;
                 this.setState('turnResult');
+                setTimeout(() => this.advanceTurn(), 800);
             },
             onUnavailable: () => {
                 this.botReadyForNext = true;
                 this.turnResolved = true;
                 this.updateResult('TTS is unavailable. Read the line and continue manually.', false);
-                this.elements.nextBtn.disabled = false;
+                // this.elements.nextBtn.disabled = false;
                 this.setState('turnResult');
             }
         });
@@ -333,7 +334,7 @@ class RoleplayConversationPlayer {
         this.currentTranscript = '';
         this.shouldEvaluateOnRecognitionEnd = true;
         this.elements.retryBtn.disabled = true;
-        this.elements.nextBtn.disabled = true;
+        // this.elements.nextBtn.disabled = true;
 
         try {
             this.recognition.start();
@@ -454,10 +455,11 @@ class RoleplayConversationPlayer {
             this.streak += 1;
             this.markTurnCompleted();
             this.updateResult(`Accepted. Similarity ${(similarity * 100).toFixed(0)}%. You earned 1 point.`, true);
-            this.elements.nextBtn.disabled = false;
+            // this.elements.nextBtn.disabled = false;
             this.elements.retryBtn.disabled = true;
             this.setState('turnResult');
             this.persistProgress();
+            setTimeout(() => this.advanceTurn(), 1500);
             return;
         }
 
@@ -468,10 +470,11 @@ class RoleplayConversationPlayer {
             this.elements.expectedWrap.classList.remove('hidden');
             this.elements.expectedOutput.textContent = expected;
             this.updateResult(`Skipped after ${attempts} attempt${attempts === 1 ? '' : 's'}. Similarity ${(similarity * 100).toFixed(0)}%.`, false);
-            this.elements.nextBtn.disabled = false;
+            // this.elements.nextBtn.disabled = false;
             this.elements.retryBtn.disabled = true;
             this.setState('turnResult');
             this.persistProgress();
+            setTimeout(() => this.advanceTurn(), 2000);
             return;
         }
 
@@ -528,7 +531,7 @@ class RoleplayConversationPlayer {
             return;
         }
 
-        this.elements.nextBtn.disabled = true;
+        // this.elements.nextBtn.disabled = true;
         this.botReadyForNext = false;
         this.renderBotTurn(turn);
     }
@@ -581,7 +584,7 @@ class RoleplayConversationPlayer {
         this.elements.turnHint.textContent = 'You can restart the session at any time.';
         this.updateResult(`Final score: ${this.score} / ${this.dialogue.filter((turn) => this.isUserTurn(turn)).length}`, true);
         this.updateTranscript('All turns completed.', false);
-        this.elements.nextBtn.disabled = true;
+        // this.elements.nextBtn.disabled = true;
         this.elements.retryBtn.disabled = true;
         this.elements.expectedWrap.classList.add('hidden');
         this.elements.currentSpeakerStat.textContent = '-';

@@ -254,7 +254,7 @@ label,
 
 .output-box,
 .expected-output {
-    min-height: 110px;
+    /* min-height: 110px; */
     border-radius: 16px;
     border: 1px solid var(--panel-border);
     background: rgba(15, 23, 42, 0.78);

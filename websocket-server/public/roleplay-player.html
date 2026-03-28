@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roleplay Conversation Player</title>
     <link rel="stylesheet" href="roleplay-player.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 </head>
 <body>
     <div class="app-shell">
@@ -37,18 +39,21 @@
                         <span id="turnTime" class="turn-time">00:00</span>
                     </div>
                     <h2 id="englishLine" class="english-line">Please wait...</h2>
+                    <span id="replayBtn" class="material-icons" style=" cursor: pointer;">volume_up</span>
                     <p id="translationLine" class="translation-line"></p>
                     <div class="turn-instructions">
                         <strong id="turnPrompt">Loading turn</strong>
                         <span id="turnHint">The game will follow the conversation order from the JSON file.</span>
                     </div>
+                   
                 </article>
 
                 <section class="controls-card">
                     <div class="control-row">
-                        <button id="replayBtn" class="primary-btn" type="button">Replay line</button>
-                        <button id="nextBtn" class="secondary-btn" type="button" disabled>Next turn</button>
+                        
+                        <!-- <button id="nextBtn" class="secondary-btn" type="button" disabled>Next turn</button> -->
                         <button id="retryBtn" class="secondary-btn" type="button" disabled>Retry</button>
+                        <div id="resultOutput" class="output-box empty">Waiting for your turn.</div>
                     </div>
                     <div class="status-row">
                         <div class="mic-status-wrap">
@@ -71,7 +76,7 @@
                         </div>
                         <div>
                             <label for="resultOutput">Result</label>
-                            <div id="resultOutput" class="output-box empty">Waiting for your turn.</div>
+                            
                         </div>
                     </div>
                     <div class="manual-input-wrap">
