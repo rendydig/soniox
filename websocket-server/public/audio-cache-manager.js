@@ -8,6 +8,7 @@ class AudioCacheManager {
         this.audioCache = new Map();
         this.currentAudio = null;
         this.mappingFile = null;
+        this.jsonBaseName = null;
     }
 
     /**
@@ -17,11 +18,15 @@ class AudioCacheManager {
         const mappingFile = conversationFile.replace('.json', '-audio-mapping.json');
         this.mappingFile = mappingFile;
         
+        // Extract base name without extension for directory path
+        this.jsonBaseName = conversationFile.replace('.json', '');
+        
         try {
             const response = await fetch(`./assets/${encodeURIComponent(mappingFile)}`);
             if (response.ok) {
                 this.audioMapping = await response.json();
                 console.log('[AudioCache] Loaded audio mapping:', Object.keys(this.audioMapping).length, 'entries');
+                console.log('[AudioCache] Using wav directory: wav/' + this.jsonBaseName);
                 return true;
             } else {
                 console.log('[AudioCache] No audio mapping found, will use TTS fallback');
@@ -69,7 +74,7 @@ class AudioCacheManager {
         if (!this.audioMapping || !(text in this.audioMapping)) {
             return null;
         }
-        return `./assets/wav/${this.audioMapping[text]}`;
+        return `./assets/wav/${this.jsonBaseName}/${this.audioMapping[text]}`;
     }
 
     /**

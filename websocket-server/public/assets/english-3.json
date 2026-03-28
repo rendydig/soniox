@@ -1,0 +1,239 @@
+{
+  "title": "General Office Conversation During an Online Meeting",
+  "estimated_duration_minutes": 15,
+  "theme": "General conversation between friends or work partners in an online office meeting",
+  "language": {
+    "source": "English",
+    "translation": "Indonesian"
+  },
+  "participants": [
+    "Alex",
+    "You"
+  ],
+  "dialogue": [
+    {
+      "turn": 1,
+      "time": "00:00",
+      "speaker": "Alex",
+      "english": "Hi, good morning. Can you hear me clearly?",
+      "indonesian": "Hai, selamat pagi. Apakah kamu bisa mendengar saya dengan jelas?"
+    },
+    {
+      "turn": 2,
+      "time": "00:30",
+      "speaker": "You",
+      "english": "Good morning. Yes, I can hear you well. Can you hear me too?",
+      "indonesian": "Selamat pagi. Ya, saya bisa mendengarmu dengan baik. Apakah kamu juga bisa mendengar saya?"
+    },
+    {
+      "turn": 3,
+      "time": "01:00",
+      "speaker": "Alex",
+      "english": "Yes, your audio is clear. Thanks for joining the meeting on time.",
+      "indonesian": "Ya, suara kamu jelas. Terima kasih sudah bergabung tepat waktu."
+    },
+    {
+      "turn": 4,
+      "time": "01:30",
+      "speaker": "You",
+      "english": "No problem. I am glad we could connect early before the rest of the team joins.",
+      "indonesian": "Tidak masalah. Saya senang kita bisa terhubung lebih awal sebelum anggota tim lainnya bergabung."
+    },
+    {
+      "turn": 5,
+      "time": "02:00",
+      "speaker": "Alex",
+      "english": "How has your morning been so far?",
+      "indonesian": "Bagaimana pagi kamu sejauh ini?"
+    },
+    {
+      "turn": 6,
+      "time": "02:30",
+      "speaker": "You",
+      "english": "It has been busy, but manageable. I spent most of the morning reviewing updates and preparing notes for this meeting.",
+      "indonesian": "Cukup sibuk, tetapi masih bisa ditangani. Saya menghabiskan sebagian besar pagi ini untuk meninjau pembaruan dan menyiapkan catatan untuk rapat ini."
+    },
+    {
+      "turn": 7,
+      "time": "03:00",
+      "speaker": "Alex",
+      "english": "That sounds productive. I also went through the shared documents and wrote down a few points we should discuss.",
+      "indonesian": "Itu terdengar produktif. Saya juga meninjau dokumen bersama dan menuliskan beberapa poin yang perlu kita bahas."
+    },
+    {
+      "turn": 8,
+      "time": "03:30",
+      "speaker": "You",
+      "english": "Great. I think it would help if we start with the main agenda and then move to any open questions.",
+      "indonesian": "Bagus. Saya rasa akan membantu jika kita mulai dengan agenda utama lalu beralih ke pertanyaan yang masih terbuka."
+    },
+    {
+      "turn": 9,
+      "time": "04:00",
+      "speaker": "Alex",
+      "english": "Agreed. The main purpose of today’s meeting is to review progress, identify blockers, and align on the next steps.",
+      "indonesian": "Setuju. Tujuan utama rapat hari ini adalah meninjau progres, mengidentifikasi kendala, dan menyelaraskan langkah selanjutnya."
+    },
+    {
+      "turn": 10,
+      "time": "04:30",
+      "speaker": "You",
+      "english": "That works for me. Would you like to begin with your update first?",
+      "indonesian": "Itu cocok untuk saya. Apakah kamu ingin mulai dengan pembaruan darimu terlebih dahulu?"
+    },
+    {
+      "turn": 11,
+      "time": "05:00",
+      "speaker": "Alex",
+      "english": "Sure. From my side, most tasks are moving forward, but there are still a few items waiting for feedback from other teams.",
+      "indonesian": "Tentu. Dari sisi saya, sebagian besar tugas berjalan maju, tetapi masih ada beberapa hal yang menunggu masukan dari tim lain."
+    },
+    {
+      "turn": 12,
+      "time": "05:30",
+      "speaker": "You",
+      "english": "I see. Do those pending items affect the overall timeline in a serious way?",
+      "indonesian": "Saya paham. Apakah hal-hal yang tertunda itu memengaruhi keseluruhan jadwal secara serius?"
+    },
+    {
+      "turn": 13,
+      "time": "06:00",
+      "speaker": "Alex",
+      "english": "At the moment, not seriously. However, if the feedback takes too long, we may need to adjust a few target dates.",
+      "indonesian": "Saat ini, belum terlalu serius. Namun, jika masukannya terlalu lama datang, kita mungkin perlu menyesuaikan beberapa tanggal target."
+    },
+    {
+      "turn": 14,
+      "time": "06:30",
+      "speaker": "You",
+      "english": "That makes sense. On my side, the current work is on track, and I do not see any major risk right now.",
+      "indonesian": "Itu masuk akal. Di sisi saya, pekerjaan saat ini berjalan sesuai rencana, dan saya belum melihat risiko besar untuk saat ini."
+    },
+    {
+      "turn": 15,
+      "time": "07:00",
+      "speaker": "Alex",
+      "english": "Good to hear that. Are there any smaller issues we should mention now before they become bigger later?",
+      "indonesian": "Senang mendengarnya. Apakah ada masalah kecil yang perlu kita sebutkan sekarang sebelum menjadi lebih besar nanti?"
+    },
+    {
+      "turn": 16,
+      "time": "07:30",
+      "speaker": "You",
+      "english": "There are a few minor coordination issues, mostly around response time and meeting availability, but nothing critical.",
+      "indonesian": "Ada beberapa masalah koordinasi kecil, terutama terkait waktu respons dan ketersediaan rapat, tetapi tidak ada yang kritis."
+    },
+    {
+      "turn": 17,
+      "time": "08:00",
+      "speaker": "Alex",
+      "english": "Understood. Maybe we should improve communication a little and make expectations clearer for everyone.",
+      "indonesian": "Dipahami. Mungkin kita perlu sedikit meningkatkan komunikasi dan membuat ekspektasi lebih jelas untuk semua orang."
+    },
+    {
+      "turn": 18,
+      "time": "08:30",
+      "speaker": "You",
+      "english": "I agree. A simple follow-up summary after meetings could help everyone stay aligned.",
+      "indonesian": "Saya setuju. Ringkasan tindak lanjut sederhana setelah rapat bisa membantu semua orang tetap selaras."
+    },
+    {
+      "turn": 19,
+      "time": "09:00",
+      "speaker": "Alex",
+      "english": "That is a practical idea. We should probably also make action items more visible and assign clear ownership.",
+      "indonesian": "Itu ide yang praktis. Kita mungkin juga harus membuat action item lebih terlihat dan menetapkan penanggung jawab yang jelas."
+    },
+    {
+      "turn": 20,
+      "time": "09:30",
+      "speaker": "You",
+      "english": "Yes, that would reduce confusion. It would also make the next meeting more efficient.",
+      "indonesian": "Ya, itu akan mengurangi kebingungan. Itu juga akan membuat rapat berikutnya lebih efisien."
+    },
+    {
+      "turn": 21,
+      "time": "10:00",
+      "speaker": "Alex",
+      "english": "Before we continue, I think your audio cut out for a second. Could you repeat your last point?",
+      "indonesian": "Sebelum kita lanjut, saya rasa suara kamu sempat terputus sebentar. Bisakah kamu mengulangi poin terakhir?"
+    },
+    {
+      "turn": 22,
+      "time": "10:30",
+      "speaker": "You",
+      "english": "Of course. I said that clearer ownership would reduce confusion and make future meetings more efficient.",
+      "indonesian": "Tentu. Saya mengatakan bahwa penanggung jawab yang lebih jelas akan mengurangi kebingungan dan membuat rapat berikutnya lebih efisien."
+    },
+    {
+      "turn": 23,
+      "time": "11:00",
+      "speaker": "Alex",
+      "english": "Thanks for repeating that. I completely agree with your point.",
+      "indonesian": "Terima kasih sudah mengulanginya. Saya sepenuhnya setuju dengan poinmu."
+    },
+    {
+      "turn": 24,
+      "time": "11:30",
+      "speaker": "You",
+      "english": "No problem. Do you think we should raise this in the team meeting later today?",
+      "indonesian": "Tidak masalah. Menurutmu apakah kita perlu menyampaikan hal ini dalam rapat tim nanti hari ini?"
+    },
+    {
+      "turn": 25,
+      "time": "12:00",
+      "speaker": "Alex",
+      "english": "Yes, I think that would be useful. We can mention it briefly and suggest a simple process improvement.",
+      "indonesian": "Ya, saya rasa itu akan berguna. Kita bisa menyebutkannya secara singkat dan menyarankan perbaikan proses yang sederhana."
+    },
+    {
+      "turn": 26,
+      "time": "12:30",
+      "speaker": "You",
+      "english": "All right. I can help summarize the idea clearly so it is easy for everyone to understand.",
+      "indonesian": "Baik. Saya bisa membantu merangkum idenya dengan jelas agar mudah dipahami semua orang."
+    },
+    {
+      "turn": 27,
+      "time": "13:00",
+      "speaker": "Alex",
+      "english": "Perfect. Also, do you have enough time this week to support the follow-up tasks?",
+      "indonesian": "Bagus. Selain itu, apakah kamu punya cukup waktu minggu ini untuk mendukung tugas-tugas tindak lanjut?"
+    },
+    {
+      "turn": 28,
+      "time": "13:30",
+      "speaker": "You",
+      "english": "Yes, I can make time for that. I just need to adjust a few priorities in my schedule.",
+      "indonesian": "Ya, saya bisa meluangkan waktu untuk itu. Saya hanya perlu menyesuaikan beberapa prioritas di jadwal saya."
+    },
+    {
+      "turn": 29,
+      "time": "14:00",
+      "speaker": "Alex",
+      "english": "Sounds good. I appreciate your flexibility and your support on this.",
+      "indonesian": "Terdengar bagus. Saya menghargai fleksibilitas dan dukunganmu untuk hal ini."
+    },
+    {
+      "turn": 30,
+      "time": "14:30",
+      "speaker": "You",
+      "english": "Happy to help. I think we have covered the main points for now.",
+      "indonesian": "Senang bisa membantu. Saya rasa kita sudah membahas poin-poin utama untuk saat ini."
+    },
+    {
+      "turn": 31,
+      "time": "15:00",
+      "speaker": "Alex",
+      "english": "I agree. Thank you for the productive discussion. Let us stay in touch and reconnect in the next meeting.",
+      "indonesian": "Saya setuju. Terima kasih atas diskusi yang produktif. Mari tetap berkoordinasi dan bertemu lagi di rapat berikutnya."
+    },
+    {
+      "turn": 32,
+      "time": "15:30",
+      "speaker": "You",
+      "english": "Thank you as well. Have a good day, and I will follow up with a short summary after this call.",
+      "indonesian": "Terima kasih juga. Semoga harimu menyenangkan, dan saya akan menindaklanjuti dengan ringkasan singkat setelah panggilan ini."
+    }
+  ]
+}

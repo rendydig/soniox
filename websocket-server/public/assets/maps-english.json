@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-03-28T23:18:27.257Z",
+  "total_games": 4,
+  "games": [
+    {
+      "file": "english-1.json",
+      "title": "Getting Started - Daily Business Conversation: Boss and You",
+      "estimated_duration_minutes": 15,
+      "theme": "General daily business conversation",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Boss",
+        "You"
+      ]
+    },
+    {
+      "file": "english-2.json",
+      "title": "Interview Conversation: Senior JavaScript Engineer",
+      "estimated_duration_minutes": 15,
+      "theme": "Senior JavaScript Engineer interview",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Interviewer",
+        "You"
+      ]
+    },
+    {
+      "file": "english-3.json",
+      "title": "General Office Conversation During an Online Meeting",
+      "estimated_duration_minutes": 15,
+      "theme": "General conversation between friends or work partners in an online office meeting",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Alex",
+        "You"
+      ]
+    },
+    {
+      "file": "english-4.json",
+      "title": "General Online Meeting Conversation with Boss",
+      "estimated_duration_minutes": 30,
+      "theme": "General office conversation during an online meeting with technical issues",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Boss",
+        "You"
+      ]
+    }
+  ]
+}

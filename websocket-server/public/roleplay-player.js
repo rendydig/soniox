@@ -3,6 +3,7 @@ import { UIManager } from './modules/ui-manager.js';
 import { ProgressManager } from './modules/progress-manager.js';
 import { SpeechRecognitionManager } from './modules/speech-recognition.js';
 import { ConversationManager } from './modules/conversation-manager.js';
+import { GameSelector } from './modules/game-selector.js';
 
 class RoleplayConversationPlayer {
     constructor() {
@@ -11,6 +12,7 @@ class RoleplayConversationPlayer {
         
         this.ui = new UIManager();
         this.progress = new ProgressManager(`roleplay-progress:${this.currentFile}`);
+        this.gameSelector = new GameSelector();
         
         this.speechRecognition = new SpeechRecognitionManager({
             onUnavailable: (message) => {

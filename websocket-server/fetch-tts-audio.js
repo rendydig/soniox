@@ -3,16 +3,9 @@ const path = require('path');
 const https = require('https');
 
 const ASSETS_DIR = path.join(__dirname, 'public', 'assets');
-const WAV_DIR = path.join(ASSETS_DIR, 'wav');
 const TTS_API_URL = 'https://kyutaipockettts6ylex2y4-kyutai-pocket-tts.functions.fnc.fr-par.scw.cloud/tts';
 const VOICE = 'eve';
 const DELAY_BETWEEN_REQUESTS = 1000; // 1 second delay between requests
-
-// Ensure wav directory exists
-if (!fs.existsSync(WAV_DIR)) {
-    fs.mkdirSync(WAV_DIR, { recursive: true });
-    console.log(`Created directory: ${WAV_DIR}`);
-}
 
 /**
  * Generate a safe filename from text
@@ -108,10 +101,10 @@ function fetchAudio(text, voice) {
 /**
  * Process a single dialogue entry
  */
-async function processDialogue(dialogue, index, total) {
+async function processDialogue(dialogue, index, total, wavDir) {
     const text = dialogue.english;
     const filename = generateFilename(text);
-    const filepath = path.join(WAV_DIR, filename);
+    const filepath = path.join(wavDir, filename);
     
     // Check if file already exists
     if (fs.existsSync(filepath)) {
@@ -144,6 +137,16 @@ async function processConversationFile(jsonFilename) {
         process.exit(1);
     }
     
+    // Create WAV directory based on JSON filename
+    const jsonBaseName = path.basename(jsonFilename, '.json');
+    const WAV_DIR = path.join(ASSETS_DIR, 'wav', jsonBaseName);
+    
+    // Ensure wav directory exists
+    if (!fs.existsSync(WAV_DIR)) {
+        fs.mkdirSync(WAV_DIR, { recursive: true });
+        console.log(`Created directory: ${WAV_DIR}`);
+    }
+    
     console.log(`\nLoading conversation file: ${jsonFilename}`);
     const conversationData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
     const dialogues = conversationData.dialogue || [];
@@ -164,7 +167,7 @@ async function processConversationFile(jsonFilename) {
     
     for (let i = 0; i < dialogues.length; i++) {
         const dialogue = dialogues[i];
-        const result = await processDialogue(dialogue, i, dialogues.length);
+        const result = await processDialogue(dialogue, i, dialogues.length, WAV_DIR);
         
         if (result.success) {
             results.success++;

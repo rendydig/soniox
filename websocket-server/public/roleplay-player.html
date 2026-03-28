@@ -12,9 +12,13 @@
 
 <body>
     <div class="progress-panel">
-        <div><span class="material-icons">
-art_track
-</span></div>
+        <div>
+            <button id="gameSelectorBtn" class="icon-btn" type="button" title="Select Game">
+                <span class="material-icons">
+                    art_track
+                </span>
+            </button>
+        </div>
         <div class="progress-copy">
             <span id="turnCounter"> 0 / 0</span>
             <span id="stateLabel" class="state-pill">idle</span>
@@ -42,8 +46,8 @@ art_track
                 <div class="conversation-history-container" id="conversationHistory">
                     <!-- Conversation turns will be dynamically added here -->
                 </div>
-                <div >
-                     <div id="transcriptOutput" class="output-box empty">Your speech will appear here.</div>
+                <div>
+                    <div id="transcriptOutput" class="output-box empty">Your speech will appear here.</div>
                 </div>
                 <div class="turn-instructions-panel">
                     <div class="mic-status-wrap">
@@ -55,10 +59,10 @@ art_track
                     </div>
                     <span id="turnHint">The game will follow the conversation order from the JSON file.</span>
                     <div class="feedback-grids" style="display: none;">
-                       
+
                         <div id="resultSection">
                             <label for="resultOutput">Result</label>
-                              <div id="resultOutput" class="output-box empty">Waiting for your turn.</div>
+                            <div id="resultOutput" class="output-box empty">Waiting for your turn.</div>
                         </div>
                     </div>
                 </div>
@@ -67,11 +71,11 @@ art_track
                     <div class="control-row">
 
                         <!-- <button id="nextBtn" class="secondary-btn" type="button" disabled>Next turn</button> -->
-                     
-                      
+
+
                     </div>
                     <div class="status-row">
-                       
+
                         <span id="attemptInfo">Attempts: 0</span>
                     </div>
                 </section>
@@ -137,6 +141,22 @@ art_track
                 </div>
             </aside>
         </main>
+    </div>
+
+    <div id="gameSelectorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Select a Game</h2>
+                <button id="closeModalBtn" class="close-btn" type="button">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="gameList" class="game-list">
+                    <div class="loading-spinner">Loading games...</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="audio-cache-manager.js"></script>
