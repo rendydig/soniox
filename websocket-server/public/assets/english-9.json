@@ -1,0 +1,645 @@
+{
+    "title": "Initial Meeting: From Online Connection to Business Partnership",
+    "estimated_duration_minutes": 45,
+    "theme": "Transitioning from friendly online rapport to professional collaboration",
+    "language": {
+        "source": "English",
+        "translation": "Indonesian"
+    },
+    "participants": [
+        "You",
+        "Ruby"
+    ],
+    "dialogue": [
+        {
+            "turn": 1,
+            "time": "00:00",
+            "speaker": "You",
+            "english": "Hi Ruby! It's so nice to finally put a face to the name. How are you doing today?",
+            "indonesian": "Halo Ruby! Senang sekali akhirnya bisa bertemu langsung. Apa kabar hari ini?"
+        },
+        {
+            "turn": 2,
+            "time": "00:30",
+            "speaker": "Ruby",
+            "english": "Hi You! I was thinking the same thing. I'm doing great, thank you. The cafe you picked is lovely.",
+            "indonesian": "Halo You! Aku juga berpikiran sama. Kabarku baik, terima kasih. Kafe yang kamu pilih ini cantik sekali."
+        },
+        {
+            "turn": 3,
+            "time": "01:00",
+            "speaker": "You",
+            "english": "I'm glad you like it. I come here often when I need a quiet place to think. Did you have any trouble finding it?",
+            "indonesian": "Syukurlah kalau kamu suka. Aku sering ke sini kalau butuh tempat tenang untuk berpikir. Tadi sulit tidak mencarinya?"
+        },
+        {
+            "turn": 4,
+            "time": "01:30",
+            "speaker": "Ruby",
+            "english": "Not at all, the directions were perfect. It’s actually quite close to my office, surprisingly.",
+            "indonesian": "Sama sekali tidak, petunjuknya sudah pas. Ternyata cukup dekat dari kantorku, ya."
+        },
+        {
+            "turn": 5,
+            "time": "02:00",
+            "speaker": "You",
+            "english": "That's convenient! So, how has your week been so far? I know we've both been quite busy lately.",
+            "indonesian": "Wah, pas sekali kalau begitu! Jadi, bagaimana minggumu sejauh ini? Aku tahu kita berdua cukup sibuk akhir-akhir ini."
+        },
+        {
+            "turn": 6,
+            "time": "02:30",
+            "speaker": "Ruby",
+            "english": "It’s been a bit of a whirlwind, to be honest. But meeting up like this is a nice change of pace.",
+            "indonesian": "Jujur saja, agak padat sekali. Tapi bertemu seperti ini adalah perubahan suasana yang menyenangkan."
+        },
+        {
+            "turn": 7,
+            "time": "03:00",
+            "speaker": "You",
+            "english": "I agree. It’s funny how we’ve chatted so much online about the project, but we haven't talked much about ourselves.",
+            "indonesian": "Aku setuju. Lucu ya, kita sudah banyak mengobrol daring tentang proyek ini, tapi belum banyak bercerita tentang diri kita sendiri."
+        },
+        {
+            "turn": 8,
+            "time": "03:30",
+            "speaker": "Ruby",
+            "english": "True. I saw on your profile that you enjoy hiking? I've been wanting to try that lately.",
+            "indonesian": "Benar juga. Aku lihat di profilmu kalau kamu suka mendaki? Aku sedang ingin mencoba itu belakangan ini."
+        },
+        {
+            "turn": 9,
+            "time": "04:00",
+            "speaker": "You",
+            "english": "Oh, I love it! It’s the best way to disconnect. I can definitely recommend some beginner trails nearby if you're interested.",
+            "indonesian": "Oh, aku sangat suka! Itu cara terbaik untuk melepas penat. Aku bisa rekomendasikan beberapa jalur pemula di sekitar sini kalau kamu tertarik."
+        },
+        {
+            "turn": 10,
+            "time": "04:30",
+            "speaker": "Ruby",
+            "english": "I’d love that. It’s important to have a balance, especially with the kind of work we do.",
+            "indonesian": "Aku mau sekali. Penting untuk punya keseimbangan, apalagi dengan jenis pekerjaan yang kita jalani."
+        },
+        {
+            "turn": 11,
+            "time": "05:00",
+            "speaker": "You",
+            "english": "Exactly. Speaking of work, you've done some amazing things with your previous clients. I was very impressed by the portfolio you shared.",
+            "indonesian": "Tepat sekali. Bicara soal kerjaan, kamu sudah melakukan hal-hal luar biasa dengan klien sebelumnya. Aku sangat terkesan dengan portofolio yang kamu bagikan."
+        },
+        {
+            "turn": 12,
+            "time": "05:30",
+            "speaker": "Ruby",
+            "english": "Thank you, You. That means a lot coming from you. I’ve heard great things about your leadership style as well.",
+            "indonesian": "Terima kasih, You. Itu sangat berarti bagiku. Aku juga mendengar banyak hal baik tentang gaya kepemimpinanmu."
+        },
+        {
+            "turn": 13,
+            "time": "06:00",
+            "speaker": "You",
+            "english": "I appreciate that. I think the reason we connected so well online is because we share the same values regarding transparency and quality.",
+            "indonesian": "Aku hargai itu. Aku rasa alasan kita sangat nyambung saat mengobrol daring adalah karena kita punya nilai yang sama soal transparansi dan kualitas."
+        },
+        {
+            "turn": 14,
+            "time": "06:30",
+            "speaker": "Ruby",
+            "english": "I felt the same way. It’s rare to find a potential partner who views the process the same way I do.",
+            "indonesian": "Aku pun merasakannya. Jarang sekali menemukan calon mitra yang memandang proses kerja dengan cara yang sama denganku."
+        },
+        {
+            "turn": 15,
+            "time": "07:00",
+            "speaker": "You",
+            "english": "Since we're here, maybe we can dive a bit deeper into how we might actually collaborate on the upcoming launch?",
+            "indonesian": "Karena kita sudah di sini, mungkin kita bisa mulai membahas lebih dalam tentang bagaimana kita bisa berkolaborasi untuk peluncuran mendatang?"
+        },
+        {
+            "turn": 16,
+            "time": "07:30",
+            "speaker": "Ruby",
+            "english": "I was hoping you'd say that. I’ve been thinking about the timeline we discussed on LinkedIn.",
+            "indonesian": "Aku berharap kamu akan bilang begitu. Aku sudah memikirkan tentang linimasa yang kita diskusikan di LinkedIn."
+        },
+        {
+            "turn": 17,
+            "time": "08:00",
+            "speaker": "You",
+            "english": "The timeline is flexible, but I want to make sure we don't rush the creative phase. What's your take on that?",
+            "indonesian": "Linimasanya fleksibel, tapi aku ingin memastikan kita tidak terburu-buru di fase kreatif. Bagaimana pendapatmu?"
+        },
+        {
+            "turn": 18,
+            "time": "08:30",
+            "speaker": "Ruby",
+            "english": "Quality over speed, always. I think adding a week for the initial drafts would be beneficial for the end result.",
+            "indonesian": "Kualitas di atas kecepatan, selalu. Menurutku menambah satu minggu untuk draf awal akan sangat bermanfaat bagi hasil akhirnya."
+        },
+        {
+            "turn": 19,
+            "time": "09:00",
+            "speaker": "You",
+            "english": "I completely agree. My main concern was the integration part, but seeing your workflow, I feel much more at ease.",
+            "indonesian": "Aku setuju sepenuhnya. Kekhawatiran utamaku tadinya di bagian integrasi, tapi melihat alur kerjamu, aku merasa jauh lebih tenang."
+        },
+        {
+            "turn": 20,
+            "time": "09:30",
+            "speaker": "Ruby",
+            "english": "That’s good to hear. I want this to be a smooth experience for your team as well. Communication is key.",
+            "indonesian": "Senang mendengarnya. Aku ingin ini menjadi pengalaman yang lancar bagi timmu juga. Komunikasi adalah kuncinya."
+        },
+        {
+            "turn": 21,
+            "time": "10:00",
+            "speaker": "You",
+            "english": "You're right. I’ve had issues in the past where communication broke down halfway through. It was quite a challenge to recover.",
+            "indonesian": "Kamu benar. Dulu aku pernah punya masalah di mana komunikasi terputus di tengah jalan. Cukup sulit untuk memulihkannya saat itu."
+        },
+        {
+            "turn": 22,
+            "time": "10:30",
+            "speaker": "Ruby",
+            "english": "I've faced that too. That’s why I prefer having these face-to-face meetings early on. It builds a different level of trust.",
+            "indonesian": "Aku juga pernah mengalaminya. Itulah sebabnya aku lebih suka pertemuan tatap muka di awal seperti ini. Ini membangun tingkat kepercayaan yang berbeda."
+        },
+        {
+            "turn": 23,
+            "time": "11:00",
+            "speaker": "You",
+            "english": "It definitely does. You know, I feel like this conversation has already cleared up more than ten emails could have.",
+            "indonesian": "Tentu saja. Tahu tidak, aku merasa percakapan ini sudah memperjelas lebih banyak hal daripada yang bisa dilakukan sepuluh email."
+        },
+        {
+            "turn": 24,
+            "time": "11:30",
+            "speaker": "Ruby",
+            "english": "I feel the same. It's much more natural. So, about the budget breakdown—is the proposal I sent within your expectations?",
+            "indonesian": "Aku juga merasa begitu. Jauh lebih alami. Jadi, soal rincian anggaran—apakah proposal yang kukirim sudah sesuai ekspektasimu?"
+        },
+        {
+            "turn": 25,
+            "time": "12:00",
+            "speaker": "You",
+            "english": "It is. It's fair and reflects the value you bring. I’ve already discussed it with my partners, and they are on board.",
+            "indonesian": "Sudah sesuai. Harganya adil dan mencerminkan nilai yang kamu berikan. Aku sudah mendiskusikannya dengan mitra-mitraku, dan mereka setuju."
+        },
+        {
+            "turn": 26,
+            "time": "12:30",
+            "speaker": "Ruby",
+            "english": "That’s fantastic news. I’m really excited to get started. I think we can make something really impactful together.",
+            "indonesian": "Itu kabar yang luar biasa. Aku sangat bersemangat untuk memulai. Aku rasa kita bisa membuat sesuatu yang berdampak besar bersama-sama."
+        },
+        {
+            "turn": 27,
+            "time": "13:00",
+            "speaker": "You",
+            "english": "I have no doubt about that. It feels like we're not just business partners, but already starting a good friendship.",
+            "indonesian": "Aku tidak ragu akan hal itu. Rasanya kita bukan sekadar mitra bisnis, tapi sudah mulai menjalin pertemanan yang baik."
+        },
+        {
+            "turn": 28,
+            "time": "13:30",
+            "speaker": "Ruby",
+            "english": "I feel that too, You. It’s been so easy talking to you today. No pressure at all.",
+            "indonesian": "Aku juga merasakannya, You. Mengobrol denganmu hari ini terasa sangat mudah. Tidak ada tekanan sama sekali."
+        },
+        {
+            "turn": 29,
+            "time": "14:00",
+            "speaker": "You",
+            "english": "Exactly how a first meeting should be. Let's wrap up for now, and I'll send over the formal contract by tomorrow morning.",
+            "indonesian": "Memang begitulah seharusnya pertemuan pertama. Mari kita cukupkan untuk sekarang, dan aku akan mengirimkan kontrak resminya besok pagi."
+        },
+        {
+            "turn": 30,
+            "time": "14:30",
+            "speaker": "Ruby",
+            "english": "Sounds like a plan. I'll look out for that. Thank you so much for the coffee and the great chat, You.",
+            "indonesian": "Rencana yang bagus. Akan kutunggu. Terima kasih banyak untuk kopinya dan obrolan serunya, You."
+        },
+        {
+            "turn": 31,
+            "time": "15:00",
+            "speaker": "You",
+            "english": "My pleasure, Ruby. I'm looking forward to our next meeting. Have a great afternoon!",
+            "indonesian": "Sama-sama, Ruby. Aku menantikan pertemuan kita berikutnya. Semoga siangmu menyenangkan!"
+        },
+        {
+            "turn": 32,
+            "time": "15:30",
+            "speaker": "Ruby",
+            "english": "You too! See you soon.",
+            "indonesian": "Kamu juga! Sampai jumpa lagi."
+        },
+        {
+            "turn": 33,
+            "time": "16:00",
+            "speaker": "You",
+            "english": "Wait, before I forget—do you have time for a quick tour of our office next week? It's just around the corner.",
+            "indonesian": "Tunggu, sebelum aku lupa—apakah kamu punya waktu untuk mampir sebentar ke kantor kami minggu depan? Letaknya dekat dari sini."
+        },
+        {
+            "turn": 34,
+            "time": "16:30",
+            "speaker": "Ruby",
+            "english": "I’d love to! Just send me the time that works for you, and I’ll be there.",
+            "indonesian": "Aku mau sekali! Kirim saja waktu yang pas untukmu, dan aku akan ke sana."
+        },
+        {
+            "turn": 35,
+            "time": "17:00",
+            "speaker": "You",
+            "english": "Perfect. It'll be great for you to meet the rest of the team. They’ve heard a lot about you.",
+            "indonesian": "Sempurna. Akan bagus jika kamu bisa bertemu anggota tim yang lain. Mereka sudah banyak dengar tentangmu."
+        },
+        {
+            "turn": 36,
+            "time": "17:30",
+            "speaker": "Ruby",
+            "english": "I'm looking forward to it. Thanks again, You. Goodbye!",
+            "indonesian": "Aku menantikannya. Terima kasih lagi, You. Mari!"
+        },
+        {
+            "turn": 37,
+            "time": "18:00",
+            "speaker": "You",
+            "english": "Goodbye, Ruby. Take care!",
+            "indonesian": "Sampai jumpa, Ruby. Hati-hati di jalan!"
+        },
+        {
+            "turn": 38,
+            "time": "18:30",
+            "speaker": "Ruby",
+            "english": "By the way, You, I meant to ask—what was that book you mentioned on your post last week? The one about strategy?",
+            "indonesian": "Ngomong-ngomong, You, aku tadi ingin tanya—apa judul buku yang kamu sebut di postinganmu minggu lalu? Yang tentang strategi itu?"
+        },
+        {
+            "turn": 39,
+            "time": "19:00",
+            "speaker": "You",
+            "english": "Oh, that was 'The Infinite Game' by Simon Sinek. It's a fantastic read for anyone in our field.",
+            "indonesian": "Oh, itu judulnya 'The Infinite Game' karya Simon Sinek. Bacaan yang luar biasa untuk siapa saja di bidang kita."
+        },
+        {
+            "turn": 40,
+            "time": "19:30",
+            "speaker": "Ruby",
+            "english": "Ah, yes! I've heard of it but haven't picked it up yet. I'll definitely add it to my list.",
+            "indonesian": "Ah, ya! Aku pernah dengar tapi belum sempat beli. Pasti akan kumasukkan ke daftar bacaanku."
+        },
+        {
+            "turn": 41,
+            "time": "20:00",
+            "speaker": "You",
+            "english": "Actually, I have an extra copy at the office. I'll bring it for you next week when you visit.",
+            "indonesian": "Sebenarnya, aku punya salinan ekstra di kantor. Akan kubawakan untukmu minggu depan saat kamu berkunjung."
+        },
+        {
+            "turn": 42,
+            "time": "20:30",
+            "speaker": "Ruby",
+            "english": "That is so kind of you! Thank you, You. You're making this partnership very pleasant.",
+            "indonesian": "Kamu baik sekali! Terima kasih, You. Kamu membuat kemitraan ini jadi sangat menyenangkan."
+        },
+        {
+            "turn": 43,
+            "time": "21:00",
+            "speaker": "You",
+            "english": "Of course. I believe business should always be this personal and friendly.",
+            "indonesian": "Tentu saja. Aku percaya bisnis seharusnya selalu sepersonal dan seramah ini."
+        },
+        {
+            "turn": 44,
+            "time": "21:30",
+            "speaker": "Ruby",
+            "english": "I couldn't agree more. Have a safe drive back!",
+            "indonesian": "Aku sangat setuju. Hati-hati dalam perjalanan pulang!"
+        },
+        {
+            "turn": 45,
+            "time": "22:00",
+            "speaker": "You",
+            "english": "You too. See you next week!",
+            "indonesian": "Kamu juga. Sampai jumpa minggu depan!"
+        },
+        {
+            "turn": 46,
+            "time": "22:30",
+            "speaker": "Ruby",
+            "english": "Wait, You! One more thing—should I bring any specific documents for the meeting next week?",
+            "indonesian": "Tunggu, You! Satu hal lagi—apa aku perlu bawa dokumen khusus untuk pertemuan minggu depan?"
+        },
+        {
+            "turn": 47,
+            "time": "23:00",
+            "speaker": "You",
+            "english": "No need for physical documents. We'll just have a casual walkthrough and introduce you to the creative leads.",
+            "indonesian": "Tidak perlu bawa dokumen fisik. Kita hanya akan berkeliling santai dan mengenalkanmu ke para pemimpin kreatif."
+        },
+        {
+            "turn": 48,
+            "time": "23:30",
+            "speaker": "Ruby",
+            "english": "Understood. That sounds perfect. I'm really looking forward to meeting the creative team.",
+            "indonesian": "Paham. Kedengarannya sempurna. Aku benar-benar menantikan pertemuan dengan tim kreatifnya."
+        },
+        {
+            "turn": 49,
+            "time": "24:00",
+            "speaker": "You",
+            "english": "They are excited to meet you too. I told them about our online discussions, and they liked your approach.",
+            "indonesian": "Mereka juga bersemangat menemuimu. Aku ceritakan soal diskusi daring kita, dan mereka suka dengan pendekatanmu."
+        },
+        {
+            "turn": 50,
+            "time": "24:30",
+            "speaker": "Ruby",
+            "english": "That's great to hear. It’s always better when everyone is on the same page from the start.",
+            "indonesian": "Senang mendengarnya. Selalu lebih baik jika semua orang punya pemahaman yang sama dari awal."
+        },
+        {
+            "turn": 51,
+            "time": "25:00",
+            "speaker": "You",
+            "english": "Absolutely. Well, I really should let you go now. Don't want to keep you from your next appointment.",
+            "indonesian": "Tentu saja. Baiklah, aku benar-benar harus membiarkanmu pergi sekarang. Tidak ingin menghambat janji temumu berikutnya."
+        },
+        {
+            "turn": 52,
+            "time": "25:30",
+            "speaker": "Ruby",
+            "english": "No worries. It was worth every minute. Talk soon!",
+            "indonesian": "Jangan khawatir. Setiap menitnya sangat berharga. Kita bicara lagi nanti!"
+        },
+        {
+            "turn": 53,
+            "time": "26:00",
+            "speaker": "You",
+            "english": "Talk soon. Cheers!",
+            "indonesian": "Sampai nanti. Mari!"
+        },
+        {
+            "turn": 54,
+            "time": "26:30",
+            "speaker": "Ruby",
+            "english": "Cheers!",
+            "indonesian": "Mari!"
+        },
+        {
+            "turn": 55,
+            "time": "27:00",
+            "speaker": "You",
+            "english": "Oh, and Ruby, feel free to text me if you have any questions before then.",
+            "indonesian": "Oh, dan Ruby, jangan sungkan kirim pesan kalau ada pertanyaan sebelum hari itu."
+        },
+        {
+            "turn": 56,
+            "time": "27:30",
+            "speaker": "Ruby",
+            "english": "Will do! Thanks for the offer. Bye!",
+            "indonesian": "Akan kulakukan! Terima kasih tawarannya. Dadah!"
+        },
+        {
+            "turn": 57,
+            "time": "28:00",
+            "speaker": "You",
+            "english": "Actually, I forgot to ask about the weekend. Any plans?",
+            "indonesian": "Sebenarnya, aku lupa tanya soal akhir pekan. Ada rencana?"
+        },
+        {
+            "turn": 58,
+            "time": "28:30",
+            "speaker": "Ruby",
+            "english": "Just catching up on some sleep and maybe a bit of gardening. You?",
+            "indonesian": "Cuma mau bayar utang tidur dan mungkin berkebun sedikit. Kamu sendiri?"
+        },
+        {
+            "turn": 59,
+            "time": "29:00",
+            "speaker": "You",
+            "english": "That sounds relaxing. I'm heading out for that hike I mentioned earlier.",
+            "indonesian": "Kedengarannya santai. Aku mau pergi mendaki seperti yang kusebutkan tadi."
+        },
+        {
+            "turn": 60,
+            "time": "29:30",
+            "speaker": "Ruby",
+            "english": "Enjoy the fresh air! Talk to you on Monday.",
+            "indonesian": "Nikmati udara segarnya! Kita bicara lagi hari Senin."
+        },
+        {
+            "turn": 61,
+            "time": "30:00",
+            "speaker": "You",
+            "english": "Definitely. Take care, Ruby.",
+            "indonesian": "Pasti. Hati-hati, Ruby."
+        },
+        {
+            "turn": 62,
+            "time": "30:30",
+            "speaker": "Ruby",
+            "english": "You too, You. Bye!",
+            "indonesian": "Kamu juga, You. Dadah!"
+        },
+        {
+            "turn": 63,
+            "time": "31:00",
+            "speaker": "You",
+            "english": "I'll make sure to send that email now while it's fresh in my mind.",
+            "indonesian": "Akan kupastikan kirim email itu sekarang mumpung masih ingat."
+        },
+        {
+            "turn": 64,
+            "time": "31:30",
+            "speaker": "Ruby",
+            "english": "Perfect, I'll keep an eye out for it. Thanks again!",
+            "indonesian": "Sempurna, akan kupantau terus. Terima kasih lagi!"
+        },
+        {
+            "turn": 65,
+            "time": "32:00",
+            "speaker": "You",
+            "english": "No problem at all. Have a great day.",
+            "indonesian": "Bukan masalah. Semoga harimu menyenangkan."
+        },
+        {
+            "turn": 66,
+            "time": "32:30",
+            "speaker": "Ruby",
+            "english": "You as well. Bye for real this time!",
+            "indonesian": "Kamu juga. Kali ini benar-benar pamit!"
+        },
+        {
+            "turn": 67,
+            "time": "33:00",
+            "speaker": "You",
+            "english": "Haha, alright. Bye!",
+            "indonesian": "Haha, baiklah. Sampai jumpa!"
+        },
+        {
+            "turn": 68,
+            "time": "33:30",
+            "speaker": "Ruby",
+            "english": "Looking forward to working with you, You.",
+            "indonesian": "Aku menantikan bekerja sama denganmu, You."
+        },
+        {
+            "turn": 69,
+            "time": "34:00",
+            "speaker": "You",
+            "english": "Me too, Ruby. Me too.",
+            "indonesian": "Aku juga, Ruby. Aku juga."
+        },
+        {
+            "turn": 70,
+            "time": "34:30",
+            "speaker": "Ruby",
+            "english": "The coffee here really is great, by the way.",
+            "indonesian": "Ngomong-ngomong, kopi di sini memang enak sekali."
+        },
+        {
+            "turn": 71,
+            "time": "35:00",
+            "speaker": "You",
+            "english": "I'm glad you think so. Next time we can try their pastries, they're famous.",
+            "indonesian": "Aku senang kamu beranggapan begitu. Lain kali kita bisa coba kue-kuenya, mereka terkenal enak."
+        },
+        {
+            "turn": 72,
+            "time": "35:30",
+            "speaker": "Ruby",
+            "english": "It's a deal. See you then!",
+            "indonesian": "Setuju. Sampai nanti kalau begitu!"
+        },
+        {
+            "turn": 73,
+            "time": "36:00",
+            "speaker": "You",
+            "english": "See you!",
+            "indonesian": "Sampai jumpa!"
+        },
+        {
+            "turn": 74,
+            "time": "36:30",
+            "speaker": "Ruby",
+            "english": "I'm just checking my schedule for Monday... yes, 10 AM works for the office tour.",
+            "indonesian": "Aku sedang cek jadwal untuk hari Senin... ya, jam 10 pagi bisa untuk kunjungan kantor."
+        },
+        {
+            "turn": 75,
+            "time": "37:00",
+            "speaker": "You",
+            "english": "Excellent. 10 AM it is. I'll put it in my calendar.",
+            "indonesian": "Bagus sekali. Jam 10 pagi kalau begitu. Akan kumasukkan ke kalenderku."
+        },
+        {
+            "turn": 76,
+            "time": "37:30",
+            "speaker": "Ruby",
+            "english": "Perfect. Now I really am leaving. Goodbye!",
+            "indonesian": "Sempurna. Sekarang aku benar-benar pergi. Dadah!"
+        },
+        {
+            "turn": 77,
+            "time": "38:00",
+            "speaker": "You",
+            "english": "Goodbye Ruby, safe travels!",
+            "indonesian": "Sampai jumpa Ruby, hati-hati di jalan!"
+        },
+        {
+            "turn": 78,
+            "time": "38:30",
+            "speaker": "Ruby",
+            "english": "Thanks, You!",
+            "indonesian": "Terima kasih, You!"
+        },
+        {
+            "turn": 79,
+            "time": "39:00",
+            "speaker": "You",
+            "english": "Talk to you soon.",
+            "indonesian": "Sampai bicara lagi nanti."
+        },
+        {
+            "turn": 80,
+            "time": "39:30",
+            "speaker": "Ruby",
+            "english": "Absolutely. Bye!",
+            "indonesian": "Tentu saja. Bye!"
+        },
+        {
+            "turn": 81,
+            "time": "40:00",
+            "speaker": "You",
+            "english": "Wait, one last thing, Ruby—did you say you were looking for a new graphic designer for your team as well?",
+            "indonesian": "Tunggu, satu hal terakhir, Ruby—tadi kamu bilang kamu sedang mencari desainer grafis baru untuk timmu juga?"
+        },
+        {
+            "turn": 82,
+            "time": "40:30",
+            "speaker": "Ruby",
+            "english": "Yes, I am. Do you have someone in mind?",
+            "indonesian": "Iya, benar. Apa kamu punya kandidat?"
+        },
+        {
+            "turn": 83,
+            "time": "41:00",
+            "speaker": "You",
+            "english": "I might. I'll send over a link to a portfolio when I get back to the office. Someone I worked with recently.",
+            "indonesian": "Mungkin ada. Akan kukirimkan tautan portofolionya saat aku kembali ke kantor. Seseorang yang baru-baru ini bekerja denganku."
+        },
+        {
+            "turn": 84,
+            "time": "41:30",
+            "speaker": "Ruby",
+            "english": "That would be incredibly helpful. Thank you for thinking of me.",
+            "indonesian": "Itu akan sangat membantu. Terima kasih sudah memikirkanku."
+        },
+        {
+            "turn": 85,
+            "time": "42:00",
+            "speaker": "You",
+            "english": "Of course. Helping each other out is what it's all about.",
+            "indonesian": "Tentu saja. Saling membantu adalah intinya."
+        },
+        {
+            "turn": 86,
+            "time": "42:30",
+            "speaker": "Ruby",
+            "english": "Truly appreciated. Okay, for real this time, goodbye!",
+            "indonesian": "Sangat kuhargai. Oke, kali ini beneran ya, sampai jumpa!"
+        },
+        {
+            "turn": 87,
+            "time": "43:00",
+            "speaker": "You",
+            "english": "Haha, take care!",
+            "indonesian": "Haha, hati-hati!"
+        },
+        {
+            "turn": 88,
+            "time": "43:30",
+            "speaker": "Ruby",
+            "english": "Bye!",
+            "indonesian": "Dah!"
+        },
+        {
+            "turn": 89,
+            "time": "44:00",
+            "speaker": "You",
+            "english": "Thank you for the wonderful meeting, Ruby. It’s been a pleasure.",
+            "indonesian": "Terima kasih untuk pertemuan yang luar biasa ini, Ruby. Sangat menyenangkan."
+        },
+        {
+            "turn": 90,
+            "time": "44:30",
+            "speaker": "Ruby",
+            "english": "Thank you too, You. I feel the same. See you soon!",
+            "indonesian": "Terima kasih juga, You. Aku merasakan hal yang sama. Sampai jumpa segera!"
+        }
+    ]
+}

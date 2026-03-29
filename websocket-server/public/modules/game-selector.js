@@ -1,3 +1,5 @@
+import { GameProgressTracker } from './game-progress-tracker.js';
+
 export class GameSelector {
     constructor() {
         this.modal = document.getElementById('gameSelectorModal');
@@ -6,6 +8,7 @@ export class GameSelector {
         this.gameSelectorBtn = document.getElementById('gameSelectorBtn');
         this.games = [];
         this.currentFile = null;
+        this.progressTracker = new GameProgressTracker();
         
         this.bindEvents();
     }
@@ -71,20 +74,30 @@ export class GameSelector {
                 gameCard.classList.add('active');
             }
 
+            const gameStatus = this.progressTracker.getGameStatus(game.file);
+            const statusBadge = this.getStatusBadge(gameStatus);
+            const imageUrl = this.getGameImageUrl(game.image);
+
             gameCard.innerHTML = `
-                <div class="game-card-header">
-                    <div style="flex: 1;">
-                        <h3 class="game-card-title">${game.title}</h3>
-                    </div>
-                    <div class="game-card-duration">
-                        ${game.estimated_duration_minutes} min
-                    </div>
+                <div class="game-card-image">
+                    <img src="${imageUrl}" alt="${game.title}" />
                 </div>
-                <p class="game-card-theme">${game.theme}</p>
-                <div class="game-card-participants">
-                    ${game.participants.map(p => 
-                        `<span class="participant-badge">${p}</span>`
-                    ).join('')}
+                <div class="game-card-content">
+                    <div class="game-card-header">
+                        <div style="flex: 1;">
+                            <h3 class="game-card-title">${game.title}</h3>
+                            ${statusBadge}
+                        </div>
+                        <div class="game-card-duration">
+                            ${game.estimated_duration_minutes} min
+                        </div>
+                    </div>
+                    <p class="game-card-theme">${game.theme}</p>
+                    <div class="game-card-participants">
+                        ${game.participants.map(p => 
+                            `<span class="participant-badge">${p}</span>`
+                        ).join('')}
+                    </div>
                 </div>
             `;
 
@@ -94,6 +107,27 @@ export class GameSelector {
 
             this.gameList.appendChild(gameCard);
         });
+    }
+
+    getStatusBadge(gameStatus) {
+        if (!gameStatus) {
+            return '';
+        }
+
+        if (gameStatus.status === 'finished') {
+            return '<span class="game-status-badge status-finished">✓ Finished</span>';
+        } else if (gameStatus.status === 'in-progress') {
+            return '<span class="game-status-badge status-in-progress">● In Progress</span>';
+        }
+
+        return '';
+    }
+
+    getGameImageUrl(imageName) {
+        if (!imageName || imageName.trim() === '') {
+            return '/assets/images/default.jpeg';
+        }
+        return `/assets/images/${imageName}`;
     }
 
     selectGame(filename) {
@@ -118,6 +152,6 @@ export class GameSelector {
     getCurrentFile() {
         const params = new URLSearchParams(window.location.search);
         const file = params.get('file');
-        return file ? `${file}.json` : 'english-1.json';
+        return file || 'english-1.json';
     }
 }

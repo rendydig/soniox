@@ -4,6 +4,7 @@ import { ProgressManager } from './modules/progress-manager.js';
 import { SpeechRecognitionManager } from './modules/speech-recognition.js';
 import { ConversationManager } from './modules/conversation-manager.js';
 import { GameSelector } from './modules/game-selector.js';
+import { GameProgressTracker } from './modules/game-progress-tracker.js';
 
 class RoleplayConversationPlayer {
     constructor() {
@@ -13,6 +14,7 @@ class RoleplayConversationPlayer {
         this.ui = new UIManager();
         this.progress = new ProgressManager(`roleplay-progress:${this.currentFile}`);
         this.gameSelector = new GameSelector();
+        this.gameProgressTracker = new GameProgressTracker();
         
         this.speechRecognition = new SpeechRecognitionManager({
             onUnavailable: (message) => {
@@ -46,7 +48,9 @@ class RoleplayConversationPlayer {
             this.ui,
             this.progress,
             this.speechRecognition,
-            this.audioCacheManager
+            this.audioCacheManager,
+            this.gameProgressTracker,
+            this.currentFile
         );
         
         this.bindEvents();
@@ -59,6 +63,7 @@ class RoleplayConversationPlayer {
     }
 
     async loadConversation() {
+        this.gameProgressTracker.markGameAsStarted(this.currentFile);
         await this.conversationManager.loadConversation(this.currentFile);
     }
 

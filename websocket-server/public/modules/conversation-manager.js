@@ -2,11 +2,13 @@ import { USER_SPEAKER, MAX_ATTEMPTS, ACCEPT_THRESHOLD, RETRY_THRESHOLD, MIN_WORD
 import { calculateSimilarity, normalizeText } from './similarity.js';
 
 export class ConversationManager {
-    constructor(ui, progress, speechRecognition, audioCacheManager) {
+    constructor(ui, progress, speechRecognition, audioCacheManager, gameProgressTracker, currentFile) {
         this.ui = ui;
         this.progress = progress;
         this.speechRecognition = speechRecognition;
         this.audioCacheManager = audioCacheManager;
+        this.gameProgressTracker = gameProgressTracker;
+        this.currentFile = currentFile;
         
         this.conversation = null;
         this.dialogue = [];
@@ -333,6 +335,10 @@ export class ConversationManager {
         this.ui.renderCompletedHistory(this.dialogue, (turnIndex) => this.handleHistoryReplay(turnIndex));
         
         this.progress.persist();
+        
+        if (this.gameProgressTracker && this.currentFile) {
+            this.gameProgressTracker.markGameAsFinished(this.currentFile);
+        }
         
         this.ui.showCelebrationPopup({
             averageScore: averageScore,

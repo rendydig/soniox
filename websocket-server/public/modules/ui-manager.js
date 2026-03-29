@@ -146,7 +146,7 @@ export class UIManager {
 
         const englishLine = document.createElement('h2');
         englishLine.className = 'turn-card-english';
-        englishLine.textContent = turn.english || '';
+        this.wrapWordsWithTTS(englishLine, turn.english || '');
 
         const translationLine = document.createElement('p');
         translationLine.className = 'turn-card-translation';
@@ -292,5 +292,60 @@ export class UIManager {
         if (score >= 75) return { emoji: '💪', text: 'Nice Effort! Getting Better!' };
         if (score >= 70) return { emoji: '📈', text: 'Fair Performance! Room to Improve!' };
         return { emoji: '🔄', text: 'Keep Practicing! You Can Do It!' };
+    }
+
+    wrapWordsWithTTS(container, text) {
+        if (!text) {
+            container.textContent = '';
+            return;
+        }
+
+        container.innerHTML = '';
+        const words = text.split(/\s+/);
+        
+        words.forEach((word, index) => {
+            if (!word) return;
+            
+            const wordSpan = document.createElement('span');
+            wordSpan.className = 'word-tts';
+            wordSpan.textContent = word;
+            wordSpan.dataset.word = word;
+            
+            const icon = document.createElement('span');
+            icon.className = 'material-icons word-tts-icon';
+            icon.textContent = 'volume_up';
+            wordSpan.appendChild(icon);
+            
+            wordSpan.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.playWordTTS(word);
+            });
+            
+            container.appendChild(wordSpan);
+            
+            if (index < words.length - 1) {
+                container.appendChild(document.createTextNode(' '));
+            }
+        });
+    }
+
+    playWordTTS(word) {
+        if (!('speechSynthesis' in window)) {
+            console.log('[TTS] Speech synthesis not available');
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85;
+        utterance.pitch = 1.0;
+        
+        utterance.onerror = (event) => {
+            console.log('[TTS] Speech error:', event.error);
+        };
+        
+        window.speechSynthesis.speak(utterance);
     }
 }

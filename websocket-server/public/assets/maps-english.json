@@ -1,11 +1,12 @@
 {
-  "generated_at": "2026-03-28T23:18:27.257Z",
-  "total_games": 4,
+  "generated_at": "2026-03-29T08:22:50.043Z",
+  "total_games": 9,
   "games": [
     {
       "file": "english-1.json",
       "title": "Getting Started - Daily Business Conversation: Boss and You",
       "estimated_duration_minutes": 15,
+      "image": "english-1.jpeg",
       "theme": "General daily business conversation",
       "language": {
         "source": "English",
@@ -14,7 +15,14 @@
       "participants": [
         "Boss",
         "You"
-      ]
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 32,
+        "audioFiles": 32,
+        "isComplete": true
+      }
     },
     {
       "file": "english-2.json",
@@ -28,7 +36,14 @@
       "participants": [
         "Interviewer",
         "You"
-      ]
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 32,
+        "audioFiles": 32,
+        "isComplete": true
+      }
     },
     {
       "file": "english-3.json",
@@ -42,7 +57,14 @@
       "participants": [
         "Alex",
         "You"
-      ]
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 32,
+        "audioFiles": 32,
+        "isComplete": true
+      }
     },
     {
       "file": "english-4.json",
@@ -56,7 +78,117 @@
       "participants": [
         "Boss",
         "You"
-      ]
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 60,
+        "audioFiles": 60,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-5.json",
+      "title": "Friendly Small Talk Leading to Product Purchase",
+      "estimated_duration_minutes": 15,
+      "theme": "Friendly business conversation that leads to a product sale",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "You",
+        "Business Friend"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 46,
+        "audioFiles": 46,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-6.json",
+      "title": "Friendly Conversation About Golang Programming Language",
+      "estimated_duration_minutes": 30,
+      "theme": "Small talk with friends that continues into a discussion about clean Golang programming",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Friend",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 60,
+        "audioFiles": 60,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-7.json",
+      "title": "Virtual Assistant Services Consultation",
+      "estimated_duration_minutes": 30,
+      "theme": "Establishing Rapport and Service Agreement",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Andi",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 60,
+        "audioFiles": 33,
+        "isComplete": false
+      }
+    },
+    {
+      "file": "english-8.json",
+      "title": "Closing the Software Development Deal",
+      "estimated_duration_minutes": 30,
+      "theme": "Software Development Sales and Client Acquisition",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "You",
+        "Andi"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": false,
+        "totalDialogues": 60,
+        "audioFiles": 0
+      }
+    },
+    {
+      "file": "english-9.json",
+      "title": "Initial Meeting: From Online Connection to Business Partnership",
+      "estimated_duration_minutes": 45,
+      "theme": "Transitioning from friendly online rapport to professional collaboration",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "You",
+        "Ruby"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": false,
+        "totalDialogues": 90,
+        "audioFiles": 0
+      }
     }
   ]
 }
