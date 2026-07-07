@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-03-29T08:22:50.043Z",
-  "total_games": 9,
+  "generated_at": "2026-03-29T14:45:52.650Z",
+  "total_games": 20,
   "games": [
     {
       "file": "english-1.json",
@@ -28,6 +28,7 @@
       "file": "english-2.json",
       "title": "Interview Conversation: Senior JavaScript Engineer",
       "estimated_duration_minutes": 15,
+      "image": "english-2.jpeg",
       "theme": "Senior JavaScript Engineer interview",
       "language": {
         "source": "English",
@@ -49,6 +50,7 @@
       "file": "english-3.json",
       "title": "General Office Conversation During an Online Meeting",
       "estimated_duration_minutes": 15,
+      "image": "english-3.jpeg",
       "theme": "General conversation between friends or work partners in an online office meeting",
       "language": {
         "source": "English",
@@ -70,6 +72,7 @@
       "file": "english-4.json",
       "title": "General Online Meeting Conversation with Boss",
       "estimated_duration_minutes": 30,
+      "image": "english-4.jpeg",
       "theme": "General office conversation during an online meeting with technical issues",
       "language": {
         "source": "English",
@@ -91,6 +94,7 @@
       "file": "english-5.json",
       "title": "Friendly Small Talk Leading to Product Purchase",
       "estimated_duration_minutes": 15,
+      "image": "english-5.jpeg",
       "theme": "Friendly business conversation that leads to a product sale",
       "language": {
         "source": "English",
@@ -112,6 +116,7 @@
       "file": "english-6.json",
       "title": "Friendly Conversation About Golang Programming Language",
       "estimated_duration_minutes": 30,
+      "image": "english-6.jpeg",
       "theme": "Small talk with friends that continues into a discussion about clean Golang programming",
       "language": {
         "source": "English",
@@ -133,6 +138,7 @@
       "file": "english-7.json",
       "title": "Virtual Assistant Services Consultation",
       "estimated_duration_minutes": 30,
+      "image": "english-7.jpeg",
       "theme": "Establishing Rapport and Service Agreement",
       "language": {
         "source": "English",
@@ -146,7 +152,7 @@
         "exists": true,
         "hasAudio": true,
         "totalDialogues": 60,
-        "audioFiles": 33,
+        "audioFiles": 59,
         "isComplete": false
       }
     },
@@ -154,6 +160,7 @@
       "file": "english-8.json",
       "title": "Closing the Software Development Deal",
       "estimated_duration_minutes": 30,
+      "image": "english-8.jpeg",
       "theme": "Software Development Sales and Client Acquisition",
       "language": {
         "source": "English",
@@ -165,15 +172,17 @@
       ],
       "audio_status": {
         "exists": true,
-        "hasAudio": false,
+        "hasAudio": true,
         "totalDialogues": 60,
-        "audioFiles": 0
+        "audioFiles": 60,
+        "isComplete": true
       }
     },
     {
       "file": "english-9.json",
       "title": "Initial Meeting: From Online Connection to Business Partnership",
       "estimated_duration_minutes": 45,
+      "image": "english-9.jpeg",
       "theme": "Transitioning from friendly online rapport to professional collaboration",
       "language": {
         "source": "English",
@@ -185,9 +194,252 @@
       ],
       "audio_status": {
         "exists": true,
-        "hasAudio": false,
+        "hasAudio": true,
         "totalDialogues": 90,
-        "audioFiles": 0
+        "audioFiles": 90,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-10.json",
+      "title": "Handling an Angry Customer About a Delayed Order",
+      "estimated_duration_minutes": 18,
+      "image": "english-10.jpeg",
+      "theme": "Customer support conversation about a delayed order",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Customer",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 36,
+        "audioFiles": 36,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-11.json",
+      "title": "Live Chat Support During a High-Volume Shift",
+      "estimated_duration_minutes": 24,
+      "image": "english-11.jpeg",
+      "theme": "Customer support live chat conversation during a busy shift",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Customer",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 48,
+        "audioFiles": 48,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-12.json",
+      "title": "Rescheduling Meetings for a Busy Manager",
+      "estimated_duration_minutes": 16,
+      "image": "english-12.jpeg",
+      "theme": "Virtual assistant conversation about rescheduling meetings for a busy manager",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Manager",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 32,
+        "audioFiles": 32,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-13.json",
+      "title": "Organizing Travel, Inbox, and Urgent Admin Tasks",
+      "estimated_duration_minutes": 22,
+      "image": "english-13.jpeg",
+      "theme": "Virtual assistant conversation about travel planning, email management, and urgent office administration",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Boss",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 44,
+        "audioFiles": 44,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-14.json",
+      "title": "Reviewing Unsafe Posts with a Moderation Lead",
+      "estimated_duration_minutes": 20,
+      "image": "english-14.jpeg",
+      "theme": "Content moderation discussion about reviewing unsafe posts and deciding proper actions",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Moderation Lead",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 40,
+        "audioFiles": 40,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-15.json",
+      "title": "Discussing Confusing Labels with a Data Annotation Supervisor",
+      "estimated_duration_minutes": 14,
+      "image": "english-15.jpeg",
+      "theme": "Data annotation discussion about unclear labeling rules and difficult examples",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Supervisor",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 28,
+        "audioFiles": 28,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-16.json",
+      "title": "Cold Outreach and Handling Objections from a Prospect",
+      "estimated_duration_minutes": 30,
+      "image": "english-16.jpeg",
+      "theme": "Sales development conversation with a prospect, including objections and appointment setting",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Prospect",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 60,
+        "audioFiles": 60,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-17.json",
+      "title": "Follow-Up Call After a Prospect Ignored Earlier Messages",
+      "estimated_duration_minutes": 30,
+      "image": "english-17.jpeg",
+      "theme": "Sales follow-up conversation with a prospect who did not respond to earlier outreach",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Prospect",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 60,
+        "audioFiles": 60,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-18.json",
+      "title": "Reporting a Bug and Explaining Reproduction Steps",
+      "estimated_duration_minutes": 30,
+      "image": "english-18.jpeg",
+      "theme": "Manual QA tester conversation about reporting a bug, discussing impact, and agreeing on next steps",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "QA Lead",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 60,
+        "audioFiles": 60,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-19.json",
+      "title": "Retesting a Fix and Confirming Release Readiness",
+      "estimated_duration_minutes": 30,
+      "image": "english-19.jpeg",
+      "theme": "Quality assurance conversation about retesting a bug fix, checking regression risk, and evaluating release readiness",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "QA Lead",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 60,
+        "audioFiles": 60,
+        "isComplete": true
+      }
+    },
+    {
+      "file": "english-20.json",
+      "title": "Escalating a Production Incident with an Engineering Manager",
+      "estimated_duration_minutes": 30,
+      "image": "english-20.jpeg",
+      "theme": "Technical operations conversation about a production incident, impact assessment, and response coordination",
+      "language": {
+        "source": "English",
+        "translation": "Indonesian"
+      },
+      "participants": [
+        "Engineering Manager",
+        "You"
+      ],
+      "audio_status": {
+        "exists": true,
+        "hasAudio": true,
+        "totalDialogues": 60,
+        "audioFiles": 60,
+        "isComplete": true
       }
     }
   ]

@@ -4,6 +4,6 @@ __pycache__/
 *.pyc
 recordings/
 .DS_Store
-# assets
+assets
 *.wav
 *.mp3

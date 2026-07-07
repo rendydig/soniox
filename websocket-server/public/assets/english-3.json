@@ -4,12 +4,13 @@
   "theme": "General conversation between friends or work partners in an online office meeting",
   "language": {
     "source": "English",
-    "translation": "Indonesian"
+"translation": "Indonesian"
   },
   "participants": [
     "Alex",
     "You"
   ],
+  "image": "english-3.jpeg",
   "dialogue": [
     {
       "turn": 1,
