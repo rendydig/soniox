@@ -100,6 +100,13 @@ class TranslationController(QObject):
         self._auto_reply_timer.start(2000)
         print(f"[DEBUG TranslationController] Timer started for 2000ms")
     
+    def trigger_reply_now(self, transcription_text: str, additional_context: str = ""):
+        """Trigger a Gemini reply immediately without debounce timer."""
+        self._pending_transcription = transcription_text
+        self._pending_context = additional_context
+        self._auto_reply_timer.stop()
+        self._trigger_auto_reply()
+
     def cancel_auto_reply(self):
         """Cancel any pending auto-reply."""
         print(f"[DEBUG TranslationController] cancel_auto_reply called")

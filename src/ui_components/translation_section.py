@@ -12,11 +12,11 @@ class TranslationSectionWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(12)
         
-        translation_section_label = QLabel("Gemini Translation:")
-        layout.addWidget(translation_section_label)
+        # translation_section_label = QLabel("Gemini Translation:")
+        # layout.addWidget(translation_section_label)
         
         gemini_lang_row = QHBoxLayout()
-        gemini_lang_label = QLabel("Target translation Language:")
+        gemini_lang_label = QLabel("Gemini Target translation Language:")
         self.gemini_lang_combo = QComboBox()
         self.gemini_lang_combo.addItems(["English", "Arabic", "Japanese", "Chinese", "Korean"])
         self.gemini_lang_combo.setMinimumWidth(150)

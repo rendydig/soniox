@@ -1,6 +1,23 @@
+import os
 from google import genai
 from PySide6.QtCore import QThread, Signal
-from src.config import GEMINI_API_KEY
+from src.config import GEMINI_API_KEY, SELF_CONTEXT_FILE, PRONUNCIATION_GUIDES
+
+DEFAULT_SELF_CONTEXT = "bahasa pemograman javascript, react , nextjs, python, docker, kubernetes, aws, gcp, azure, github, gitlab, bitbucket, jenkins, circleci, travis ci, aws lambda, aws s3, aws ec2, aws rds, aws lambda, aws s3, aws ec2, aws rds"
+
+
+def _get_pronunciation_line(target_language: str) -> str:
+    """Build the Syllables/Pronunciation instruction line based on target language."""
+    guide = PRONUNCIATION_GUIDES.get(target_language, PRONUNCIATION_GUIDES["Japanese"])
+    return f"Syllables/Pronunciation: [{guide['instruction']} Example format: \"{guide['example']}\"]"
+
+
+def _load_self_context() -> str:
+    """Load self context from SELF_CONTEXT_FILE if configured, otherwise use default."""
+    if not SELF_CONTEXT_FILE or not os.path.exists(SELF_CONTEXT_FILE):
+        return DEFAULT_SELF_CONTEXT
+    with open(SELF_CONTEXT_FILE, 'r', encoding='utf-8') as f:
+        return f.read().strip() or DEFAULT_SELF_CONTEXT
 
 
 class GeminiWorker(QThread):
@@ -27,7 +44,7 @@ class GeminiWorker(QThread):
             prompt = f"""Translate the following text to {self._target_language}. Provide the response in this exact format:
 
 {self._target_language} Text: [Write the sentence using natural {self._target_language} script]
-Syllables/Pronunciation: [Provide the pronunciation in Latin alphabet with Indonesian spelling. Separate words with spaces. Example format: "Don'na tori ga hebi o tabe raremasu ka?"]
+{_get_pronunciation_line(self._target_language)}
 English Translation: [Provide the meaning in clear English]
 
 Text to translate: {self._text}"""
@@ -63,7 +80,7 @@ class GeminiAutoReplyWorker(QThread):
         self._target_language = target_language
         self._additional_context = additional_context
         self._is_running = True
-        self._self_context = "bahasa pemograman javascript, react , nextjs, python, docker, kubernetes, aws, gcp, azure, github, gitlab, bitbucket, jenkins, circleci, travis ci, aws lambda, aws s3, aws ec2, aws rds, aws lambda, aws s3, aws ec2, aws rds"
+        self._self_context = _load_self_context()
     
     def run(self):
         try:
@@ -84,7 +101,7 @@ class GeminiAutoReplyWorker(QThread):
             prompt = f"""You are a very curious about {self._self_context} Man/Woman that responding to the following transcribed speech people in front of You. Provide a natural, contextual response in {self._target_language}. Format your response exactly as follows and don't make long answer:
 
 {self._target_language} Text: [Write your response using natural {self._target_language} script]
-Syllables/Pronunciation: [Provide the pronunciation in Latin alphabet with Indonesian spelling. Separate words with spaces. Example format: "Don'na tori ga hebi o tabe raremasu ka?"]
+{_get_pronunciation_line(self._target_language)}
 English Translation: [Provide the meaning in clear English]
 
 Transcribed speech: {self._transcription_text}{context_section}"""

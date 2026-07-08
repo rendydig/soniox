@@ -3,6 +3,7 @@ import os
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, 
                              QMessageBox, QFileDialog)
 from PySide6.QtCore import Qt, QEvent, QTimer
+from PySide6.QtGui import QKeySequence, QShortcut
 from src.config import MAX_TRANSCRIPTION_LINES, MAX_GEMINI_LINES
 from src.text_formatter import append_timestamped_text
 from src.controllers import (
@@ -41,6 +42,8 @@ class MainWindow(QMainWindow):
         self._memory_monitor_timer = QTimer()
         self._memory_monitor_timer.timeout.connect(self._update_memory_usage)
         self._memory_monitor_timer.start(5000)
+        
+        self._last_final_transcription = ""
         
         self._init_ui()
         self._setup_controller_connections()
@@ -106,6 +109,9 @@ class MainWindow(QMainWindow):
         self.translation_input.installEventFilter(self)
         self.btn_start.clicked.connect(self._toggle_start)
         self.record_btn.clicked.connect(self._toggle_recording)
+        
+        reply_shortcut = QShortcut(QKeySequence("Ctrl+R"), self)
+        reply_shortcut.activated.connect(self._manual_reply)
     
     def _apply_styles(self):
         self.setStyleSheet(
@@ -222,6 +228,8 @@ class MainWindow(QMainWindow):
             labeled_text = f"[{input_source.upper()}] {text}"
             append_timestamped_text(self.transcription_editor, labeled_text, max_lines=MAX_TRANSCRIPTION_LINES)
             
+            self._last_final_transcription = text
+            
             if self.auto_reply_checkbox.isChecked() and text.strip():
                 print(f"[DEBUG] [{input_source}] Scheduling auto-reply for: '{text}'")
                 additional_context = self.translation_input.toPlainText().strip()
@@ -301,6 +309,17 @@ class MainWindow(QMainWindow):
     def _on_auto_reply_result(self, result: str):
         """Handle auto-reply result."""
         self.gemini_text.setText(result)
+    
+    def _manual_reply(self):
+        """Manually trigger a Gemini reply using the last final transcription (Ctrl+R / Cmd+R)."""
+        text = self._last_final_transcription.strip()
+        if not text:
+            text = self.transcription_editor.toPlainText().strip()
+        if not text:
+            QMessageBox.warning(self, "No Transcription", "No transcription available to reply to.")
+            return
+        additional_context = self.translation_input.toPlainText().strip()
+        self.translation_controller.trigger_reply_now(text, additional_context)
     
     def _on_auto_reply_language_changed(self, language: str):
         """Update auto-reply target language when combo box changes."""

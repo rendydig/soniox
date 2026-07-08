@@ -12,8 +12,8 @@ class TextEditorsWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(12)
         
-        transcription_editors_label = QLabel("Output:")
-        layout.addWidget(transcription_editors_label)
+        # transcription_editors_label = QLabel("Output:")
+        # layout.addWidget(transcription_editors_label)
         
         transcription_editors_row = QHBoxLayout()
         
