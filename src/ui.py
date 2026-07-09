@@ -198,6 +198,7 @@ class MainWindow(QMainWindow):
         target_lang = self.lang_combo.currentData()
 
         self.transcription_editor.clear()
+        self.translation_controller.clear_conversation_history()
         self.transcription_controller.start_session(host_device_id, speaker_device_id, mode=mode, target_lang=target_lang)
         
         if self.auto_record_checkbox.isChecked():
@@ -211,6 +212,7 @@ class MainWindow(QMainWindow):
     def _stop_session(self):
         self.status_label.setText("Stopping...")
         
+        self.translation_controller.cancel_auto_reply()
         self.transcription_controller.stop_session()
         
         if self.auto_record_checkbox.isChecked() and self.recording_controller.is_recording():
@@ -235,7 +237,7 @@ class MainWindow(QMainWindow):
                 additional_context = self.translation_input.toPlainText().strip()
                 if additional_context:
                     print(f"[DEBUG] Including translation input as context: '{additional_context[:50]}...'")
-                self.translation_controller.schedule_auto_reply(text, additional_context)
+                self.translation_controller.schedule_auto_reply(text, additional_context, input_source)
             else:
                 print(f"[DEBUG] [{input_source}] NOT scheduling auto-reply. Checkbox: {self.auto_reply_checkbox.isChecked()}, Text empty: {not text.strip()}")
         else:
@@ -319,7 +321,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "No Transcription", "No transcription available to reply to.")
             return
         additional_context = self.translation_input.toPlainText().strip()
-        self.translation_controller.trigger_reply_now(text, additional_context)
+        self.translation_controller.trigger_reply_now(text, additional_context, "speaker")
     
     def _on_auto_reply_language_changed(self, language: str):
         """Update auto-reply target language when combo box changes."""

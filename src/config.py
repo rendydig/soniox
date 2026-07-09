@@ -54,6 +54,18 @@ PRONUNCIATION_GUIDES = {
     }
 }
 
+SAMPLE_TEXTS = {
+    "English": "Hello, how are you today?",
+    "Indonesian": "Halo, apa kabar hari ini?",
+    "Spanish": "Hola, ¿cómo estás hoy?",
+    "French": "Bonjour, comment allez-vous aujourd'hui?",
+    "German": "Hallo, wie geht es dir heute?",
+    "Chinese": "你好，今天怎么样？",
+    "Japanese": "こんにちは、今日はどうですか？",
+    "Korean": "안녕하세요, 오늘 어떻게 지내세요?",
+    "Arabic": "مرحبا، كيف حالك اليوم؟"
+}
+
 MAX_TRANSCRIPTION_LINES = 500
 MAX_GEMINI_LINES = 300
 CLEANUP_CHECK_INTERVAL = 50

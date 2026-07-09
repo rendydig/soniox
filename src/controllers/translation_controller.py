@@ -12,6 +12,8 @@ class TranslationController(QObject):
     translation_completed = Signal()
     auto_reply_result = Signal(str)
     
+    MAX_HISTORY_TURNS = 10
+
     def __init__(self):
         super().__init__()
         self._gemini_worker = None
@@ -22,7 +24,9 @@ class TranslationController(QObject):
         self._auto_reply_timer.timeout.connect(self._trigger_auto_reply)
         self._pending_transcription = ""
         self._pending_context = ""
+        self._pending_input_source = "speaker"
         self._auto_reply_target_language = "English"
+        self._conversation_history = []
     
     def is_translating(self):
         """Check if currently translating."""
@@ -83,27 +87,30 @@ class TranslationController(QObject):
         """Set the target language for auto-reply."""
         self._auto_reply_target_language = target_language
     
-    def schedule_auto_reply(self, transcription_text: str, additional_context: str = ""):
+    def schedule_auto_reply(self, transcription_text: str, additional_context: str = "", input_source: str = "speaker"):
         """
         Schedule an auto-reply after 2 seconds of no new transcription.
         
         Args:
             transcription_text: The transcribed text to respond to
             additional_context: Optional additional context (e.g., from translation input field)
+            input_source: Who said this text — "host" (you) or "speaker" (the other person)
         """
-        print(f"[DEBUG TranslationController] schedule_auto_reply called with: '{transcription_text}'")
+        print(f"[DEBUG TranslationController] schedule_auto_reply called with: '{transcription_text}' (from {input_source})")
         if additional_context:
             print(f"[DEBUG TranslationController] Additional context: '{additional_context[:50]}...'")
         self._pending_transcription = transcription_text
         self._pending_context = additional_context
+        self._pending_input_source = input_source
         self._auto_reply_timer.stop()
         self._auto_reply_timer.start(2000)
         print(f"[DEBUG TranslationController] Timer started for 2000ms")
     
-    def trigger_reply_now(self, transcription_text: str, additional_context: str = ""):
+    def trigger_reply_now(self, transcription_text: str, additional_context: str = "", input_source: str = "speaker"):
         """Trigger a Gemini reply immediately without debounce timer."""
         self._pending_transcription = transcription_text
         self._pending_context = additional_context
+        self._pending_input_source = input_source
         self._auto_reply_timer.stop()
         self._trigger_auto_reply()
 
@@ -113,6 +120,7 @@ class TranslationController(QObject):
         self._auto_reply_timer.stop()
         self._pending_transcription = ""
         self._pending_context = ""
+        self._pending_input_source = "speaker"
     
     def _trigger_auto_reply(self):
         """Trigger the auto-reply after debounce period."""
@@ -131,7 +139,8 @@ class TranslationController(QObject):
             self._auto_reply_worker = GeminiAutoReplyWorker(
                 self._pending_transcription, 
                 self._auto_reply_target_language,
-                self._pending_context
+                self._pending_context,
+                conversation_history=list(self._conversation_history)
             )
             self._auto_reply_worker.result.connect(self._on_auto_reply_result, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.error.connect(self._on_auto_reply_error, Qt.ConnectionType.QueuedConnection)
@@ -152,6 +161,7 @@ class TranslationController(QObject):
             self._old_workers.append(self._auto_reply_worker)
             self._auto_reply_worker = None
             self._cleanup_old_workers()
+        self._append_to_history(self._pending_transcription, result, self._pending_input_source)
         self.auto_reply_result.emit(result)
         self.status_changed.emit("Auto-reply complete.")
     
@@ -183,6 +193,22 @@ class TranslationController(QObject):
                 worker.deleteLater()
             self._old_workers = self._old_workers[5:]
     
+    def clear_conversation_history(self):
+        """Clear the conversation history buffer."""
+        self._conversation_history.clear()
+        print(f"[DEBUG TranslationController] Conversation history cleared")
+
+    def _append_to_history(self, text: str, suggestion: str, input_source: str):
+        """Append a conversation turn to history, keeping only last MAX_HISTORY_TURNS."""
+        self._conversation_history.append({
+            "text": text,
+            "role": input_source,
+            "suggestion": suggestion
+        })
+        if len(self._conversation_history) > self.MAX_HISTORY_TURNS:
+            self._conversation_history = self._conversation_history[-self.MAX_HISTORY_TURNS:]
+        print(f"[DEBUG TranslationController] History updated: {len(self._conversation_history)} turns (last from {input_source})")
+
     def cleanup(self):
         """Clean up resources."""
         self._auto_reply_timer.stop()
