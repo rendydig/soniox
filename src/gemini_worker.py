@@ -1,5 +1,6 @@
 import os
 from google import genai
+from google.genai import types
 from PySide6.QtCore import QThread, Signal
 from src.config import GEMINI_API_KEY, SELF_CONTEXT_FILE, PRONUNCIATION_GUIDES, SAMPLE_TEXTS
 
@@ -46,23 +47,25 @@ class GeminiWorker(QThread):
             
             client = genai.Client(api_key=GEMINI_API_KEY)
             
-            prompt = f"""Translate the following text to {self._target_language}. Provide the response in this exact format:
+            system_instruction = f"""You are a professional translator. Translate the given text to {self._target_language}.
 
+Format your response exactly as follows:
 {self._target_language} Text: [Write the sentence using natural {self._target_language} script]
 {_get_pronunciation_line(self._target_language)}
 ----------------
 English Translation: [Provide the meaning in clear English]
 ----------------
-Sample {self._target_language} text format: {_get_sample_text(self._target_language)}
+Sample {self._target_language} text format: {_get_sample_text(self._target_language)}"""
 
-Text to translate: {self._text}"""
-            
             if not self._is_running:
                 return
             
             response = client.models.generate_content(
                 model='gemini-2.5-flash',
-                contents=prompt
+                contents=f"Text to translate: {self._text}",
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction
+                )
             )
             
             if self._is_running and response.text:
@@ -102,37 +105,55 @@ class GeminiAutoReplyWorker(QThread):
             
             client = genai.Client(api_key=GEMINI_API_KEY)
             
-            # Build conversation history section
-            history_section = ""
-            if self._conversation_history:
-                history_lines = []
-                for i, turn in enumerate(self._conversation_history, 1):
-                    role_label = "YOU (host)" if turn["role"] == "host" else "THE OTHER PERSON (speaker)"
-                    history_lines.append(f"  Turn {i}:")
-                    history_lines.append(f"    {role_label} said: {turn['text']}")
-                    history_lines.append(f"    Suggested reply was: {turn['suggestion']}")
-                history_section = f"\n\nPrevious conversation history (most recent last):\n" + "\n".join(history_lines)
+            # Build system instruction (static persona + format rules)
+            system_instruction = f"""You are a {self._self_context} professional engaged in a live conversation.
+You are the HOST (the user). You are listening to transcribed speech and suggesting what you should say next.
+Use the conversation history to understand the flow and direction of the conversation.
+Your suggestion should be a natural continuation that makes sense given what has already been said.
+Provide a natural, contextual response in {self._target_language}.
 
-            # Build prompt with optional additional context
-            context_section = ""
-            if self._additional_context and self._additional_context.strip():
-                context_section = f"\n\nAdditional context from user input:\n{self._additional_context.strip()}"
-            
-            prompt = f"""You are a {self._self_context} professional engaged in a live conversation. You are the HOST (the user). You are listening to transcribed speech and suggesting what you should say next. Use the conversation history to understand the flow and direction of the conversation. Your suggestion should be a natural continuation that makes sense given what has already been said. Provide a natural, contextual response in {self._target_language}. Format your response exactly as follows and keep it concise:
-
+Format your response exactly as follows and keep it concise:
 {self._target_language} Text: [Write your response using natural {self._target_language} script]
 {_get_pronunciation_line(self._target_language)}
 English Translation: [Provide the meaning in clear English]
-{history_section}{context_section}
+Sample {self._target_language} text format: {_get_sample_text(self._target_language)}"""
 
-Latest transcribed speech: {self._transcription_text}"""
+            # Build multi-turn contents from conversation history
+            contents = []
+            for turn in self._conversation_history:
+                role_label = "YOU (host)" if turn["role"] == "host" else "THE OTHER PERSON (speaker)"
+                user_text = f"{role_label} said: {turn['text']}"
+                if turn["role"] == "host":
+                    user_text += f"\nYour previous reply was: {turn['suggestion']}"
+                else:
+                    user_text += f"\nSuggested reply was: {turn['suggestion']}"
+                contents.append(types.Content(
+                    role="user",
+                    parts=[types.Part(text=user_text)]
+                ))
+                contents.append(types.Content(
+                    role="model",
+                    parts=[types.Part(text=turn['suggestion'])]
+                ))
+
+            # Build latest user input with optional additional context
+            latest_input = f"Latest transcribed speech: {self._transcription_text}"
+            if self._additional_context and self._additional_context.strip():
+                latest_input += f"\n\nAdditional context from user input:\n{self._additional_context.strip()}"
+            contents.append(types.Content(
+                role="user",
+                parts=[types.Part(text=latest_input)]
+            ))
             
             if not self._is_running:
                 return
             
             response = client.models.generate_content(
                 model='gemini-2.5-flash',
-                contents=prompt
+                contents=contents,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction
+                )
             )
             
             if self._is_running and response.text:

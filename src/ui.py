@@ -233,11 +233,15 @@ class MainWindow(QMainWindow):
             self._last_final_transcription = text
             
             if self.auto_reply_checkbox.isChecked() and text.strip():
-                print(f"[DEBUG] [{input_source}] Scheduling auto-reply for: '{text}'")
-                additional_context = self.translation_input.toPlainText().strip()
-                if additional_context:
-                    print(f"[DEBUG] Including translation input as context: '{additional_context[:50]}...'")
-                self.translation_controller.schedule_auto_reply(text, additional_context, input_source)
+                if input_source == "host":
+                    print(f"[DEBUG] [{input_source}] Recording host speech (no auto-reply): '{text}'")
+                    self.translation_controller.record_host_speech(text)
+                else:
+                    print(f"[DEBUG] [{input_source}] Scheduling auto-reply for: '{text}'")
+                    additional_context = self.translation_input.toPlainText().strip()
+                    if additional_context:
+                        print(f"[DEBUG] Including translation input as context: '{additional_context[:50]}...'")
+                    self.translation_controller.schedule_auto_reply(text, additional_context, input_source)
             else:
                 print(f"[DEBUG] [{input_source}] NOT scheduling auto-reply. Checkbox: {self.auto_reply_checkbox.isChecked()}, Text empty: {not text.strip()}")
         else:

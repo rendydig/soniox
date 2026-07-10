@@ -193,6 +193,13 @@ class TranslationController(QObject):
                 worker.deleteLater()
             self._old_workers = self._old_workers[5:]
     
+    def record_host_speech(self, text: str):
+        """Record host's actual speech into history without triggering auto-reply."""
+        if not text.strip():
+            return
+        self._append_to_history(text, text, "host")
+        print(f"[DEBUG TranslationController] Host speech recorded (no auto-reply): '{text[:50]}...'")
+
     def clear_conversation_history(self):
         """Clear the conversation history buffer."""
         self._conversation_history.clear()
