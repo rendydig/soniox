@@ -1,11 +1,10 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, 
-                             QLabel, QComboBox, QPushButton, QLineEdit, QCheckBox)
+                             QLabel, QComboBox)
 
 
 class DeviceSettingsWidget(QWidget):
-    def __init__(self, recording_controller, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.recording_controller = recording_controller
         self._init_ui()
     
     def _init_ui(self):
@@ -30,32 +29,9 @@ class DeviceSettingsWidget(QWidget):
         dev_layout.addLayout(speaker_layout, 1)
         
         layout.addLayout(dev_layout)
-        
-        dest_row = QHBoxLayout()
-        dest_label = QLabel("Destination Folder:")
-        self.dest_edit = QLineEdit(self.recording_controller.get_base_dir())
-        self.dest_edit.setReadOnly(True)
-        self.browse_btn = QPushButton("Change...")
-        dest_row.addWidget(dest_label)
-        dest_row.addWidget(self.dest_edit, 1)
-        dest_row.addWidget(self.browse_btn)
-        layout.addLayout(dest_row)
-        
-        self.auto_record_checkbox = QCheckBox("Auto-record to WAV when transcribing/translating")
-        self.auto_record_checkbox.setChecked(False)
-        layout.addWidget(self.auto_record_checkbox)
     
     def get_device_combo(self):
         return self.device_combo
     
     def get_speaker_combo(self):
         return self.speaker_combo
-    
-    def get_dest_edit(self):
-        return self.dest_edit
-    
-    def get_browse_button(self):
-        return self.browse_btn
-    
-    def get_auto_record_checkbox(self):
-        return self.auto_record_checkbox

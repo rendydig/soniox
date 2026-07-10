@@ -1,14 +1,13 @@
 import sys
 import os
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, 
-                             QMessageBox, QFileDialog)
+                             QMessageBox)
 from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
 from src.config import MAX_TRANSCRIPTION_LINES, MAX_GEMINI_LINES
 from src.text_formatter import append_timestamped_text
 from src.controllers import (
     DeviceController,
-    RecordingController,
     TranscriptionController,
     TranslationController
 )
@@ -29,10 +28,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Soniox AI: Transcribe & Translate")
         self.resize(800, 600)
         
-        base_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "recordings")
-        
         self.device_controller = DeviceController()
-        self.recording_controller = RecordingController(base_dir)
         self.transcription_controller = TranscriptionController()
         self.translation_controller = TranslationController()
         
@@ -56,7 +52,7 @@ class MainWindow(QMainWindow):
         layout.setSpacing(12)
         layout.setContentsMargins(16, 16, 16, 16)
 
-        self.device_settings = DeviceSettingsWidget(self.recording_controller)
+        self.device_settings = DeviceSettingsWidget()
         layout.addWidget(self.device_settings)
         
         self.mode_selection = ModeSelectionWidget()
@@ -81,8 +77,6 @@ class MainWindow(QMainWindow):
     def _setup_widget_references(self):
         self.device_combo = self.device_settings.get_device_combo()
         self.speaker_combo = self.device_settings.get_speaker_combo()
-        self.dest_edit = self.device_settings.get_dest_edit()
-        self.auto_record_checkbox = self.device_settings.get_auto_record_checkbox()
         
         self.mode_group = self.mode_selection.get_mode_group()
         self.rb_transcribe = self.mode_selection.get_transcribe_radio()
@@ -98,17 +92,14 @@ class MainWindow(QMainWindow):
         self.translation_input = self.translation_section.get_translation_input()
         
         self.btn_start = self.control_buttons.get_start_button()
-        self.record_btn = self.control_buttons.get_record_button()
         
         self.status_label = self.status_bar.get_status_label()
         self.memory_label = self.status_bar.get_memory_label()
     
     def _setup_widget_connections(self):
-        self.device_settings.get_browse_button().clicked.connect(self._choose_destination)
         self.mode_group.buttonToggled.connect(self._on_mode_changed)
         self.translation_input.installEventFilter(self)
         self.btn_start.clicked.connect(self._toggle_start)
-        self.record_btn.clicked.connect(self._toggle_recording)
         
         reply_shortcut = QShortcut(QKeySequence("Ctrl+R"), self)
         reply_shortcut.activated.connect(self._manual_reply)
@@ -129,11 +120,6 @@ class MainWindow(QMainWindow):
         self.device_controller.devices_populated.connect(self._on_devices_populated)
         self.device_controller.device_error.connect(self._on_device_error)
         
-        self.recording_controller.status_changed.connect(self._update_status)
-        self.recording_controller.error_occurred.connect(self._on_recording_error)
-        self.recording_controller.recording_started.connect(self._on_recording_started)
-        self.recording_controller.recording_stopped.connect(self._on_recording_stopped)
-        
         self.transcription_controller.status_changed.connect(self._update_status)
         self.transcription_controller.error_occurred.connect(self._on_transcription_error)
         self.transcription_controller.transcription_update.connect(self._on_transcription_update)
@@ -148,12 +134,6 @@ class MainWindow(QMainWindow):
         self.translation_controller.auto_reply_result.connect(self._on_auto_reply_result)
         
         self.gemini_lang_combo.currentTextChanged.connect(self._on_auto_reply_language_changed)
-
-    def _choose_destination(self):
-        folder = QFileDialog.getExistingDirectory(self, "Choose destination folder", self.recording_controller.get_base_dir())
-        if folder:
-            self.recording_controller.set_base_dir(folder)
-            self.dest_edit.setText(folder)
 
     def _on_mode_changed(self, btn, checked):
         if checked:
@@ -200,23 +180,12 @@ class MainWindow(QMainWindow):
         self.transcription_editor.clear()
         self.translation_controller.clear_conversation_history()
         self.transcription_controller.start_session(host_device_id, speaker_device_id, mode=mode, target_lang=target_lang)
-        
-        if self.auto_record_checkbox.isChecked():
-            host_dev_info = self.device_controller.get_device_info(host_device_id)
-            speaker_dev_info = self.device_controller.get_device_info(speaker_device_id) if speaker_device_id is not None else None
-            if host_dev_info:
-                self.recording_controller.start_recording(host_device_id, host_dev_info, speaker_device_id, speaker_dev_info)
-                self.record_btn.setText("Recording (auto)")
-                self.record_btn.setEnabled(False)
 
     def _stop_session(self):
         self.status_label.setText("Stopping...")
         
         self.translation_controller.cancel_auto_reply()
         self.transcription_controller.stop_session()
-        
-        if self.auto_record_checkbox.isChecked() and self.recording_controller.is_recording():
-            self.recording_controller.stop_recording()
 
     def _on_transcription_update(self, text, is_final, input_source):
         print(f"[DEBUG] [{input_source}] _on_transcription_update called: is_final={is_final}, text='{text[:50] if text else ''}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
@@ -263,19 +232,16 @@ class MainWindow(QMainWindow):
     def _on_transcription_started(self):
         """Handle transcription session started."""
         self.btn_start.setText("Stop")
-        self.record_btn.setEnabled(False)
     
     def _on_transcription_stopped(self):
         """Handle transcription session stopped."""
         self.btn_start.setChecked(False)
         self.btn_start.setText("Start Transcription" if self.rb_transcribe.isChecked() else "Start Translation")
-        self.record_btn.setEnabled(True)
     
     def _on_transcription_error(self, msg: str):
         """Handle transcription errors."""
         self.btn_start.setChecked(False)
         self.btn_start.setText("Start Transcription" if self.rb_transcribe.isChecked() else "Start Translation")
-        self.record_btn.setEnabled(True)
         QMessageBox.critical(self, "Error", msg)
 
     def _update_status(self, text: str):
@@ -349,71 +315,6 @@ class MainWindow(QMainWindow):
         """Handle device errors."""
         QMessageBox.warning(self, "Device Error", msg)
 
-    def _toggle_recording(self, checked: bool):
-        if checked:
-            self._start_recording()
-        else:
-            self._stop_recording()
-
-    def _start_recording(self):
-        if not self.device_controller.has_devices():
-            QMessageBox.warning(self, "No Device", "No input device is available to record from.")
-            self.record_btn.setChecked(False)
-            return
-
-        host_idx = self.device_combo.currentIndex()
-        device_ids = self.device_controller.get_device_ids()
-        
-        if host_idx < 0 or host_idx >= len(device_ids):
-            QMessageBox.warning(self, "No Device Selected", "Please select a host input device.")
-            self.record_btn.setChecked(False)
-            return
-
-        host_device_id = device_ids[host_idx]
-        dev_info = self.device_controller.get_device_info(host_device_id)
-        
-        if not dev_info:
-            self.record_btn.setChecked(False)
-            return
-        
-        # Get speaker device ID (optional)
-        speaker_idx = self.speaker_combo.currentIndex()
-        speaker_device_id = None
-        if speaker_idx >= 0 and speaker_idx < len(device_ids):
-            speaker_device_id = device_ids[speaker_idx]
-            # Only use speaker device if it's different from host
-            if speaker_device_id == host_device_id:
-                speaker_device_id = None
-        
-        samplerate = dev_info.get("default_samplerate") or 44100
-        channels = min(dev_info.get("max_input_channels", 1), 2)
-        channels = max(1, channels)
-
-        success = self.recording_controller.start_recording(host_device_id, samplerate, channels, speaker_device_id)
-        if not success:
-            self.record_btn.setChecked(False)
-
-    def _stop_recording(self):
-        self.recording_controller.stop_recording()
-
-    def _on_recording_started(self):
-        """Handle recording started."""
-        self.record_btn.setText("Stop Recording")
-        if not self.auto_record_checkbox.isChecked():
-            self.btn_start.setEnabled(False)
-    
-    def _on_recording_stopped(self):
-        """Handle recording stopped."""
-        self.record_btn.setChecked(False)
-        self.record_btn.setText("Record to File")
-        if not self.auto_record_checkbox.isChecked():
-            self.btn_start.setEnabled(True)
-        self.record_btn.setEnabled(True)
-    
-    def _on_recording_error(self, msg: str):
-        """Handle recording errors."""
-        QMessageBox.critical(self, "Recording Error", msg)
-
     def _update_memory_usage(self):
         """Update memory usage indicator."""
         try:
@@ -439,9 +340,6 @@ class MainWindow(QMainWindow):
             
             # Stop transcription first to stop audio streams
             self.transcription_controller.cleanup()
-            
-            # Stop recording
-            self.recording_controller.cleanup()
             
             # Stop translation
             self.translation_controller.cleanup()

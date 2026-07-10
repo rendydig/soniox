@@ -2,10 +2,8 @@ import asyncio
 import json
 import queue
 import os
-from datetime import datetime
 import numpy as np
 import sounddevice as sd
-import soundfile as sf
 import websockets
 from PySide6.QtCore import QThread, Signal
 from src.config import SONIOX_API_KEY, WS_URL
@@ -219,90 +217,5 @@ class SonioxWorker(QThread):
                             self.transcription_update.emit("", False, self._input_source)
 
             await asyncio.gather(sender(), receiver())
-
-
-class RecorderWorker(QThread):
-    error = Signal(str)
-    status = Signal(str)
-    saved = Signal(str)
-
-    def __init__(self, device_id: int, samplerate: float, channels: int, filepath: str, parent=None):
-        super().__init__(parent)
-        self._device_id = device_id
-        self._samplerate = int(samplerate)
-        self._channels = channels
-        self._filepath = filepath
-        self._stop_flag = False
-        self._q: "queue.Queue[np.ndarray]" = queue.Queue(maxsize=128)
-        self._stream = None
-        self._blocksize = 2048
-
-    def stop(self):
-        self._stop_flag = True
-
-    def run(self):
-        try:
-            self.status.emit("Opening audio stream...")
-            
-            # Check device compatibility
-            try:
-                device_info = sd.query_devices(self._device_id)
-                if device_info['max_input_channels'] < self._channels:
-                    self.error.emit(f"Device only supports {device_info['max_input_channels']} channels, requested {self._channels}")
-                    return
-            except Exception as e:
-                self.error.emit(f"Failed to query device: {e}")
-                return
-
-            with sf.SoundFile(
-                self._filepath,
-                mode="w",
-                samplerate=self._samplerate,
-                channels=self._channels,
-                subtype="PCM_24",
-                format="WAV",
-            ) as wav_file:
-
-                def callback(indata, frames, time_info, status):
-                    if status:
-                        self.status.emit(f"Audio status: {status}")
-                    if self._stop_flag:
-                        return
-                    try:
-                        self._q.put_nowait(indata.copy())
-                    except queue.Full:
-                        self.status.emit("Warning: Audio queue full, dropping frames")
-
-                self._stream = sd.InputStream(
-                    samplerate=self._samplerate,
-                    channels=self._channels,
-                    device=self._device_id,
-                    dtype="float32",
-                    blocksize=self._blocksize,
-                    callback=callback,
-                )
-                self._stream.start()
-                try:
-                    self.status.emit("Recording...")
-                    while not self._stop_flag or not self._q.empty():
-                        try:
-                            data = self._q.get(timeout=0.2)
-                            wav_file.write(data)
-                        except queue.Empty:
-                            if self._stop_flag:
-                                break
-                            continue
-                finally:
-                    if self._stream is not None:
-                        try:
-                            self._stream.stop()
-                            self._stream.close()
-                        except:
-                            pass
-                        self._stream = None
-
-            self.saved.emit(self._filepath)
-        except Exception as e:
-            self.error.emit(str(e))
 
 

@@ -14,14 +14,6 @@ class ControlButtonsWidget(QWidget):
         self.btn_start.setCheckable(True)
         self.btn_start.setMinimumHeight(56)
         layout.addWidget(self.btn_start)
-        
-        self.record_btn = QPushButton("Record to File")
-        self.record_btn.setCheckable(True)
-        self.record_btn.setMinimumHeight(56)
-        layout.addWidget(self.record_btn)
     
     def get_start_button(self):
         return self.btn_start
-    
-    def get_record_button(self):
-        return self.record_btn
