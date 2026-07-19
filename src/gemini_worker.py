@@ -106,13 +106,22 @@ class GeminiAutoReplyWorker(QThread):
             client = genai.Client(api_key=GEMINI_API_KEY)
             
             # Build system instruction (static persona + format rules)
-            system_instruction = f"""You are a {self._self_context} professional engaged in a live conversation.
-You are the HOST (the user). You are listening to transcribed speech and suggesting what you should say next.
-Use the conversation history to understand the flow and direction of the conversation.
-Your suggestion should be a natural continuation that makes sense given what has already been said.
-Provide a natural, contextual response in {self._target_language}.
+            system_instruction = f"""You are the Host in a live, two-person conversation.
 
-Format your response exactly as follows and keep it concise:
+- Your expertise areas: {self._self_context}.
+- Messages with role 'user' are what the other person (Speaker) said.
+- Messages with role 'model' are what you (the Host) have said previously.
+
+Objective:
+- Produce the next thing the Host should say.
+- Directly address the LAST 'user' message. Do not change topic. If it is a question, answer it first.
+- Keep it concise (1–4 sentences), natural, and conversational.
+- Do not repeat the Speaker's words and do not mention being an AI.
+
+Language:
+- Write the Host's reply in {self._target_language}.
+
+Format your response exactly as follows:
 {self._target_language} Text: [Write your response using natural {self._target_language} script]
 {_get_pronunciation_line(self._target_language)}
 English Translation: [Provide the meaning in clear English]
@@ -120,24 +129,78 @@ Sample {self._target_language} text format: {_get_sample_text(self._target_langu
 
             # Build multi-turn contents from conversation history
             contents = []
-            for turn in self._conversation_history:
-                role_label = "YOU (host)" if turn["role"] == "host" else "THE OTHER PERSON (speaker)"
-                user_text = f"{role_label} said: {turn['text']}"
-                if turn["role"] == "host":
-                    user_text += f"\nYour previous reply was: {turn['suggestion']}"
+            print(f"[GeminiAutoReplyWorker] Contents ({len(self._conversation_history)} turns):")
+            for i, turn in enumerate(self._conversation_history):
+                print(f"  [{i}] role={turn['role']} | text={turn['text']} | suggestion={turn['suggestion']}")
+                
+            # Merge consecutive turns with the same role to reduce fragmentation/noise
+            merged_history = []
+            for t in self._conversation_history:
+                role = t.get("role")
+                text = (t.get("text") or "").strip()
+                sugg = (t.get("suggestion") or "").strip()
+                # Skip completely empty entries
+                if not text and not sugg:
+                    continue
+                if merged_history and merged_history[-1].get("role") == role:
+                    # Merge into previous entry
+                    if text:
+                        prev_text = merged_history[-1].get("text", "")
+                        merged_history[-1]["text"] = (prev_text + " " + text).strip() if prev_text else text
+                    # For speaker turns, keep the latest suggestion as the fallback
+                    if sugg:
+                        merged_history[-1]["suggestion"] = sugg
                 else:
-                    user_text += f"\nSuggested reply was: {turn['suggestion']}"
-                contents.append(types.Content(
-                    role="user",
-                    parts=[types.Part(text=user_text)]
-                ))
-                contents.append(types.Content(
-                    role="model",
-                    parts=[types.Part(text=turn['suggestion'])]
-                ))
+                    merged_history.append({
+                        "role": role,
+                        "text": text,
+                        "suggestion": sugg
+                    })
+
+            # Normalize history into alternating user/model turns using merged history:
+            # - 'speaker' -> role='user' with their text
+            # - 'host'    -> role='model' with host's spoken text
+            # If a 'speaker' turn has no following 'host' turn, use its 'suggestion' as the model reply
+            idx = 0
+            while idx < len(merged_history):
+                turn = merged_history[idx]
+                role = turn.get("role")
+                if role == "speaker":
+                    # Add the other person's utterance as a user message
+                    speaker_text = turn.get("text", "").strip()
+                    if speaker_text:
+                        contents.append(types.Content(
+                            role="user",
+                            parts=[types.Part(text=speaker_text)]
+                        ))
+
+                    # Pair with the host reply if present next, otherwise fall back to the suggestion for this turn
+                    host_reply_text = None
+                    if idx + 1 < len(merged_history) and merged_history[idx + 1].get("role") == "host":
+                        host_reply_text = (merged_history[idx + 1].get("text") or "").strip()
+                        idx += 1  # consume the paired host turn
+                    else:
+                        host_reply_text = (turn.get("suggestion") or "").strip()
+
+                    if host_reply_text:
+                        contents.append(types.Content(
+                            role="model",
+                            parts=[types.Part(text=host_reply_text)]
+                        ))
+
+                elif role == "host":
+                    # Unpaired host utterance (e.g., manual speech) as a model message
+                    host_text = turn.get("text", "").strip()
+                    if host_text:
+                        contents.append(types.Content(
+                            role="model",
+                            parts=[types.Part(text=host_text)]
+                        ))
+
+                idx += 1
 
             # Build latest user input with optional additional context
-            latest_input = f"Latest transcribed speech: {self._transcription_text}"
+            latest_input = f"{self._transcription_text}"
             if self._additional_context and self._additional_context.strip():
                 latest_input += f"\n\nAdditional context from user input:\n{self._additional_context.strip()}"
             contents.append(types.Content(
@@ -147,7 +210,11 @@ Sample {self._target_language} text format: {_get_sample_text(self._target_langu
             
             if not self._is_running:
                 return
-            
+
+            print(f"[GeminiAutoReplyWorker] Contents ({len(contents)} turns):")
+            for i, c in enumerate(contents):
+                print(f"  [{i}] role={c.role} | {c.parts[0].text[:200]!r}")
+
             response = client.models.generate_content(
                 model='gemini-2.5-flash',
                 contents=contents,

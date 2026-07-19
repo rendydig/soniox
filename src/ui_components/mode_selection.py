@@ -11,10 +11,9 @@ class ModeSelectionWidget(QWidget):
     def _init_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(12)
+        layout.setSpacing(4)
         
-        mode_layout = QHBoxLayout()
-        mode_layout.addWidget(QLabel("Mode:"))
+        layout.addWidget(QLabel("Mode:"))
         
         self.mode_group = QButtonGroup(self)
         self.rb_transcribe = QRadioButton("Live Transcription")
@@ -24,14 +23,18 @@ class ModeSelectionWidget(QWidget):
         self.mode_group.addButton(self.rb_transcribe)
         self.mode_group.addButton(self.rb_translate)
         
-        mode_layout.addWidget(self.rb_transcribe)
-        mode_layout.addWidget(self.rb_translate)
-        mode_layout.addStretch()
-        layout.addLayout(mode_layout)
-        
+        radio_layout = QHBoxLayout()
+        radio_layout.setContentsMargins(0, 0, 0, 0)
+        radio_layout.addWidget(self.rb_transcribe)
+        radio_layout.addWidget(self.rb_translate)
+        radio_layout.addStretch()
+        layout.addLayout(radio_layout)
+        layout.addStretch()
+
         self.lang_container = QWidget()
-        lang_layout = QHBoxLayout(self.lang_container)
+        lang_layout = QVBoxLayout(self.lang_container)
         lang_layout.setContentsMargins(0, 0, 0, 0)
+        lang_layout.setSpacing(4)
         
         self.lang_combo = QComboBox()
         for name, code in LANGUAGES.items():
@@ -39,9 +42,9 @@ class ModeSelectionWidget(QWidget):
         self.lang_combo.setCurrentText("Indonesian")
         
         lang_layout.addWidget(QLabel("Target Language:"))
-        lang_layout.addWidget(self.lang_combo, 1)
+        lang_layout.addWidget(self.lang_combo)
+        lang_layout.addStretch()
         
-        layout.addWidget(self.lang_container)
         self.lang_container.setVisible(False)
     
     def get_mode_group(self):

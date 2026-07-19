@@ -37,8 +37,8 @@ export const LiveTextDisplayer = ({ finalizedSentences, liveTextHost, liveTextSp
             ${recentSentences.map((sentenceObj, index) => {
                 const isLatest = index === recentSentences.length - 1;
                 const style = isLatest 
-                     ? { opacity: '1', fontWeight: '600', fontSize: '24px' }
-                    : { opacity: '0.7', fontWeight: 'normal', fontSize: '18px' };
+                     ? { opacity: '1', fontWeight: '600', fontSize: '16px' }
+                    : { opacity: '0.7', fontWeight: 'normal', fontSize: '12px' };
                 const correction = corrections[sentenceObj.text];
                 
                 return html`

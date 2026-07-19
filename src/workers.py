@@ -59,7 +59,7 @@ class SonioxWorker(QThread):
 
             config = {
                 "api_key": SONIOX_API_KEY,
-                "model": "stt-rt-v3",
+                "model": "stt-rt-v5",
                 "audio_format": "pcm_s16le",
                 "sample_rate": self._sample_rate,
                 "num_channels": self._channels,

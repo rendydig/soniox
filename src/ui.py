@@ -1,6 +1,6 @@
 import sys
 import os
-from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, 
+from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QMessageBox)
 from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
@@ -52,11 +52,18 @@ class MainWindow(QMainWindow):
         layout.setSpacing(12)
         layout.setContentsMargins(16, 16, 16, 16)
 
+        top_row = QHBoxLayout()
+        top_row.setSpacing(16)
+
         self.device_settings = DeviceSettingsWidget()
-        layout.addWidget(self.device_settings)
-        
+        top_row.addWidget(self.device_settings, 2)
+
         self.mode_selection = ModeSelectionWidget()
-        layout.addWidget(self.mode_selection)
+        top_row.addWidget(self.mode_selection, 1)
+
+        top_row.addWidget(self.mode_selection.get_lang_container(), 1)
+
+        layout.addLayout(top_row)
         
         self.text_editors = TextEditorsWidget()
         layout.addWidget(self.text_editors)

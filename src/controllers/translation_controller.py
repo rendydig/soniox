@@ -12,7 +12,7 @@ class TranslationController(QObject):
     translation_completed = Signal()
     auto_reply_result = Signal(str)
     
-    MAX_HISTORY_TURNS = 10
+    MAX_HISTORY_TURNS = 25
 
     def __init__(self):
         super().__init__()
@@ -23,6 +23,7 @@ class TranslationController(QObject):
         self._auto_reply_timer.setSingleShot(True)
         self._auto_reply_timer.timeout.connect(self._trigger_auto_reply)
         self._pending_transcription = ""
+        self._pending_transcription_parts = []
         self._pending_context = ""
         self._pending_input_source = "speaker"
         self._auto_reply_target_language = "English"
@@ -99,15 +100,28 @@ class TranslationController(QObject):
         print(f"[DEBUG TranslationController] schedule_auto_reply called with: '{transcription_text}' (from {input_source})")
         if additional_context:
             print(f"[DEBUG TranslationController] Additional context: '{additional_context[:50]}...'")
-        self._pending_transcription = transcription_text
+        # Accumulate chunks from the same speaker/host while debounce timer is active
+        if self._pending_input_source == input_source and self._auto_reply_timer.isActive():
+            if self._pending_transcription_parts:
+                self._pending_transcription_parts.append(transcription_text)
+            else:
+                if self._pending_transcription:
+                    self._pending_transcription_parts = [self._pending_transcription, transcription_text]
+                else:
+                    self._pending_transcription_parts = [transcription_text]
+            self._pending_transcription = " ".join(self._pending_transcription_parts).strip()
+        else:
+            self._pending_transcription_parts = [transcription_text] if transcription_text else []
+            self._pending_transcription = transcription_text
+            self._pending_input_source = input_source
         self._pending_context = additional_context
-        self._pending_input_source = input_source
         self._auto_reply_timer.stop()
         self._auto_reply_timer.start(2000)
         print(f"[DEBUG TranslationController] Timer started for 2000ms")
     
     def trigger_reply_now(self, transcription_text: str, additional_context: str = "", input_source: str = "speaker"):
         """Trigger a Gemini reply immediately without debounce timer."""
+        self._pending_transcription_parts = [transcription_text] if transcription_text else []
         self._pending_transcription = transcription_text
         self._pending_context = additional_context
         self._pending_input_source = input_source
@@ -119,6 +133,7 @@ class TranslationController(QObject):
         print(f"[DEBUG TranslationController] cancel_auto_reply called")
         self._auto_reply_timer.stop()
         self._pending_transcription = ""
+        self._pending_transcription_parts = []
         self._pending_context = ""
         self._pending_input_source = "speaker"
     
@@ -148,6 +163,8 @@ class TranslationController(QObject):
             self.status_changed.emit(f"Auto-replying to: {self._pending_transcription[:50]}...")
             self._auto_reply_worker.start()
             print(f"[DEBUG TranslationController] Auto-reply worker started!")
+            # Reset accumulation for the next window
+            self._pending_transcription_parts = []
             
         except Exception as e:
             print(f"[DEBUG TranslationController] Exception in _trigger_auto_reply: {e}")

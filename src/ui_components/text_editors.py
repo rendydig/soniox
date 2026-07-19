@@ -1,5 +1,8 @@
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, 
-                             QLabel, QTextEdit, QCheckBox)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
+                             QLabel, QTextEdit, QCheckBox, QComboBox,
+                             QStackedWidget)
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtCore import QUrl
 
 
 class TextEditorsWidget(QWidget):
@@ -18,12 +21,32 @@ class TextEditorsWidget(QWidget):
         transcription_editors_row = QHBoxLayout()
         
         transcription_container = QVBoxLayout()
+
+        transcription_header = QHBoxLayout()
         transcription_label = QLabel("Real-Time Transcription")
+        self.view_mode_combo = QComboBox()
+        self.view_mode_combo.addItem("Text Editor")
+        self.view_mode_combo.addItem("Webview")
+        self.view_mode_combo.setToolTip("Switch between text editor and webview")
+        transcription_header.addWidget(transcription_label)
+        transcription_header.addStretch()
+        transcription_header.addWidget(QLabel("View mode:"))
+        transcription_header.addWidget(self.view_mode_combo)
+
+        self.view_stack = QStackedWidget()
         self.transcription_editor = QTextEdit()
         self.transcription_editor.setPlaceholderText("Transcription will appear here...")
         self.transcription_editor.setMinimumHeight(200)
-        transcription_container.addWidget(transcription_label)
-        transcription_container.addWidget(self.transcription_editor)
+        self.webview = QWebEngineView()
+        self.webview.setUrl(QUrl("http://localhost:8765/"))
+        self.webview.setMinimumHeight(200)
+        self.view_stack.addWidget(self.transcription_editor)
+        self.view_stack.addWidget(self.webview)
+
+        self.view_mode_combo.currentIndexChanged.connect(self.view_stack.setCurrentIndex)
+
+        transcription_container.addLayout(transcription_header)
+        transcription_container.addWidget(self.view_stack)
         
         gemini_container = QVBoxLayout()
         gemini_header = QHBoxLayout()
@@ -51,3 +74,9 @@ class TextEditorsWidget(QWidget):
     
     def get_auto_reply_checkbox(self):
         return self.auto_reply_checkbox
+    
+    def get_view_mode_combo(self):
+        return self.view_mode_combo
+    
+    def get_webview(self):
+        return self.webview
