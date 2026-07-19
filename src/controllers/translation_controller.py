@@ -1,3 +1,5 @@
+import os
+from datetime import datetime
 from PySide6.QtCore import QObject, Signal, Qt, QTimer
 from src.gemini_worker import GeminiWorker, GeminiAutoReplyWorker
 
@@ -13,6 +15,11 @@ class TranslationController(QObject):
     auto_reply_result = Signal(str)
     
     MAX_HISTORY_TURNS = 25
+    HISTORY_LOG_FILE = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "logs",
+        "conversation_history.log"
+    )
 
     def __init__(self):
         super().__init__()
@@ -23,8 +30,6 @@ class TranslationController(QObject):
         self._auto_reply_timer.setSingleShot(True)
         self._auto_reply_timer.timeout.connect(self._trigger_auto_reply)
         self._pending_transcription = ""
-        self._pending_transcription_parts = []
-        self._pending_context = ""
         self._pending_input_source = "speaker"
         self._auto_reply_target_language = "English"
         self._conversation_history = []
@@ -88,42 +93,25 @@ class TranslationController(QObject):
         """Set the target language for auto-reply."""
         self._auto_reply_target_language = target_language
     
-    def schedule_auto_reply(self, transcription_text: str, additional_context: str = "", input_source: str = "speaker"):
+    def schedule_auto_reply(self, transcription_text: str, input_source: str = "speaker"):
         """
         Schedule an auto-reply after 2 seconds of no new transcription.
         
         Args:
             transcription_text: The transcribed text to respond to
-            additional_context: Optional additional context (e.g., from translation input field)
             input_source: Who said this text — "host" (you) or "speaker" (the other person)
         """
         print(f"[DEBUG TranslationController] schedule_auto_reply called with: '{transcription_text}' (from {input_source})")
-        if additional_context:
-            print(f"[DEBUG TranslationController] Additional context: '{additional_context[:50]}...'")
-        # Accumulate chunks from the same speaker/host while debounce timer is active
-        if self._pending_input_source == input_source and self._auto_reply_timer.isActive():
-            if self._pending_transcription_parts:
-                self._pending_transcription_parts.append(transcription_text)
-            else:
-                if self._pending_transcription:
-                    self._pending_transcription_parts = [self._pending_transcription, transcription_text]
-                else:
-                    self._pending_transcription_parts = [transcription_text]
-            self._pending_transcription = " ".join(self._pending_transcription_parts).strip()
-        else:
-            self._pending_transcription_parts = [transcription_text] if transcription_text else []
-            self._pending_transcription = transcription_text
-            self._pending_input_source = input_source
-        self._pending_context = additional_context
+        self._pending_transcription = transcription_text
+        self._pending_input_source = input_source
         self._auto_reply_timer.stop()
         self._auto_reply_timer.start(2000)
         print(f"[DEBUG TranslationController] Timer started for 2000ms")
     
-    def trigger_reply_now(self, transcription_text: str, additional_context: str = "", input_source: str = "speaker"):
+    def trigger_reply_now(self, transcription_text: str = None, input_source: str = "speaker"):
         """Trigger a Gemini reply immediately without debounce timer."""
-        self._pending_transcription_parts = [transcription_text] if transcription_text else []
-        self._pending_transcription = transcription_text
-        self._pending_context = additional_context
+        if transcription_text is not None:
+            self._pending_transcription = transcription_text
         self._pending_input_source = input_source
         self._auto_reply_timer.stop()
         self._trigger_auto_reply()
@@ -133,8 +121,6 @@ class TranslationController(QObject):
         print(f"[DEBUG TranslationController] cancel_auto_reply called")
         self._auto_reply_timer.stop()
         self._pending_transcription = ""
-        self._pending_transcription_parts = []
-        self._pending_context = ""
         self._pending_input_source = "speaker"
     
     def _trigger_auto_reply(self):
@@ -152,9 +138,8 @@ class TranslationController(QObject):
         try:
             print(f"[DEBUG TranslationController] Creating GeminiAutoReplyWorker with language: {self._auto_reply_target_language}")
             self._auto_reply_worker = GeminiAutoReplyWorker(
-                self._pending_transcription, 
+                self._pending_transcription,
                 self._auto_reply_target_language,
-                self._pending_context,
                 conversation_history=list(self._conversation_history)
             )
             self._auto_reply_worker.result.connect(self._on_auto_reply_result, Qt.ConnectionType.QueuedConnection)
@@ -163,9 +148,7 @@ class TranslationController(QObject):
             self.status_changed.emit(f"Auto-replying to: {self._pending_transcription[:50]}...")
             self._auto_reply_worker.start()
             print(f"[DEBUG TranslationController] Auto-reply worker started!")
-            # Reset accumulation for the next window
-            self._pending_transcription_parts = []
-            
+
         except Exception as e:
             print(f"[DEBUG TranslationController] Exception in _trigger_auto_reply: {e}")
             self.error_occurred.emit(f"Failed to start auto-reply: {e}")
@@ -178,7 +161,6 @@ class TranslationController(QObject):
             self._old_workers.append(self._auto_reply_worker)
             self._auto_reply_worker = None
             self._cleanup_old_workers()
-        self._append_to_history(self._pending_transcription, result, self._pending_input_source)
         self.auto_reply_result.emit(result)
         self.status_changed.emit("Auto-reply complete.")
     
@@ -210,19 +192,12 @@ class TranslationController(QObject):
                 worker.deleteLater()
             self._old_workers = self._old_workers[5:]
     
-    def record_host_speech(self, text: str):
-        """Record host's actual speech into history without triggering auto-reply."""
-        if not text.strip():
-            return
-        self._append_to_history(text, text, "host")
-        print(f"[DEBUG TranslationController] Host speech recorded (no auto-reply): '{text[:50]}...'")
-
     def clear_conversation_history(self):
         """Clear the conversation history buffer."""
         self._conversation_history.clear()
         print(f"[DEBUG TranslationController] Conversation history cleared")
 
-    def _append_to_history(self, text: str, suggestion: str, input_source: str):
+    def append_to_history(self, text: str, suggestion: str, input_source: str):
         """Append a conversation turn to history, keeping only last MAX_HISTORY_TURNS."""
         self._conversation_history.append({
             "text": text,
@@ -231,7 +206,21 @@ class TranslationController(QObject):
         })
         if len(self._conversation_history) > self.MAX_HISTORY_TURNS:
             self._conversation_history = self._conversation_history[-self.MAX_HISTORY_TURNS:]
+        self._log_history_to_file(text, suggestion, input_source)
         print(f"[DEBUG TranslationController] History updated: {len(self._conversation_history)} turns (last from {input_source})")
+
+    def _log_history_to_file(self, text: str, suggestion: str, input_source: str):
+        """Append the conversation turn to a persistent text log file."""
+        try:
+            os.makedirs(os.path.dirname(self.HISTORY_LOG_FILE), exist_ok=True)
+            timestamp = datetime.now().isoformat()
+            with open(self.HISTORY_LOG_FILE, "a", encoding="utf-8") as f:
+                f.write(f"[{timestamp}] source={input_source}\n")
+                f.write(f"  text: {text}\n")
+                f.write(f"  suggestion: {suggestion}\n")
+                f.write("-" * 80 + "\n")
+        except Exception as e:
+            print(f"[DEBUG TranslationController] Failed to write history log: {e}")
 
     def cleanup(self):
         """Clean up resources."""

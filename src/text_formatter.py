@@ -1,6 +1,37 @@
+import re
 from datetime import datetime
 from PySide6.QtWidgets import QTextEdit
 from PySide6.QtGui import QTextCursor
+
+
+def format_gemini_result(text: str) -> str:
+    """
+    Add paragraph breaks before known Gemini output sections.
+
+    Detects headers such as:
+      - Syllables/Pronunciation:
+      - English Translation:
+      - <Language> Translation:
+
+    Returns the text with blank lines inserted before each detected header.
+    """
+    if not text:
+        return text
+
+    section_pattern = re.compile(r'^(Syllables/Pronunciation:|\w+ Translation:)\s*', re.MULTILINE)
+
+    def insert_breaks(match: re.Match) -> str:
+        start = match.start()
+        # If a blank line already exists above the header, keep it as is.
+        if start >= 2 and text[start - 2:start] == '\n\n':
+            return match.group(0)
+        # If the header is directly attached to previous text, add a blank line.
+        if start > 0 and not text[start - 1].isspace():
+            return '\n\n' + match.group(0)
+        # Header is on a new line but has no blank line above it; add one.
+        return '\n' + match.group(0)
+
+    return section_pattern.sub(insert_breaks, text)
 
 
 def append_timestamped_text(text_edit: QTextEdit, text: str, max_lines: int = None):

@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
 from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
 from src.config import MAX_TRANSCRIPTION_LINES, MAX_GEMINI_LINES
-from src.text_formatter import append_timestamped_text
+from src.text_formatter import append_timestamped_text, format_gemini_result
 from src.controllers import (
     DeviceController,
     TranscriptionController,
@@ -194,39 +194,37 @@ class MainWindow(QMainWindow):
         self.translation_controller.cancel_auto_reply()
         self.transcription_controller.stop_session()
 
-    def _on_transcription_update(self, text, is_final, input_source):
-        print(f"[DEBUG] [{input_source}] _on_transcription_update called: is_final={is_final}, text='{text[:50] if text else ''}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
+    def _on_transcription_update(self, transcription_text, is_final, input_source):
+        # print(f"[DEBUG] [{input_source}] _on_transcription_update called: is_final={is_final}, text='{text[:50] if text else ''}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
         
         # Always send as "transcription" type (original English text)
         # Translation results are sent separately via _on_translation_update
-        self.websocket_client.send_transcription(text, is_final, additional_data={"input_source": input_source}, message_type="transcription")
+        self.websocket_client.send_transcription(transcription_text, is_final, additional_data={"input_source": input_source}, message_type="transcription")
         
         if is_final:
             # Prefix text with input source label
-            labeled_text = f"[{input_source.upper()}] {text}"
+            labeled_text = f"[{input_source.upper()}] {transcription_text}"
             append_timestamped_text(self.transcription_editor, labeled_text, max_lines=MAX_TRANSCRIPTION_LINES)
             
-            self._last_final_transcription = text
+            self._last_final_transcription = transcription_text
             
-            if self.auto_reply_checkbox.isChecked() and text.strip():
+            if(transcription_text.strip() != ""):
+                self.translation_controller.append_to_history(transcription_text, "", input_source)
+
+            if self.auto_reply_checkbox.isChecked() and transcription_text.strip():
                 if input_source == "host":
-                    print(f"[DEBUG] [{input_source}] Recording host speech (no auto-reply): '{text}'")
-                    self.translation_controller.record_host_speech(text)
+                    print(f"[DEBUG] [{input_source}] Recording host speech (no auto-reply): '{transcription_text}'")
                 else:
-                    print(f"[DEBUG] [{input_source}] Scheduling auto-reply for: '{text}'")
-                    additional_context = self.translation_input.toPlainText().strip()
-                    if additional_context:
-                        print(f"[DEBUG] Including translation input as context: '{additional_context[:50]}...'")
-                    self.translation_controller.schedule_auto_reply(text, additional_context, input_source)
+                    self.translation_controller.schedule_auto_reply(transcription_text, input_source)
             else:
-                print(f"[DEBUG] [{input_source}] NOT scheduling auto-reply. Checkbox: {self.auto_reply_checkbox.isChecked()}, Text empty: {not text.strip()}")
+                print(f"[DEBUG] [{input_source}] NOT scheduling auto-reply. Checkbox: {self.auto_reply_checkbox.isChecked()}, Text empty: {not transcription_text.strip()}")
         else:
-            self.status_label.setText(f"Live [{input_source}]: {text}" if text.strip() else "Listening...")
+            self.status_label.setText(f"Live [{input_source}]: {transcription_text}" if transcription_text.strip() else "Listening...")
             
-            if self.auto_reply_checkbox.isChecked() and text.strip():
+            if self.auto_reply_checkbox.isChecked() and transcription_text.strip():
                 print(f"[DEBUG] [{input_source}] Canceling auto-reply (non-final text with content received)")
                 self.translation_controller.cancel_auto_reply()
-            elif self.auto_reply_checkbox.isChecked() and not text.strip():
+            elif self.auto_reply_checkbox.isChecked() and not transcription_text.strip():
                 print(f"[DEBUG] [{input_source}] Ignoring empty non-final text, keeping auto-reply timer active")
     
     def _on_translation_update(self, text: str, is_final: bool, input_source: str):
@@ -273,7 +271,7 @@ class MainWindow(QMainWindow):
     
     def _on_translation_result(self, result: str):
         """Handle translation result."""
-        self.gemini_text.setText(result)
+        self.gemini_text.setText(format_gemini_result(result))
     
     def _on_translation_error(self, msg: str):
         """Handle translation errors."""
@@ -287,7 +285,7 @@ class MainWindow(QMainWindow):
     
     def _on_auto_reply_result(self, result: str):
         """Handle auto-reply result."""
-        self.gemini_text.setText(result)
+        self.gemini_text.setText(format_gemini_result(result))
     
     def _manual_reply(self):
         """Manually trigger a Gemini reply using the last final transcription (Ctrl+R / Cmd+R)."""
@@ -297,8 +295,7 @@ class MainWindow(QMainWindow):
         if not text:
             QMessageBox.warning(self, "No Transcription", "No transcription available to reply to.")
             return
-        additional_context = self.translation_input.toPlainText().strip()
-        self.translation_controller.trigger_reply_now(text, additional_context, "speaker")
+        self.translation_controller.trigger_reply_now(text, "speaker")
     
     def _on_auto_reply_language_changed(self, language: str):
         """Update auto-reply target language when combo box changes."""

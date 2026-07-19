@@ -85,11 +85,10 @@ class GeminiAutoReplyWorker(QThread):
     error = Signal(str)
     result = Signal(str)
     
-    def __init__(self, transcription_text: str, target_language: str, additional_context: str = "", conversation_history: list = None, parent=None):
+    def __init__(self, transcription_text: str, target_language: str, conversation_history: list = None, parent=None):
         super().__init__(parent)
         self._transcription_text = transcription_text
         self._target_language = target_language
-        self._additional_context = additional_context
         self._conversation_history = conversation_history or []
         self._is_running = True
         self._self_context = _load_self_context()
@@ -108,9 +107,9 @@ class GeminiAutoReplyWorker(QThread):
             # Build system instruction (static persona + format rules)
             system_instruction = f"""You are the Host in a live, two-person conversation.
 
-- Your expertise areas: {self._self_context}.
 - Messages with role 'user' are what the other person (Speaker) said.
 - Messages with role 'model' are what you (the Host) have said previously.
+- Your expertise areas: {self._self_context}.
 
 Objective:
 - Produce the next thing the Host should say.
@@ -129,7 +128,7 @@ Sample {self._target_language} text format: {_get_sample_text(self._target_langu
 
             # Build multi-turn contents from conversation history
             contents = []
-            print(f"[GeminiAutoReplyWorker] Contents ({len(self._conversation_history)} turns):")
+            print(f"[GeminiAutoReplyWorker] Contents Length ({len(self._conversation_history)} turns):")
             for i, turn in enumerate(self._conversation_history):
                 print(f"  [{i}] role={turn['role']} | text={turn['text']} | suggestion={turn['suggestion']}")
                 
@@ -138,29 +137,28 @@ Sample {self._target_language} text format: {_get_sample_text(self._target_langu
             for t in self._conversation_history:
                 role = t.get("role")
                 text = (t.get("text") or "").strip()
-                sugg = (t.get("suggestion") or "").strip()
                 # Skip completely empty entries
-                if not text and not sugg:
+                if not text:
                     continue
                 if merged_history and merged_history[-1].get("role") == role:
                     # Merge into previous entry
                     if text:
                         prev_text = merged_history[-1].get("text", "")
-                        merged_history[-1]["text"] = (prev_text + " " + text).strip() if prev_text else text
-                    # For speaker turns, keep the latest suggestion as the fallback
-                    if sugg:
-                        merged_history[-1]["suggestion"] = sugg
+                        merged_history[-1]["text"] = (prev_text + "\n" + text).strip() if prev_text else text
                 else:
                     merged_history.append({
                         "role": role,
-                        "text": text,
-                        "suggestion": sugg
+                        "text": text
                     })
 
             # Normalize history into alternating user/model turns using merged history:
             # - 'speaker' -> role='user' with their text
             # - 'host'    -> role='model' with host's spoken text
-            # If a 'speaker' turn has no following 'host' turn, use its 'suggestion' as the model reply
+            # Gemini requires the contents list to start with a 'user' turn, so drop
+            # any leading unpaired host turn before building the context.
+            if merged_history and merged_history[0].get("role") == "host":
+                merged_history.pop(0)
+
             idx = 0
             while idx < len(merged_history):
                 turn = merged_history[idx]
@@ -174,13 +172,11 @@ Sample {self._target_language} text format: {_get_sample_text(self._target_langu
                             parts=[types.Part(text=speaker_text)]
                         ))
 
-                    # Pair with the host reply if present next, otherwise fall back to the suggestion for this turn
+                    # Pair with the host reply if present next
                     host_reply_text = None
                     if idx + 1 < len(merged_history) and merged_history[idx + 1].get("role") == "host":
                         host_reply_text = (merged_history[idx + 1].get("text") or "").strip()
                         idx += 1  # consume the paired host turn
-                    else:
-                        host_reply_text = (turn.get("suggestion") or "").strip()
 
                     if host_reply_text:
                         contents.append(types.Content(
@@ -199,14 +195,19 @@ Sample {self._target_language} text format: {_get_sample_text(self._target_langu
 
                 idx += 1
 
-            # Build latest user input with optional additional context
-            latest_input = f"{self._transcription_text}"
-            if self._additional_context and self._additional_context.strip():
-                latest_input += f"\n\nAdditional context from user input:\n{self._additional_context.strip()}"
-            contents.append(types.Content(
-                role="user",
-                parts=[types.Part(text=latest_input)]
-            ))
+            # Build latest user input, but don't duplicate it if the caller already
+            # appended the current transcription as the most recent speaker turn.
+            latest_input = self._transcription_text.strip()
+            already_latest_speaker = (
+                merged_history
+                and merged_history[-1].get("role") == "speaker"
+                and merged_history[-1].get("text", "").strip() == latest_input
+            )
+            if latest_input and not already_latest_speaker:
+                contents.append(types.Content(
+                    role="user",
+                    parts=[types.Part(text=latest_input)]
+                ))
             
             if not self._is_running:
                 return

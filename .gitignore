@@ -7,3 +7,4 @@ recordings/
 assets
 *.wav
 *.mp3
+logs

@@ -60,8 +60,8 @@ export const LiveTranslationDisplayer = ({ finalizedTranslations, liveTranslatio
             ${translationsWithSentences.map((translationObj, index) => {
                 const isLatest = index === translationsWithSentences.length - 1;
                 const style = isLatest 
-                    ? { opacity: '1', fontWeight: '600', fontSize: '24px' }
-                    : { opacity: '0.7', fontWeight: 'normal', fontSize: '18px' };
+                    ? { opacity: '1', fontWeight: '600', fontSize: '16px' }
+                    : { opacity: '0.7', fontWeight: 'normal', fontSize: '12px' };
                 
                 return html`
                     <div class="live-text-line" style=${style} key=${translationObj.id}>

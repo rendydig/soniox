@@ -113,7 +113,7 @@ class WebSocketClient:
         if self.websocket and self.connected:
             try:
                 await self.websocket.send(json.dumps(message))
-                print(f"[WebSocket] Sent: {message['type']} - is_final={message.get('is_final')}")
+                # print(f"[WebSocket] Sent: {message['type']} - is_final={message.get('is_final')}")
             except Exception as e:
                 print(f"[WebSocket] Send error: {e}")
                 self.connected = False
