@@ -37,6 +37,18 @@ class SettingsViewWidget(QWidget):
         self.language_selection = LanguageSelectionWidget()
         layout.addWidget(self.language_selection)
 
+        view_mode_row = QHBoxLayout()
+        view_mode_label = QLabel("View mode:")
+        self.view_mode_combo = QComboBox()
+        self.view_mode_combo.addItem("Text Editor")
+        self.view_mode_combo.addItem("Webview")
+        self.view_mode_combo.setCurrentIndex(1)
+        self.view_mode_combo.setToolTip("Switch between text editor and webview")
+        view_mode_row.addWidget(view_mode_label)
+        view_mode_row.addWidget(self.view_mode_combo)
+        view_mode_row.addStretch()
+        layout.addLayout(view_mode_row)
+
         gemini_lang_row = QHBoxLayout()
         gemini_lang_label = QLabel("AI Reply Language:")
         self.gemini_lang_combo = QComboBox()
@@ -86,6 +98,9 @@ class SettingsViewWidget(QWidget):
 
     def get_language_selection(self):
         return self.language_selection
+
+    def get_view_mode_combo(self):
+        return self.view_mode_combo
 
     def get_gemini_lang_combo(self):
         return self.gemini_lang_combo

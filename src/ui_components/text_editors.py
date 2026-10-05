@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
-                             QLabel, QTextEdit, QCheckBox, QComboBox,
+                             QLabel, QTextEdit, QCheckBox,
                              QStackedWidget)
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtCore import QUrl
@@ -24,14 +24,8 @@ class TextEditorsWidget(QWidget):
 
         transcription_header = QHBoxLayout()
         transcription_label = QLabel("Real-Time Transcription")
-        self.view_mode_combo = QComboBox()
-        self.view_mode_combo.addItem("Text Editor")
-        self.view_mode_combo.addItem("Webview")
-        self.view_mode_combo.setToolTip("Switch between text editor and webview")
         transcription_header.addWidget(transcription_label)
         transcription_header.addStretch()
-        transcription_header.addWidget(QLabel("View mode:"))
-        transcription_header.addWidget(self.view_mode_combo)
 
         self.view_stack = QStackedWidget()
         self.transcription_editor = QTextEdit()
@@ -42,8 +36,6 @@ class TextEditorsWidget(QWidget):
         self.webview.setMinimumHeight(200)
         self.view_stack.addWidget(self.transcription_editor)
         self.view_stack.addWidget(self.webview)
-
-        self.view_mode_combo.currentIndexChanged.connect(self.view_stack.setCurrentIndex)
 
         transcription_container.addLayout(transcription_header)
         transcription_container.addWidget(self.view_stack)
@@ -75,8 +67,8 @@ class TextEditorsWidget(QWidget):
     def get_auto_reply_checkbox(self):
         return self.auto_reply_checkbox
     
-    def get_view_mode_combo(self):
-        return self.view_mode_combo
+    def get_view_stack(self):
+        return self.view_stack
     
     def get_webview(self):
         return self.webview

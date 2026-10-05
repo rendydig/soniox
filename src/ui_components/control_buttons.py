@@ -12,7 +12,6 @@ class ControlButtonsWidget(QWidget):
         
         self.btn_start = QPushButton("Start Transcription")
         self.btn_start.setCheckable(True)
-        self.btn_start.setMinimumHeight(56)
         layout.addWidget(self.btn_start)
     
     def get_start_button(self):

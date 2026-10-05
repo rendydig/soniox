@@ -70,8 +70,9 @@ class MainWindow(QMainWindow):
         self.translation_section = TranslationSectionWidget()
         main_layout.addWidget(self.translation_section)
 
+        # Start/Stop button lives in the menu bar (see _init_menu); created here
+        # so _setup_widget_references can cache it.
         self.control_buttons = ControlButtonsWidget()
-        main_layout.addWidget(self.control_buttons)
 
         self.status_bar = StatusBarWidget()
         main_layout.addWidget(self.status_bar)
@@ -124,6 +125,8 @@ class MainWindow(QMainWindow):
         self.settings_action.setCheckable(True)
         self.settings_action.toggled.connect(self._on_settings_toggled)
         self.menuBar().addAction(self.settings_action)
+
+        self.menuBar().setCornerWidget(self.control_buttons)
     
     def _setup_widget_references(self):
         self.device_combo = self.settings_view.get_device_combo()
@@ -131,6 +134,7 @@ class MainWindow(QMainWindow):
         
         self.lang_selection = self.settings_view.get_language_selection()
         self.lang_combo = self.lang_selection.get_lang_combo()
+        self.view_mode_combo = self.settings_view.get_view_mode_combo()
         
         self.transcription_editor = self.text_editors.get_transcription_editor()
         self.gemini_text = self.text_editors.get_gemini_text()
@@ -149,6 +153,9 @@ class MainWindow(QMainWindow):
         self.memory_label = self.status_bar.get_memory_label()
     
     def _setup_widget_connections(self):
+        self.view_mode_combo.currentIndexChanged.connect(self.text_editors.get_view_stack().setCurrentIndex)
+        self.text_editors.get_view_stack().setCurrentIndex(self.view_mode_combo.currentIndex())
+
         self.translation_input.installEventFilter(self)
         self.btn_start.clicked.connect(self._toggle_start)
         self.pronunciation_checkbox.toggled.connect(self.translation_controller.set_pronunciation_enabled)
@@ -165,6 +172,7 @@ class MainWindow(QMainWindow):
             QWidget { font-size: 14px; }
             QComboBox, QLineEdit { padding: 6px; }
             QPushButton { padding: 10px 16px; }
+            QMenuBar QPushButton { padding: 4px 14px; }
             QPushButton:checked { background-color: #d9534f; color: white; }
             QTextEdit { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; }
             """

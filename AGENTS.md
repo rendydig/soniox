@@ -34,15 +34,21 @@ Web monitor: `http://localhost:8765`.
 
 ## UI structure
 - `MainWindow` (`src/ui.py`) hosts a `QStackedWidget` with two pages:
-  - **Main** — `TextEditorsWidget`, `TranslationSectionWidget` (manual translate),
-    `ControlButtonsWidget`, `StatusBarWidget`.
+  - **Main** — `TextEditorsWidget`, `TranslationSectionWidget` (manual translate, shown/
+    hidden by a `SwitchButton` pill toggle, visible by default), `StatusBarWidget`.
   - **Settings** — `SettingsViewWidget` (`src/ui_components/settings_view.py`): reuses
-    `DeviceSettingsWidget` + `LanguageSelectionWidget` and adds AI Reply Language,
-    Purpose, Pronunciation, and Screen Protection.
+    `DeviceSettingsWidget` + `LanguageSelectionWidget` and adds View mode (default
+    **Webview**), AI Reply Language, Purpose, Pronunciation, and Screen Protection.
+- `view_mode_combo` (Settings) drives `TextEditorsWidget`'s internal `view_stack` via
+  `get_view_stack().setCurrentIndex`; the default index selects the Webview.
 - A checkable `Settings` action is added directly to the `QMenuBar` (via
   `menuBar().addAction(...)`), so it appears next to `Mode` and `Tool` as a clickable
   item; the Settings page also has a `Back` button. Both drive
   `_on_settings_toggled` / `_show_main_view`.
+- The checkable Start/Stop button (`ControlButtonsWidget`) is pinned to the menu bar's
+  far-right edge via `menuBar().setCornerWidget(...)` in `_init_menu`; it is no longer
+  part of the main view layout. It's still cached as `self.btn_start` in
+  `_setup_widget_references`.
 - Widgets are reached via getters in `_setup_widget_references`; moving a control between
   views only requires repointing the getter, not changing session/translation logic.
 - Device changes apply on the next **Start** (combos are read in `_start_session`).
