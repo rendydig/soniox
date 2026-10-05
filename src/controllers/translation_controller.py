@@ -95,7 +95,7 @@ class TranslationController(QObject):
     
     def schedule_auto_reply(self, transcription_text: str, input_source: str = "speaker"):
         """
-        Schedule an auto-reply after 2 seconds of no new transcription.
+        Schedule an auto-reply after 1.2 seconds of no new transcription.
         
         Args:
             transcription_text: The transcribed text to respond to
@@ -105,8 +105,8 @@ class TranslationController(QObject):
         self._pending_transcription = transcription_text
         self._pending_input_source = input_source
         self._auto_reply_timer.stop()
-        self._auto_reply_timer.start(2000)
-        print(f"[DEBUG TranslationController] Timer started for 2000ms")
+        self._auto_reply_timer.start(1200)
+        print(f"[DEBUG TranslationController] Timer started for 1200ms")
     
     def trigger_reply_now(self, transcription_text: str = None, input_source: str = "speaker"):
         """Trigger a Gemini reply immediately without debounce timer."""
