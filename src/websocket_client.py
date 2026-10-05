@@ -118,7 +118,18 @@ class WebSocketClient:
             self._send_message(message),
             self.loop
         )
-    
+
+    def send_message(self, message: dict):
+        """Send an arbitrary pre-built message dict over the connection."""
+        if not self.connected or not self.loop:
+            print("[WebSocket] Not connected, skipping send")
+            return
+
+        asyncio.run_coroutine_threadsafe(
+            self._send_message(message),
+            self.loop
+        )
+
     async def _send_message(self, message: dict):
         if self.websocket and self.connected:
             try:

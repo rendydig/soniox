@@ -13,6 +13,7 @@ export const useTranscriptionHandlers = ({
     corrections,
     setGeminiResults,
     setGeminiStatus,
+    setScreenshots,
     wsManager
 }) => {
     const correctionEnabledRef = useRef(correctionEnabled);
@@ -246,6 +247,25 @@ export const useTranscriptionHandlers = ({
         console.log('[DEBUG] Gemini status:', status, mode);
     }, [setGeminiStatus]);
 
+    /** Screenshot captured by the desktop app (ALT+SHIFT+K) — append to the gallery. */
+    const handleScreenshot = useCallback((image, timestamp) => {
+        if (!image || typeof setScreenshots !== 'function') return;
+
+        setScreenshots(prev => [...prev, {
+            image,
+            timestamp: timestamp || new Date().toISOString(),
+            id: Date.now() + Math.random()
+        }]);
+        console.log('[DEBUG] Screenshot appended');
+    }, [setScreenshots]);
+
+    /** Clear all captured screenshots (ALT+CTRL+SHIFT+K). */
+    const handleClearScreenshots = useCallback(() => {
+        if (typeof setScreenshots !== 'function') return;
+        setScreenshots([]);
+        console.log('[DEBUG] Screenshots cleared');
+    }, [setScreenshots]);
+
     return {
         handleFinalTranscription,
         handleLiveTranscription,
@@ -253,6 +273,8 @@ export const useTranscriptionHandlers = ({
         handleLiveTranslation,
         handleCorrectionResponse,
         handleGeminiResult,
-        handleGeminiStatus
+        handleGeminiStatus,
+        handleScreenshot,
+        handleClearScreenshots
     };
 };

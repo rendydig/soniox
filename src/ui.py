@@ -8,6 +8,8 @@ from src.config import MAX_TRANSCRIPTION_LINES
 from src.purposes import PURPOSES
 from src.text_formatter import append_timestamped_text, format_gemini_result
 from src.screen_protection import set_capture_protection
+from src.screenshot import capture_screen_data_url
+from src.global_hotkeys import GlobalHotkeys
 from src.controllers import (
     DeviceController,
     TranscriptionController,
@@ -57,6 +59,14 @@ class MainWindow(QMainWindow):
         self.websocket_client = WebSocketClient("ws://localhost:8765")
         self.websocket_client.set_message_handler(self._on_ws_message_raw)
         self.websocket_client.start()
+
+        # System-wide hotkeys: ALT+SHIFT+K captures a screenshot, ALT+CTRL+SHIFT+K
+        # clears the ones shown in the Gemini pane.
+        self.hotkeys = GlobalHotkeys(
+            on_screenshot=self._capture_screenshot,
+            on_clear=self._clear_screenshots,
+        )
+        self.hotkeys.register()
         
         self._memory_monitor_timer = QTimer()
         self._memory_monitor_timer.timeout.connect(self._update_memory_usage)
@@ -448,6 +458,19 @@ class MainWindow(QMainWindow):
             text or "", False, additional_data=additional, message_type="gemini_status"
         )
 
+    def _capture_screenshot(self):
+        """Capture the primary screen and append it to the Gemini pane."""
+        data_url = capture_screen_data_url()
+        if not data_url:
+            return
+        self.websocket_client.send_message({"type": "screenshot", "image": data_url})
+        print(f"[Screenshot] Sent capture ({len(data_url)} bytes)")
+
+    def _clear_screenshots(self):
+        """Clear the screenshot gallery in the Gemini pane."""
+        self.websocket_client.send_message({"type": "clear_screenshots"})
+        print("[Screenshot] Clear requested")
+
     def _on_translation_started(self):
         """Handle manual translation start."""
         self._send_gemini_status("started", "manual")
@@ -603,6 +626,9 @@ class MainWindow(QMainWindow):
         """Clean up resources on window close."""
         try:
             self._memory_monitor_timer.stop()
+
+            # Release the global hotkeys
+            self.hotkeys.unregister()
 
             # Close the separate panes and the settings dialog
             self.settings_dialog.close()

@@ -89,6 +89,41 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
   call: `_set_screen_protection` forwards to `gemini_window.apply_screen_protection`, and
   `GeminiWindow.showEvent` re-applies after re-shows.
 
+## Screenshot hotkeys
+- Two **system-wide** hotkeys (work even when the app is unfocused), registered by
+  `src/global_hotkeys.py` (`GlobalHotkeys`, a `QAbstractNativeEventFilter`) using the
+  Windows API `RegisterHotKey` via ctypes — **no third-party dependency**:
+  - `ALT+SHIFT+K` → capture the **primary screen**, downscale to `SCREENSHOT_MAX_WIDTH`
+    (680px, height follows the aspect ratio), JPEG-encode at quality 80, base64 → `data:`
+    URL (`src/screenshot.py::capture_screen_data_url`), then send
+    `{"type": "screenshot", "image": <data-url>}` over the WebSocket.
+  - `ALT+CTRL+SHIFT+K` → send `{"type": "clear_screenshots"}`.
+- Wiring lives in `MainWindow` (`src/ui.py`): `GlobalHotkeys` is created/registered in
+  `__init__` (after `websocket_client.start()`), `_capture_screenshot` / `_clear_screenshots`
+  are the callbacks, and `unregister()` runs in `closeEvent`. The callbacks fire on the Qt
+  main thread, so they may touch widgets/capture directly.
+- `WebSocketClient.send_message(dict)` is the generic send used for these messages; the
+  server needs no change (`server.js` rebroadcasts any unrecognized `type` to other clients).
+- The Gemini pane (`public/gemini-app.js`) appends each image to a
+  `ScreenshotGallery` (`public/components/ScreenshotGallery.js`, rendered **above**
+  `GeminiDisplayer`); handlers `handleScreenshot` / `handleClearScreenshots` live in
+  `useTranscriptionHandlers.js` and are dispatched by `useWebSocketHandler.js`. Images are
+  stored at 680px wide; the gallery is hidden when empty.
+- The gallery is a **4-column grid** (`repeat(4, 1fr)`) of square `object-fit: cover`
+  thumbnails. Clicking one opens `ScreenshotLightbox` (`components/ScreenshotLightbox.js`),
+  a `position: fixed` overlay filling the pane: zoom in/out/reset (1x–10x) with a percentage
+  label, **Ctrl/Cmd + wheel** zoom, **drag-to-pan** once the image overflows, and
+  **prev/next** via the side buttons or Left/Right arrows (Escape closes; a plain wheel
+  scrolls). The lightbox is rendered inside `.screenshot-gallery`, which is fine because a
+  fixed element escapes the scroll container. Zoom sets the image's inline `width` to
+  `min(naturalWidth, containerWidth) * zoom` (same technique as `mermaid-zoom.js`); the
+  scroll box uses `display:flex` + `margin:auto` on the image so centering does not clip
+  the overflow.
+- `capture_screen_data_url` uses `QGuiApplication.primaryScreen().grabWindow(0)`; construct
+  `QBuffer()` **without** a temporary `QByteArray` argument or `save()` segfaults.
+- Since the app's own windows use `WDA_EXCLUDEFROMCAPTURE`, they appear black in the capture
+  (expected); screenshots are in-memory only (cleared on reload/close).
+
 ## Live view window
 - `LiveWindow` (`src/ui_components/live_window.py`) mirrors `GeminiWindow` on the
   opposite edge: frameless + `WindowStaysOnTopHint` + `Tool`, pinned to the primary

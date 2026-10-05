@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'https://esm.sh/preact@10.19.3/hooks
 import htm from 'https://esm.sh/htm@3.1.1';
 import { WebSocketManager } from './websocket-manager.js';
 import { GeminiDisplayer } from './components/GeminiDisplayer.js';
+import { ScreenshotGallery } from './components/ScreenshotGallery.js';
 import { useWebSocketHandler } from './hooks/useWebSocketHandler.js';
 import { useTranscriptionHandlers } from './hooks/useTranscriptionHandlers.js';
 
@@ -14,12 +15,16 @@ const GeminiApp = () => {
     const [, setConnected] = useState(false);
     const [geminiResults, setGeminiResults] = useState([]);
     const [geminiStatus, setGeminiStatus] = useState('');
+    const [screenshots, setScreenshots] = useState([]);
     const wsManager = useRef(null);
 
     const {
         /** Gemini Handlers */
         handleGeminiResult,
-        handleGeminiStatus
+        handleGeminiStatus,
+        /** Screenshot Handlers */
+        handleScreenshot,
+        handleClearScreenshots
     } = useTranscriptionHandlers({
         /** Unused on this page — only the Gemini output is shown. */
         setFinalizedSentences: noop,
@@ -33,6 +38,7 @@ const GeminiApp = () => {
         corrections: {},
         setGeminiResults,
         setGeminiStatus,
+        setScreenshots,
         wsManager
     });
 
@@ -43,7 +49,9 @@ const GeminiApp = () => {
         handleLiveTranslation: noop,
         handleCorrectionResponse: noop,
         handleGeminiResult,
-        handleGeminiStatus
+        handleGeminiStatus,
+        handleScreenshot,
+        handleClearScreenshots
     });
 
     /** Send a control message back to the Python app. */
@@ -79,6 +87,7 @@ const GeminiApp = () => {
                     Reply now
                 </button>
             </h2>
+            <${ScreenshotGallery} screenshots=${screenshots} />
             <${GeminiDisplayer}
                 geminiResults=${geminiResults}
                 geminiStatus=${geminiStatus}

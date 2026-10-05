@@ -7,7 +7,9 @@ export const useWebSocketHandler = ({
     handleLiveTranslation,
     handleCorrectionResponse,
     handleGeminiResult,
-    handleGeminiStatus
+    handleGeminiStatus,
+    handleScreenshot,
+    handleClearScreenshots
 }) => {
     const processMessage = useCallback((data, type, finalHandler, liveHandler) => {
         console.log('[WebSocket]', data);
@@ -36,6 +38,14 @@ export const useWebSocketHandler = ({
             if (typeof handleGeminiStatus === 'function') {
                 handleGeminiStatus(data.status, data.mode, data.message);
             }
+        } else if (data.type === 'screenshot') {
+            if (typeof handleScreenshot === 'function') {
+                handleScreenshot(data.image, data.timestamp);
+            }
+        } else if (data.type === 'clear_screenshots') {
+            if (typeof handleClearScreenshots === 'function') {
+                handleClearScreenshots();
+            }
         } else if (data.type === 'correction_response') {
             console.log('[WebSocket] Correction response:', data);
             handleCorrectionResponse(data);
@@ -50,7 +60,9 @@ export const useWebSocketHandler = ({
         handleLiveTranslation,
         handleCorrectionResponse,
         handleGeminiResult,
-        handleGeminiStatus
+        handleGeminiStatus,
+        handleScreenshot,
+        handleClearScreenshots
     ]);
 
     return handleMessage;

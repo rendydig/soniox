@@ -480,6 +480,185 @@
         animation: textPulse 1.5s ease-in-out infinite;
     }
 
+    /* Screenshot gallery (ALT+SHIFT+K captures, ALT+CTRL+SHIFT+K clears) */
+    .screenshot-gallery {
+        flex: 0 1 auto;
+        max-height: 45%;
+        overflow-y: auto;
+        margin-bottom: 8px;
+        padding: 6px;
+        background: #f5f3ff;
+        border: 1px solid #ddd6fe;
+        border-radius: 8px;
+    }
+
+    .screenshot-gallery-header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        padding: 2px 0;
+        background: #f5f3ff;
+        font-size: 11px;
+        font-weight: 600;
+        color: #6d28d9;
+    }
+
+    .screenshot-hint {
+        font-weight: 400;
+        color: #8b5cf6;
+    }
+
+    .screenshot-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+    }
+
+    .screenshot-thumb {
+        padding: 0;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        border: 1px solid #c4b5fd;
+        border-radius: 6px;
+        background: #ffffff;
+        cursor: zoom-in;
+    }
+
+    .screenshot-thumb:hover {
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25);
+    }
+
+    .screenshot-thumb-img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Enlarged, zoomable view */
+    .screenshot-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        background: rgba(17, 12, 34, 0.9);
+    }
+
+    .screenshot-lightbox-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 8px;
+        color: #ede9fe;
+        font-size: 11px;
+    }
+
+    .screenshot-lightbox-meta {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .screenshot-lightbox-zoom {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .screenshot-zoom-btn,
+    .screenshot-lightbox-close {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: none;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.14);
+        color: #ede9fe;
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .screenshot-zoom-btn:hover:not(:disabled),
+    .screenshot-lightbox-close:hover {
+        background: rgba(255, 255, 255, 0.28);
+    }
+
+    .screenshot-zoom-btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+    }
+
+    .screenshot-lightbox-level {
+        min-width: 44px;
+        text-align: center;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .screenshot-lightbox-body {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        align-items: stretch;
+    }
+
+    .screenshot-lightbox-scroll {
+        flex: 1;
+        min-width: 0;
+        overflow: auto;
+        display: flex;
+    }
+
+    .screenshot-lightbox-scroll.pannable {
+        cursor: grab;
+    }
+
+    .screenshot-lightbox-scroll.panning {
+        cursor: grabbing;
+        user-select: none;
+    }
+
+    .screenshot-lightbox-img {
+        display: block;
+        height: auto;
+        max-width: 100%;
+        margin: auto;
+        flex: 0 0 auto;
+    }
+
+    .screenshot-lightbox-nav {
+        flex: 0 0 auto;
+        width: 28px;
+        border: none;
+        background: rgba(255, 255, 255, 0.08);
+        color: #ede9fe;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .screenshot-lightbox-nav:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.22);
+    }
+
+    .screenshot-lightbox-nav:disabled {
+        opacity: 0.25;
+        cursor: default;
+    }
+
     /* Rendered Gemini suggestion (markdown -> HTML) */
     .markdown-body {
         font-size: 14px;
