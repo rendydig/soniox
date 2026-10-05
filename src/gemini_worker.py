@@ -1,3 +1,4 @@
+import base64
 import os
 from google import genai
 from google.genai import types
@@ -6,6 +7,50 @@ from src.config import GEMINI_API_KEY, SELF_CONTEXT_FILE, PRONUNCIATION_GUIDES, 
 from src.purposes import PURPOSES, DEFAULT_PURPOSE
 
 DEFAULT_SELF_CONTEXT = "bahasa pemograman javascript, react , nextjs, python, docker, kubernetes, aws, gcp, azure, github, gitlab, bitbucket, jenkins, circleci, travis ci, aws lambda, aws s3, aws ec2, aws rds, aws lambda, aws s3, aws ec2, aws rds"
+
+IMAGE_CONTEXT_PROMPT = "Here is a screenshot of the current context. Continue the conversation based on it."
+
+
+def _decode_data_url(data_url: str):
+    """Split a ``data:<mime>;base64,<payload>`` URL into (bytes, mime_type)."""
+    if not data_url or "," not in data_url:
+        return None, "image/jpeg"
+    header, payload = data_url.split(",", 1)
+    mime_type = "image/jpeg"
+    if header.startswith("data:") and ";" in header:
+        mime_type = header[5:].split(";", 1)[0] or mime_type
+    try:
+        return base64.b64decode(payload), mime_type
+    except Exception:
+        return None, mime_type
+
+
+def _attach_images(contents: list, images: list) -> list:
+    """Attach screenshots (data URLs) to the conversation contents.
+
+    Images are added to the final user turn, or a new user turn is appended
+    when the conversation ends with a model turn (or is empty).
+    """
+    if not images:
+        return contents
+
+    parts = []
+    for data_url in images:
+        data, mime_type = _decode_data_url(data_url)
+        if data:
+            parts.append(types.Part.from_bytes(data=data, mime_type=mime_type))
+
+    if not parts:
+        return contents
+
+    if contents and contents[-1].role == "user":
+        contents[-1].parts = list(contents[-1].parts) + parts
+    else:
+        contents.append(types.Content(
+            role="user",
+            parts=[types.Part(text=IMAGE_CONTEXT_PROMPT), *parts]
+        ))
+    return contents
 
 
 def _get_pronunciation_line(target_language: str) -> str:
@@ -86,13 +131,14 @@ class GeminiAutoReplyWorker(QThread):
     error = Signal(str)
     result = Signal(str)
     
-    def __init__(self, transcription_text: str, target_language: str, conversation_history: list = None, include_pronunciation: bool = True, purpose: str = DEFAULT_PURPOSE, parent=None):
+    def __init__(self, transcription_text: str, target_language: str, conversation_history: list = None, include_pronunciation: bool = True, purpose: str = DEFAULT_PURPOSE, images: list = None, parent=None):
         super().__init__(parent)
         self._transcription_text = transcription_text
         self._target_language = target_language
         self._conversation_history = conversation_history or []
         self._include_pronunciation = include_pronunciation
         self._purpose = purpose
+        self._images = images or []
         self._is_running = True
         self._self_context = _load_self_context()
     
@@ -228,13 +274,18 @@ Format your response exactly as follows:
                     role="user",
                     parts=[types.Part(text=latest_input)]
                 ))
-            
+
+            if self._images:
+                contents = _attach_images(contents, self._images)
+                print(f"[GeminiAutoReplyWorker] Attached {len(self._images)} screenshot(s)")
+
             if not self._is_running:
                 return
 
             print(f"[GeminiAutoReplyWorker] Contents ({len(contents)} turns):")
             for i, c in enumerate(contents):
-                print(f"  [{i}] role={c.role} | {c.parts[0].text[:200]!r}")
+                first_text = (c.parts[0].text or "") if c.parts else ""
+                print(f"  [{i}] role={c.role} | parts={len(c.parts)} | {first_text[:200]!r}")
 
             response = client.models.generate_content(
                 model='gemini-2.5-flash',

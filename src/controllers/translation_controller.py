@@ -14,6 +14,7 @@ class TranslationController(QObject):
     translation_started = Signal()
     translation_completed = Signal()
     auto_reply_result = Signal(str)
+    image_reply_result = Signal(str)
     
     MAX_HISTORY_TURNS = 25
     HISTORY_LOG_FILE = os.path.join(
@@ -36,6 +37,7 @@ class TranslationController(QObject):
         self._include_pronunciation = False
         self._auto_reply_purpose = DEFAULT_PURPOSE
         self._conversation_history = []
+        self._auto_reply_is_image = False
     
     def is_translating(self):
         """Check if currently translating."""
@@ -134,52 +136,79 @@ class TranslationController(QObject):
         self._pending_transcription = ""
         self._pending_input_source = "speaker"
     
-    def _trigger_auto_reply(self):
-        """Trigger the auto-reply after debounce period."""
-        print(f"[DEBUG TranslationController] _trigger_auto_reply called! Pending text: '{self._pending_transcription}'")
-        
-        if not self._pending_transcription.strip():
-            print(f"[DEBUG TranslationController] No pending transcription, aborting")
-            return
-        
+    def _start_auto_reply_worker(self, transcription_text: str, images: list = None, is_image: bool = False):
+        """Create and start a Gemini auto-reply worker. Returns True if started."""
         if self._auto_reply_worker is not None and self._auto_reply_worker.isRunning():
             print(f"[DEBUG TranslationController] Auto-reply worker already running, aborting")
-            return
-        
+            return False
+
         try:
             print(f"[DEBUG TranslationController] Creating GeminiAutoReplyWorker with language: {self._auto_reply_target_language}")
+            self._auto_reply_is_image = is_image
             self._auto_reply_worker = GeminiAutoReplyWorker(
-                self._pending_transcription,
+                transcription_text,
                 self._auto_reply_target_language,
                 conversation_history=list(self._conversation_history),
                 include_pronunciation=self._include_pronunciation,
-                purpose=self._auto_reply_purpose
+                purpose=self._auto_reply_purpose,
+                images=images
             )
             self._auto_reply_worker.result.connect(self._on_auto_reply_result, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.error.connect(self._on_auto_reply_error, Qt.ConnectionType.QueuedConnection)
-            
-            self.status_changed.emit(f"Auto-replying to: {self._pending_transcription[:50]}...")
             self._auto_reply_worker.start()
-            print(f"[DEBUG TranslationController] Auto-reply worker started!")
-
+            return True
         except Exception as e:
-            print(f"[DEBUG TranslationController] Exception in _trigger_auto_reply: {e}")
+            print(f"[DEBUG TranslationController] Exception starting auto-reply: {e}")
             self.error_occurred.emit(f"Failed to start auto-reply: {e}")
             self._auto_reply_worker = None
+            self._auto_reply_is_image = False
+            return False
+
+    def _trigger_auto_reply(self):
+        """Trigger the auto-reply after debounce period."""
+        print(f"[DEBUG TranslationController] _trigger_auto_reply called! Pending text: '{self._pending_transcription}'")
+
+        if not self._pending_transcription.strip():
+            print(f"[DEBUG TranslationController] No pending transcription, aborting")
+            return
+
+        if self._start_auto_reply_worker(self._pending_transcription, is_image=False):
+            self.status_changed.emit(f"Auto-replying to: {self._pending_transcription[:50]}...")
+            print(f"[DEBUG TranslationController] Auto-reply worker started!")
+
+    def trigger_image_reply(self, images: list):
+        """Send captured screenshots to Gemini using the auto-reply context/format."""
+        if not images:
+            self.error_occurred.emit("No screenshots to send")
+            return False
+
+        self._auto_reply_timer.stop()
+        print(f"[DEBUG TranslationController] trigger_image_reply called with {len(images)} screenshot(s)")
+        if self._start_auto_reply_worker("", images=images, is_image=True):
+            self.status_changed.emit(f"Sending {len(images)} screenshot(s) to Gemini...")
+            print(f"[DEBUG TranslationController] Image reply worker started!")
+            return True
+        return False
     
     def _on_auto_reply_result(self, result: str):
         """Handle auto-reply result from worker."""
         print(f"[DEBUG TranslationController] Auto-reply result received: '{result[:100]}...'")
+        is_image = self._auto_reply_is_image
+        self._auto_reply_is_image = False
         if self._auto_reply_worker is not None:
             self._old_workers.append(self._auto_reply_worker)
             self._auto_reply_worker = None
             self._cleanup_old_workers()
-        self.auto_reply_result.emit(result)
+        if is_image:
+            self.image_reply_result.emit(result)
+        else:
+            self.auto_reply_result.emit(result)
         self.status_changed.emit("Auto-reply complete.")
     
     def _on_auto_reply_error(self, msg: str):
         """Handle errors from auto-reply worker."""
         print(f"[DEBUG TranslationController] Auto-reply error: {msg}")
+        self._auto_reply_is_image = False
         if self._auto_reply_worker is not None:
             self._old_workers.append(self._auto_reply_worker)
             self._auto_reply_worker = None

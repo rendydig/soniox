@@ -90,18 +90,29 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
   `GeminiWindow.showEvent` re-applies after re-shows.
 
 ## Screenshot hotkeys
-- Two **system-wide** hotkeys (work even when the app is unfocused), registered by
+- Three **system-wide** hotkeys (work even when the app is unfocused), registered by
   `src/global_hotkeys.py` (`GlobalHotkeys`, a `QAbstractNativeEventFilter`) using the
   Windows API `RegisterHotKey` via ctypes — **no third-party dependency**:
   - `ALT+SHIFT+K` → capture the **primary screen**, downscale to `SCREENSHOT_MAX_WIDTH`
-    (680px, height follows the aspect ratio), JPEG-encode at quality 80, base64 → `data:`
+    (1200px, height follows the aspect ratio), JPEG-encode at quality 80, base64 → `data:`
     URL (`src/screenshot.py::capture_screen_data_url`), then send
     `{"type": "screenshot", "image": <data-url>}` over the WebSocket.
   - `ALT+CTRL+SHIFT+K` → send `{"type": "clear_screenshots"}`.
+  - `CTRL+ALT+SHIFT+G` → send **all** captured screenshots to Gemini (see below).
 - Wiring lives in `MainWindow` (`src/ui.py`): `GlobalHotkeys` is created/registered in
-  `__init__` (after `websocket_client.start()`), `_capture_screenshot` / `_clear_screenshots`
-  are the callbacks, and `unregister()` runs in `closeEvent`. The callbacks fire on the Qt
-  main thread, so they may touch widgets/capture directly.
+  `__init__` (after `websocket_client.start()`), `_capture_screenshot` / `_clear_screenshots` /
+  `_send_images_to_gemini` are the callbacks, and `unregister()` runs in `closeEvent`. The
+  callbacks fire on the Qt main thread, so they may touch widgets/capture directly.
+- `MainWindow._screenshots` retains every capture as a data URL (appended in
+  `_capture_screenshot`, cleared in `_clear_screenshots`) so Python can forward them to Gemini;
+  it stays in sync with the webview gallery because both hotkeys are handled in Python.
+- `CTRL+ALT+SHIFT+G` → `MainWindow._send_images_to_gemini` → `TranslationController.trigger_image_reply(images)`
+  → `GeminiAutoReplyWorker(..., images=...)`, which reuses the auto-reply persona/purpose/format
+  and conversation history. `gemini_worker._attach_images` decodes each data URL and attaches
+  `types.Part.from_bytes(...)` to the final **user** turn (or appends a new user turn with a
+  short screenshot prompt). The reply arrives on the new `image_reply_result` signal and is
+  broadcast with mode `"image"` (badge "Image"); normal auto-replies still use `auto_reply_result`.
+  An empty gallery shows "No screenshots to send." in the pane.
 - `WebSocketClient.send_message(dict)` is the generic send used for these messages; the
   server needs no change (`server.js` rebroadcasts any unrecognized `type` to other clients).
 - The Gemini pane (`public/gemini-app.js`) appends each image to a

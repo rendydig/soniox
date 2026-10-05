@@ -7,7 +7,14 @@ const html = htm.bind(h);
 
 const MODE_LABELS = {
     manual: 'Manual',
-    auto_reply: 'Auto-reply'
+    auto_reply: 'Auto-reply',
+    image: 'Image'
+};
+
+const BADGE_CLASSES = {
+    manual: 'gemini-badge-manual',
+    auto_reply: 'gemini-badge-auto',
+    image: 'gemini-badge-image'
 };
 
 export const GeminiDisplayer = ({ geminiResults, geminiStatus }) => {
@@ -24,7 +31,7 @@ export const GeminiDisplayer = ({ geminiResults, geminiStatus }) => {
     const getModeBadge = (mode) => {
         if (!mode) return null;
         const label = MODE_LABELS[mode] || mode;
-        const badgeClass = mode === 'auto_reply' ? 'gemini-badge-auto' : 'gemini-badge-manual';
+        const badgeClass = BADGE_CLASSES[mode] || 'gemini-badge-manual';
         return html`<span class="${badgeClass}">${label}</span>`;
     };
 

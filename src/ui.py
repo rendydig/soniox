@@ -61,10 +61,12 @@ class MainWindow(QMainWindow):
         self.websocket_client.start()
 
         # System-wide hotkeys: ALT+SHIFT+K captures a screenshot, ALT+CTRL+SHIFT+K
-        # clears the ones shown in the Gemini pane.
+        # clears the ones shown in the Gemini pane, and CTRL+ALT+SHIFT+G sends the
+        # captured screenshots to Gemini.
         self.hotkeys = GlobalHotkeys(
             on_screenshot=self._capture_screenshot,
             on_clear=self._clear_screenshots,
+            on_send_image=self._send_images_to_gemini,
         )
         self.hotkeys.register()
         
@@ -73,6 +75,7 @@ class MainWindow(QMainWindow):
         self._memory_monitor_timer.start(5000)
         
         self._last_final_transcription = ""
+        self._screenshots = []
         self._screen_protection_enabled = True
         self._auto_reply_enabled = False
 
@@ -316,6 +319,7 @@ class MainWindow(QMainWindow):
         self.translation_controller.translation_result.connect(self._on_translation_result)
         self.translation_controller.translation_started.connect(self._on_translation_started)
         self.translation_controller.auto_reply_result.connect(self._on_auto_reply_result)
+        self.translation_controller.image_reply_result.connect(self._on_image_reply_result)
         
         self.gemini_lang_combo.currentTextChanged.connect(self._on_auto_reply_language_changed)
 
@@ -463,13 +467,24 @@ class MainWindow(QMainWindow):
         data_url = capture_screen_data_url()
         if not data_url:
             return
+        self._screenshots.append(data_url)
         self.websocket_client.send_message({"type": "screenshot", "image": data_url})
         print(f"[Screenshot] Sent capture ({len(data_url)} bytes)")
 
     def _clear_screenshots(self):
         """Clear the screenshot gallery in the Gemini pane."""
+        self._screenshots.clear()
         self.websocket_client.send_message({"type": "clear_screenshots"})
         print("[Screenshot] Clear requested")
+
+    def _send_images_to_gemini(self):
+        """Send the captured screenshots to Gemini with the conversation context."""
+        if not self._screenshots:
+            self._send_gemini_status("failed", "image", text="No screenshots to send.")
+            print("[Screenshot] No screenshots to send")
+            return
+        self._send_gemini_status("started", "image")
+        self.translation_controller.trigger_image_reply(list(self._screenshots))
 
     def _on_translation_started(self):
         """Handle manual translation start."""
@@ -492,6 +507,10 @@ class MainWindow(QMainWindow):
     def _on_auto_reply_result(self, result: str):
         """Handle auto-reply result."""
         self._send_gemini_result(result, "auto_reply")
+
+    def _on_image_reply_result(self, result: str):
+        """Handle the reply to a screenshot sent to Gemini."""
+        self._send_gemini_result(result, "image")
     
     def _on_ws_message_raw(self, data: dict):
         """Receive a decoded WebSocket message (runs on the asyncio thread)."""
