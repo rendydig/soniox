@@ -46,10 +46,13 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
   followed automatically. No taskbar measurement is needed. For top-level windows,
   `move()` positions the **frame** (including the title bar), so `_snap_to_bottom` moves
   to the frame's top-left directly and resizes the client to `avail − chrome`.
+  `_snap_to_bottom` reads each pane's **current edge and width** (not fixed constants),
+  so it stays correct after a pane is moved to the other edge or resized; it also re-snaps
+  whenever a pane emits `geometry_changed`.
 - There is **no menu bar** and no `QStackedWidget`. The single horizontal row
   (`_init_ui`) holds: Start/Stop (`ControlButtonsWidget`) · Mode ▾ (`QToolButton` + `QMenu`
   with the Live Transcription/Translation actions) · Tool ▾ (`QToolButton` + `QMenu` with
-  Screen Protection / Gemini Window / Live Window) · Settings button ·
+  Screen Protection / Gemini Window / Live Window / Always on Top) · Settings button ·
   `TranslationSectionWidget` (stretch) · `StatusBarWidget`. The main window has **no**
   output view; transcription output lives in the Live Window pane.
 - `Settings` opens a **separate `QDialog`** (`_open_settings`) hosting
@@ -58,6 +61,12 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
   **Webview**), AI Reply Language, Purpose, Pronunciation, and Screen Protection. The
   dialog is created eagerly (hidden) so the widget getters stay valid; its `Back` button
   closes it, and `_set_screen_protection` gives it its own `set_capture_protection` call.
+  It also carries its own `WindowStaysOnTopHint` so it stays above the top-most bar.
+- The bar is **always-on-top** by default (mirrors the panes): `MainWindow` sets
+  `Qt.WindowType.WindowStaysOnTopHint` from `ui_state.json`'s `main_window.always_on_top`
+  (default true) and exposes it as the Tool ▾ **Always on Top** checkable action
+  (`_set_always_on_top`). Toggling re-sets the flag and calls `show()` (changing flags on a
+  visible window hides it), which re-runs `showEvent`'s re-snap + capture protection.
 - `view_mode_combo` (Settings) drives the **Live Window**'s internal `view_stack` via
   `get_view_stack().setCurrentIndex`; index 0 = text editor, index 1 = Webview (default).
 - `TranslationSectionWidget` is a compact horizontal row: a fixed-height (~32px)
@@ -71,8 +80,10 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
 ## Gemini suggestion window
 - `GeminiWindow` (`src/ui_components/gemini_window.py`) is a **separate top-level window**
   (no Qt parent), frameless + `WindowStaysOnTopHint` + `Tool`, pinned to the primary
-  screen's right edge: `GEMINI_WINDOW_WIDTH` (480px) wide and full screen height
-  (`_position_on_screen`). It hosts a `QWebEngineView` loading `http://localhost:8765/gemini`.
+  screen's left **or** right edge (default **right**, switchable at runtime):
+  `GEMINI_WINDOW_WIDTH` (400px) wide by default and full screen height, width resizable
+  via a drag handle (`_position_on_screen`). It hosts a `QWebEngineView` loading
+  `http://localhost:8765/gemini`.
 - It shows **only** the Gemini card. The card was removed from `public/app.js`; the
   Gemini-only page is `public/gemini.html` + `public/gemini-app.js` (reuses
   `WebSocketManager`, `useWebSocketHandler`, `useTranscriptionHandlers`, `GeminiDisplayer`;
@@ -138,10 +149,12 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
 ## Live view window
 - `LiveWindow` (`src/ui_components/live_window.py`) mirrors `GeminiWindow` on the
   opposite edge: frameless + `WindowStaysOnTopHint` + `Tool`, pinned to the primary
-  screen's **left** edge, `LIVE_WINDOW_WIDTH` (480px) wide and full height. It is the
-  output window: a `QStackedWidget` holding the transcription `QTextEdit` (index 0) and
-  a `QWebEngineView` → `http://localhost:8765/live` (index 1); the Settings View mode
-  combo switches it. `MainWindow.transcription_editor` points at this editor.
+  screen's left **or** right edge (default **left**, switchable at runtime),
+  `LIVE_WINDOW_WIDTH` (480px) wide by default and full height, width resizable via the
+  same drag handle. It is the output window: a `QStackedWidget` holding the transcription
+  `QTextEdit` (index 0) and a `QWebEngineView` → `http://localhost:8765/live` (index 1);
+  the Settings View mode combo switches it. `MainWindow.transcription_editor` points at
+  this editor.
 - Its web view shows the **full** live view (Live Transcription + Live Translation).
   The Preact `App` component now lives in `public/components/App.js`; `public/app.js`
   is a thin entry rendering it, and `public/live.html` + `public/live-app.js` render the
@@ -153,6 +166,28 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
   which unchecks `live_window_action`. Hide/show only toggles visibility (the webview is
   never reloaded), and `_set_screen_protection` forwards to
   `live_window.apply_screen_protection`.
+
+## Pane layout (edge + width, persisted)
+- Both panes carry a top-right control cluster (`.gemini-controls` / `.pane-controls`):
+  `⇤` (move to left edge) · `⇥` (move to right edge) · `−` (hide). The edge buttons send
+  `{"type": "set_gemini_window_edge" | "set_live_window_edge", "edge": "left" | "right"}`
+  over the WebSocket (same rebroadcast path as the hide messages).
+- `MainWindow._handle_webview_message` routes them to `_set_pane_edge(window, edge)`, which
+  is a no-op if the pane is already on that edge and otherwise **auto-swaps** the other
+  pane to the opposite edge, so the two panes never overlap.
+- Each pane is width-resizable by dragging a thin `PaneResizeHandle`
+  (`src/ui_components/pane_resize_handle.py`) on its **inner** edge. The handle lives in the
+  pane's `QHBoxLayout` next to the content because the `QWebEngineView` consumes mouse
+  events; `_apply_edge_layout()` moves it to the inner side when the edge changes. Drag →
+  `window.resize_by_drag()`; release → `finish_resize()`; double-click → `reset_width()`.
+  Width is clamped to `[MIN_WINDOW_WIDTH (200), screen width]`.
+- Panes emit `geometry_changed` (live resize / edge change → `MainWindow._snap_to_bottom`)
+  and `state_changed` (resize release / edge change → `MainWindow._save_pane_state`).
+- Edge + width are persisted per pane to a gitignored `ui_state.json` at the repo root
+  (`src/ui_state.py`), loaded in `MainWindow.__init__` and restored on the next launch;
+  `closeEvent` saves once more. The same file stores `main_window.always_on_top` (default
+  true), written by `_save_pane_state` alongside the panes. A missing/corrupt file falls
+  back to the defaults (Gemini = right/400, Live = left/480, always-on-top = true).
 
 ## Audio capture architecture
 - **Host** input → `sounddevice.InputStream` (microphone), streamed at 16 kHz mono.

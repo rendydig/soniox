@@ -8,3 +8,4 @@ assets
 *.wav
 *.mp3
 logs
+ui_state.json

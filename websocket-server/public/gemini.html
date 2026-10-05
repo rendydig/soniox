@@ -23,11 +23,16 @@
             flex-direction: column;
         }
 
-        .gemini-minimize-btn {
+        .gemini-controls {
             position: absolute;
             top: 4px;
             right: 8px;
             z-index: 10;
+            display: flex;
+            gap: 4px;
+        }
+
+        .gemini-control-btn {
             width: 22px;
             height: 22px;
             padding: 0;
@@ -43,7 +48,7 @@
             justify-content: center;
         }
 
-        .gemini-minimize-btn:hover {
+        .gemini-control-btn:hover {
             background: rgba(0, 0, 0, 0.3);
         }
 

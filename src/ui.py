@@ -27,13 +27,17 @@ from src.ui_components import (
     GeminiWindow,
     LiveWindow
 )
-from src.ui_components.live_window import LIVE_WINDOW_WIDTH
-from src.ui_components.gemini_window import GEMINI_WINDOW_WIDTH
+from src.ui_state import load_state, save_state
 
 # Height of the bottom bar's always-visible control row (window frame included).
 # The manual-translation input row is revealed above it, growing the bar upward.
 BAR_HEIGHT = 60
 INPUT_ROW_HEIGHT = 40
+
+
+def _as_dict(value):
+    """Return ``value`` if it is a dict, else an empty dict (guards bad state)."""
+    return value if isinstance(value, dict) else {}
 
 
 class MainWindow(QMainWindow):
@@ -79,13 +83,24 @@ class MainWindow(QMainWindow):
         self._screen_protection_enabled = True
         self._auto_reply_enabled = False
 
-        # Separate top-level panes (not Qt children of this window).
-        self.gemini_window = GeminiWindow()
-        self.live_window = LiveWindow()
+        # Separate top-level panes (not Qt children of this window). Their edge
+        # and width are restored from ui_state.json (written back on change).
+        state = load_state()
+        main_state = _as_dict(state.get("main_window"))
+        gemini_state = _as_dict(state.get("gemini_window"))
+        live_state = _as_dict(state.get("live_window"))
+        self._always_on_top = bool(main_state.get("always_on_top", True))
+        self.gemini_window = GeminiWindow(
+            edge=gemini_state.get("edge"), width=gemini_state.get("width")
+        )
+        self.live_window = LiveWindow(
+            edge=live_state.get("edge"), width=live_state.get("width")
+        )
 
         self._init_menu()
         self._init_ui()
         self._setup_controller_connections()
+        self._connect_pane_signals()
         self.device_controller.populate_devices()
         self._snap_to_bottom()
         self._connect_screen_signals()
@@ -143,6 +158,8 @@ class MainWindow(QMainWindow):
         self.settings_view = SettingsViewWidget()
         self.settings_dialog = QDialog()
         self.settings_dialog.setWindowTitle("Settings")
+        # Separate top-level window: keep it above the always-on-top bar.
+        self.settings_dialog.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
         dialog_layout = QVBoxLayout(self.settings_dialog)
         dialog_layout.setContentsMargins(16, 16, 16, 16)
         dialog_layout.addWidget(self.settings_view)
@@ -157,23 +174,30 @@ class MainWindow(QMainWindow):
         return BAR_HEIGHT + (INPUT_ROW_HEIGHT if self.manual_switch.isChecked() else 0)
 
     def _snap_to_bottom(self):
-        """Pin the bar between the two side panes, just above the taskbar.
+        """Pin the bar between the side panes, just above the taskbar.
 
         ``availableGeometry`` already excludes the taskbar (and any other reserved
         app bars), so no taskbar measurement is needed. The bar spans the middle
-        of the screen: ``screen width - Live pane - Gemini pane``, starting right
-        after the Live pane on the left.
+        of the screen: ``screen width - left pane - right pane``, starting right
+        after whichever pane is currently pinned to the left edge.
         """
         screen = QGuiApplication.primaryScreen()
         if screen is None:
             return
         avail = screen.availableGeometry()
 
-        width = max(avail.width() - LIVE_WINDOW_WIDTH - GEMINI_WINDOW_WIDTH, 1)
+        left_width = right_width = 0
+        for pane in (self.live_window, self.gemini_window):
+            if pane.get_edge() == "left":
+                left_width = max(left_width, pane.get_width())
+            else:
+                right_width = max(right_width, pane.get_width())
+
+        width = max(avail.width() - left_width - right_width, 1)
         height = self._current_bar_height()
         self.resize(width, height)
         # The window is frameless, so move() positions the visible top-left.
-        self.move(avail.left() + LIVE_WINDOW_WIDTH, avail.bottom() + 1 - height)
+        self.move(avail.left() + left_width, avail.bottom() + 1 - height)
 
     def _on_manual_switch_toggled(self, checked):
         """Show/hide the input row, growing or shrinking upward from the bottom."""
@@ -182,6 +206,28 @@ class MainWindow(QMainWindow):
         height = self._current_bar_height()
         self.resize(self.width(), height)
         self.move(self.x(), bottom + 1 - height)
+
+    def _connect_pane_signals(self):
+        """Keep the bar in sync with, and persist, each pane's edge/width."""
+        for pane in (self.gemini_window, self.live_window):
+            pane.geometry_changed.connect(self._snap_to_bottom)
+            pane.state_changed.connect(self._save_pane_state)
+
+    def _save_pane_state(self):
+        """Persist each pane's edge and width for the next launch."""
+        save_state({
+            "main_window": {
+                "always_on_top": self._always_on_top,
+            },
+            "gemini_window": {
+                "edge": self.gemini_window.get_edge(),
+                "width": self.gemini_window.get_width(),
+            },
+            "live_window": {
+                "edge": self.live_window.get_edge(),
+                "width": self.live_window.get_width(),
+            },
+        })
 
     def _connect_screen_signals(self):
         screen = QGuiApplication.primaryScreen()
@@ -246,6 +292,16 @@ class MainWindow(QMainWindow):
         self.live_window_action.setToolTip("Show or hide the live view pane.")
         self.live_window_action.toggled.connect(self._set_live_window_visible)
         self.tool_menu.addAction(self.live_window_action)
+
+        self.always_on_top_action = QAction("Always on Top", self)
+        self.always_on_top_action.setCheckable(True)
+        self.always_on_top_action.setChecked(self._always_on_top)
+        self.always_on_top_action.setToolTip("Keep the control bar above other windows.")
+        self.always_on_top_action.toggled.connect(self._set_always_on_top)
+        self.tool_menu.addAction(self.always_on_top_action)
+
+        # Applied before the window is shown, so no hide/re-show churn.
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, self._always_on_top)
 
         self.tool_button = QToolButton()
         self.tool_button.setText("Tool")
@@ -535,6 +591,12 @@ class MainWindow(QMainWindow):
             # Unchecking routes through _set_live_window_visible(False) -> hide()
             # and keeps the menu item in sync with the pane's visibility.
             self.live_window_action.setChecked(False)
+        elif msg_type == "set_gemini_window_edge":
+            print(f"[WebSocket] Gemini window edge -> {data.get('edge')}")
+            self._set_pane_edge(self.gemini_window, data.get("edge"))
+        elif msg_type == "set_live_window_edge":
+            print(f"[WebSocket] Live window edge -> {data.get('edge')}")
+            self._set_pane_edge(self.live_window, data.get("edge"))
 
     def _manual_reply(self):
         """Manually trigger a Gemini reply using the last final transcription (Ctrl+R / Cmd+R)."""
@@ -618,6 +680,29 @@ class MainWindow(QMainWindow):
         else:
             self.live_window.hide()
 
+    def _set_pane_edge(self, window, edge):
+        """Move a pane to ``edge``, swapping the other pane to the opposite side."""
+        if edge not in ("left", "right") or window.get_edge() == edge:
+            return
+        other = self.live_window if window is self.gemini_window else self.gemini_window
+        if other.get_edge() == edge:
+            other.set_edge("left" if edge == "right" else "right")
+        window.set_edge(edge)
+
+    def _set_always_on_top(self, enabled):
+        """Keep the bar above other windows (mirrors the panes' top-most flag)."""
+        enabled = bool(enabled)
+        if self._always_on_top == enabled:
+            return
+        self._always_on_top = enabled
+        # Changing window flags on a visible window hides it, so re-show and
+        # re-raise; showEvent re-snaps the bar and re-applies capture protection.
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, enabled)
+        self.show()
+        self.raise_()
+        self.activateWindow()
+        self._save_pane_state()
+
     def _set_screen_protection(self, enabled):
         """Exclude this window from screen capture and mirror the state on both controls."""
         enabled = bool(enabled)
@@ -649,7 +734,8 @@ class MainWindow(QMainWindow):
             # Release the global hotkeys
             self.hotkeys.unregister()
 
-            # Close the separate panes and the settings dialog
+            # Persist the pane layout, then close the panes and settings dialog
+            self._save_pane_state()
             self.settings_dialog.close()
             self.gemini_window.close()
             self.live_window.close()

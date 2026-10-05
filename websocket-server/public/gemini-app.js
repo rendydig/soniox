@@ -75,12 +75,26 @@ const GeminiApp = () => {
 
     return html`
         <div class="card gemini-card">
-            <button
-                class="gemini-minimize-btn"
-                title="Hide"
-                aria-label="Hide"
-                onClick=${() => sendControl({ type: 'hide_gemini_window' })}
-            >−</button>
+            <div class="gemini-controls">
+                <button
+                    class="gemini-control-btn"
+                    title="Move to left edge"
+                    aria-label="Move to left edge"
+                    onClick=${() => sendControl({ type: 'set_gemini_window_edge', edge: 'left' })}
+                >⇤</button>
+                <button
+                    class="gemini-control-btn"
+                    title="Move to right edge"
+                    aria-label="Move to right edge"
+                    onClick=${() => sendControl({ type: 'set_gemini_window_edge', edge: 'right' })}
+                >⇥</button>
+                <button
+                    class="gemini-control-btn"
+                    title="Hide"
+                    aria-label="Hide"
+                    onClick=${() => sendControl({ type: 'hide_gemini_window' })}
+                >−</button>
+            </div>
             <h2>
                 ✨ Gemini Suggestion
                 <button class="btn-gemini" onClick=${() => sendControl({ type: 'auto_reply_request' })}>

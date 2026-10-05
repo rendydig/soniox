@@ -12,7 +12,7 @@ const html = htm.bind(h);
 
 const MAX_LIVE_LINES = 5;
 
-export const App = ({ hideControlType } = {}) => {
+export const App = ({ hideControlType, edgeControlType } = {}) => {
     const [connected, setConnected] = useState(false);
     const [finalizedSentences, setFinalizedSentences] = useState([]);
     const [liveTextHost, setLiveTextHost] = useState('');
@@ -82,12 +82,28 @@ export const App = ({ hideControlType } = {}) => {
     return html`
         <div class="container">
             ${hideControlType && html`
-                <button
-                    class="pane-minimize-btn"
-                    title="Hide"
-                    aria-label="Hide"
-                    onClick=${() => sendControl({ type: hideControlType })}
-                >−</button>
+                <div class="pane-controls">
+                    ${edgeControlType && html`
+                        <button
+                            class="pane-control-btn"
+                            title="Move to left edge"
+                            aria-label="Move to left edge"
+                            onClick=${() => sendControl({ type: edgeControlType, edge: 'left' })}
+                        >⇤</button>
+                        <button
+                            class="pane-control-btn"
+                            title="Move to right edge"
+                            aria-label="Move to right edge"
+                            onClick=${() => sendControl({ type: edgeControlType, edge: 'right' })}
+                        >⇥</button>
+                    `}
+                    <button
+                        class="pane-control-btn"
+                        title="Hide"
+                        aria-label="Hide"
+                        onClick=${() => sendControl({ type: hideControlType })}
+                    >−</button>
+                </div>
             `}
             <div class="header">
                 <${StatusIndicator} connected=${connected} />

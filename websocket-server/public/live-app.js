@@ -5,6 +5,6 @@ import { App } from './components/App.js';
 const html = htm.bind(h);
 
 render(
-    html`<${App} hideControlType="hide_live_window" />`,
+    html`<${App} hideControlType="hide_live_window" edgeControlType="set_live_window_edge" />`,
     document.getElementById('live-root')
 );

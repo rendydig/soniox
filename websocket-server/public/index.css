@@ -734,7 +734,7 @@
         background: #f6f8fa;
         border: 1px solid #e5e7eb;
         border-radius: 6px;
-        overflow-x: auto;
+        overflow-x: hidden;
     }
 
     .markdown-body pre code {
@@ -742,7 +742,8 @@
         background: none;
         padding: 0;
         font-size: 0.85em;
-        white-space: pre;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
     }
 
     .markdown-body table {
