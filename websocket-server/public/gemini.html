@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Suggestion</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            min-height: 100%;
+        }
+
+        #gemini-root {
+            position: relative;
+            height: 100vh;
+            padding: 30px 8px 8px 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gemini-minimize-btn {
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            z-index: 10;
+            width: 22px;
+            height: 22px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.15);
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gemini-minimize-btn:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        #gemini-root .card.gemini-card {
+            flex: 1;
+            min-height: 0;
+        }
+
+        #gemini-root .card.gemini-card h2 {
+            flex: 0 0 auto;
+        }
+
+        #gemini-root .live-text.gemini-view {
+            flex: 1;
+            min-height: 0;
+            max-height: none;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="gemini-root"></div>
+    <script type="module" src="gemini-app.js"></script>
+</body>
+</html>

@@ -226,14 +226,14 @@ export const useTranscriptionHandlers = ({
     const handleGeminiResult = useCallback((text, mode, timestamp) => {
         if (!text || text.trim().length === 0) return;
 
-        setGeminiResults(prev => [...prev, {
+        setGeminiResults([{
             text: text.trim(),
             mode: mode || 'manual',
             timestamp: timestamp || new Date().toISOString(),
             id: Date.now() + Math.random()
         }]);
         setGeminiStatus('');
-        console.log('[DEBUG] Gemini result added:', mode, text.slice(0, 80));
+        console.log('[DEBUG] Gemini result replaced:', mode, text.slice(0, 80));
     }, [setGeminiResults, setGeminiStatus]);
 
     /** Gemini progress / failure status */

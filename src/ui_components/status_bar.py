@@ -12,11 +12,15 @@ class StatusBarWidget(QWidget):
         
         self.status_label = QLabel("Ready")
         font = self.status_label.font()
-        font.setPointSize(font.pointSize() + 1)
+        if font.pointSize() > 0:
+            font.setPointSize(font.pointSize() + 1)
         self.status_label.setFont(font)
-        layout.addWidget(self.status_label, 1)
+        # Cap the live status text so a long transcription can't squeeze the
+        # translation input in the compact bottom bar.
+        self.status_label.setMaximumWidth(380)
+        layout.addWidget(self.status_label)
         
-        self.mode_label = QLabel("Mode: Live Transcription")
+        self.mode_label = QLabel("Transcription")
         self.mode_label.setStyleSheet("color: #666; font-size: 11px;")
         layout.addWidget(self.mode_label)
         

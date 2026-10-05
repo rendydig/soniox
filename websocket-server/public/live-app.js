@@ -4,4 +4,7 @@ import { App } from './components/App.js';
 
 const html = htm.bind(h);
 
-render(html`<${App} />`, document.body);
+render(
+    html`<${App} hideControlType="hide_live_window" />`,
+    document.getElementById('live-root')
+);

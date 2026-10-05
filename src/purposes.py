@@ -26,6 +26,7 @@ PURPOSES = {
             "Directly address the LAST 'user' message (the interviewer's question). Do not change topic.",
             "Think step by step and give a correct, concise technical answer.",
             "When code helps, include a short code snippet in a fenced block.",
+            "When a diagram is requested, output it in a ```mermaid fenced block and wrap any label containing spaces or special characters in double quotes (e.g. A[\"Load Balancer (ALB)\"]); avoid bare parentheses, braces, and ampersands inside labels.",
             "Do not mention being an AI.",
         ],
         "extra_format": [

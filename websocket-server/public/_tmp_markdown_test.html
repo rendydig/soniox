@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Markdown Render Test</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <style>
+        body { padding: 20px; }
+        #test-root { background: #ede9fe; padding: 16px; border-left: 4px solid #8b5cf6; max-width: 700px; }
+    </style>
+</head>
+<body>
+    <div id="test-root"></div>
+    <script type="module">
+        import { h, render } from 'https://esm.sh/preact@10.19.3';
+        import htm from 'https://esm.sh/htm@3.1.1';
+        import { Markdown } from './components/Markdown.js';
+
+        const html = htm.bind(h);
+
+        const sample = `English Text: Both \`let\` and \`const\` are **block-scoped**.
+
+Code:
+\`\`\`python
+def greet(name):
+    # say hi
+    return f"Hello, {name}!"
+\`\`\`
+
+Example:
+\`\`\`mermaid
+graph TD
+  A[Start] --> B{Choice}
+  B -->|yes| C[Done]
+  B -->|no| D[Retry]
+\`\`\`
+
+| Feature | let | const |
+| --- | --- | --- |
+| Reassign | yes | no |
+`;
+
+        const Test = () => html`
+            <div class="gemini-text">
+                <${Markdown} text=${sample} />
+            </div>
+        `;
+
+        render(html`<${Test} />`, document.getElementById('test-root'));
+    </script>
+</body>
+</html>

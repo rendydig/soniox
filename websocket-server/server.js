@@ -38,6 +38,14 @@ app.get('/roleplay-player', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'roleplay-player.html'));
 });
 
+app.get('/gemini', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'gemini.html'));
+});
+
+app.get('/live', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'live.html'));
+});
+
 wss.on('connection', (ws, req) => {
   const clientIp = req.socket.remoteAddress;
   console.log(`[WebSocket] New connection from ${clientIp}`);

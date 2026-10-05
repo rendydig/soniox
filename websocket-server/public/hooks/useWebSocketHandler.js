@@ -29,9 +29,13 @@ export const useWebSocketHandler = ({
         } else if (data.type === 'translation') {
             processMessage(data, data.type, handleFinalTranslation, handleLiveTranslation);
         } else if (data.type === 'gemini_result') {
-            handleGeminiResult(data.text, data.mode, data.timestamp);
+            if (typeof handleGeminiResult === 'function') {
+                handleGeminiResult(data.text, data.mode, data.timestamp);
+            }
         } else if (data.type === 'gemini_status') {
-            handleGeminiStatus(data.status, data.mode, data.message);
+            if (typeof handleGeminiStatus === 'function') {
+                handleGeminiStatus(data.status, data.mode, data.message);
+            }
         } else if (data.type === 'correction_response') {
             console.log('[WebSocket] Correction response:', data);
             handleCorrectionResponse(data);

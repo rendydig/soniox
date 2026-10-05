@@ -1,9 +1,9 @@
 import sys
 import os
-from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout,
-                             QMessageBox, QStackedWidget)
+from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+                             QMessageBox, QDialog, QMenu, QToolButton, QPushButton)
 from PySide6.QtCore import Qt, QEvent, QTimer, Signal
-from PySide6.QtGui import QKeySequence, QShortcut, QAction, QActionGroup
+from PySide6.QtGui import QKeySequence, QShortcut, QAction, QActionGroup, QGuiApplication
 from src.config import MAX_TRANSCRIPTION_LINES
 from src.purposes import PURPOSES
 from src.text_formatter import append_timestamped_text, format_gemini_result
@@ -14,13 +14,24 @@ from src.controllers import (
     TranslationController
 )
 from src.websocket_client import WebSocketClient
+from src.websocket_server_manager import WebSocketServerManager
 from src.ui_components import (
     SettingsViewWidget,
-    TextEditorsWidget,
     TranslationSectionWidget,
     ControlButtonsWidget,
-    StatusBarWidget
+    StatusBarWidget,
+    SwitchButton,
+    DragHandle,
+    GeminiWindow,
+    LiveWindow
 )
+from src.ui_components.live_window import LIVE_WINDOW_WIDTH
+from src.ui_components.gemini_window import GEMINI_WINDOW_WIDTH
+
+# Height of the bottom bar's always-visible control row (window frame included).
+# The manual-translation input row is revealed above it, growing the bar upward.
+BAR_HEIGHT = 60
+INPUT_ROW_HEIGHT = 40
 
 
 class MainWindow(QMainWindow):
@@ -31,12 +42,18 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Soniox AI: Transcribe & Translate")
-        self.resize(800, 600)
+        # Frameless: no title bar, but the bar stays movable via its drag handle.
+        self.setWindowFlag(Qt.WindowType.FramelessWindowHint, True)
         
         self.device_controller = DeviceController()
         self.transcription_controller = TranscriptionController()
         self.translation_controller = TranslationController()
         
+        # Bring up the Node web service (port 8765) before connecting / loading
+        # the Gemini pane, so both the client and the webview have a server.
+        self._server_manager = WebSocketServerManager()
+        self._server_manager.ensure_running()
+
         self.websocket_client = WebSocketClient("ws://localhost:8765")
         self.websocket_client.set_message_handler(self._on_ws_message_raw)
         self.websocket_client.start()
@@ -48,60 +65,130 @@ class MainWindow(QMainWindow):
         self._last_final_transcription = ""
         self._screen_protection_enabled = True
         self._auto_reply_enabled = False
-        
-        self._init_ui()
+
+        # Separate top-level panes (not Qt children of this window).
+        self.gemini_window = GeminiWindow()
+        self.live_window = LiveWindow()
+
         self._init_menu()
+        self._init_ui()
         self._setup_controller_connections()
         self.device_controller.populate_devices()
+        self._snap_to_bottom()
+        self._connect_screen_signals()
+        self.gemini_window.show()
+        self.live_window.show()
 
     def _init_ui(self):
         central = QWidget()
         self.setCentralWidget(central)
-        layout = QVBoxLayout(central)
-        layout.setSpacing(12)
-        layout.setContentsMargins(16, 16, 16, 16)
+        root = QVBoxLayout(central)
+        root.setContentsMargins(6, 4, 6, 4)
+        root.setSpacing(6)
 
-        self.view_stack = QStackedWidget()
-        layout.addWidget(self.view_stack)
-
-        # Main view: transcription output and session controls.
-        self.main_view = QWidget()
-        main_layout = QVBoxLayout(self.main_view)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setSpacing(12)
-
-        self.text_editors = TextEditorsWidget()
-        main_layout.addWidget(self.text_editors)
-
+        # Top row: manual translation input, revealed by the toggle (hidden by
+        # default) which grows the bar upward.
         self.translation_section = TranslationSectionWidget()
-        main_layout.addWidget(self.translation_section)
+        self.translation_section.setVisible(False)
+        root.addWidget(self.translation_section)
 
-        # Start/Stop button lives in the menu bar (see _init_menu); created here
-        # so _setup_widget_references can cache it.
+        # Bottom row: always-visible controls, mode/tool menus, status, close.
+        row = QHBoxLayout()
+        row.setSpacing(8)
+
+        self.drag_handle = DragHandle()
+        row.addWidget(self.drag_handle)
+
         self.control_buttons = ControlButtonsWidget()
+        row.addWidget(self.control_buttons)
+        row.addWidget(self.mode_button)
+        row.addWidget(self.tool_button)
+        row.addWidget(self.settings_button)
+
+        # Toggle for the input row above; off by default.
+        self.manual_switch = SwitchButton()
+        self.manual_switch.setChecked(False)
+        self.manual_switch.setToolTip("Show or hide the manual translation input.")
+        self.manual_switch.toggled.connect(self._on_manual_switch_toggled)
+        row.addWidget(self.manual_switch)
+
+        row.addStretch(1)
 
         self.status_bar = StatusBarWidget()
-        main_layout.addWidget(self.status_bar)
+        row.addWidget(self.status_bar)
 
-        # Settings view: devices, languages, and session options.
+        self.close_button = QPushButton("\u2715")
+        self.close_button.setFixedWidth(36)
+        self.close_button.setToolTip("Close the app")
+        self.close_button.clicked.connect(self.close)
+        row.addWidget(self.close_button)
+
+        root.addLayout(row)
+
+        # Settings lives in its own dialog. Created eagerly (hidden) so the
+        # widget getters in _setup_widget_references stay valid.
         self.settings_view = SettingsViewWidget()
-        self.settings_view.back_requested.connect(self._show_main_view)
-
-        self.view_stack.addWidget(self.main_view)
-        self.view_stack.addWidget(self.settings_view)
+        self.settings_dialog = QDialog()
+        self.settings_dialog.setWindowTitle("Settings")
+        dialog_layout = QVBoxLayout(self.settings_dialog)
+        dialog_layout.setContentsMargins(16, 16, 16, 16)
+        dialog_layout.addWidget(self.settings_view)
+        self.settings_view.back_requested.connect(self.settings_dialog.close)
 
         self._setup_widget_references()
         self._setup_widget_connections()
         self._apply_styles()
 
-    def _on_settings_toggled(self, checked):
-        self.view_stack.setCurrentWidget(self.settings_view if checked else self.main_view)
+    def _current_bar_height(self):
+        """Total bar height, including the input row when the toggle is on."""
+        return BAR_HEIGHT + (INPUT_ROW_HEIGHT if self.manual_switch.isChecked() else 0)
 
-    def _show_main_view(self):
-        self.settings_action.setChecked(False)
+    def _snap_to_bottom(self):
+        """Pin the bar between the two side panes, just above the taskbar.
+
+        ``availableGeometry`` already excludes the taskbar (and any other reserved
+        app bars), so no taskbar measurement is needed. The bar spans the middle
+        of the screen: ``screen width - Live pane - Gemini pane``, starting right
+        after the Live pane on the left.
+        """
+        screen = QGuiApplication.primaryScreen()
+        if screen is None:
+            return
+        avail = screen.availableGeometry()
+
+        width = max(avail.width() - LIVE_WINDOW_WIDTH - GEMINI_WINDOW_WIDTH, 1)
+        height = self._current_bar_height()
+        self.resize(width, height)
+        # The window is frameless, so move() positions the visible top-left.
+        self.move(avail.left() + LIVE_WINDOW_WIDTH, avail.bottom() + 1 - height)
+
+    def _on_manual_switch_toggled(self, checked):
+        """Show/hide the input row, growing or shrinking upward from the bottom."""
+        self.translation_section.setVisible(checked)
+        bottom = self.frameGeometry().bottom()
+        height = self._current_bar_height()
+        self.resize(self.width(), height)
+        self.move(self.x(), bottom + 1 - height)
+
+    def _connect_screen_signals(self):
+        screen = QGuiApplication.primaryScreen()
+        if screen is not None:
+            screen.availableGeometryChanged.connect(self._on_available_geometry_changed)
+
+    def _on_available_geometry_changed(self, _rect):
+        """Re-snap when the taskbar is shown/hidden/resized or the screen changes."""
+        self._snap_to_bottom()
+
+    def _open_settings(self):
+        """Show the separate Settings dialog, honouring screen protection."""
+        if self._screen_protection_enabled:
+            set_capture_protection(self.settings_dialog, True)
+        self.settings_dialog.show()
+        self.settings_dialog.raise_()
+        self.settings_dialog.activateWindow()
 
     def _init_menu(self):
-        self.mode_menu = self.menuBar().addMenu("Mode: Live Transcription")
+        self.mode_menu = QMenu("Mode: Live Transcription", self)
 
         self.mode_action_group = QActionGroup(self)
         self.mode_action_group.setExclusive(True)
@@ -120,19 +207,40 @@ class MainWindow(QMainWindow):
         self.act_transcribe.triggered.connect(lambda: self._on_mode_changed("transcription"))
         self.act_translate.triggered.connect(lambda: self._on_mode_changed("translation"))
 
-        tool_menu = self.menuBar().addMenu("Tool")
+        self.mode_button = QToolButton()
+        self.mode_button.setText("Transcription")
+        self.mode_button.setToolTip("Switch between Live Transcription and Live Translation.")
+        self.mode_button.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.mode_button.setMenu(self.mode_menu)
+
+        self.tool_menu = QMenu("Tool", self)
         self.screen_protection_action = QAction("Screen Protection", self)
         self.screen_protection_action.setCheckable(True)
         self.screen_protection_action.setChecked(True)
         self.screen_protection_action.toggled.connect(self._set_screen_protection)
-        tool_menu.addAction(self.screen_protection_action)
+        self.tool_menu.addAction(self.screen_protection_action)
 
-        self.settings_action = QAction("Settings", self)
-        self.settings_action.setCheckable(True)
-        self.settings_action.toggled.connect(self._on_settings_toggled)
-        self.menuBar().addAction(self.settings_action)
+        self.gemini_window_action = QAction("Gemini Window", self)
+        self.gemini_window_action.setCheckable(True)
+        self.gemini_window_action.setChecked(True)
+        self.gemini_window_action.setToolTip("Show or hide the Gemini suggestion pane.")
+        self.gemini_window_action.toggled.connect(self._set_gemini_window_visible)
+        self.tool_menu.addAction(self.gemini_window_action)
 
-        self.menuBar().setCornerWidget(self.control_buttons)
+        self.live_window_action = QAction("Live Window", self)
+        self.live_window_action.setCheckable(True)
+        self.live_window_action.setChecked(True)
+        self.live_window_action.setToolTip("Show or hide the live view pane.")
+        self.live_window_action.toggled.connect(self._set_live_window_visible)
+        self.tool_menu.addAction(self.live_window_action)
+
+        self.tool_button = QToolButton()
+        self.tool_button.setText("Tool")
+        self.tool_button.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.tool_button.setMenu(self.tool_menu)
+
+        self.settings_button = QPushButton("Settings")
+        self.settings_button.clicked.connect(self._open_settings)
     
     def _setup_widget_references(self):
         self.device_combo = self.settings_view.get_device_combo()
@@ -142,7 +250,7 @@ class MainWindow(QMainWindow):
         self.lang_combo = self.lang_selection.get_lang_combo()
         self.view_mode_combo = self.settings_view.get_view_mode_combo()
         
-        self.transcription_editor = self.text_editors.get_transcription_editor()
+        self.transcription_editor = self.live_window.get_transcription_editor()
         self.pronunciation_checkbox = self.settings_view.get_pronunciation_checkbox()
         self.purpose_combo = self.settings_view.get_purpose_combo()
         self.screen_protection_checkbox = self.settings_view.get_screen_protection_checkbox()
@@ -157,8 +265,8 @@ class MainWindow(QMainWindow):
         self.memory_label = self.status_bar.get_memory_label()
     
     def _setup_widget_connections(self):
-        self.view_mode_combo.currentIndexChanged.connect(self.text_editors.get_view_stack().setCurrentIndex)
-        self.text_editors.get_view_stack().setCurrentIndex(self.view_mode_combo.currentIndex())
+        self.view_mode_combo.currentIndexChanged.connect(self.live_window.get_view_stack().setCurrentIndex)
+        self.live_window.get_view_stack().setCurrentIndex(self.view_mode_combo.currentIndex())
 
         self.translation_input.installEventFilter(self)
         self.btn_start.clicked.connect(self._toggle_start)
@@ -173,10 +281,9 @@ class MainWindow(QMainWindow):
     def _apply_styles(self):
         self.setStyleSheet(
             """
-            QWidget { font-size: 14px; }
-            QComboBox, QLineEdit { padding: 6px; }
-            QPushButton { padding: 10px 16px; }
-            QMenuBar QPushButton { padding: 4px 14px; }
+            QWidget { font-size: 13px; }
+            QComboBox, QLineEdit { padding: 4px 6px; }
+            QPushButton, QToolButton { padding: 4px 10px; }
             QPushButton:checked { background-color: #d9534f; color: white; }
             QTextEdit { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; }
             """
@@ -208,8 +315,9 @@ class MainWindow(QMainWindow):
     def _on_mode_changed(self, mode):
         is_translation = (mode == "translation")
         self.lang_selection.setVisible(is_translation)
-        self.mode_menu.setTitle("Mode: Live Translation" if is_translation else "Mode: Live Transcription")
-        self.mode_status_label.setText("Mode: Live Translation" if is_translation else "Mode: Live Transcription")
+        label = "Translation" if is_translation else "Transcription"
+        self.mode_button.setText(label)
+        self.mode_status_label.setText(label)
         self._update_start_button_text()
 
     def _update_start_button_text(self):
@@ -375,6 +483,16 @@ class MainWindow(QMainWindow):
         elif msg_type == "auto_reply_request":
             print("[WebSocket] Auto-reply requested from webview")
             self._manual_reply()
+        elif msg_type == "hide_gemini_window":
+            print("[WebSocket] Hide requested from Gemini window")
+            # Unchecking routes through _set_gemini_window_visible(False) -> hide()
+            # and keeps the menu item in sync with the pane's visibility.
+            self.gemini_window_action.setChecked(False)
+        elif msg_type == "hide_live_window":
+            print("[WebSocket] Hide requested from Live window")
+            # Unchecking routes through _set_live_window_visible(False) -> hide()
+            # and keeps the menu item in sync with the pane's visibility.
+            self.live_window_action.setChecked(False)
 
     def _manual_reply(self):
         """Manually trigger a Gemini reply using the last final transcription (Ctrl+R / Cmd+R)."""
@@ -440,17 +558,42 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
     
+    def _set_gemini_window_visible(self, visible):
+        """Show or hide the separate Gemini suggestion pane."""
+        if visible:
+            self.gemini_window._position_on_screen()
+            self.gemini_window.showNormal()  # also restores if minimized
+            self.gemini_window.raise_()
+        else:
+            self.gemini_window.hide()
+
+    def _set_live_window_visible(self, visible):
+        """Show or hide the separate live-view pane."""
+        if visible:
+            self.live_window._position_on_screen()
+            self.live_window.showNormal()  # also restores if minimized
+            self.live_window.raise_()
+        else:
+            self.live_window.hide()
+
     def _set_screen_protection(self, enabled):
         """Exclude this window from screen capture and mirror the state on both controls."""
         enabled = bool(enabled)
         self._screen_protection_enabled = enabled
         set_capture_protection(self, enabled)
+        self.gemini_window.apply_screen_protection(enabled)
+        self.live_window.apply_screen_protection(enabled)
+        if hasattr(self, "settings_dialog"):
+            set_capture_protection(self.settings_dialog, enabled)
         for widget in (self.screen_protection_action, self.screen_protection_checkbox):
             if widget.isChecked() != enabled:
                 widget.setChecked(enabled)
 
     def showEvent(self, event):
         super().showEvent(event)
+        # The frame metrics are only valid once shown, so re-snap the bar to the
+        # bottom edge after the first real show (and after re-shows).
+        QTimer.singleShot(0, self._snap_to_bottom)
         # Changing window flags / re-showing resets the display affinity,
         # so re-apply it whenever the window becomes visible.
         if self._screen_protection_enabled:
@@ -460,7 +603,12 @@ class MainWindow(QMainWindow):
         """Clean up resources on window close."""
         try:
             self._memory_monitor_timer.stop()
-            
+
+            # Close the separate panes and the settings dialog
+            self.settings_dialog.close()
+            self.gemini_window.close()
+            self.live_window.close()
+
             # Stop transcription first to stop audio streams
             self.transcription_controller.cleanup()
             
@@ -469,6 +617,9 @@ class MainWindow(QMainWindow):
             
             # Stop websocket
             self.websocket_client.stop()
+
+            # Stop the web service if this app started it
+            self._server_manager.stop()
             
             # Give threads time to finish
             from PySide6.QtCore import QThread
