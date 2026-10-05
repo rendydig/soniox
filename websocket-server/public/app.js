@@ -5,6 +5,7 @@ import { WebSocketManager } from './websocket-manager.js';
 import { StatusIndicator } from './components/StatusIndicator.js';
 import { LiveTextDisplayer } from './components/LiveTextDisplayer.js';
 import { LiveTranslationDisplayer } from './components/LiveTranslationDisplayer.js';
+import { GeminiDisplayer } from './components/GeminiDisplayer.js';
 import { useWebSocketHandler } from './hooks/useWebSocketHandler.js';
 import { useTranscriptionHandlers } from './hooks/useTranscriptionHandlers.js';
 
@@ -23,6 +24,9 @@ const App = () => {
     const [translationEnabled, setTranslationEnabled] = useState(true);
     const [correctionEnabled, setCorrectionEnabled] = useState(false);
     const [corrections, setCorrections] = useState({});
+    const [geminiResults, setGeminiResults] = useState([]);
+    const [geminiStatus, setGeminiStatus] = useState('');
+    const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
     const wsManager = useRef(null);
     
     const {
@@ -33,7 +37,10 @@ const App = () => {
         handleFinalTranslation,
         handleLiveTranslation,
         /** Corrections Handlers */
-        handleCorrectionResponse
+        handleCorrectionResponse,
+        /** Gemini Handlers */
+        handleGeminiResult,
+        handleGeminiStatus
     } = useTranscriptionHandlers({
         setFinalizedSentences,
         setLiveTextHost,
@@ -44,6 +51,8 @@ const App = () => {
         setCorrections,
         correctionEnabled,
         corrections,
+        setGeminiResults,
+        setGeminiStatus,
         wsManager
     });
 
@@ -55,8 +64,19 @@ const App = () => {
         handleFinalTranslation,
         handleLiveTranslation,
         /** Corrections Handlers */
-        handleCorrectionResponse
+        handleCorrectionResponse,
+        /** Gemini Handlers */
+        handleGeminiResult,
+        handleGeminiStatus
     });
+
+    /** Send a control message back to the Python app. */
+    const sendControl = (payload) => {
+        const ws = wsManager.current && wsManager.current.ws;
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(payload));
+        }
+    };
 
     /** Use Effects */
     useEffect(() => {
@@ -91,6 +111,18 @@ const App = () => {
                         />
                         <span class="toggle-text">Enable Correction</span>
                     </label>
+                    <label class="toggle-label">
+                        <input 
+                            type="checkbox" 
+                            checked=${autoReplyEnabled}
+                            onChange=${(e) => {
+                                const enabled = e.target.checked;
+                                setAutoReplyEnabled(enabled);
+                                sendControl({ type: 'auto_reply_toggle', enabled });
+                            }}
+                        />
+                        <span class="toggle-text">Auto reply</span>
+                    </label>
                 </div>
             </div>
 
@@ -117,8 +149,21 @@ const App = () => {
                             />
                         </div>
                     `}
+
+                    <div class="card gemini-card">
+                        <h2>
+                            ✨ Gemini Suggestion
+                            <button class="btn-gemini" onClick=${() => sendControl({ type: 'auto_reply_request' })}>
+                                Reply now
+                            </button>
+                        </h2>
+                        <${GeminiDisplayer} 
+                            geminiResults=${geminiResults}
+                            geminiStatus=${geminiStatus}
+                        />
+                    </div>
                 </div>
-                
+
             </div>
         </div>
     `;

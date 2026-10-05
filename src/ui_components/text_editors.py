@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
-                             QLabel, QTextEdit, QCheckBox,
+                             QLabel, QTextEdit,
                              QStackedWidget)
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtCore import QUrl
@@ -22,11 +22,6 @@ class TextEditorsWidget(QWidget):
         
         transcription_container = QVBoxLayout()
 
-        transcription_header = QHBoxLayout()
-        transcription_label = QLabel("Real-Time Transcription")
-        transcription_header.addWidget(transcription_label)
-        transcription_header.addStretch()
-
         self.view_stack = QStackedWidget()
         self.transcription_editor = QTextEdit()
         self.transcription_editor.setPlaceholderText("Transcription will appear here...")
@@ -37,36 +32,14 @@ class TextEditorsWidget(QWidget):
         self.view_stack.addWidget(self.transcription_editor)
         self.view_stack.addWidget(self.webview)
 
-        transcription_container.addLayout(transcription_header)
         transcription_container.addWidget(self.view_stack)
-        
-        gemini_container = QVBoxLayout()
-        gemini_header = QHBoxLayout()
-        gemini_label = QLabel("Gemini Suggestion")
-        self.auto_reply_checkbox = QCheckBox("Auto reply")
-        gemini_header.addWidget(gemini_label)
-        gemini_header.addWidget(self.auto_reply_checkbox)
-        gemini_header.addStretch()
-        self.gemini_text = QTextEdit()
-        self.gemini_text.setPlaceholderText("Gemini translation will appear here...")
-        self.gemini_text.setMinimumHeight(200)
-        self.gemini_text.setReadOnly(True)
-        gemini_container.addLayout(gemini_header)
-        gemini_container.addWidget(self.gemini_text)
-        
+
         transcription_editors_row.addLayout(transcription_container)
-        transcription_editors_row.addLayout(gemini_container)
         layout.addLayout(transcription_editors_row)
-    
+
     def get_transcription_editor(self):
         return self.transcription_editor
-    
-    def get_gemini_text(self):
-        return self.gemini_text
-    
-    def get_auto_reply_checkbox(self):
-        return self.auto_reply_checkbox
-    
+
     def get_view_stack(self):
         return self.view_stack
     

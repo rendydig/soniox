@@ -15,7 +15,12 @@ class WebSocketClient:
         self.connected = False
         self.reconnect_delay = 5
         self._stop_flag = False
-        
+        self._message_handler = None
+
+    def set_message_handler(self, handler):
+        """Register a callback invoked with each decoded inbound message (dict)."""
+        self._message_handler = handler
+
     def start(self):
         if self.thread and self.thread.is_alive():
             print("[WebSocket] Client already running")
@@ -74,7 +79,12 @@ class WebSocketClient:
                 
                 while not self._stop_flag:
                     try:
-                        await asyncio.wait_for(websocket.recv(), timeout=1.0)
+                        data = await asyncio.wait_for(websocket.recv(), timeout=1.0)
+                        if data and self._message_handler:
+                            try:
+                                self._message_handler(json.loads(data))
+                            except Exception:
+                                pass
                     except asyncio.TimeoutError:
                         continue
                     except ConnectionClosed:

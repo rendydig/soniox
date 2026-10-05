@@ -11,6 +11,8 @@ export const useTranscriptionHandlers = ({
     setCorrections,
     correctionEnabled,
     corrections,
+    setGeminiResults,
+    setGeminiStatus,
     wsManager
 }) => {
     const correctionEnabledRef = useRef(correctionEnabled);
@@ -220,11 +222,37 @@ export const useTranscriptionHandlers = ({
         console.log('[DEBUG] Correction stored:', data.original, '->', data.status);
     }, [setCorrections]);
 
+    /** Gemini manual translation / auto-reply result */
+    const handleGeminiResult = useCallback((text, mode, timestamp) => {
+        if (!text || text.trim().length === 0) return;
+
+        setGeminiResults(prev => [...prev, {
+            text: text.trim(),
+            mode: mode || 'manual',
+            timestamp: timestamp || new Date().toISOString(),
+            id: Date.now() + Math.random()
+        }]);
+        setGeminiStatus('');
+        console.log('[DEBUG] Gemini result added:', mode, text.slice(0, 80));
+    }, [setGeminiResults, setGeminiStatus]);
+
+    /** Gemini progress / failure status */
+    const handleGeminiStatus = useCallback((status, mode, message) => {
+        if (status === 'started') {
+            setGeminiStatus('Translating...');
+        } else if (status === 'failed') {
+            setGeminiStatus(message || 'Translation failed.');
+        }
+        console.log('[DEBUG] Gemini status:', status, mode);
+    }, [setGeminiStatus]);
+
     return {
         handleFinalTranscription,
         handleLiveTranscription,
         handleFinalTranslation,
         handleLiveTranslation,
-        handleCorrectionResponse
+        handleCorrectionResponse,
+        handleGeminiResult,
+        handleGeminiStatus
     };
 };

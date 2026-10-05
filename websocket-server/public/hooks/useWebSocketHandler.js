@@ -5,7 +5,9 @@ export const useWebSocketHandler = ({
     handleLiveTranscription,
     handleFinalTranslation,
     handleLiveTranslation,
-    handleCorrectionResponse
+    handleCorrectionResponse,
+    handleGeminiResult,
+    handleGeminiStatus
 }) => {
     const processMessage = useCallback((data, type, finalHandler, liveHandler) => {
         console.log('[WebSocket]', data);
@@ -26,17 +28,25 @@ export const useWebSocketHandler = ({
             processMessage(data, data.type, handleFinalTranscription, handleLiveTranscription);
         } else if (data.type === 'translation') {
             processMessage(data, data.type, handleFinalTranslation, handleLiveTranslation);
+        } else if (data.type === 'gemini_result') {
+            handleGeminiResult(data.text, data.mode, data.timestamp);
+        } else if (data.type === 'gemini_status') {
+            handleGeminiStatus(data.status, data.mode, data.message);
         } else if (data.type === 'correction_response') {
             console.log('[WebSocket] Correction response:', data);
             handleCorrectionResponse(data);
         }
+        // auto_reply_toggle / auto_reply_request are meant for the Python app and
+        // are rebroadcast by the server; ignore them here.
     }, [
         processMessage,
         handleFinalTranscription,
         handleLiveTranscription,
         handleFinalTranslation,
         handleLiveTranslation,
-        handleCorrectionResponse
+        handleCorrectionResponse,
+        handleGeminiResult,
+        handleGeminiStatus
     ]);
 
     return handleMessage;

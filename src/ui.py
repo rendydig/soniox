@@ -2,9 +2,9 @@ import sys
 import os
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout,
                              QMessageBox, QStackedWidget)
-from PySide6.QtCore import Qt, QEvent, QTimer
+from PySide6.QtCore import Qt, QEvent, QTimer, Signal
 from PySide6.QtGui import QKeySequence, QShortcut, QAction, QActionGroup
-from src.config import MAX_TRANSCRIPTION_LINES, MAX_GEMINI_LINES
+from src.config import MAX_TRANSCRIPTION_LINES
 from src.purposes import PURPOSES
 from src.text_formatter import append_timestamped_text, format_gemini_result
 from src.screen_protection import set_capture_protection
@@ -24,6 +24,10 @@ from src.ui_components import (
 
 
 class MainWindow(QMainWindow):
+    # Emitted from the WebSocket receive thread and marshalled onto the Qt
+    # main thread via a QueuedConnection (see _setup_controller_connections).
+    webview_message = Signal(dict)
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Soniox AI: Transcribe & Translate")
@@ -34,6 +38,7 @@ class MainWindow(QMainWindow):
         self.translation_controller = TranslationController()
         
         self.websocket_client = WebSocketClient("ws://localhost:8765")
+        self.websocket_client.set_message_handler(self._on_ws_message_raw)
         self.websocket_client.start()
         
         self._memory_monitor_timer = QTimer()
@@ -42,6 +47,7 @@ class MainWindow(QMainWindow):
         
         self._last_final_transcription = ""
         self._screen_protection_enabled = True
+        self._auto_reply_enabled = False
         
         self._init_ui()
         self._init_menu()
@@ -137,8 +143,6 @@ class MainWindow(QMainWindow):
         self.view_mode_combo = self.settings_view.get_view_mode_combo()
         
         self.transcription_editor = self.text_editors.get_transcription_editor()
-        self.gemini_text = self.text_editors.get_gemini_text()
-        self.auto_reply_checkbox = self.text_editors.get_auto_reply_checkbox()
         self.pronunciation_checkbox = self.settings_view.get_pronunciation_checkbox()
         self.purpose_combo = self.settings_view.get_purpose_combo()
         self.screen_protection_checkbox = self.settings_view.get_screen_protection_checkbox()
@@ -193,10 +197,13 @@ class MainWindow(QMainWindow):
         self.translation_controller.status_changed.connect(self._update_status)
         self.translation_controller.error_occurred.connect(self._on_translation_error)
         self.translation_controller.translation_result.connect(self._on_translation_result)
-        self.translation_controller.translation_started.connect(lambda: self.gemini_text.setText("Translating..."))
+        self.translation_controller.translation_started.connect(self._on_translation_started)
         self.translation_controller.auto_reply_result.connect(self._on_auto_reply_result)
         
         self.gemini_lang_combo.currentTextChanged.connect(self._on_auto_reply_language_changed)
+
+        # WebSocket messages arrive on the asyncio thread; hop to the Qt thread.
+        self.webview_message.connect(self._handle_webview_message, Qt.ConnectionType.QueuedConnection)
 
     def _on_mode_changed(self, mode):
         is_translation = (mode == "translation")
@@ -243,7 +250,7 @@ class MainWindow(QMainWindow):
         self.transcription_controller.stop_session()
 
     def _on_transcription_update(self, transcription_text, is_final, input_source):
-        # print(f"[DEBUG] [{input_source}] _on_transcription_update called: is_final={is_final}, text='{text[:50] if text else ''}...', checkbox_checked={self.auto_reply_checkbox.isChecked()}")
+        # print(f"[DEBUG] [{input_source}] _on_transcription_update called: is_final={is_final}, text='{text[:50] if text else ''}...', auto_reply_enabled={self._auto_reply_enabled}")
         
         # Always send as "transcription" type (original English text)
         # Translation results are sent separately via _on_translation_update
@@ -259,20 +266,20 @@ class MainWindow(QMainWindow):
             if(transcription_text.strip() != ""):
                 self.translation_controller.append_to_history(transcription_text, "", input_source)
 
-            if self.auto_reply_checkbox.isChecked() and transcription_text.strip():
+            if self._auto_reply_enabled and transcription_text.strip():
                 if input_source == "host":
                     print(f"[DEBUG] [{input_source}] Recording host speech (no auto-reply): '{transcription_text}'")
                 else:
                     self.translation_controller.schedule_auto_reply(transcription_text, input_source)
             else:
-                print(f"[DEBUG] [{input_source}] NOT scheduling auto-reply. Checkbox: {self.auto_reply_checkbox.isChecked()}, Text empty: {not transcription_text.strip()}")
+                print(f"[DEBUG] [{input_source}] NOT scheduling auto-reply. Auto reply: {self._auto_reply_enabled}, Text empty: {not transcription_text.strip()}")
         else:
             self.status_label.setText(f"Live [{input_source}]: {transcription_text}" if transcription_text.strip() else "Listening...")
             
-            if self.auto_reply_checkbox.isChecked() and transcription_text.strip():
+            if self._auto_reply_enabled and transcription_text.strip():
                 print(f"[DEBUG] [{input_source}] Canceling auto-reply (non-final text with content received)")
                 self.translation_controller.cancel_auto_reply()
-            elif self.auto_reply_checkbox.isChecked() and not transcription_text.strip():
+            elif self._auto_reply_enabled and not transcription_text.strip():
                 print(f"[DEBUG] [{input_source}] Ignoring empty non-final text, keeping auto-reply timer active")
     
     def _on_translation_update(self, text: str, is_final: bool, input_source: str):
@@ -317,9 +324,29 @@ class MainWindow(QMainWindow):
         target_language = self.gemini_lang_combo.currentText()
         self.translation_controller.translate_text(text, target_language)
     
+    def _send_gemini_result(self, text: str, mode: str):
+        """Broadcast a formatted Gemini result to the webview."""
+        self.websocket_client.send_transcription(
+            format_gemini_result(text), True,
+            additional_data={"mode": mode}, message_type="gemini_result"
+        )
+
+    def _send_gemini_status(self, status: str, mode: str, text: str = None):
+        """Broadcast a Gemini progress/failure status to the webview."""
+        additional = {"status": status, "mode": mode}
+        if text is not None:
+            additional["message"] = text
+        self.websocket_client.send_transcription(
+            text or "", False, additional_data=additional, message_type="gemini_status"
+        )
+
+    def _on_translation_started(self):
+        """Handle manual translation start."""
+        self._send_gemini_status("started", "manual")
+
     def _on_translation_result(self, result: str):
         """Handle translation result."""
-        self.gemini_text.setText(format_gemini_result(result))
+        self._send_gemini_result(result, "manual")
     
     def _on_translation_error(self, msg: str):
         """Handle translation errors."""
@@ -329,12 +356,26 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Translation Error", msg)
         
         if "auto-reply" not in msg.lower():
-            self.gemini_text.setText("Translation failed.")
+            self._send_gemini_status("failed", "manual", text="Translation failed.")
     
     def _on_auto_reply_result(self, result: str):
         """Handle auto-reply result."""
-        self.gemini_text.setText(format_gemini_result(result))
+        self._send_gemini_result(result, "auto_reply")
     
+    def _on_ws_message_raw(self, data: dict):
+        """Receive a decoded WebSocket message (runs on the asyncio thread)."""
+        self.webview_message.emit(data)
+
+    def _handle_webview_message(self, data: dict):
+        """Handle control messages sent from the webview (Qt main thread)."""
+        msg_type = data.get("type")
+        if msg_type == "auto_reply_toggle":
+            self._auto_reply_enabled = bool(data.get("enabled"))
+            print(f"[WebSocket] Auto reply set to {self._auto_reply_enabled} from webview")
+        elif msg_type == "auto_reply_request":
+            print("[WebSocket] Auto-reply requested from webview")
+            self._manual_reply()
+
     def _manual_reply(self):
         """Manually trigger a Gemini reply using the last final transcription (Ctrl+R / Cmd+R)."""
         text = self._last_final_transcription.strip()
@@ -391,7 +432,6 @@ class MainWindow(QMainWindow):
             mem_mb = mem_info.rss / 1024 / 1024
             
             trans_lines = self.transcription_editor.document().blockCount()
-            gemini_lines = self.gemini_text.document().blockCount()
             
             self.memory_label.setText(f"Memory: {mem_mb:.1f} MB | Lines: {trans_lines}/{MAX_TRANSCRIPTION_LINES}")
         except ImportError:
