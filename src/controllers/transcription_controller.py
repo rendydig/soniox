@@ -28,13 +28,13 @@ class TranscriptionController(QObject):
         """Get the current mode (transcription or translation)."""
         return self._current_mode
     
-    def start_session(self, host_device_id: int, speaker_device_id: int = None, mode: str = "transcription", target_lang: str = None):
+    def start_session(self, host_device_id: int, speaker_device: dict = None, mode: str = "transcription", target_lang: str = None):
         """
         Start a transcription or translation session with dual audio inputs.
         
         Args:
             host_device_id: Audio input device ID for host
-            speaker_device_id: Audio input device ID for speaker (optional)
+            speaker_device: Loopback device descriptor for speaker output (optional)
             mode: Either "transcription" or "translation"
             target_lang: Target language code for translation mode
         """
@@ -68,11 +68,11 @@ class TranscriptionController(QObject):
             self._host_worker.start()
             
             # Create speaker worker if device is provided
-            if speaker_device_id is not None:
+            if speaker_device is not None:
                 # Small delay to prevent simultaneous audio stream initialization
                 from PySide6.QtCore import QThread
                 QThread.msleep(100)
-                self._speaker_worker = SonioxWorker(speaker_device_id, mode=mode, target_lang=target_lang, input_source="speaker")
+                self._speaker_worker = SonioxWorker(speaker_device, mode=mode, target_lang=target_lang, input_source="speaker")
                 self._speaker_worker.transcription_update.connect(self._on_transcription_update)
                 self._speaker_worker.translation_update.connect(self._on_translation_update)
                 self._speaker_worker.status.connect(self._on_status_update)

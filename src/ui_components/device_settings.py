@@ -22,7 +22,7 @@ class DeviceSettingsWidget(QWidget):
         dev_layout.addLayout(user_layout, 1)
         
         speaker_layout = QVBoxLayout()
-        speaker_layout.addWidget(QLabel("Input Device (Speaker):"))
+        speaker_layout.addWidget(QLabel("Speaker Output (Loopback):"))
         self.speaker_combo = QComboBox()
         self.speaker_combo.setMinimumWidth(180)
         speaker_layout.addWidget(self.speaker_combo)

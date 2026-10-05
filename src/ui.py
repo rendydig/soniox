@@ -3,9 +3,11 @@ import os
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QMessageBox)
 from PySide6.QtCore import Qt, QEvent, QTimer
-from PySide6.QtGui import QKeySequence, QShortcut
+from PySide6.QtGui import QKeySequence, QShortcut, QAction
 from src.config import MAX_TRANSCRIPTION_LINES, MAX_GEMINI_LINES
+from src.purposes import PURPOSES
 from src.text_formatter import append_timestamped_text, format_gemini_result
+from src.screen_protection import set_capture_protection
 from src.controllers import (
     DeviceController,
     TranscriptionController,
@@ -40,8 +42,10 @@ class MainWindow(QMainWindow):
         self._memory_monitor_timer.start(5000)
         
         self._last_final_transcription = ""
+        self._screen_protection_enabled = True
         
         self._init_ui()
+        self._init_menu()
         self._setup_controller_connections()
         self.device_controller.populate_devices()
 
@@ -80,6 +84,14 @@ class MainWindow(QMainWindow):
         self._setup_widget_references()
         self._setup_widget_connections()
         self._apply_styles()
+
+    def _init_menu(self):
+        tool_menu = self.menuBar().addMenu("Tool")
+        self.screen_protection_action = QAction("Screen Protection", self)
+        self.screen_protection_action.setCheckable(True)
+        self.screen_protection_action.setChecked(True)
+        self.screen_protection_action.triggered.connect(self._toggle_screen_protection)
+        tool_menu.addAction(self.screen_protection_action)
     
     def _setup_widget_references(self):
         self.device_combo = self.device_settings.get_device_combo()
@@ -94,6 +106,8 @@ class MainWindow(QMainWindow):
         self.transcription_editor = self.text_editors.get_transcription_editor()
         self.gemini_text = self.text_editors.get_gemini_text()
         self.auto_reply_checkbox = self.text_editors.get_auto_reply_checkbox()
+        self.pronunciation_checkbox = self.text_editors.get_pronunciation_checkbox()
+        self.purpose_combo = self.text_editors.get_purpose_combo()
         
         self.gemini_lang_combo = self.translation_section.get_gemini_lang_combo()
         self.translation_input = self.translation_section.get_translation_input()
@@ -107,6 +121,9 @@ class MainWindow(QMainWindow):
         self.mode_group.buttonToggled.connect(self._on_mode_changed)
         self.translation_input.installEventFilter(self)
         self.btn_start.clicked.connect(self._toggle_start)
+        self.pronunciation_checkbox.toggled.connect(self.translation_controller.set_pronunciation_enabled)
+        self.translation_controller.set_pronunciation_enabled(self.pronunciation_checkbox.isChecked())
+        self.purpose_combo.currentIndexChanged.connect(self._on_purpose_changed)
         
         reply_shortcut = QShortcut(QKeySequence("Ctrl+R"), self)
         reply_shortcut.activated.connect(self._manual_reply)
@@ -158,35 +175,23 @@ class MainWindow(QMainWindow):
             self._stop_session()
 
     def _start_session(self):
-        host_idx = self.device_combo.currentIndex()
-        if host_idx < 0:
+        host_device_id = self.device_combo.currentData()
+        if host_device_id is None:
             QMessageBox.warning(self, "No Device", "Please select a host input device.")
             self.btn_start.setChecked(False)
             return
 
-        device_ids = self.device_controller.get_device_ids()
-        if host_idx >= len(device_ids):
-            QMessageBox.warning(self, "Invalid Device", "Selected host device is not available.")
-            self.btn_start.setChecked(False)
-            return
-        
-        host_device_id = device_ids[host_idx]
-        
-        # Get speaker device ID (optional)
-        speaker_idx = self.speaker_combo.currentIndex()
-        speaker_device_id = None
-        if speaker_idx >= 0 and speaker_idx < len(device_ids):
-            speaker_device_id = device_ids[speaker_idx]
-            # Only use speaker device if it's different from host
-            if speaker_device_id == host_device_id:
-                speaker_device_id = None
+        # Get speaker loopback device (optional); only use it if it's different from host
+        speaker_device = self.speaker_combo.currentData()
+        if speaker_device == host_device_id:
+            speaker_device = None
         
         mode = "translation" if self.rb_translate.isChecked() else "transcription"
         target_lang = self.lang_combo.currentData()
 
         self.transcription_editor.clear()
         self.translation_controller.clear_conversation_history()
-        self.transcription_controller.start_session(host_device_id, speaker_device_id, mode=mode, target_lang=target_lang)
+        self.transcription_controller.start_session(host_device_id, speaker_device, mode=mode, target_lang=target_lang)
 
     def _stop_session(self):
         self.status_label.setText("Stopping...")
@@ -301,19 +306,34 @@ class MainWindow(QMainWindow):
         """Update auto-reply target language when combo box changes."""
         self.translation_controller.set_auto_reply_language(language)
 
-    def _on_devices_populated(self, device_list: list, device_ids: list):
+    def _on_purpose_changed(self, index: int):
+        """Update the auto-reply purpose and apply its default pronunciation setting."""
+        key = self.purpose_combo.currentData()
+        self.translation_controller.set_auto_reply_purpose(key)
+        purpose = PURPOSES.get(key)
+        if purpose is not None:
+            self.pronunciation_checkbox.setChecked(purpose.get("include_pronunciation_default", False))
+
+    def _on_devices_populated(self, host_list: list, host_ids: list, speaker_list: list, speaker_items: list):
         """Handle devices populated from controller."""
         self.device_combo.clear()
+        for label, dev_id in zip(host_list, host_ids):
+            self.device_combo.addItem(label, dev_id)
+
         self.speaker_combo.clear()
-        for label in device_list:
-            self.device_combo.addItem(label)
-            self.speaker_combo.addItem(label)
-        
-        # Auto-select BlackHole for speaker device if available
-        for idx, label in enumerate(device_list):
-            if "blackhole" in label.lower():
-                self.speaker_combo.setCurrentIndex(idx)
-                break
+        for label, item in zip(speaker_list, speaker_items):
+            self.speaker_combo.addItem(label, item)
+
+        default_host = self.device_controller.get_default_host_id()
+        if default_host in host_ids:
+            self.device_combo.setCurrentIndex(host_ids.index(default_host))
+
+        default_speaker = self.device_controller.get_default_speaker_index()
+        if default_speaker is not None:
+            self.speaker_combo.setCurrentIndex(default_speaker)
+
+        if not speaker_list:
+            self.status_label.setText("No loopback output device found")
     
     def _on_device_error(self, msg: str):
         """Handle device errors."""
@@ -337,6 +357,29 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
     
+    def _enable_screen_protection(self):
+        """Exclude this window from screen capture (visible on monitor only)."""
+        self._screen_protection_enabled = True
+        set_capture_protection(self, True)
+
+    def _disable_screen_protection(self):
+        """Restore normal screen-capture behaviour."""
+        self._screen_protection_enabled = False
+        set_capture_protection(self, False)
+
+    def _toggle_screen_protection(self, checked):
+        if checked:
+            self._enable_screen_protection()
+        else:
+            self._disable_screen_protection()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        # Changing window flags / re-showing resets the display affinity,
+        # so re-apply it whenever the window becomes visible.
+        if self._screen_protection_enabled:
+            set_capture_protection(self, True)
+
     def closeEvent(self, event):
         """Clean up resources on window close."""
         try:

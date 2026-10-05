@@ -3,6 +3,7 @@ from google import genai
 from google.genai import types
 from PySide6.QtCore import QThread, Signal
 from src.config import GEMINI_API_KEY, SELF_CONTEXT_FILE, PRONUNCIATION_GUIDES, SAMPLE_TEXTS
+from src.purposes import PURPOSES, DEFAULT_PURPOSE
 
 DEFAULT_SELF_CONTEXT = "bahasa pemograman javascript, react , nextjs, python, docker, kubernetes, aws, gcp, azure, github, gitlab, bitbucket, jenkins, circleci, travis ci, aws lambda, aws s3, aws ec2, aws rds, aws lambda, aws s3, aws ec2, aws rds"
 
@@ -85,11 +86,13 @@ class GeminiAutoReplyWorker(QThread):
     error = Signal(str)
     result = Signal(str)
     
-    def __init__(self, transcription_text: str, target_language: str, conversation_history: list = None, parent=None):
+    def __init__(self, transcription_text: str, target_language: str, conversation_history: list = None, include_pronunciation: bool = True, purpose: str = DEFAULT_PURPOSE, parent=None):
         super().__init__(parent)
         self._transcription_text = transcription_text
         self._target_language = target_language
         self._conversation_history = conversation_history or []
+        self._include_pronunciation = include_pronunciation
+        self._purpose = purpose
         self._is_running = True
         self._self_context = _load_self_context()
     
@@ -104,27 +107,44 @@ class GeminiAutoReplyWorker(QThread):
             
             client = genai.Client(api_key=GEMINI_API_KEY)
             
-            # Build system instruction (static persona + format rules)
-            system_instruction = f"""You are the Host in a live, two-person conversation.
+            # Resolve the selected purpose (persona + objective)
+            purpose = PURPOSES.get(self._purpose, PURPOSES[DEFAULT_PURPOSE])
+            persona = purpose["persona"]
+            objective = "\n".join(f"- {line}" for line in purpose["objective"])
+
+            # Build the shared output format block (plus optional purpose extras)
+            format_lines = [
+                f"{self._target_language} Text: [Write your response using natural {self._target_language} script]"
+            ]
+            if self._include_pronunciation:
+                format_lines.append(_get_pronunciation_line(self._target_language))
+                format_lines.append("English Translation: [Provide the meaning in clear English]")
+            format_lines.extend(purpose.get("extra_format", []))
+            format_lines.append(
+                f"Sample {self._target_language} text format: {_get_sample_text(self._target_language)}"
+            )
+            format_block = "\n".join(format_lines)
+
+            if self._include_pronunciation:
+                output_rule = ""
+            else:
+                output_rule = ("\nOutput only the sections shown above "
+                               "(no pronunciation, no English translation).")
+
+            system_instruction = f"""{persona}
 
 - Messages with role 'user' are what the other person (Speaker) said.
 - Messages with role 'model' are what you (the Host) have said previously.
 - Your expertise areas: {self._self_context}.
 
 Objective:
-- Produce the next thing the Host should say.
-- Directly address the LAST 'user' message. Do not change topic. If it is a question, answer it first.
-- Keep it concise (1–4 sentences), natural, and conversational.
-- Do not repeat the Speaker's words and do not mention being an AI.
+{objective}
 
 Language:
 - Write the Host's reply in {self._target_language}.
 
 Format your response exactly as follows:
-{self._target_language} Text: [Write your response using natural {self._target_language} script]
-{_get_pronunciation_line(self._target_language)}
-English Translation: [Provide the meaning in clear English]
-Sample {self._target_language} text format: {_get_sample_text(self._target_language)}"""
+{format_block}{output_rule}"""
 
             # Build multi-turn contents from conversation history
             contents = []

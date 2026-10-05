@@ -2,11 +2,17 @@ import asyncio
 import json
 import queue
 import os
+import threading
 import numpy as np
 import sounddevice as sd
 import websockets
 from PySide6.QtCore import QThread, Signal
 from src.config import SONIOX_API_KEY, WS_URL
+
+try:
+    import pyaudiowpatch as pyaudio
+except ImportError:
+    pyaudio = None
 
 
 class SonioxWorker(QThread):
@@ -15,21 +21,109 @@ class SonioxWorker(QThread):
     transcription_update = Signal(str, bool, str)
     translation_update = Signal(str, bool, str)
 
-    def __init__(self, device_id: int, mode: str = "transcription", target_lang: str = "en", input_source: str = "host", parent=None):
+    def __init__(self, device, mode: str = "transcription", target_lang: str = "en", input_source: str = "host", parent=None):
         super().__init__(parent)
-        self._device_id = device_id
         self._mode = mode
         self._target_lang = target_lang
         self._input_source = input_source
         self._stop_flag = False
-        self._sample_rate = 16000
         self._channels = 1
         self._audio_queue = queue.Queue(maxsize=32)
         self._queue_overflow_count = 0
         self._stream = None
+        self._pyaudio = None
+        self._capture_thread = None
+
+        if isinstance(device, dict) and device.get("backend") == "loopback":
+            self._backend = "loopback"
+            self._device_id = None
+            self._loopback_index = device["index"]
+            self._sample_rate = int(device["rate"])
+        else:
+            self._backend = "sounddevice"
+            self._device_id = device
+            self._loopback_index = None
+            self._sample_rate = 16000
 
     def stop(self):
         self._stop_flag = True
+
+    def _push_pcm(self, mono):
+        pcm16 = np.clip(mono * 32767, -32768, 32767).astype(np.int16).tobytes()
+        try:
+            self._audio_queue.put_nowait(pcm16)
+            self._queue_overflow_count = 0
+        except queue.Full:
+            self._queue_overflow_count += 1
+            if self._queue_overflow_count > 50:
+                while self._audio_queue.qsize() > 16:
+                    try:
+                        self._audio_queue.get_nowait()
+                    except queue.Empty:
+                        break
+                self._queue_overflow_count = 0
+
+    def _loopback_capture(self):
+        while not self._stop_flag:
+            try:
+                data = self._stream.read(1024, exception_on_overflow=False)
+            except Exception:
+                break
+            mono = np.frombuffer(data, dtype=np.float32).reshape(-1, 2)[:, 0]
+            self._push_pcm(mono)
+
+    def _is_wasapi_device(self):
+        try:
+            hostapi = sd.query_devices(self._device_id)["hostapi"]
+            return "wasapi" in sd.query_hostapis(hostapi)["name"].lower()
+        except Exception:
+            return False
+
+    def _open_input_stream(self, callback):
+        kwargs = dict(
+            samplerate=self._sample_rate,
+            channels=self._channels,
+            dtype="float32",
+            callback=callback,
+            blocksize=1024,
+            device=self._device_id,
+        )
+        try:
+            return sd.InputStream(**kwargs)
+        except sd.PortAudioError:
+            if not self._is_wasapi_device():
+                raise
+            kwargs["extra_settings"] = sd.WasapiSettings(auto_convert=True)
+            return sd.InputStream(**kwargs)
+
+    def _close_stream(self):
+        if self._backend == "loopback":
+            if self._stream is not None:
+                try:
+                    self._stream.stop_stream()
+                except Exception:
+                    pass
+            if self._capture_thread is not None:
+                self._capture_thread.join(timeout=3)
+                self._capture_thread = None
+            if self._stream is not None:
+                try:
+                    self._stream.close()
+                except Exception:
+                    pass
+            if self._pyaudio is not None:
+                try:
+                    self._pyaudio.terminate()
+                except Exception:
+                    pass
+            self._stream = None
+        elif self._stream is not None:
+            try:
+                self._stream.stop()
+                self._stream.close()
+            except Exception:
+                pass
+            self._stream = None
 
     def run(self):
         if not SONIOX_API_KEY:
@@ -44,13 +138,7 @@ class SonioxWorker(QThread):
             self.error.emit(f"Worker error: {e}", self._input_source)
         finally:
             # Ensure stream closed exactly once from worker thread
-            if self._stream is not None:
-                try:
-                    self._stream.stop()
-                    self._stream.close()
-                except Exception:
-                    pass
-                self._stream = None
+            self._close_stream()
             loop.close()
 
     async def _stream_audio(self):
@@ -78,29 +166,26 @@ class SonioxWorker(QThread):
             async def sender():
                 def audio_callback(indata, frames, time_info, status):
                     if not self._stop_flag:
-                        pcm16 = np.clip(indata[:, 0] * 32767, -32768, 32767).astype(np.int16).tobytes()
-                        try:
-                            self._audio_queue.put_nowait(pcm16)
-                            self._queue_overflow_count = 0
-                        except queue.Full:
-                            self._queue_overflow_count += 1
-                            if self._queue_overflow_count > 50:
-                                while self._audio_queue.qsize() > 16:
-                                    try:
-                                        self._audio_queue.get_nowait()
-                                    except queue.Empty:
-                                        break
-                                self._queue_overflow_count = 0
+                        self._push_pcm(indata[:, 0])
 
-                self._stream = sd.InputStream(
-                    samplerate=self._sample_rate,
-                    channels=self._channels,
-                    dtype="float32",
-                    callback=audio_callback,
-                    blocksize=1024,
-                    device=self._device_id,
-                )
-                self._stream.start()
+                if self._backend == "loopback":
+                    if pyaudio is None:
+                        self.error.emit("PyAudioWPatch not installed", self._input_source)
+                        return
+                    self._pyaudio = pyaudio.PyAudio()
+                    self._stream = self._pyaudio.open(
+                        format=pyaudio.paFloat32,
+                        channels=2,
+                        rate=self._sample_rate,
+                        input=True,
+                        input_device_index=self._loopback_index,
+                        frames_per_buffer=1024,
+                    )
+                    self._capture_thread = threading.Thread(target=self._loopback_capture, daemon=True)
+                    self._capture_thread.start()
+                else:
+                    self._stream = self._open_input_stream(audio_callback)
+                    self._stream.start()
                 try:
                     while not self._stop_flag:
                         try:

@@ -10,6 +10,8 @@ def format_gemini_result(text: str) -> str:
 
     Detects headers such as:
       - Syllables/Pronunciation:
+      - Code:
+      - Example:
       - English Translation:
       - <Language> Translation:
 
@@ -18,7 +20,7 @@ def format_gemini_result(text: str) -> str:
     if not text:
         return text
 
-    section_pattern = re.compile(r'^(Syllables/Pronunciation:|\w+ Translation:)\s*', re.MULTILINE)
+    section_pattern = re.compile(r'^(Syllables/Pronunciation:|Code:|Example:|\w+ Translation:)\s*', re.MULTILINE)
 
     def insert_breaks(match: re.Match) -> str:
         start = match.start()

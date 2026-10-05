@@ -1,0 +1,8 @@
+# Copy this file to .env and fill in your real keys.
+# .env is gitignored and must not be committed.
+
+SONIOX_API_KEY=your_soniox_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Optional: path to a self-context file used by the Gemini worker
+# SELF_CONTEXT_FILE=

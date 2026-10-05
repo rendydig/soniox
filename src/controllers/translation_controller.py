@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from PySide6.QtCore import QObject, Signal, Qt, QTimer
 from src.gemini_worker import GeminiWorker, GeminiAutoReplyWorker
+from src.purposes import DEFAULT_PURPOSE
 
 
 class TranslationController(QObject):
@@ -32,6 +33,8 @@ class TranslationController(QObject):
         self._pending_transcription = ""
         self._pending_input_source = "speaker"
         self._auto_reply_target_language = "English"
+        self._include_pronunciation = False
+        self._auto_reply_purpose = DEFAULT_PURPOSE
         self._conversation_history = []
     
     def is_translating(self):
@@ -93,6 +96,14 @@ class TranslationController(QObject):
         """Set the target language for auto-reply."""
         self._auto_reply_target_language = target_language
     
+    def set_pronunciation_enabled(self, enabled: bool):
+        """Set whether auto-reply includes syllables/pronunciation and English translation."""
+        self._include_pronunciation = enabled
+    
+    def set_auto_reply_purpose(self, purpose: str):
+        """Set the purpose/persona used for the auto-reply."""
+        self._auto_reply_purpose = purpose
+    
     def schedule_auto_reply(self, transcription_text: str, input_source: str = "speaker"):
         """
         Schedule an auto-reply after 1.2 seconds of no new transcription.
@@ -140,7 +151,9 @@ class TranslationController(QObject):
             self._auto_reply_worker = GeminiAutoReplyWorker(
                 self._pending_transcription,
                 self._auto_reply_target_language,
-                conversation_history=list(self._conversation_history)
+                conversation_history=list(self._conversation_history),
+                include_pronunciation=self._include_pronunciation,
+                purpose=self._auto_reply_purpose
             )
             self._auto_reply_worker.result.connect(self._on_auto_reply_result, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.error.connect(self._on_auto_reply_error, Qt.ConnectionType.QueuedConnection)
