@@ -32,6 +32,21 @@ Web monitor: `http://localhost:8765`.
 - `GEMINI_API_KEY` — required (translation/auto-reply)
 - `GROK_API_KEY` — optional (grammar correction in `websocket-server/gemini-correction.js`)
 
+## UI structure
+- `MainWindow` (`src/ui.py`) hosts a `QStackedWidget` with two pages:
+  - **Main** — `TextEditorsWidget`, `TranslationSectionWidget` (manual translate),
+    `ControlButtonsWidget`, `StatusBarWidget`.
+  - **Settings** — `SettingsViewWidget` (`src/ui_components/settings_view.py`): reuses
+    `DeviceSettingsWidget` + `LanguageSelectionWidget` and adds AI Reply Language,
+    Purpose, Pronunciation, and Screen Protection.
+- A checkable `Settings` action is added directly to the `QMenuBar` (via
+  `menuBar().addAction(...)`), so it appears next to `Mode` and `Tool` as a clickable
+  item; the Settings page also has a `Back` button. Both drive
+  `_on_settings_toggled` / `_show_main_view`.
+- Widgets are reached via getters in `_setup_widget_references`; moving a control between
+  views only requires repointing the getter, not changing session/translation logic.
+- Device changes apply on the next **Start** (combos are read in `_start_session`).
+
 ## Audio capture architecture
 - **Host** input → `sounddevice.InputStream` (microphone), streamed at 16 kHz mono.
 - **Speaker** input → **output loopback** via `PyAudioWPatch`, so it can capture any
@@ -57,8 +72,9 @@ Web monitor: `http://localhost:8765`.
 - `src/screen_protection.py` wraps `user32.SetWindowDisplayAffinity` to hide the main
   window from Windows screen capture while keeping it visible on the physical monitor
   (`WDA_EXCLUDEFROMCAPTURE`, needs Win10 build 19041+). `MainWindow` applies it in
-  `showEvent` (re-applies after flag/re-show resets) and exposes a `Tool > Screen
-  Protection` checkable menu item (enabled by default). Only the top-level window is
+  `showEvent` (re-applies after flag/re-show resets). Toggled from either the
+  `Tool > Screen Protection` menu item or the Settings checkbox; `_set_screen_protection`
+  keeps both controls in sync (enabled by default). Only the top-level window is
   protected; separate popups/dialogs need their own call.
 
 ## Verification

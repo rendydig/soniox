@@ -1,9 +1,9 @@
 import sys
 import os
-from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-                             QMessageBox)
+from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout,
+                             QMessageBox, QStackedWidget)
 from PySide6.QtCore import Qt, QEvent, QTimer
-from PySide6.QtGui import QKeySequence, QShortcut, QAction
+from PySide6.QtGui import QKeySequence, QShortcut, QAction, QActionGroup
 from src.config import MAX_TRANSCRIPTION_LINES, MAX_GEMINI_LINES
 from src.purposes import PURPOSES
 from src.text_formatter import append_timestamped_text, format_gemini_result
@@ -15,8 +15,7 @@ from src.controllers import (
 )
 from src.websocket_client import WebSocketClient
 from src.ui_components import (
-    DeviceSettingsWidget,
-    ModeSelectionWidget,
+    SettingsViewWidget,
     TextEditorsWidget,
     TranslationSectionWidget,
     ControlButtonsWidget,
@@ -56,74 +55,106 @@ class MainWindow(QMainWindow):
         layout.setSpacing(12)
         layout.setContentsMargins(16, 16, 16, 16)
 
-        top_row = QHBoxLayout()
-        top_row.setSpacing(16)
+        self.view_stack = QStackedWidget()
+        layout.addWidget(self.view_stack)
 
-        self.device_settings = DeviceSettingsWidget()
-        top_row.addWidget(self.device_settings, 2)
+        # Main view: transcription output and session controls.
+        self.main_view = QWidget()
+        main_layout = QVBoxLayout(self.main_view)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(12)
 
-        self.mode_selection = ModeSelectionWidget()
-        top_row.addWidget(self.mode_selection, 1)
-
-        top_row.addWidget(self.mode_selection.get_lang_container(), 1)
-
-        layout.addLayout(top_row)
-        
         self.text_editors = TextEditorsWidget()
-        layout.addWidget(self.text_editors)
-        
+        main_layout.addWidget(self.text_editors)
+
         self.translation_section = TranslationSectionWidget()
-        layout.addWidget(self.translation_section)
-        
+        main_layout.addWidget(self.translation_section)
+
         self.control_buttons = ControlButtonsWidget()
-        layout.addWidget(self.control_buttons)
-        
+        main_layout.addWidget(self.control_buttons)
+
         self.status_bar = StatusBarWidget()
-        layout.addWidget(self.status_bar)
-        
+        main_layout.addWidget(self.status_bar)
+
+        # Settings view: devices, languages, and session options.
+        self.settings_view = SettingsViewWidget()
+        self.settings_view.back_requested.connect(self._show_main_view)
+
+        self.view_stack.addWidget(self.main_view)
+        self.view_stack.addWidget(self.settings_view)
+
         self._setup_widget_references()
         self._setup_widget_connections()
         self._apply_styles()
 
+    def _on_settings_toggled(self, checked):
+        self.view_stack.setCurrentWidget(self.settings_view if checked else self.main_view)
+
+    def _show_main_view(self):
+        self.settings_action.setChecked(False)
+
     def _init_menu(self):
+        self.mode_menu = self.menuBar().addMenu("Mode: Live Transcription")
+
+        self.mode_action_group = QActionGroup(self)
+        self.mode_action_group.setExclusive(True)
+
+        self.act_transcribe = QAction("Live Transcription", self)
+        self.act_transcribe.setCheckable(True)
+        self.act_transcribe.setChecked(True)
+        self.act_translate = QAction("Live Translation", self)
+        self.act_translate.setCheckable(True)
+
+        self.mode_action_group.addAction(self.act_transcribe)
+        self.mode_action_group.addAction(self.act_translate)
+        self.mode_menu.addAction(self.act_transcribe)
+        self.mode_menu.addAction(self.act_translate)
+
+        self.act_transcribe.triggered.connect(lambda: self._on_mode_changed("transcription"))
+        self.act_translate.triggered.connect(lambda: self._on_mode_changed("translation"))
+
         tool_menu = self.menuBar().addMenu("Tool")
         self.screen_protection_action = QAction("Screen Protection", self)
         self.screen_protection_action.setCheckable(True)
         self.screen_protection_action.setChecked(True)
-        self.screen_protection_action.triggered.connect(self._toggle_screen_protection)
+        self.screen_protection_action.toggled.connect(self._set_screen_protection)
         tool_menu.addAction(self.screen_protection_action)
+
+        self.settings_action = QAction("Settings", self)
+        self.settings_action.setCheckable(True)
+        self.settings_action.toggled.connect(self._on_settings_toggled)
+        self.menuBar().addAction(self.settings_action)
     
     def _setup_widget_references(self):
-        self.device_combo = self.device_settings.get_device_combo()
-        self.speaker_combo = self.device_settings.get_speaker_combo()
+        self.device_combo = self.settings_view.get_device_combo()
+        self.speaker_combo = self.settings_view.get_speaker_combo()
         
-        self.mode_group = self.mode_selection.get_mode_group()
-        self.rb_transcribe = self.mode_selection.get_transcribe_radio()
-        self.rb_translate = self.mode_selection.get_translate_radio()
-        self.lang_container = self.mode_selection.get_lang_container()
-        self.lang_combo = self.mode_selection.get_lang_combo()
+        self.lang_selection = self.settings_view.get_language_selection()
+        self.lang_combo = self.lang_selection.get_lang_combo()
         
         self.transcription_editor = self.text_editors.get_transcription_editor()
         self.gemini_text = self.text_editors.get_gemini_text()
         self.auto_reply_checkbox = self.text_editors.get_auto_reply_checkbox()
-        self.pronunciation_checkbox = self.text_editors.get_pronunciation_checkbox()
-        self.purpose_combo = self.text_editors.get_purpose_combo()
+        self.pronunciation_checkbox = self.settings_view.get_pronunciation_checkbox()
+        self.purpose_combo = self.settings_view.get_purpose_combo()
+        self.screen_protection_checkbox = self.settings_view.get_screen_protection_checkbox()
         
-        self.gemini_lang_combo = self.translation_section.get_gemini_lang_combo()
+        self.gemini_lang_combo = self.settings_view.get_gemini_lang_combo()
         self.translation_input = self.translation_section.get_translation_input()
         
         self.btn_start = self.control_buttons.get_start_button()
         
         self.status_label = self.status_bar.get_status_label()
+        self.mode_status_label = self.status_bar.get_mode_label()
         self.memory_label = self.status_bar.get_memory_label()
     
     def _setup_widget_connections(self):
-        self.mode_group.buttonToggled.connect(self._on_mode_changed)
         self.translation_input.installEventFilter(self)
         self.btn_start.clicked.connect(self._toggle_start)
         self.pronunciation_checkbox.toggled.connect(self.translation_controller.set_pronunciation_enabled)
         self.translation_controller.set_pronunciation_enabled(self.pronunciation_checkbox.isChecked())
         self.purpose_combo.currentIndexChanged.connect(self._on_purpose_changed)
+        self.screen_protection_checkbox.toggled.connect(self._set_screen_protection)
         
         reply_shortcut = QShortcut(QKeySequence("Ctrl+R"), self)
         reply_shortcut.activated.connect(self._manual_reply)
@@ -159,14 +190,18 @@ class MainWindow(QMainWindow):
         
         self.gemini_lang_combo.currentTextChanged.connect(self._on_auto_reply_language_changed)
 
-    def _on_mode_changed(self, btn, checked):
-        if checked:
-            is_translation = (btn == self.rb_translate)
-            self.lang_container.setVisible(is_translation)
-            if is_translation:
-                self.btn_start.setText("Start Translation")
-            else:
-                self.btn_start.setText("Start Transcription")
+    def _on_mode_changed(self, mode):
+        is_translation = (mode == "translation")
+        self.lang_selection.setVisible(is_translation)
+        self.mode_menu.setTitle("Mode: Live Translation" if is_translation else "Mode: Live Transcription")
+        self.mode_status_label.setText("Mode: Live Translation" if is_translation else "Mode: Live Transcription")
+        self._update_start_button_text()
+
+    def _update_start_button_text(self):
+        """Set the start button label from the current mode (unless a session is running)."""
+        if self.btn_start.isChecked():
+            return
+        self.btn_start.setText("Start Translation" if self.act_translate.isChecked() else "Start Transcription")
 
     def _toggle_start(self, checked):
         if checked:
@@ -186,7 +221,7 @@ class MainWindow(QMainWindow):
         if speaker_device == host_device_id:
             speaker_device = None
         
-        mode = "translation" if self.rb_translate.isChecked() else "transcription"
+        mode = "translation" if self.act_translate.isChecked() else "transcription"
         target_lang = self.lang_combo.currentData()
 
         self.transcription_editor.clear()
@@ -246,12 +281,12 @@ class MainWindow(QMainWindow):
     def _on_transcription_stopped(self):
         """Handle transcription session stopped."""
         self.btn_start.setChecked(False)
-        self.btn_start.setText("Start Transcription" if self.rb_transcribe.isChecked() else "Start Translation")
+        self._update_start_button_text()
     
     def _on_transcription_error(self, msg: str):
         """Handle transcription errors."""
         self.btn_start.setChecked(False)
-        self.btn_start.setText("Start Transcription" if self.rb_transcribe.isChecked() else "Start Translation")
+        self._update_start_button_text()
         QMessageBox.critical(self, "Error", msg)
 
     def _update_status(self, text: str):
@@ -357,21 +392,14 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
     
-    def _enable_screen_protection(self):
-        """Exclude this window from screen capture (visible on monitor only)."""
-        self._screen_protection_enabled = True
-        set_capture_protection(self, True)
-
-    def _disable_screen_protection(self):
-        """Restore normal screen-capture behaviour."""
-        self._screen_protection_enabled = False
-        set_capture_protection(self, False)
-
-    def _toggle_screen_protection(self, checked):
-        if checked:
-            self._enable_screen_protection()
-        else:
-            self._disable_screen_protection()
+    def _set_screen_protection(self, enabled):
+        """Exclude this window from screen capture and mirror the state on both controls."""
+        enabled = bool(enabled)
+        self._screen_protection_enabled = enabled
+        set_capture_protection(self, enabled)
+        for widget in (self.screen_protection_action, self.screen_protection_checkbox):
+            if widget.isChecked() != enabled:
+                widget.setChecked(enabled)
 
     def showEvent(self, event):
         super().showEvent(event)

@@ -3,7 +3,6 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
                              QStackedWidget)
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtCore import QUrl
-from src.purposes import PURPOSES, DEFAULT_PURPOSE
 
 
 class TextEditorsWidget(QWidget):
@@ -53,25 +52,9 @@ class TextEditorsWidget(QWidget):
         gemini_header = QHBoxLayout()
         gemini_label = QLabel("Gemini Suggestion")
         self.auto_reply_checkbox = QCheckBox("Auto reply")
-        self.pronunciation_checkbox = QCheckBox("Pronunciation")
-        self.pronunciation_checkbox.setChecked(False)
-        self.pronunciation_checkbox.setToolTip(
-            "Include syllables/pronunciation and English translation in the auto-reply. "
-            "Off = answer in the target language only."
-        )
-        self.purpose_combo = QComboBox()
-        for key, purpose in PURPOSES.items():
-            self.purpose_combo.addItem(purpose["label"], key)
-        default_index = self.purpose_combo.findData(DEFAULT_PURPOSE)
-        if default_index >= 0:
-            self.purpose_combo.setCurrentIndex(default_index)
-        self.purpose_combo.setToolTip("Persona used for the Gemini auto-reply.")
         gemini_header.addWidget(gemini_label)
         gemini_header.addWidget(self.auto_reply_checkbox)
-        gemini_header.addWidget(self.pronunciation_checkbox)
         gemini_header.addStretch()
-        gemini_header.addWidget(QLabel("Purpose:"))
-        gemini_header.addWidget(self.purpose_combo)
         self.gemini_text = QTextEdit()
         self.gemini_text.setPlaceholderText("Gemini translation will appear here...")
         self.gemini_text.setMinimumHeight(200)
@@ -91,12 +74,6 @@ class TextEditorsWidget(QWidget):
     
     def get_auto_reply_checkbox(self):
         return self.auto_reply_checkbox
-    
-    def get_pronunciation_checkbox(self):
-        return self.pronunciation_checkbox
-    
-    def get_purpose_combo(self):
-        return self.purpose_combo
     
     def get_view_mode_combo(self):
         return self.view_mode_combo

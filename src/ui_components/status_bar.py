@@ -16,12 +16,19 @@ class StatusBarWidget(QWidget):
         self.status_label.setFont(font)
         layout.addWidget(self.status_label, 1)
         
+        self.mode_label = QLabel("Mode: Live Transcription")
+        self.mode_label.setStyleSheet("color: #666; font-size: 11px;")
+        layout.addWidget(self.mode_label)
+        
         self.memory_label = QLabel("")
         self.memory_label.setStyleSheet("color: #666; font-size: 11px;")
         layout.addWidget(self.memory_label)
     
     def get_status_label(self):
         return self.status_label
+    
+    def get_mode_label(self):
+        return self.mode_label
     
     def get_memory_label(self):
         return self.memory_label
