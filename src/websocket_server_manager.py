@@ -11,10 +11,13 @@ import socket
 import subprocess
 import sys
 import time
+import logging
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SERVER_DIR = os.path.join(REPO_ROOT, "websocket-server")
 LOG_PATH = os.path.join(REPO_ROOT, "logs", "websocket-server.log")
+
+logger = logging.getLogger(__name__)
 
 HOST = "localhost"
 PORT = 8765
@@ -48,8 +51,8 @@ class WebSocketServerManager:
 
         node = shutil.which("node")
         if not node:
-            print("[Server] node not found on PATH; start manually: "
-                  "cd websocket-server && npm start")
+            logger.warning("node not found on PATH; start manually: "
+                           "cd websocket-server && npm start")
             return False
 
         os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
@@ -64,26 +67,24 @@ class WebSocketServerManager:
                     creationflags=creationflags,
                 )
         except OSError as e:
-            print(f"[Server] Failed to start node server: {e}")
+            logger.error("Failed to start node server: %s", e)
             self.process = None
             return False
 
-        print(f"[Server] Starting node server (pid {self.process.pid}); "
-              f"logs: {LOG_PATH}")
+        logger.info("Starting node server (pid %s); logs: %s", self.process.pid, LOG_PATH)
 
         deadline = time.time() + wait_seconds
         while time.time() < deadline:
             if is_server_running():
-                print(f"[Server] Web service ready at http://localhost:{PORT}")
+                logger.info("Web service ready at http://localhost:%s", PORT)
                 return True
             if self.process.poll() is not None:
-                print(f"[Server] node server exited early (code "
-                      f"{self.process.returncode}); see {LOG_PATH}")
+                logger.error("node server exited early (code %s); see %s", self.process.returncode, LOG_PATH)
                 self.process = None
                 return False
             time.sleep(0.1)
 
-        print(f"[Server] Timed out waiting for port {PORT}; see {LOG_PATH}")
+        logger.warning("Timed out waiting for port %s; see %s", PORT, LOG_PATH)
         return False
 
     def stop(self):

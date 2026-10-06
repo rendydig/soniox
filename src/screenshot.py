@@ -1,7 +1,10 @@
 import base64
+import logging
 
 from PySide6.QtCore import QBuffer, QIODevice, Qt
 from PySide6.QtGui import QGuiApplication
+
+logger = logging.getLogger(__name__)
 
 # Downscale every capture to this width (height follows the aspect ratio) so the
 # payload stays small over the local WebSocket.
@@ -21,12 +24,12 @@ def capture_screen_data_url(
     """
     screen = QGuiApplication.primaryScreen()
     if screen is None:
-        print("[Screenshot] No primary screen available")
+        logger.warning("No primary screen available")
         return ""
 
     pixmap = screen.grabWindow(0)
     if pixmap.isNull():
-        print("[Screenshot] Capture returned a null pixmap")
+        logger.warning("Capture returned a null pixmap")
         return ""
 
     if pixmap.width() > max_width:
@@ -37,7 +40,7 @@ def capture_screen_data_url(
     buffer = QBuffer()
     buffer.open(QIODevice.OpenModeFlag.WriteOnly)
     if not pixmap.save(buffer, "JPEG", quality):
-        print("[Screenshot] Failed to encode capture as JPEG")
+        logger.warning("Failed to encode capture as JPEG")
         buffer.close()
         return ""
 

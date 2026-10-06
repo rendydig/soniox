@@ -1,8 +1,11 @@
 import os
+import logging
 from datetime import datetime
 from PySide6.QtCore import QObject, Signal, Qt, QTimer
 from src.gemini_worker import GeminiWorker, GeminiAutoReplyWorker
 from src.purposes import DEFAULT_PURPOSE
+
+logger = logging.getLogger(__name__)
 
 
 class TranslationController(QObject):
@@ -114,12 +117,12 @@ class TranslationController(QObject):
             transcription_text: The transcribed text to respond to
             input_source: Who said this text — "host" (you) or "speaker" (the other person)
         """
-        print(f"[DEBUG TranslationController] schedule_auto_reply called with: '{transcription_text}' (from {input_source})")
+        logger.debug("schedule_auto_reply called with: %r (from %s)", transcription_text, input_source)
         self._pending_transcription = transcription_text
         self._pending_input_source = input_source
         self._auto_reply_timer.stop()
         self._auto_reply_timer.start(1200)
-        print(f"[DEBUG TranslationController] Timer started for 1200ms")
+        logger.debug("Timer started for 1200ms")
     
     def trigger_reply_now(self, transcription_text: str = None, input_source: str = "speaker"):
         """Trigger a Gemini reply immediately without debounce timer."""
@@ -131,7 +134,7 @@ class TranslationController(QObject):
 
     def cancel_auto_reply(self):
         """Cancel any pending auto-reply."""
-        print(f"[DEBUG TranslationController] cancel_auto_reply called")
+        logger.debug("cancel_auto_reply called")
         self._auto_reply_timer.stop()
         self._pending_transcription = ""
         self._pending_input_source = "speaker"
@@ -139,11 +142,11 @@ class TranslationController(QObject):
     def _start_auto_reply_worker(self, transcription_text: str, images: list = None, is_image: bool = False):
         """Create and start a Gemini auto-reply worker. Returns True if started."""
         if self._auto_reply_worker is not None and self._auto_reply_worker.isRunning():
-            print(f"[DEBUG TranslationController] Auto-reply worker already running, aborting")
+            logger.debug("Auto-reply worker already running, aborting")
             return False
 
         try:
-            print(f"[DEBUG TranslationController] Creating GeminiAutoReplyWorker with language: {self._auto_reply_target_language}")
+            logger.debug("Creating GeminiAutoReplyWorker with language: %s", self._auto_reply_target_language)
             self._auto_reply_is_image = is_image
             self._auto_reply_worker = GeminiAutoReplyWorker(
                 transcription_text,
@@ -158,7 +161,7 @@ class TranslationController(QObject):
             self._auto_reply_worker.start()
             return True
         except Exception as e:
-            print(f"[DEBUG TranslationController] Exception starting auto-reply: {e}")
+            logger.error("Exception starting auto-reply: %s", e)
             self.error_occurred.emit(f"Failed to start auto-reply: {e}")
             self._auto_reply_worker = None
             self._auto_reply_is_image = False
@@ -166,15 +169,15 @@ class TranslationController(QObject):
 
     def _trigger_auto_reply(self):
         """Trigger the auto-reply after debounce period."""
-        print(f"[DEBUG TranslationController] _trigger_auto_reply called! Pending text: '{self._pending_transcription}'")
+        logger.debug("_trigger_auto_reply called! Pending text: %r", self._pending_transcription)
 
         if not self._pending_transcription.strip():
-            print(f"[DEBUG TranslationController] No pending transcription, aborting")
+            logger.debug("No pending transcription, aborting")
             return
 
         if self._start_auto_reply_worker(self._pending_transcription, is_image=False):
             self.status_changed.emit(f"Auto-replying to: {self._pending_transcription[:50]}...")
-            print(f"[DEBUG TranslationController] Auto-reply worker started!")
+            logger.debug("Auto-reply worker started!")
 
     def trigger_image_reply(self, images: list):
         """Send captured screenshots to Gemini using the auto-reply context/format."""
@@ -183,16 +186,16 @@ class TranslationController(QObject):
             return False
 
         self._auto_reply_timer.stop()
-        print(f"[DEBUG TranslationController] trigger_image_reply called with {len(images)} screenshot(s)")
+        logger.debug("trigger_image_reply called with %d screenshot(s)", len(images))
         if self._start_auto_reply_worker("", images=images, is_image=True):
             self.status_changed.emit(f"Sending {len(images)} screenshot(s) to Gemini...")
-            print(f"[DEBUG TranslationController] Image reply worker started!")
+            logger.debug("Image reply worker started!")
             return True
         return False
     
     def _on_auto_reply_result(self, result: str):
         """Handle auto-reply result from worker."""
-        print(f"[DEBUG TranslationController] Auto-reply result received: '{result[:100]}...'")
+        logger.debug("Auto-reply result received: %r...", result[:100])
         is_image = self._auto_reply_is_image
         self._auto_reply_is_image = False
         if self._auto_reply_worker is not None:
@@ -207,7 +210,7 @@ class TranslationController(QObject):
     
     def _on_auto_reply_error(self, msg: str):
         """Handle errors from auto-reply worker."""
-        print(f"[DEBUG TranslationController] Auto-reply error: {msg}")
+        logger.error("Auto-reply error: %s", msg)
         self._auto_reply_is_image = False
         if self._auto_reply_worker is not None:
             self._old_workers.append(self._auto_reply_worker)
@@ -237,7 +240,7 @@ class TranslationController(QObject):
     def clear_conversation_history(self):
         """Clear the conversation history buffer."""
         self._conversation_history.clear()
-        print(f"[DEBUG TranslationController] Conversation history cleared")
+        logger.debug("Conversation history cleared")
 
     def append_to_history(self, text: str, suggestion: str, input_source: str):
         """Append a conversation turn to history, keeping only last MAX_HISTORY_TURNS."""
@@ -249,7 +252,7 @@ class TranslationController(QObject):
         if len(self._conversation_history) > self.MAX_HISTORY_TURNS:
             self._conversation_history = self._conversation_history[-self.MAX_HISTORY_TURNS:]
         self._log_history_to_file(text, suggestion, input_source)
-        print(f"[DEBUG TranslationController] History updated: {len(self._conversation_history)} turns (last from {input_source})")
+        logger.debug("History updated: %d turns (last from %s)", len(self._conversation_history), input_source)
 
     def _log_history_to_file(self, text: str, suggestion: str, input_source: str):
         """Append the conversation turn to a persistent text log file."""
@@ -262,7 +265,7 @@ class TranslationController(QObject):
                 f.write(f"  suggestion: {suggestion}\n")
                 f.write("-" * 80 + "\n")
         except Exception as e:
-            print(f"[DEBUG TranslationController] Failed to write history log: {e}")
+            logger.error("Failed to write history log: %s", e)
 
     def cleanup(self):
         """Clean up resources."""

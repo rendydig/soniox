@@ -34,8 +34,15 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
 ## Configuration
 `.env` at the repo root (gitignored; see `.env.example`) must define:
 - `SONIOX_API_KEY` — required (streaming STT)
-- `GEMINI_API_KEY` — required (translation/auto-reply)
+- `GEMINI_API_KEY` — required when `AI_PROVIDER=gemini` (default)
 - `GROK_API_KEY` — optional (grammar correction in `websocket-server/gemini-correction.js`)
+
+AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
+- `AI_PROVIDER` — `gemini` (default) or `openai` (any OpenAI-compatible endpoint:
+  OpenRouter, x.ai, OpenAI, local servers)
+- `AI_MODEL` — model name; falls back to `GEMINI_MODEL`, then `gemini-2.5-flash`
+- `AI_BASE_URL` + `AI_API_KEY` — required only when `AI_PROVIDER=openai`
+  (e.g. `https://openrouter.ai/api/v1`; screenshot replies need a vision-capable model)
 
 ## UI structure
 - `MainWindow` (`src/ui.py`) is a **bottom bar**: a normal framed window, full usable
@@ -119,11 +126,13 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
   it stays in sync with the webview gallery because both hotkeys are handled in Python.
 - `CTRL+ALT+SHIFT+G` → `MainWindow._send_images_to_gemini` → `TranslationController.trigger_image_reply(images)`
   → `GeminiAutoReplyWorker(..., images=...)`, which reuses the auto-reply persona/purpose/format
-  and conversation history. `gemini_worker._attach_images` decodes each data URL and attaches
-  `types.Part.from_bytes(...)` to the final **user** turn (or appends a new user turn with a
-  short screenshot prompt). The reply arrives on the new `image_reply_result` signal and is
-  broadcast with mode `"image"` (badge "Image"); normal auto-replies still use `auto_reply_result`.
-  An empty gallery shows "No screenshots to send." in the pane.
+  and conversation history. `gemini_worker._build_messages` attaches each screenshot to the
+  final **user** turn (or appends a new user turn with a short screenshot prompt); the provider
+  client (`src/ai_client.py`) then encodes them (`types.Part.from_bytes` for Gemini, an
+  `image_url` data URL for OpenAI-compatible providers). The reply arrives on the new
+  `image_reply_result` signal and is broadcast with mode `"image"` (badge "Image"); normal
+  auto-replies still use `auto_reply_result`. An empty gallery shows "No screenshots to send."
+  in the pane.
 - `WebSocketClient.send_message(dict)` is the generic send used for these messages; the
   server needs no change (`server.js` rebroadcasts any unrecognized `type` to other clients).
 - The Gemini pane (`public/gemini-app.js`) appends each image to a
@@ -201,6 +210,18 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
     of the Speaker list via `VIRTUAL_OUTPUT_HINTS` in `device_controller.py`.
   - Clean shutdown order matters: `stop.set()` → `stream.stop_stream()` (unblocks the
     blocking `read`) → `join()` → `close()` → `PyAudio().terminate()`.
+
+## Logging
+- All errors/warnings and diagnostics go to the **terminal** via Python `logging`;
+  there are **no `QMessageBox` popups** (the worker error that used to show
+  `[speaker] Worker error: received 1000 (ok)...` is now logged, not shown).
+  `src/logging_setup.py::setup_logging()` (called first in `main.py`) installs a
+  stdout `StreamHandler` with the format `%(asctime)s [%(levelname)s] %(name)s: %(message)s`;
+  the level comes from the `LOG_LEVEL` env var (default `DEBUG`), and
+  `websockets`/`urllib3`/`asyncio` are pinned to `WARNING`.
+- Each module uses `logger = logging.getLogger(__name__)`. Add new diagnostics as
+  `logger.<level>(...)` with lazy `%`-style args, **not** `print()`, so they flow
+  through the same console.
 
 ## Notes / gotchas
 - `sounddevice` has **no** WASAPI loopback API; `soundcard` crashes (heap corruption) —

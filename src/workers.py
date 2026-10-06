@@ -2,12 +2,15 @@ import asyncio
 import json
 import queue
 import os
+import logging
 import threading
 import numpy as np
 import sounddevice as sd
 import websockets
 from PySide6.QtCore import QThread, Signal
 from src.config import SONIOX_API_KEY, WS_URL
+
+logger = logging.getLogger(__name__)
 
 try:
     import pyaudiowpatch as pyaudio
@@ -161,7 +164,7 @@ class SonioxWorker(QThread):
                 }
 
             await ws.send(json.dumps(config))
-            print(f"[DEBUG] Config sent: {json.dumps(config, indent=2)}")
+            logger.debug("Config sent: %s", json.dumps(config, indent=2))
 
             async def sender():
                 def audio_callback(indata, frames, time_info, status):
@@ -244,7 +247,7 @@ class SonioxWorker(QThread):
                                 else:
                                     text_parts.append(token_text)
                             final_transcription = "".join(text_parts)
-                            print(f"[DEBUG] [{self._input_source}] Final Transcription (English): {repr(final_transcription)}")
+                            logger.debug("[%s] Final Transcription (English): %r", self._input_source, final_transcription)
                             self.transcription_update.emit(final_transcription, True, self._input_source)
                         
                         # Emit final translation (Indonesian)
@@ -257,7 +260,7 @@ class SonioxWorker(QThread):
                                 else:
                                     text_parts.append(token_text)
                             final_translation = "".join(text_parts)
-                            print(f"[DEBUG] [{self._input_source}] Final Translation (Indonesian): {repr(final_translation)}")
+                            logger.debug("[%s] Final Translation (Indonesian): %r", self._input_source, final_translation)
                             self.translation_update.emit(final_translation, True, self._input_source)
                         
                         # Emit partial text (English - for live display)

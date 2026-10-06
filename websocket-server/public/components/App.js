@@ -23,7 +23,6 @@ export const App = ({ hideControlType, edgeControlType } = {}) => {
     const [translationEnabled, setTranslationEnabled] = useState(true);
     const [correctionEnabled, setCorrectionEnabled] = useState(false);
     const [corrections, setCorrections] = useState({});
-    const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
     const wsManager = useRef(null);
     
     const {
@@ -123,18 +122,6 @@ export const App = ({ hideControlType, edgeControlType } = {}) => {
                             onChange=${(e) => setCorrectionEnabled(e.target.checked)}
                         />
                         <span class="toggle-text">Enable Correction</span>
-                    </label>
-                    <label class="toggle-label">
-                        <input 
-                            type="checkbox" 
-                            checked=${autoReplyEnabled}
-                            onChange=${(e) => {
-                                const enabled = e.target.checked;
-                                setAutoReplyEnabled(enabled);
-                                sendControl({ type: 'auto_reply_toggle', enabled });
-                            }}
-                        />
-                        <span class="toggle-text">Auto reply</span>
                     </label>
                 </div>
             </div>

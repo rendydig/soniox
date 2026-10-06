@@ -1,9 +1,12 @@
 import asyncio
 import json
+import logging
 import threading
 from typing import Optional
 import websockets
 from websockets.exceptions import ConnectionClosed, WebSocketException
+
+logger = logging.getLogger(__name__)
 
 
 class WebSocketClient:
@@ -23,12 +26,12 @@ class WebSocketClient:
 
     def start(self):
         if self.thread and self.thread.is_alive():
-            print("[WebSocket] Client already running")
+            logger.info("Client already running")
             return
             
         self.thread = threading.Thread(target=self._run_loop, daemon=True)
         self.thread.start()
-        print(f"[WebSocket] Client started, connecting to {self.uri}")
+        logger.info("Client started, connecting to %s", self.uri)
     
     def _run_loop(self):
         self.loop = asyncio.new_event_loop()
@@ -37,7 +40,7 @@ class WebSocketClient:
             self.loop.run_until_complete(self._connect_loop())
         except Exception as e:
             if not self._stop_flag:
-                print(f"[WebSocket] Event loop error: {e}")
+                logger.error("Event loop error: %s", e)
         finally:
             # Cancel all pending tasks
             try:
@@ -61,10 +64,10 @@ class WebSocketClient:
                 await self._connect()
             except Exception as e:
                 if not self._stop_flag:
-                    print(f"[WebSocket] Connection error: {e}")
+                    logger.error("Connection error: %s", e)
             
             if not self.connected and not self._stop_flag:
-                print(f"[WebSocket] Reconnecting in {self.reconnect_delay} seconds...")
+                logger.info("Reconnecting in %s seconds...", self.reconnect_delay)
                 for _ in range(self.reconnect_delay * 10):
                     if self._stop_flag:
                         break
@@ -75,7 +78,7 @@ class WebSocketClient:
             async with websockets.connect(self.uri) as websocket:
                 self.websocket = websocket
                 self.connected = True
-                print(f"[WebSocket] Connected to {self.uri}")
+                logger.info("Connected to %s", self.uri)
                 
                 while not self._stop_flag:
                     try:
@@ -91,17 +94,17 @@ class WebSocketClient:
                         break
         except ConnectionClosed:
             if not self._stop_flag:
-                print("[WebSocket] Connection closed")
+                logger.info("Connection closed")
         except Exception as e:
             if not self._stop_flag:
-                print(f"[WebSocket] Connection failed: {e}")
+                logger.error("Connection failed: %s", e)
         finally:
             self.connected = False
             self.websocket = None
     
     def send_transcription(self, text: str, is_final: bool, additional_data: dict = None, message_type: str = "transcription"):
         if not self.connected or not self.loop:
-            print("[WebSocket] Not connected, skipping send")
+            logger.warning("Not connected, skipping send")
             return
         
         message = {
@@ -122,7 +125,7 @@ class WebSocketClient:
     def send_message(self, message: dict):
         """Send an arbitrary pre-built message dict over the connection."""
         if not self.connected or not self.loop:
-            print("[WebSocket] Not connected, skipping send")
+            logger.warning("Not connected, skipping send")
             return
 
         asyncio.run_coroutine_threadsafe(
@@ -134,9 +137,9 @@ class WebSocketClient:
         if self.websocket and self.connected:
             try:
                 await self.websocket.send(json.dumps(message))
-                # print(f"[WebSocket] Sent: {message['type']} - is_final={message.get('is_final')}")
+                # logger.debug("Sent: %s - is_final=%s", message['type'], message.get('is_final'))
             except Exception as e:
-                print(f"[WebSocket] Send error: {e}")
+                logger.error("Send error: %s", e)
                 self.connected = False
     
     def stop(self):
@@ -155,7 +158,7 @@ class WebSocketClient:
         if self.thread and self.thread.is_alive():
             self.thread.join(timeout=5)
         
-        print("[WebSocket] Client stopped")
+        logger.info("Client stopped")
     
     def is_connected(self) -> bool:
         return self.connected

@@ -1,7 +1,8 @@
 import sys
 import os
+import logging
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-                             QMessageBox, QDialog, QMenu, QToolButton, QPushButton)
+                             QDialog, QMenu, QToolButton, QPushButton)
 from PySide6.QtCore import Qt, QEvent, QTimer, Signal
 from PySide6.QtGui import QKeySequence, QShortcut, QAction, QActionGroup, QGuiApplication
 from src.config import MAX_TRANSCRIPTION_LINES
@@ -28,6 +29,8 @@ from src.ui_components import (
     LiveWindow
 )
 from src.ui_state import load_state, save_state
+
+logger = logging.getLogger(__name__)
 
 # Height of the bottom bar's always-visible control row (window frame included).
 # The manual-translation input row is revealed above it, growing the bar upward.
@@ -405,7 +408,7 @@ class MainWindow(QMainWindow):
     def _start_session(self):
         host_device_id = self.device_combo.currentData()
         if host_device_id is None:
-            QMessageBox.warning(self, "No Device", "Please select a host input device.")
+            logger.warning("Cannot start: no host input device selected.")
             self.btn_start.setChecked(False)
             return
 
@@ -428,7 +431,7 @@ class MainWindow(QMainWindow):
         self.transcription_controller.stop_session()
 
     def _on_transcription_update(self, transcription_text, is_final, input_source):
-        # print(f"[DEBUG] [{input_source}] _on_transcription_update called: is_final={is_final}, text='{text[:50] if text else ''}...', auto_reply_enabled={self._auto_reply_enabled}")
+        # logger.debug("[%s] _on_transcription_update called: is_final=%s, text='%s...', auto_reply_enabled=%s", input_source, is_final, text[:50] if text else '', self._auto_reply_enabled)
         
         # Always send as "transcription" type (original English text)
         # Translation results are sent separately via _on_translation_update
@@ -446,23 +449,23 @@ class MainWindow(QMainWindow):
 
             if self._auto_reply_enabled and transcription_text.strip():
                 if input_source == "host":
-                    print(f"[DEBUG] [{input_source}] Recording host speech (no auto-reply): '{transcription_text}'")
+                    logger.debug("[%s] Recording host speech (no auto-reply): %r", input_source, transcription_text)
                 else:
                     self.translation_controller.schedule_auto_reply(transcription_text, input_source)
             else:
-                print(f"[DEBUG] [{input_source}] NOT scheduling auto-reply. Auto reply: {self._auto_reply_enabled}, Text empty: {not transcription_text.strip()}")
+                logger.debug("[%s] NOT scheduling auto-reply. Auto reply: %s, Text empty: %s", input_source, self._auto_reply_enabled, not transcription_text.strip())
         else:
             self.status_label.setText(f"Live [{input_source}]: {transcription_text}" if transcription_text.strip() else "Listening...")
             
             if self._auto_reply_enabled and transcription_text.strip():
-                print(f"[DEBUG] [{input_source}] Canceling auto-reply (non-final text with content received)")
+                logger.debug("[%s] Canceling auto-reply (non-final text with content received)", input_source)
                 self.translation_controller.cancel_auto_reply()
             elif self._auto_reply_enabled and not transcription_text.strip():
-                print(f"[DEBUG] [{input_source}] Ignoring empty non-final text, keeping auto-reply timer active")
+                logger.debug("[%s] Ignoring empty non-final text, keeping auto-reply timer active", input_source)
     
     def _on_translation_update(self, text: str, is_final: bool, input_source: str):
         """Handle translation updates from transcription controller (Indonesian translations)."""
-        print(f"[DEBUG] [{input_source}] _on_translation_update called: is_final={is_final}, text='{text[:50] if text else ''}...'")
+        logger.debug("[%s] _on_translation_update called: is_final=%s, text='%s...'", input_source, is_final, text[:50] if text else '')
         
         # Send translation via WebSocket with input_source
         self.websocket_client.send_transcription(text, is_final, additional_data={"input_source": input_source}, message_type="translation")
@@ -480,7 +483,7 @@ class MainWindow(QMainWindow):
         """Handle transcription errors."""
         self.btn_start.setChecked(False)
         self._update_start_button_text()
-        QMessageBox.critical(self, "Error", msg)
+        logger.error("%s", msg)
 
     def _update_status(self, text: str):
         self.status_label.setText(text)
@@ -496,7 +499,7 @@ class MainWindow(QMainWindow):
     def _translate_text(self):
         text = self.translation_input.toPlainText().strip()
         if not text:
-            QMessageBox.warning(self, "No Text", "Please enter text to translate.")
+            logger.warning("No text provided to translate.")
             return
         
         target_language = self.gemini_lang_combo.currentText()
@@ -525,19 +528,19 @@ class MainWindow(QMainWindow):
             return
         self._screenshots.append(data_url)
         self.websocket_client.send_message({"type": "screenshot", "image": data_url})
-        print(f"[Screenshot] Sent capture ({len(data_url)} bytes)")
+        logger.info("Sent capture (%d bytes)", len(data_url))
 
     def _clear_screenshots(self):
         """Clear the screenshot gallery in the Gemini pane."""
         self._screenshots.clear()
         self.websocket_client.send_message({"type": "clear_screenshots"})
-        print("[Screenshot] Clear requested")
+        logger.info("Clear requested")
 
     def _send_images_to_gemini(self):
         """Send the captured screenshots to Gemini with the conversation context."""
         if not self._screenshots:
             self._send_gemini_status("failed", "image", text="No screenshots to send.")
-            print("[Screenshot] No screenshots to send")
+            logger.info("No screenshots to send")
             return
         self._send_gemini_status("started", "image")
         self.translation_controller.trigger_image_reply(list(self._screenshots))
@@ -553,9 +556,9 @@ class MainWindow(QMainWindow):
     def _on_translation_error(self, msg: str):
         """Handle translation errors."""
         if "already in progress" in msg.lower():
-            QMessageBox.warning(self, "Translation in Progress", "Please wait for the current translation to complete.")
+            logger.warning("Translation already in progress.")
         elif "auto-reply" not in msg.lower():
-            QMessageBox.critical(self, "Translation Error", msg)
+            logger.error("%s", msg)
         
         if "auto-reply" not in msg.lower():
             self._send_gemini_status("failed", "manual", text="Translation failed.")
@@ -577,25 +580,25 @@ class MainWindow(QMainWindow):
         msg_type = data.get("type")
         if msg_type == "auto_reply_toggle":
             self._auto_reply_enabled = bool(data.get("enabled"))
-            print(f"[WebSocket] Auto reply set to {self._auto_reply_enabled} from webview")
+            logger.info("Auto reply set to %s from webview", self._auto_reply_enabled)
         elif msg_type == "auto_reply_request":
-            print("[WebSocket] Auto-reply requested from webview")
+            logger.info("Auto-reply requested from webview")
             self._manual_reply()
         elif msg_type == "hide_gemini_window":
-            print("[WebSocket] Hide requested from Gemini window")
+            logger.info("Hide requested from Gemini window")
             # Unchecking routes through _set_gemini_window_visible(False) -> hide()
             # and keeps the menu item in sync with the pane's visibility.
             self.gemini_window_action.setChecked(False)
         elif msg_type == "hide_live_window":
-            print("[WebSocket] Hide requested from Live window")
+            logger.info("Hide requested from Live window")
             # Unchecking routes through _set_live_window_visible(False) -> hide()
             # and keeps the menu item in sync with the pane's visibility.
             self.live_window_action.setChecked(False)
         elif msg_type == "set_gemini_window_edge":
-            print(f"[WebSocket] Gemini window edge -> {data.get('edge')}")
+            logger.info("Gemini window edge -> %s", data.get('edge'))
             self._set_pane_edge(self.gemini_window, data.get("edge"))
         elif msg_type == "set_live_window_edge":
-            print(f"[WebSocket] Live window edge -> {data.get('edge')}")
+            logger.info("Live window edge -> %s", data.get('edge'))
             self._set_pane_edge(self.live_window, data.get("edge"))
 
     def _manual_reply(self):
@@ -604,7 +607,7 @@ class MainWindow(QMainWindow):
         if not text:
             text = self.transcription_editor.toPlainText().strip()
         if not text:
-            QMessageBox.warning(self, "No Transcription", "No transcription available to reply to.")
+            logger.warning("No transcription available to reply to.")
             return
         self.translation_controller.trigger_reply_now(text, "speaker")
     
@@ -643,7 +646,7 @@ class MainWindow(QMainWindow):
     
     def _on_device_error(self, msg: str):
         """Handle device errors."""
-        QMessageBox.warning(self, "Device Error", msg)
+        logger.warning("Device error: %s", msg)
 
     def _update_memory_usage(self):
         """Update memory usage indicator."""
@@ -757,7 +760,7 @@ class MainWindow(QMainWindow):
             QThread.msleep(500)
             
         except Exception as e:
-            print(f"[Cleanup] Error during cleanup: {e}")
+            logger.error("Error during cleanup: %s", e)
         
         event.accept()
         return super().closeEvent(event)

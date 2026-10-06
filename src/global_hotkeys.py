@@ -1,8 +1,11 @@
 import ctypes
+import logging
 from ctypes import wintypes
 
 from PySide6.QtCore import QAbstractNativeEventFilter
 from PySide6.QtWidgets import QApplication
+
+logger = logging.getLogger(__name__)
 
 WM_HOTKEY = 0x0312
 MOD_ALT = 0x0001
@@ -44,7 +47,7 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
     def register(self):
         app = QApplication.instance()
         if app is None:
-            print("[Hotkeys] No QApplication; global hotkeys not registered")
+            logger.warning("No QApplication; global hotkeys not registered")
             return
         if not self._filter_installed:
             app.installNativeEventFilter(self)
@@ -58,7 +61,7 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
         if _user32.RegisterHotKey(None, hotkey_id, modifiers, vk):
             self._registered.append(hotkey_id)
         else:
-            print(f"[Hotkeys] Failed to register hotkey id={hotkey_id} (already in use?)")
+            logger.warning("Failed to register hotkey id=%s (already in use?)", hotkey_id)
 
     def unregister(self):
         for hotkey_id in self._registered:

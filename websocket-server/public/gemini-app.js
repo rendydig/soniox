@@ -16,6 +16,7 @@ const GeminiApp = () => {
     const [geminiResults, setGeminiResults] = useState([]);
     const [geminiStatus, setGeminiStatus] = useState('');
     const [screenshots, setScreenshots] = useState([]);
+    const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
     const wsManager = useRef(null);
 
     const {
@@ -97,9 +98,23 @@ const GeminiApp = () => {
             </div>
             <h2>
                 ✨ Gemini Suggestion
-                <button class="btn-gemini" onClick=${() => sendControl({ type: 'auto_reply_request' })}>
-                    Reply now
-                </button>
+                <div class="gemini-header-actions">
+                    <label class="toggle-label">
+                        <input
+                            type="checkbox"
+                            checked=${autoReplyEnabled}
+                            onChange=${(e) => {
+                                const enabled = e.target.checked;
+                                setAutoReplyEnabled(enabled);
+                                sendControl({ type: 'auto_reply_toggle', enabled });
+                            }}
+                        />
+                        <span class="toggle-text">Auto reply</span>
+                    </label>
+                    <button class="btn-gemini" onClick=${() => sendControl({ type: 'auto_reply_request' })}>
+                        Reply now
+                    </button>
+                </div>
             </h2>
             <${ScreenshotGallery} screenshots=${screenshots} />
             <${GeminiDisplayer}

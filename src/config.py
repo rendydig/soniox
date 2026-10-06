@@ -8,6 +8,17 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 SELF_CONTEXT_FILE = os.environ.get("SELF_CONTEXT_FILE")
 WS_URL = "wss://stt-rt.soniox.com/transcribe-websocket"
 
+# AI provider selection. "gemini" uses the google-genai SDK; "openai" targets any
+# OpenAI-compatible endpoint (OpenRouter, x.ai, OpenAI, local servers).
+AI_PROVIDER = os.environ.get("AI_PROVIDER", "gemini").strip().lower()
+AI_MODEL = os.environ.get("AI_MODEL") or os.environ.get("GEMINI_MODEL")
+AI_API_KEY = os.environ.get("AI_API_KEY")
+AI_BASE_URL = os.environ.get("AI_BASE_URL")
+
+DEFAULT_AI_MODELS = {
+    "gemini": "gemini-2.5-flash",
+}
+
 LANGUAGES = {
     "English": "en",
     "Indonesian": "id",
