@@ -14,11 +14,13 @@ MOD_SHIFT = 0x0004
 MOD_NOREPEAT = 0x4000
 VK_K = 0x4B
 VK_G = 0x47
+VK_P = 0x50
 
 # Hotkey ids used with RegisterHotKey / WM_HOTKEY.
 HOTKEY_SCREENSHOT = 1
 HOTKEY_CLEAR_SCREENSHOTS = 2
 HOTKEY_SEND_IMAGES = 3
+HOTKEY_BULLET_POINTS = 4
 
 _user32 = ctypes.windll.user32
 _user32.RegisterHotKey.argtypes = [wintypes.HWND, ctypes.c_int, wintypes.UINT, wintypes.UINT]
@@ -31,16 +33,18 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
     """Register system-wide hotkeys and dispatch them to plain callables.
 
     ``ALT+SHIFT+K`` triggers ``on_screenshot``, ``ALT+CTRL+SHIFT+K`` triggers
-    ``on_clear`` and ``CTRL+ALT+SHIFT+G`` triggers ``on_send_image``. The
-    callbacks run on the Qt main thread (the thread that registered the
-    hotkeys), so they may safely touch widgets.
+    ``on_clear``, ``CTRL+ALT+SHIFT+G`` triggers ``on_send_image`` and
+    ``CTRL+ALT+P`` triggers ``on_bullet_points``. The callbacks run on the Qt
+    main thread (the thread that registered the hotkeys), so they may safely
+    touch widgets.
     """
 
-    def __init__(self, on_screenshot=None, on_clear=None, on_send_image=None):
+    def __init__(self, on_screenshot=None, on_clear=None, on_send_image=None, on_bullet_points=None):
         super().__init__()
         self._on_screenshot = on_screenshot
         self._on_clear = on_clear
         self._on_send_image = on_send_image
+        self._on_bullet_points = on_bullet_points
         self._registered = []
         self._filter_installed = False
 
@@ -56,6 +60,7 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
         self._register_hotkey(HOTKEY_SCREENSHOT, MOD_ALT | MOD_SHIFT | MOD_NOREPEAT, VK_K)
         self._register_hotkey(HOTKEY_CLEAR_SCREENSHOTS, MOD_ALT | MOD_CONTROL | MOD_SHIFT | MOD_NOREPEAT, VK_K)
         self._register_hotkey(HOTKEY_SEND_IMAGES, MOD_CONTROL | MOD_ALT | MOD_SHIFT | MOD_NOREPEAT, VK_G)
+        self._register_hotkey(HOTKEY_BULLET_POINTS, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, VK_P)
 
     def _register_hotkey(self, hotkey_id: int, modifiers: int, vk: int):
         if _user32.RegisterHotKey(None, hotkey_id, modifiers, vk):
@@ -83,4 +88,6 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
                     self._on_clear()
                 elif msg.wParam == HOTKEY_SEND_IMAGES and self._on_send_image:
                     self._on_send_image()
+                elif msg.wParam == HOTKEY_BULLET_POINTS and self._on_bullet_points:
+                    self._on_bullet_points()
         return False

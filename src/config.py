@@ -80,3 +80,21 @@ SAMPLE_TEXTS = {
 MAX_TRANSCRIPTION_LINES = 500
 MAX_GEMINI_LINES = 300
 CLEANUP_CHECK_INTERVAL = 50
+
+# Bullet points (rolling conversation summary). Tuned for token efficiency:
+# the AI receives the current list + only the new lines, batched on an interval.
+BULLET_MAX_ITEMS = 12
+BULLET_FLUSH_INTERVAL_MS = 15000
+BULLET_MAX_BUFFER_LINES = 12
+BULLET_PAUSED_BUFFER_MAX = 40
+BULLET_MAX_LINE_CHARS = 300
+
+# Session persistence. The current session is written to SESSION_DIR/current.json
+# by a background thread (debounced); New Session archives it and starts fresh.
+SESSION_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "sessions"
+)
+SESSION_WRITE_DEBOUNCE_MS = 2000
+SESSION_MAX_TRANSCRIPT_LINES = 500
+SESSION_MAX_GEMINI = 100
+SESSION_MAX_SCREENSHOTS = 20

@@ -222,7 +222,11 @@ Objective:
 {objective}
 
 Language:
-- Write the Host's reply in {self._target_language}.
+- Default to writing the Host's reply in {self._target_language}.
+- If the Host is already speaking a different language in the conversation (check your previous 'assistant' messages), reply in the language the Host is currently using instead of {self._target_language}.
+- If the Host has not spoken yet, use {self._target_language}.
+- Whichever language you use, label the first line with that language's name (e.g. "Indonesian Text:" instead of "{self._target_language} Text:").
+- Adapt the syllables/pronunciation to the language you actually use, and ignore the sample text below when it is not in that language.
 
 Format your response exactly as follows:
 {format_block}{output_rule}"""

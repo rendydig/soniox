@@ -14,6 +14,8 @@ export const useTranscriptionHandlers = ({
     setGeminiResults,
     setGeminiStatus,
     setScreenshots,
+    setBulletPoints,
+    setBulletPointsStatus,
     wsManager
 }) => {
     const correctionEnabledRef = useRef(correctionEnabled);
@@ -266,6 +268,53 @@ export const useTranscriptionHandlers = ({
         console.log('[DEBUG] Screenshots cleared');
     }, [setScreenshots]);
 
+    /** Rolling bullet-point list update from the Python app. */
+    const handleBulletPoints = useCallback((items) => {
+        if (typeof setBulletPoints !== 'function') return;
+        setBulletPoints(Array.isArray(items) ? items : []);
+        console.log('[DEBUG] Bullet points updated:', Array.isArray(items) ? items.length : 0);
+    }, [setBulletPoints]);
+
+    /** Bullet-points progress / failure status. */
+    const handleBulletPointsStatus = useCallback((status, message) => {
+        if (typeof setBulletPointsStatus !== 'function') return;
+        if (status === 'started') {
+            setBulletPointsStatus('Updating...');
+        } else if (status === 'failed' || status === 'error') {
+            setBulletPointsStatus(message || 'Update failed.');
+        } else {
+            setBulletPointsStatus('');
+        }
+        console.log('[DEBUG] Bullet points status:', status);
+    }, [setBulletPointsStatus]);
+
+    /** Restore the persisted session into the panes (only the provided setters apply). */
+    const handleSessionState = useCallback((data) => {
+        const now = Date.now();
+        const toItems = (list, mapFn) => (Array.isArray(list) ? list.map((entry, i) => ({
+            ...mapFn(entry),
+            timestamp: entry.timestamp || new Date().toISOString(),
+            id: now + i
+        })) : []);
+
+        if (typeof setFinalizedSentences === 'function') {
+            setFinalizedSentences(toItems(data.transcriptions, (e) => ({ text: e.text, source: e.source })));
+        }
+        if (typeof setFinalizedTranslations === 'function') {
+            setFinalizedTranslations(toItems(data.translations, (e) => ({ text: e.text, source: e.source })));
+        }
+        if (typeof setGeminiResults === 'function') {
+            setGeminiResults(toItems(data.gemini_results, (e) => ({ text: e.text, mode: e.mode || 'manual' })));
+        }
+        if (typeof setScreenshots === 'function') {
+            setScreenshots(toItems(data.screenshots || [], (image) => ({ image })));
+        }
+        if (typeof setBulletPoints === 'function') {
+            setBulletPoints(Array.isArray(data.bullets) ? data.bullets : []);
+        }
+        console.log('[DEBUG] Session state applied');
+    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints]);
+
     return {
         handleFinalTranscription,
         handleLiveTranscription,
@@ -275,6 +324,9 @@ export const useTranscriptionHandlers = ({
         handleGeminiResult,
         handleGeminiStatus,
         handleScreenshot,
-        handleClearScreenshots
+        handleClearScreenshots,
+        handleBulletPoints,
+        handleBulletPointsStatus,
+        handleSessionState
     };
 };

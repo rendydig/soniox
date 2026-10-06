@@ -1,8 +1,9 @@
 import sys
 import os
 import logging
+from datetime import datetime
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-                             QDialog, QMenu, QToolButton, QPushButton)
+                             QDialog, QMenu, QToolButton, QPushButton, QMessageBox)
 from PySide6.QtCore import Qt, QEvent, QTimer, Signal
 from PySide6.QtGui import QKeySequence, QShortcut, QAction, QActionGroup, QGuiApplication
 from src.config import MAX_TRANSCRIPTION_LINES
@@ -14,7 +15,8 @@ from src.global_hotkeys import GlobalHotkeys
 from src.controllers import (
     DeviceController,
     TranscriptionController,
-    TranslationController
+    TranslationController,
+    BulletPointsController
 )
 from src.websocket_client import WebSocketClient
 from src.websocket_server_manager import WebSocketServerManager
@@ -26,10 +28,12 @@ from src.ui_components import (
     SwitchButton,
     DragHandle,
     GeminiWindow,
-    LiveWindow
+    LiveWindow,
+    BulletPointsWindow
 )
 from src.ui_components.pane_resize_handle import PaneResizeHandle
 from src.ui_state import load_state, save_state
+from src.session_store import SessionStore
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +43,7 @@ BAR_WIDTH = 560
 MIN_BAR_WIDTH = 540
 # Height of the bottom bar's always-visible control row (window frame included).
 # The manual-translation input row is revealed above it, growing the bar upward.
-BAR_HEIGHT = 60
+BAR_HEIGHT = 40
 INPUT_ROW_HEIGHT = 40
 
 
@@ -62,6 +66,9 @@ class MainWindow(QMainWindow):
         self.device_controller = DeviceController()
         self.transcription_controller = TranscriptionController()
         self.translation_controller = TranslationController()
+        self.bullet_points_controller = BulletPointsController()
+        # Session state (restored below, persisted asynchronously to disk).
+        self.session_store = SessionStore()
         
         # Bring up the Node web service (port 8765) before connecting / loading
         # the Gemini pane, so both the client and the webview have a server.
@@ -73,12 +80,9 @@ class MainWindow(QMainWindow):
         self.websocket_client.start()
 
         # System-wide hotkeys: ALT+SHIFT+K captures a screenshot, ALT+CTRL+SHIFT+K
-        # clears the ones shown in the Gemini pane, and CTRL+ALT+SHIFT+G sends the
-        # captured screenshots to Gemini.
-        self.hotkeys = GlobalHotkeys(
-            on_screenshot=self._capture_screenshot,
-            on_clear=self._clear_screenshots,
-            on_send_image=self._send_images_to_gemini,
+        # clears the ones shown in the Gemini pane, CTRL+ALT+SHIFT+G sends the
+        # captured screenshots to Gemini, and CTRL+ALT+P updates the bullet points.
+        self.hotkeys = GlobalHotkeys( on_screenshot=self._capture_screenshot, on_clear=self._clear_screenshots, on_send_image=self._send_images_to_gemini, on_bullet_points=self._trigger_bullet_points_now,
         )
         self.hotkeys.register()
         
@@ -97,21 +101,20 @@ class MainWindow(QMainWindow):
         main_state = _as_dict(state.get("main_window"))
         gemini_state = _as_dict(state.get("gemini_window"))
         live_state = _as_dict(state.get("live_window"))
+        bullet_points_state = _as_dict(state.get("bullet_points_window"))
         settings_state = _as_dict(state.get("settings"))
         self._always_on_top = bool(main_state.get("always_on_top", True))
         # Bar geometry: fixed default width, bottom-center unless the user moved it.
         self._bar_width = self._clamp_bar_width(main_state.get("width"))
         self._bar_x = main_state.get("x")
         self._bar_y = main_state.get("y")
-        self.gemini_window = GeminiWindow(
-            edge=gemini_state.get("edge"), width=gemini_state.get("width"),
-            height=gemini_state.get("height"), x=gemini_state.get("x"),
-            y=gemini_state.get("y"), docked=gemini_state.get("docked"),
+        self.gemini_window = GeminiWindow( edge=gemini_state.get("edge"), width=gemini_state.get("width"), height=gemini_state.get("height"), x=gemini_state.get("x"), y=gemini_state.get("y"), docked=gemini_state.get("docked"),
         )
-        self.live_window = LiveWindow(
-            edge=live_state.get("edge"), width=live_state.get("width"),
-            height=live_state.get("height"), x=live_state.get("x"),
-            y=live_state.get("y"), docked=live_state.get("docked"),
+        self.live_window = LiveWindow( edge=live_state.get("edge"), width=live_state.get("width"), height=live_state.get("height"), x=live_state.get("x"), y=live_state.get("y"), docked=live_state.get("docked"),
+        )
+        # Defaults to free-floating (no "docked" key) so it doesn't collide with
+        # the docked Gemini/Live panes.
+        self.bullet_points_window = BulletPointsWindow( edge=bullet_points_state.get("edge"), width=bullet_points_state.get("width"), height=bullet_points_state.get("height"), x=bullet_points_state.get("x"), y=bullet_points_state.get("y"), docked=bullet_points_state.get("docked"),
         )
 
         self._init_menu()
@@ -119,6 +122,7 @@ class MainWindow(QMainWindow):
         self._setup_controller_connections()
         self._connect_pane_signals()
         self._apply_settings_state(settings_state)
+        self._restore_session()
         self._connect_settings_signals()
         self.device_controller.populate_devices()
         self._apply_bar_geometry()
@@ -287,7 +291,7 @@ class MainWindow(QMainWindow):
 
     def _connect_pane_signals(self):
         """Persist each pane's geometry; the bar no longer follows the panes."""
-        for pane in (self.gemini_window, self.live_window):
+        for pane in (self.gemini_window, self.live_window, self.bullet_points_window):
             pane.state_changed.connect(self._save_state)
 
     def _save_state(self):
@@ -315,11 +319,21 @@ class MainWindow(QMainWindow):
                 "x": self.live_window.get_x(),
                 "y": self.live_window.get_y(),
             },
+            "bullet_points_window": {
+                "edge": self.bullet_points_window.get_edge(),
+                "docked": self.bullet_points_window.is_docked(),
+                "width": self.bullet_points_window.get_width(),
+                "height": self.bullet_points_window.get_height(),
+                "x": self.bullet_points_window.get_x(),
+                "y": self.bullet_points_window.get_y(),
+            },
             "settings": {
                 "view_mode": self.view_mode_combo.currentIndex(),
                 "ai_reply_language": self.gemini_lang_combo.currentText(),
                 "purpose": self.purpose_combo.currentData(),
                 "pronunciation": self.pronunciation_checkbox.isChecked(),
+                "bullet_points": self.bullet_points_checkbox.isChecked(),
+                "bullet_points_window_visible": self.bullet_points_window_action.isChecked(),
                 "screen_protection": self.screen_protection_checkbox.isChecked(),
             },
         })
@@ -327,7 +341,7 @@ class MainWindow(QMainWindow):
     def _apply_settings_state(self, state):
         """Restore persisted Settings onto the widgets (falls back to defaults)."""
         view_mode = state.get("view_mode")
-        if isinstance(view_mode, int) and 0 <= view_mode < self.view_mode_combo.count():
+        if isinstance(view_mode, int) and 0<= view_mode < self.view_mode_combo.count():
             self.view_mode_combo.setCurrentIndex(view_mode)
 
         language = state.get("ai_reply_language")
@@ -351,12 +365,24 @@ class MainWindow(QMainWindow):
         if isinstance(screen_protection, bool):
             self._set_screen_protection(screen_protection)
 
+        # Enabling shows the pane (via _on_bullet_points_toggled); disabled stays hidden.
+        bullet_points = state.get("bullet_points")
+        if isinstance(bullet_points, bool):
+            self.bullet_points_checkbox.setChecked(bullet_points)
+
+        # Restore the pane's visibility so a manual-only setup survives a restart.
+        bullet_points_visible = state.get("bullet_points_window_visible")
+        if isinstance(bullet_points_visible, bool):
+            self.bullet_points_window_action.setChecked(bullet_points_visible)
+
     def _connect_settings_signals(self):
         """Persist Settings whenever one of them changes."""
         self.view_mode_combo.currentIndexChanged.connect(self._save_state)
         self.gemini_lang_combo.currentTextChanged.connect(self._save_state)
         self.purpose_combo.currentIndexChanged.connect(self._save_state)
         self.pronunciation_checkbox.toggled.connect(self._save_state)
+        self.bullet_points_checkbox.toggled.connect(self._save_state)
+        self.bullet_points_window_action.toggled.connect(self._save_state)
         self.screen_protection_checkbox.toggled.connect(self._save_state)
 
     def _connect_screen_signals(self):
@@ -423,6 +449,15 @@ class MainWindow(QMainWindow):
         self.live_window_action.toggled.connect(self._set_live_window_visible)
         self.tool_menu.addAction(self.live_window_action)
 
+        self.bullet_points_window_action = QAction("Bullet Points", self)
+        self.bullet_points_window_action.setCheckable(True)
+        self.bullet_points_window_action.setChecked(False)
+        self.bullet_points_window_action.setToolTip(
+            "Show or hide the bullet-points pane. Hiding pauses it and keeps the last list."
+        )
+        self.bullet_points_window_action.toggled.connect(self._set_bullet_points_window_visible)
+        self.tool_menu.addAction(self.bullet_points_window_action)
+
         self.always_on_top_action = QAction("Always on Top", self)
         self.always_on_top_action.setCheckable(True)
         self.always_on_top_action.setChecked(self._always_on_top)
@@ -452,6 +487,7 @@ class MainWindow(QMainWindow):
         self.transcription_editor = self.live_window.get_transcription_editor()
         self.pronunciation_checkbox = self.settings_view.get_pronunciation_checkbox()
         self.purpose_combo = self.settings_view.get_purpose_combo()
+        self.bullet_points_checkbox = self.settings_view.get_bullet_points_checkbox()
         self.screen_protection_checkbox = self.settings_view.get_screen_protection_checkbox()
         
         self.gemini_lang_combo = self.settings_view.get_gemini_lang_combo()
@@ -473,10 +509,12 @@ class MainWindow(QMainWindow):
 
         self.translation_input.installEventFilter(self)
         self.btn_start.clicked.connect(self._toggle_start)
+        self.control_buttons.new_session_clicked.connect(self._new_session)
         self.pronunciation_checkbox.toggled.connect(self.translation_controller.set_pronunciation_enabled)
         self.translation_controller.set_pronunciation_enabled(self.pronunciation_checkbox.isChecked())
         self.purpose_combo.currentIndexChanged.connect(self._on_purpose_changed)
         self.screen_protection_checkbox.toggled.connect(self._set_screen_protection)
+        self.bullet_points_checkbox.toggled.connect(self._on_bullet_points_toggled)
         
         reply_shortcut = QShortcut(QKeySequence("Ctrl+R"), self)
         reply_shortcut.activated.connect(self._manual_reply)
@@ -510,6 +548,10 @@ class MainWindow(QMainWindow):
         self.translation_controller.translation_started.connect(self._on_translation_started)
         self.translation_controller.auto_reply_result.connect(self._on_auto_reply_result)
         self.translation_controller.image_reply_result.connect(self._on_image_reply_result)
+        
+        self.bullet_points_controller.updated.connect(self._on_bullet_points_updated)
+        self.bullet_points_controller.status_changed.connect(self._send_bullet_status)
+        self.bullet_points_controller.error_occurred.connect(self._on_bullet_points_error)
         
         self.gemini_lang_combo.currentTextChanged.connect(self._on_auto_reply_language_changed)
 
@@ -553,15 +595,60 @@ class MainWindow(QMainWindow):
         mode = "translation" if self.act_translate.isChecked() else "transcription"
         target_lang = self.lang_combo.currentData()
 
-        self.transcription_editor.clear()
-        self.translation_controller.clear_conversation_history()
+        # Stop -> Start resumes the same session (no clearing); use New Session
+        # to start a fresh one.
         self.transcription_controller.start_session(host_device_id, speaker_device, mode=mode, target_lang=target_lang)
 
     def _stop_session(self):
         self.status_label.setText("Stopping...")
         
         self.translation_controller.cancel_auto_reply()
+        self.bullet_points_controller.flush_now()
         self.transcription_controller.stop_session()
+
+    def _restore_session(self):
+        """Restore the previous session's state into the controllers and editor."""
+        data = self.session_store.snapshot()
+        self.bullet_points_controller.load_bullets(data.get("bullets") or [])
+        self.translation_controller.load_conversation_history(data.get("conversation") or [])
+        self._screenshots = list(data.get("screenshots") or [])
+        for entry in data.get("transcriptions") or []:
+            text = entry.get("text", "")
+            if not text:
+                continue
+            append_timestamped_text(
+                self.transcription_editor,
+                f"[{str(entry.get('source', '')).upper()}] {text}",
+                max_lines=MAX_TRANSCRIPTION_LINES,
+            )
+        logger.info(
+            "Session restored: %d bullets, %d transcriptions, %d screenshots",
+            len(data.get("bullets") or []),
+            len(data.get("transcriptions") or []),
+            len(data.get("screenshots") or []),
+        )
+
+    def _new_session(self):
+        """Archive the current session and start a fresh one (after confirmation)."""
+        box = QMessageBox(self)
+        box.setWindowTitle("New Session")
+        box.setText("Start a new session? The current one will be archived.")
+        box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        box.setDefaultButton(QMessageBox.StandardButton.No)
+        box.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+        if self._screen_protection_enabled:
+            set_capture_protection(box, True)
+        if box.exec() != QMessageBox.StandardButton.Yes:
+            return
+
+        archived = self.session_store.new_session()
+        self.transcription_editor.clear()
+        self.translation_controller.clear_conversation_history()
+        self.bullet_points_controller.reset()
+        self._screenshots.clear()
+        # Empty state resets every webview (gemini/live/bullets).
+        self._send_session_state()
+        logger.info("New session started (archived=%s)", archived)
 
     def _on_transcription_update(self, transcription_text, is_final, input_source):
         # logger.debug("[%s] _on_transcription_update called: is_final=%s, text='%s...', auto_reply_enabled=%s", input_source, is_final, text[:50] if text else '', self._auto_reply_enabled)
@@ -579,6 +666,14 @@ class MainWindow(QMainWindow):
             
             if(transcription_text.strip() != ""):
                 self.translation_controller.append_to_history(transcription_text, "", input_source)
+                # Always buffered (free); auto mode / the hotkey decide when to call the AI.
+                self.bullet_points_controller.add_line(input_source, transcription_text)
+                # Persist to the session (async).
+                self.session_store.append("transcriptions", {
+                    "source": input_source, "text": transcription_text,
+                    "timestamp": datetime.now().isoformat(),
+                })
+                self.session_store.update("conversation", self.translation_controller.get_conversation_history())
 
             if self._auto_reply_enabled and transcription_text.strip():
                 if input_source == "host":
@@ -602,6 +697,12 @@ class MainWindow(QMainWindow):
         
         # Send translation via WebSocket with input_source
         self.websocket_client.send_transcription(text, is_final, additional_data={"input_source": input_source}, message_type="translation")
+
+        if is_final and text.strip():
+            self.session_store.append("translations", {
+                "source": input_source, "text": text,
+                "timestamp": datetime.now().isoformat(),
+            })
 
     def _on_transcription_started(self):
         """Handle transcription session started."""
@@ -641,9 +742,11 @@ class MainWindow(QMainWindow):
     def _send_gemini_result(self, text: str, mode: str):
         """Broadcast a formatted Gemini result to the webview."""
         self.websocket_client.send_transcription(
-            format_gemini_result(text), True,
-            additional_data={"mode": mode}, message_type="gemini_result"
+            format_gemini_result(text), True, additional_data={"mode": mode}, message_type="gemini_result"
         )
+        self.session_store.append("gemini_results", {
+            "text": text, "mode": mode, "timestamp": datetime.now().isoformat(),
+        })
 
     def _send_gemini_status(self, status: str, mode: str, text: str = None):
         """Broadcast a Gemini progress/failure status to the webview."""
@@ -661,6 +764,7 @@ class MainWindow(QMainWindow):
             return
         self._screenshots.append(data_url)
         self.websocket_client.send_message({"type": "screenshot", "image": data_url})
+        self.session_store.append("screenshots", data_url)
         logger.info("Sent capture (%d bytes)", len(data_url))
 
     def _clear_screenshots(self):
@@ -703,6 +807,23 @@ class MainWindow(QMainWindow):
     def _on_image_reply_result(self, result: str):
         """Handle the reply to a screenshot sent to Gemini."""
         self._send_gemini_result(result, "image")
+
+    def _on_bullet_points_updated(self, items: list):
+        """Broadcast the updated bullet-point list to the webview."""
+        self.websocket_client.send_message({"type": "bullet_points", "items": list(items)})
+        self.session_store.set_bullets(items)
+
+    def _send_bullet_status(self, status: str):
+        """Broadcast a bullet-points progress/failure status to the webview."""
+        self.websocket_client.send_message({"type": "bullet_points_status", "status": status})
+
+    def _send_session_state(self):
+        """Send the full session state so webviews can repopulate on connect."""
+        self.websocket_client.send_message({"type": "session_state", **self.session_store.snapshot()})
+
+    def _on_bullet_points_error(self, msg: str):
+        """Handle bullet-points worker errors (logged, not popped up)."""
+        logger.warning("Bullet points error: %s", msg)
     
     def _on_ws_message_raw(self, data: dict):
         """Receive a decoded WebSocket message (runs on the asyncio thread)."""
@@ -711,7 +832,10 @@ class MainWindow(QMainWindow):
     def _handle_webview_message(self, data: dict):
         """Handle control messages sent from the webview (Qt main thread)."""
         msg_type = data.get("type")
-        if msg_type == "auto_reply_toggle":
+        if msg_type == "request_session_state":
+            logger.info("Session state requested from webview")
+            self._send_session_state()
+        elif msg_type == "auto_reply_toggle":
             self._auto_reply_enabled = bool(data.get("enabled"))
             logger.info("Auto reply set to %s from webview", self._auto_reply_enabled)
         elif msg_type == "auto_reply_request":
@@ -733,6 +857,13 @@ class MainWindow(QMainWindow):
         elif msg_type == "set_live_window_edge":
             logger.info("Live window edge -> %s", data.get('edge'))
             self._set_pane_edge(self.live_window, data.get("edge"))
+        elif msg_type == "hide_bullet_points_window":
+            logger.info("Hide requested from Bullet Points window")
+            # Unchecking pauses generation and hides the pane (checkpoint kept).
+            self.bullet_points_window_action.setChecked(False)
+        elif msg_type == "set_bullet_points_window_edge":
+            logger.info("Bullet Points window edge -> %s", data.get('edge'))
+            self._set_pane_edge(self.bullet_points_window, data.get("edge"))
 
     def _manual_reply(self):
         """Manually trigger a Gemini reply using the last final transcription (Ctrl+R / Cmd+R)."""
@@ -816,17 +947,50 @@ class MainWindow(QMainWindow):
         else:
             self.live_window.hide()
 
+    def _on_bullet_points_toggled(self, enabled):
+        """Toggle auto updates. Enabling also shows the pane; disabling leaves it."""
+        if enabled:
+            self.bullet_points_window_action.setChecked(True)
+        self._update_bullet_points_auto()
+
+    def _set_bullet_points_window_visible(self, visible):
+        """Show or hide the bullet-points pane. Hiding pauses auto updates."""
+        if visible:
+            self.bullet_points_window._apply_geometry()
+            self.bullet_points_window.showNormal()  # also restores if minimized
+            self.bullet_points_window.raise_()
+        else:
+            self.bullet_points_window.hide()
+        self._update_bullet_points_auto()
+
+    def _update_bullet_points_auto(self):
+        """Auto updates run only when the feature is enabled AND the pane is shown."""
+        auto = (self.bullet_points_checkbox.isChecked()
+                and self.bullet_points_window_action.isChecked())
+        self.bullet_points_controller.set_auto(auto)
+
+    def _trigger_bullet_points_now(self):
+        """CTRL+ALT+P: update the list on demand (silent; only when the pane is shown)."""
+        if not self.bullet_points_window_action.isChecked():
+            logger.info("Bullet points pane hidden; CTRL+ALT+P ignored")
+            return
+        logger.info("Bullet points manual update requested")
+        self.bullet_points_controller.flush_now(force=True)
+
     def _set_pane_edge(self, window, edge):
-        """Dock a pane to ``edge``, swapping the other docked pane to the opposite side."""
+        """Dock a pane to ``edge``, moving any docked pane on that edge to the opposite side."""
         if edge not in ("left", "right"):
             return
         # A same-edge pane that is already docked needs no change; a same-edge
         # floating pane still re-docks to that edge.
         if window.get_edge() == edge and window.is_docked():
             return
-        other = self.live_window if window is self.gemini_window else self.gemini_window
-        if other.is_docked() and other.get_edge() == edge:
-            other.set_edge("left" if edge == "right" else "right")
+        opposite = "left" if edge == "right" else "right"
+        for other in (self.gemini_window, self.live_window, self.bullet_points_window):
+            if other is window:
+                continue
+            if other.is_docked() and other.get_edge() == edge:
+                other.set_edge(opposite)
         window.set_edge(edge)
 
     def _set_always_on_top(self, enabled):
@@ -850,6 +1014,7 @@ class MainWindow(QMainWindow):
         set_capture_protection(self, enabled)
         self.gemini_window.apply_screen_protection(enabled)
         self.live_window.apply_screen_protection(enabled)
+        self.bullet_points_window.apply_screen_protection(enabled)
         if hasattr(self, "settings_dialog"):
             set_capture_protection(self.settings_dialog, enabled)
         for widget in (self.screen_protection_action, self.screen_protection_checkbox):
@@ -876,15 +1041,21 @@ class MainWindow(QMainWindow):
 
             # Persist the pane layout and Settings, then close the panes and settings dialog
             self._save_state()
+            # Flush + stop the async session writer.
+            self.session_store.close()
             self.settings_dialog.close()
             self.gemini_window.close()
             self.live_window.close()
+            self.bullet_points_window.close()
 
             # Stop transcription first to stop audio streams
             self.transcription_controller.cleanup()
             
             # Stop translation
             self.translation_controller.cleanup()
+
+            # Stop the bullet-points worker/timer
+            self.bullet_points_controller.cleanup()
             
             # Stop websocket
             self.websocket_client.stop()

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bullet Points</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            min-height: 100%;
+        }
+
+        #bullets-root {
+            position: relative;
+            height: 100vh;
+            padding: 30px 8px 8px 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pane-controls {
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            z-index: 10;
+            display: flex;
+            gap: 4px;
+        }
+
+        .pane-control-btn {
+            width: 22px;
+            height: 22px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.15);
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pane-control-btn:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        #bullets-root .card.bullet-card {
+            flex: 1;
+            min-height: 0;
+        }
+
+        #bullets-root .card.bullet-card h2 {
+            flex: 0 0 auto;
+        }
+
+        #bullets-root .live-text.bullet-view {
+            flex: 1;
+            min-height: 0;
+            max-height: none;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="bullets-root"></div>
+    <script type="module" src="bullets-app.js"></script>
+</body>
+</html>

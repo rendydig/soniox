@@ -9,3 +9,4 @@ assets
 *.mp3
 logs
 ui_state.json
+sessions/

@@ -58,9 +58,9 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
 - The bar's layout (`_init_ui`) is an outer `QHBoxLayout` of `[content] · [width handle]`,
   where `content` is a `QVBoxLayout`: the optional translation-input row
   (`TranslationSectionWidget`, hidden by default) above the single control row. The control
-  row holds `DragHandle` · Start/Stop (`ControlButtonsWidget`) · Mode ▾ (`QToolButton` +
+  row holds `DragHandle` · Start/Stop + New (`ControlButtonsWidget`) · Mode ▾ (`QToolButton` +
   `QMenu` with the Live Transcription/Translation actions) · Tool ▾ (`QToolButton` + `QMenu`
-  with Screen Protection / Gemini Window / Live Window / Always on Top) · Settings button ·
+  with Screen Protection / Gemini Window / Live Window / Bullet Points / Always on Top) · Settings button ·
   `SwitchButton` (shows/hides the input row) · stretch · `StatusBarWidget` · close. The main
   window has **no** output view; transcription output lives in the Live Window pane.
 - The bar is **trimmed** to fit its fixed width: the Start button reads "Start"/"Stop", the
@@ -114,7 +114,7 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
   `GeminiWindow.showEvent` re-applies after re-shows.
 
 ## Screenshot hotkeys
-- Three **system-wide** hotkeys (work even when the app is unfocused), registered by
+- Four **system-wide** hotkeys (work even when the app is unfocused), registered by
   `src/global_hotkeys.py` (`GlobalHotkeys`, a `QAbstractNativeEventFilter`) using the
   Windows API `RegisterHotKey` via ctypes — **no third-party dependency**:
   - `ALT+SHIFT+K` → capture the **primary screen**, downscale to `SCREENSHOT_MAX_WIDTH`
@@ -123,6 +123,8 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
     `{"type": "screenshot", "image": <data-url>}` over the WebSocket.
   - `ALT+CTRL+SHIFT+K` → send `{"type": "clear_screenshots"}`.
   - `CTRL+ALT+SHIFT+G` → send **all** captured screenshots to Gemini (see below).
+  - `CTRL+ALT+P` → manual **bullet points** update (`MainWindow._trigger_bullet_points_now`;
+    silent, only when the Bullet Points pane is visible — see the bullet points section).
 - Wiring lives in `MainWindow` (`src/ui.py`): `GlobalHotkeys` is created/registered in
   `__init__` (after `websocket_client.start()`), `_capture_screenshot` / `_clear_screenshots` /
   `_send_images_to_gemini` are the callbacks, and `unregister()` runs in `closeEvent`. The
@@ -182,6 +184,77 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
   never reloaded), and `_set_screen_protection` forwards to
   `live_window.apply_screen_protection`.
 
+## Bullet points (rolling conversation summary)
+- Optional feature. The Settings dialog's **Auto Bullet Points** checkbox
+  (`settings_view.py`, default off) controls the *automatic* timer only; checking it also shows
+  the pane. The Tool ▾ **Bullet Points** action (checkable, default unchecked) shows/hides the
+  pane. Both funnel through `MainWindow._update_bullet_points_auto()`.
+- `BulletPointsController` (`src/controllers/bullet_points_controller.py`) keeps the list as
+  **state** and **always buffers** finalized lines during a session (capped at
+  `BULLET_PAUSED_BUFFER_MAX`, oldest dropped) — buffering is free, only AI calls cost tokens.
+  With auto on, a repeating `QTimer` (`BULLET_FLUSH_INTERVAL_MS`, 15 s) *polls* (ticks are free
+  when the buffer is empty or a worker is running) and it also flushes early at
+  `BULLET_MAX_BUFFER_LINES` (12). An idle/auto-off conversation costs **zero tokens**.
+- Each call sends the **current list + only the new lines** to `BulletPointsWorker`
+  (`src/bullet_points_worker.py`), which reuses `AIClient.generate` and the same `.env`
+  provider/model and returns the full updated list as JSON (`_parse_bullet_json` tolerates
+  code fences; malformed output keeps the previous list and retries). Cost stays flat
+  (O(list + delta)) instead of re-sending the whole transcript (O(N²)). The list is capped at
+  `BULLET_MAX_ITEMS` (12).
+- **Auto / manual / checkpoint:** auto updates run only when the checkbox is on **and** the
+  pane is visible; hiding the pane (Tool ▾ or its `−`) pauses the timer but keeps the current
+  list as a checkpoint and keeps buffering. Re-showing broadcasts the checkpoint immediately
+  and makes one catch-up call. **`CTRL+ALT+P`** (system-wide, `global_hotkeys.py`) does a
+  **silent manual update** (`flush_now(force=True)`) that merges only the new buffered lines —
+  it works with auto off, but is a no-op (logged) when the pane is hidden (never auto-shows it).
+- `MainWindow` wires it: `_on_transcription_update` buffers final lines via `add_line`
+  (unconditional); `_trigger_bullet_points_now` is the `CTRL+ALT+P` callback;
+  `_on_bullet_points_updated` broadcasts `{"type":"bullet_points","items":[...]}` and
+  `_send_bullet_status` broadcasts `{"type":"bullet_points_status","status":...}` over the
+  WebSocket (`send_message`, rebroadcast by the server). Pane control messages:
+  `hide_bullet_points_window`, `set_bullet_points_window_edge`.
+- `BulletPointsWindow` (`src/ui_components/bullet_points_window.py`) mirrors
+  `GeminiWindow`/`LiveWindow` (frameless, always-on-top, `Tool`, drag + width/height resize,
+  dock left/right, own `set_capture_protection`) but starts **free-floating** on the right
+  (not edge-docked) to avoid colliding with the docked panes. Its web view loads
+  `http://localhost:8765/bullets` → `public/bullets.html` + `public/bullets-app.js`
+  (server route `/bullets`), rendering `components/BulletPointsList.js` with a custom
+  CSS-drawn checkmark.
+- Persisted in `ui_state.json`: `settings.bullet_points` (auto, default false),
+  `settings.bullet_points_window_visible` (default false) and a `bullet_points_window`
+  geometry block. `_set_pane_edge` swaps any docked pane on the target edge across all three
+  panes.
+
+## Sessions (persistence, resume, new session)
+- A **session** is the conversation state persisted to `sessions/current.json` (gitignored):
+  `bullets`, `conversation`, `transcriptions`, `translations`, `gemini_results`, `screenshots`
+  (each capped in `src/config.py`). `SessionStore` (`src/session_store.py`) holds it in memory and
+  a **background daemon thread** JSON-dumps snapshots on a debounce
+  (`SESSION_WRITE_DEBOUNCE_MS`, 2 s) via a temp file + `os.replace`, so file I/O never blocks the
+  UI. `flush()` writes synchronously; `close()` (called from `closeEvent`) stops the thread after
+  a final flush. The store only ever *replaces* list values (never mutates in place), so a shallow
+  snapshot is safe to serialize off-thread.
+- **Stop → Start resumes** the same session (the editor/history/bullets clears were removed from
+  `_start_session`).
+- **New Session**: the bar's **New** button (`ControlButtonsWidget.new_session_clicked`) →
+  `MainWindow._new_session` confirms via a top-most, capture-protected `QMessageBox`, then
+  `SessionStore.new_session()` archives the current session to `sessions/<id>.json` (when
+  non-empty) and starts a fresh `current.json`; the editor/history/bullets/screenshots are cleared
+  and an **empty `session_state`** is broadcast so every pane resets.
+- **Restore on launch**: `MainWindow._restore_session` seeds `BulletPointsController.load_bullets`,
+  `TranslationController.load_conversation_history`, `MainWindow._screenshots` and the
+  transcription `QTextEdit`. Webviews restore their slice by sending
+  `{"type":"request_session_state"}` when they receive the server's `connection` message;
+  `MainWindow` replies with `{"type":"session_state", ...}` (rebroadcast by the server).
+  `handleSessionState` in `useTranscriptionHandlers.js` applies each slice to the setters the page
+  provides (`noop`/absent setters are skipped).
+- `MainWindow` pushes state at the existing points: final transcriptions/translations,
+  `_send_gemini_result` (gemini_results), `_capture_screenshot` (screenshots),
+  `_on_bullet_points_updated` (bullets), plus the conversation-history mirror.
+- Worker cleanup: `BulletPointsController.cleanup()` now stop → wait → terminate (like
+  `TranslationController`) so a worker blocked in a synchronous HTTP call isn't destroyed while
+  running (`QThread: Destroyed while thread is still running`).
+
 ## Pane layout (free-floating geometry, persisted)
 - Both panes are **free-floating**: a top `PaneDragHandle`
   (`src/ui_components/pane_drag_handle.py`, a 12px strip) drags the window anywhere on the
@@ -220,8 +293,8 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
   (not a re-dock) when a pane is re-shown.
 - The `settings` section persists the Settings dialog's non-device options — `view_mode`
   (default 1 = Webview), `ai_reply_language` (default "English"), `purpose` (default
-  `language_learning`), `pronunciation` (default false), and `screen_protection` (default
-  true). `MainWindow._apply_settings_state` restores them (guarding bad values) after the
+  `language_learning`), `pronunciation` (default false), `bullet_points` (auto, default false),
+  `bullet_points_window_visible` (default false), and `screen_protection` (default true). `MainWindow._apply_settings_state` restores them (guarding bad values) after the
   widget/controller connections are wired, and `_connect_settings_signals` saves on every
   change. Purpose is applied **before** pronunciation because `_on_purpose_changed` resets
   pronunciation to the purpose's `include_pronunciation_default`. Device selection and the

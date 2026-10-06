@@ -9,7 +9,11 @@ export const useWebSocketHandler = ({
     handleGeminiResult,
     handleGeminiStatus,
     handleScreenshot,
-    handleClearScreenshots
+    handleClearScreenshots,
+    handleBulletPoints,
+    handleBulletPointsStatus,
+    handleSessionState,
+    handleConnection
 }) => {
     const processMessage = useCallback((data, type, finalHandler, liveHandler) => {
         console.log('[WebSocket]', data);
@@ -23,6 +27,16 @@ export const useWebSocketHandler = ({
     const handleMessage = useCallback((data) => {
         if (data.type === 'connection') {
             console.log('[WebSocket]', data.message);
+            if (typeof handleConnection === 'function') {
+                handleConnection();
+            }
+            return;
+        }
+
+        if (data.type === 'session_state') {
+            if (typeof handleSessionState === 'function') {
+                handleSessionState(data);
+            }
             return;
         }
 
@@ -46,6 +60,14 @@ export const useWebSocketHandler = ({
             if (typeof handleClearScreenshots === 'function') {
                 handleClearScreenshots();
             }
+        } else if (data.type === 'bullet_points') {
+            if (typeof handleBulletPoints === 'function') {
+                handleBulletPoints(data.items || [], data.timestamp);
+            }
+        } else if (data.type === 'bullet_points_status') {
+            if (typeof handleBulletPointsStatus === 'function') {
+                handleBulletPointsStatus(data.status, data.message);
+            }
         } else if (data.type === 'correction_response') {
             console.log('[WebSocket] Correction response:', data);
             handleCorrectionResponse(data);
@@ -62,7 +84,11 @@ export const useWebSocketHandler = ({
         handleGeminiResult,
         handleGeminiStatus,
         handleScreenshot,
-        handleClearScreenshots
+        handleClearScreenshots,
+        handleBulletPoints,
+        handleBulletPointsStatus,
+        handleSessionState,
+        handleConnection
     ]);
 
     return handleMessage;

@@ -1,5 +1,5 @@
 import { h, render } from 'https://esm.sh/preact@10.19.3';
-import { useState, useEffect, useRef } from 'https://esm.sh/preact@10.19.3/hooks';
+import { useState, useEffect, useRef, useCallback } from 'https://esm.sh/preact@10.19.3/hooks';
 import htm from 'https://esm.sh/htm@3.1.1';
 import { WebSocketManager } from './websocket-manager.js';
 import { GeminiDisplayer } from './components/GeminiDisplayer.js';
@@ -25,7 +25,9 @@ const GeminiApp = () => {
         handleGeminiStatus,
         /** Screenshot Handlers */
         handleScreenshot,
-        handleClearScreenshots
+        handleClearScreenshots,
+        /** Session restore */
+        handleSessionState
     } = useTranscriptionHandlers({
         /** Unused on this page — only the Gemini output is shown. */
         setFinalizedSentences: noop,
@@ -43,6 +45,19 @@ const GeminiApp = () => {
         wsManager
     });
 
+    /** Send a control message back to the Python app. */
+    const sendControl = useCallback((payload) => {
+        const ws = wsManager.current && wsManager.current.ws;
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(payload));
+        }
+    }, []);
+
+    /** On (re)connect, ask Python for the persisted session state. */
+    const handleConnection = useCallback(() => {
+        sendControl({ type: 'request_session_state' });
+    }, [sendControl]);
+
     const handleMessage = useWebSocketHandler({
         handleFinalTranscription: noop,
         handleLiveTranscription: noop,
@@ -52,16 +67,10 @@ const GeminiApp = () => {
         handleGeminiResult,
         handleGeminiStatus,
         handleScreenshot,
-        handleClearScreenshots
+        handleClearScreenshots,
+        handleSessionState,
+        handleConnection
     });
-
-    /** Send a control message back to the Python app. */
-    const sendControl = (payload) => {
-        const ws = wsManager.current && wsManager.current.ws;
-        if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify(payload));
-        }
-    };
 
     useEffect(() => {
         wsManager.current = new WebSocketManager(setConnected, handleMessage);

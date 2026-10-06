@@ -242,6 +242,15 @@ class TranslationController(QObject):
         self._conversation_history.clear()
         logger.debug("Conversation history cleared")
 
+    def load_conversation_history(self, history):
+        """Seed the history from a restored session, keeping the last N turns."""
+        self._conversation_history = list(history or [])[-self.MAX_HISTORY_TURNS:]
+        logger.debug("Conversation history restored: %d turns", len(self._conversation_history))
+
+    def get_conversation_history(self):
+        """Return a copy of the current conversation history."""
+        return list(self._conversation_history)
+
     def append_to_history(self, text: str, suggestion: str, input_source: str):
         """Append a conversation turn to history, keeping only last MAX_HISTORY_TURNS."""
         self._conversation_history.append({

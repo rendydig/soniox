@@ -1,5 +1,5 @@
 import { h } from 'https://esm.sh/preact@10.19.3';
-import { useState, useEffect, useRef } from 'https://esm.sh/preact@10.19.3/hooks';
+import { useState, useEffect, useRef, useCallback } from 'https://esm.sh/preact@10.19.3/hooks';
 import htm from 'https://esm.sh/htm@3.1.1';
 import { WebSocketManager } from '../websocket-manager.js';
 import { StatusIndicator } from './StatusIndicator.js';
@@ -33,7 +33,9 @@ export const App = ({ hideControlType, edgeControlType } = {}) => {
         handleFinalTranslation,
         handleLiveTranslation,
         /** Corrections Handlers */
-        handleCorrectionResponse
+        handleCorrectionResponse,
+        /** Session restore */
+        handleSessionState
     } = useTranscriptionHandlers({
         setFinalizedSentences,
         setLiveTextHost,
@@ -47,6 +49,19 @@ export const App = ({ hideControlType, edgeControlType } = {}) => {
         wsManager
     });
 
+    /** Send a control message back to the Python app. */
+    const sendControl = useCallback((payload) => {
+        const ws = wsManager.current && wsManager.current.ws;
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(payload));
+        }
+    }, []);
+
+    /** On (re)connect, ask Python for the persisted session state. */
+    const handleConnection = useCallback(() => {
+        sendControl({ type: 'request_session_state' });
+    }, [sendControl]);
+
     const handleMessage = useWebSocketHandler({
         /** Transcriptions Handlers */
         handleFinalTranscription,
@@ -55,16 +70,10 @@ export const App = ({ hideControlType, edgeControlType } = {}) => {
         handleFinalTranslation,
         handleLiveTranslation,
         /** Corrections Handlers */
-        handleCorrectionResponse
+        handleCorrectionResponse,
+        handleSessionState,
+        handleConnection
     });
-
-    /** Send a control message back to the Python app. */
-    const sendControl = (payload) => {
-        const ws = wsManager.current && wsManager.current.ws;
-        if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify(payload));
-        }
-    };
 
     /** Use Effects */
     useEffect(() => {

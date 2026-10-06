@@ -8,6 +8,7 @@ from .status_bar import StatusBarWidget
 from .drag_handle import DragHandle
 from .gemini_window import GeminiWindow
 from .live_window import LiveWindow
+from .bullet_points_window import BulletPointsWindow
 
 __all__ = [
     'DeviceSettingsWidget',
@@ -20,4 +21,5 @@ __all__ = [
     'DragHandle',
     'GeminiWindow',
     'LiveWindow',
+    'BulletPointsWindow',
 ]

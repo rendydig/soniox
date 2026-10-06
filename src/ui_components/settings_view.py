@@ -81,6 +81,15 @@ class SettingsViewWidget(QWidget):
         )
         layout.addWidget(self.pronunciation_checkbox)
 
+        self.bullet_points_checkbox = QCheckBox("Auto Bullet Points")
+        self.bullet_points_checkbox.setChecked(False)
+        self.bullet_points_checkbox.setToolTip(
+            "Automatically update a running bullet-point list of the conversation "
+            "(every 15s / 12 lines). Off = update on demand with CTRL+ALT+P while "
+            "the pane is open. Hiding the pane pauses auto updates."
+        )
+        layout.addWidget(self.bullet_points_checkbox)
+
         self.screen_protection_checkbox = QCheckBox("Screen Protection")
         self.screen_protection_checkbox.setChecked(True)
         self.screen_protection_checkbox.setToolTip(
@@ -110,6 +119,9 @@ class SettingsViewWidget(QWidget):
 
     def get_pronunciation_checkbox(self):
         return self.pronunciation_checkbox
+
+    def get_bullet_points_checkbox(self):
+        return self.bullet_points_checkbox
 
     def get_screen_protection_checkbox(self):
         return self.screen_protection_checkbox

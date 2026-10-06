@@ -480,6 +480,66 @@
         animation: textPulse 1.5s ease-in-out infinite;
     }
 
+    /* Bullet points (rolling conversation summary) */
+    .card.bullet-card {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .live-text.bullet-view {
+        background: #ecfdf5;
+        color: #065f46;
+        border-left: 4px solid #10b981;
+        font-style: normal;
+        white-space: normal;
+    }
+
+    .bullet-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .bullet-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 8px;
+        line-height: 1.5;
+    }
+
+    .bullet-item:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Numbered marker. */
+    .bullet-number {
+        flex: 0 0 auto;
+        min-width: 18px;
+        color: #059669;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+    }
+
+    .bullet-text {
+        flex: 1;
+        min-width: 0;
+        color: #1f2937;
+    }
+
+    .bullet-status {
+        color: #059669;
+        font-style: italic;
+        margin-bottom: 8px;
+        animation: textPulse 1.5s ease-in-out infinite;
+    }
+
+    .bullet-empty {
+        color: #6b7280;
+        font-style: italic;
+    }
+
     /* Screenshot gallery (ALT+SHIFT+K captures, ALT+CTRL+SHIFT+K clears) */
     .screenshot-gallery {
         flex: 0 1 auto;
