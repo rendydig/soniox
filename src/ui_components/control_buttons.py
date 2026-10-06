@@ -10,7 +10,7 @@ class ControlButtonsWidget(QWidget):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         
-        self.btn_start = QPushButton("Start Transcription")
+        self.btn_start = QPushButton("Start")
         self.btn_start.setCheckable(True)
         layout.addWidget(self.btn_start)
     

@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import (QWidget, QHBoxLayout, QLabel)
+from .elided_label import ElidedLabel
 
 
 class StatusBarWidget(QWidget):
@@ -10,7 +11,7 @@ class StatusBarWidget(QWidget):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         
-        self.status_label = QLabel("Ready")
+        self.status_label = ElidedLabel("Ready")
         font = self.status_label.font()
         if font.pointSize() > 0:
             font.setPointSize(font.pointSize() + 1)

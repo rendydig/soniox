@@ -1,32 +1,36 @@
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QTextEdit, QStackedWidget
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QStackedWidget
 from PySide6.QtCore import Qt, QUrl, Signal
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from src.screen_protection import set_capture_protection
 from .pane_resize_handle import PaneResizeHandle
+from .pane_drag_handle import PaneDragHandle
 
 # Default width of the always-on-top live-view pane.
 LIVE_WINDOW_WIDTH = 480
-# Narrowest the pane may be dragged to.
+# Narrowest / shortest the pane may be dragged to.
 MIN_WINDOW_WIDTH = 200
+MIN_WINDOW_HEIGHT = 120
 
 
 class LiveWindow(QWidget):
     """Frameless, always-on-top output window for the live view.
 
-    Pinned to the primary screen's left or right edge (switchable at runtime),
-    full height, no title bar, with a drag handle on its inner edge to resize
-    the width. It hosts the output stack (text editor + webview) and is a
-    separate top-level window (no Qt parent) so it can carry its own screen
-    capture protection, mirroring ``MainWindow`` and ``GeminiWindow``.
+    Free-floating: a top drag strip moves it anywhere on the primary screen,
+    the inner-edge handle resizes its width, and the bottom-edge handle resizes
+    its height. It can still be docked to the screen's left or right edge at
+    full height (switchable at runtime via the ⇤/⇥ buttons). It hosts the
+    output stack (text editor + webview) and is a separate top-level window (no
+    Qt parent) so it can carry its own screen capture protection, mirroring
+    ``MainWindow`` and ``GeminiWindow``.
     """
 
     # Emitted while the pane is resized / moved, so the bar can re-snap.
     geometry_changed = Signal()
-    # Emitted when the edge or width settles and should be persisted.
+    # Emitted when the geometry settles and should be persisted.
     state_changed = Signal()
 
-    def __init__(self, edge=None, width=None, parent=None):
+    def __init__(self, edge=None, width=None, height=None, x=None, y=None, docked=None, parent=None):
         super().__init__(parent)
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint
@@ -36,13 +40,29 @@ class LiveWindow(QWidget):
         self._screen_protection_enabled = True
         self._edge = edge if edge in ("left", "right") else "left"
         self._width = self._clamp_width(width if width else LIVE_WINDOW_WIDTH)
+
+        # A pane is docked (edge-pinned, full height) unless the saved state
+        # says otherwise. Missing/legacy state (no "docked" key) defaults to
+        # docked, matching the previous edge+width-only behaviour.
+        floating = docked is False and x is not None and y is not None
+        self._docked = not floating
+        if floating:
+            self._height = self._clamp_height(height if height else self._screen_height())
+            self._x, self._y = self._clamp_position(int(x), int(y))
+        else:
+            self._height = self._screen_height()
+            self._x, self._y = self._edge_position()
+
         self._init_ui()
-        self._position_on_screen()
+        self._apply_geometry()
 
     def _init_ui(self):
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
+
+        self._drag_handle = PaneDragHandle(self)
+        outer.addWidget(self._drag_handle)
 
         self.view_stack = QStackedWidget()
         self.transcription_editor = QTextEdit()
@@ -55,19 +75,36 @@ class LiveWindow(QWidget):
         self.view_stack.addWidget(self.transcription_editor)
         self.view_stack.addWidget(self.webview)
         self.view_stack.setCurrentIndex(1)
-        layout.addWidget(self.view_stack)
 
-        self._resize_handle = PaneResizeHandle(self)
+        self._content_row = QHBoxLayout()
+        self._content_row.setContentsMargins(0, 0, 0, 0)
+        self._content_row.setSpacing(0)
+        self._content_row.addWidget(self.view_stack)
+        outer.addLayout(self._content_row, 1)
+
+        self._height_handle = PaneResizeHandle(self, orientation="vertical")
+        outer.addWidget(self._height_handle)
+
+        self._width_handle = PaneResizeHandle(self, orientation="horizontal")
         self._apply_edge_layout()
 
     def _apply_edge_layout(self):
-        """Put the resize handle on the pane's inner (screen-centre) edge."""
-        layout = self.layout()
-        layout.removeWidget(self._resize_handle)
+        """Put the width handle on the pane's inner (screen-centre) edge."""
+        self._content_row.removeWidget(self._width_handle)
         if self._edge == "right":
-            layout.insertWidget(0, self._resize_handle)
+            self._content_row.insertWidget(0, self._width_handle)
         else:
-            layout.addWidget(self._resize_handle)
+            self._content_row.addWidget(self._width_handle)
+
+    def _screen_height(self):
+        screen = QGuiApplication.primaryScreen()
+        return screen.geometry().height() if screen is not None else 720
+
+    def _edge_position(self):
+        """Top-left for the pane docked to its edge at the current width."""
+        geo = QGuiApplication.primaryScreen().geometry()
+        x = geo.left() if self._edge == "left" else geo.right() - self._width + 1
+        return x, geo.top()
 
     def _clamp_width(self, width):
         try:
@@ -75,38 +112,98 @@ class LiveWindow(QWidget):
         except (TypeError, ValueError):
             width = LIVE_WINDOW_WIDTH
         screen = QGuiApplication.primaryScreen()
-        max_width = screen.availableGeometry().width() if screen is not None else LIVE_WINDOW_WIDTH
+        max_width = screen.geometry().width() if screen is not None else LIVE_WINDOW_WIDTH
         return max(MIN_WINDOW_WIDTH, min(width, max_width))
 
-    def _position_on_screen(self):
-        """Snap to the primary screen's left/right edge at full height."""
-        geo = QGuiApplication.primaryScreen().geometry()
-        x = geo.left() if self._edge == "left" else geo.right() - self._width + 1
-        self.setGeometry(x, geo.top(), self._width, geo.height())
+    def _clamp_height(self, height):
+        try:
+            height = int(height)
+        except (TypeError, ValueError):
+            height = self._screen_height()
+        screen = QGuiApplication.primaryScreen()
+        max_height = screen.geometry().height() if screen is not None else height
+        return max(MIN_WINDOW_HEIGHT, min(height, max_height))
+
+    def _clamp_position(self, x, y):
+        """Keep the pane within the primary screen so it can't be lost off-screen."""
+        screen = QGuiApplication.primaryScreen()
+        if screen is None:
+            return x, y
+        geo = screen.geometry()
+        x = max(geo.left(), min(x, geo.right() - self._width + 1))
+        y = max(geo.top(), min(y, geo.bottom() - self._height + 1))
+        return x, y
+
+    def _apply_geometry(self):
+        self.setGeometry(self._x, self._y, self._width, self._height)
+
+    def _dock(self):
+        """Pin to the current edge at full height."""
+        self._docked = True
+        self._height = self._screen_height()
+        self._x, self._y = self._edge_position()
+        self._apply_geometry()
 
     def get_edge(self):
         return self._edge
 
+    def is_docked(self):
+        return self._docked
+
     def get_width(self):
         return self._width
 
+    def get_height(self):
+        return self._height
+
+    def get_x(self):
+        return self._x
+
+    def get_y(self):
+        return self._y
+
     def set_edge(self, edge):
-        """Pin the pane to ``edge`` ("left"/"right"), keeping the width."""
-        if edge not in ("left", "right") or edge == self._edge:
+        """Dock the pane to ``edge`` ("left"/"right") at full height."""
+        if edge not in ("left", "right"):
+            return
+        if edge == self._edge and self._docked:
             return
         self._edge = edge
         self._apply_edge_layout()
-        self._position_on_screen()
+        self._dock()
         self.geometry_changed.emit()
         self.state_changed.emit()
 
     def set_width(self, width):
-        """Resize the pane, keeping it pinned to its edge."""
+        """Resize the width, keeping the pane's top-left anchored."""
         width = self._clamp_width(width)
         if width == self._width:
             return
         self._width = width
-        self._position_on_screen()
+        if self._docked:
+            self._x, self._y = self._edge_position()
+        self._apply_geometry()
+        self.geometry_changed.emit()
+
+    def set_height(self, height):
+        """Resize the height, un-docking the pane (top-left anchored)."""
+        height = self._clamp_height(height)
+        if height == self._height and not self._docked:
+            return
+        self._height = height
+        self._docked = False
+        self._x, self._y = self._clamp_position(self._x, self._y)
+        self._apply_geometry()
+        self.geometry_changed.emit()
+
+    def move_to(self, point):
+        """Move the pane (un-docking it) from a drag position."""
+        x, y = self._clamp_position(int(point.x()), int(point.y()))
+        if (x, y) == (self._x, self._y) and not self._docked:
+            return
+        self._x, self._y = x, y
+        self._docked = False
+        self._apply_geometry()
         self.geometry_changed.emit()
 
     def resize_by_drag(self, delta_x, start_width):
@@ -114,13 +211,26 @@ class LiveWindow(QWidget):
         width = start_width - delta_x if self._edge == "right" else start_width + delta_x
         self.set_width(width)
 
+    def resize_height_by_drag(self, delta_y, start_height):
+        """Height from the bottom handle: grow downward from the top edge."""
+        self.set_height(start_height + delta_y)
+
     def finish_resize(self):
-        """Persist the width once a drag settles."""
+        """Persist the geometry once a resize drag settles."""
+        self.state_changed.emit()
+
+    def finish_move(self):
+        """Persist the geometry once a move drag settles."""
         self.state_changed.emit()
 
     def reset_width(self):
-        """Restore the default width (double-click the handle)."""
+        """Restore the default width (double-click the width handle)."""
         self.set_width(LIVE_WINDOW_WIDTH)
+        self.finish_resize()
+
+    def reset_height(self):
+        """Restore full screen height (double-click the height handle)."""
+        self.set_height(self._screen_height())
         self.finish_resize()
 
     def apply_screen_protection(self, enabled: bool):

@@ -28,10 +28,15 @@ from src.ui_components import (
     GeminiWindow,
     LiveWindow
 )
+from src.ui_components.pane_resize_handle import PaneResizeHandle
 from src.ui_state import load_state, save_state
 
 logger = logging.getLogger(__name__)
 
+# Default width of the bottom bar. It is fixed (not derived from the panes) and
+# user-resizable; the narrowest it can shrink to is the trimmed content minimum.
+BAR_WIDTH = 560
+MIN_BAR_WIDTH = 540
 # Height of the bottom bar's always-visible control row (window frame included).
 # The manual-translation input row is revealed above it, growing the bar upward.
 BAR_HEIGHT = 60
@@ -86,26 +91,37 @@ class MainWindow(QMainWindow):
         self._screen_protection_enabled = True
         self._auto_reply_enabled = False
 
-        # Separate top-level panes (not Qt children of this window). Their edge
-        # and width are restored from ui_state.json (written back on change).
+        # Separate top-level panes (not Qt children of this window). Their
+        # geometry is restored from ui_state.json (written back on change).
         state = load_state()
         main_state = _as_dict(state.get("main_window"))
         gemini_state = _as_dict(state.get("gemini_window"))
         live_state = _as_dict(state.get("live_window"))
+        settings_state = _as_dict(state.get("settings"))
         self._always_on_top = bool(main_state.get("always_on_top", True))
+        # Bar geometry: fixed default width, bottom-center unless the user moved it.
+        self._bar_width = self._clamp_bar_width(main_state.get("width"))
+        self._bar_x = main_state.get("x")
+        self._bar_y = main_state.get("y")
         self.gemini_window = GeminiWindow(
-            edge=gemini_state.get("edge"), width=gemini_state.get("width")
+            edge=gemini_state.get("edge"), width=gemini_state.get("width"),
+            height=gemini_state.get("height"), x=gemini_state.get("x"),
+            y=gemini_state.get("y"), docked=gemini_state.get("docked"),
         )
         self.live_window = LiveWindow(
-            edge=live_state.get("edge"), width=live_state.get("width")
+            edge=live_state.get("edge"), width=live_state.get("width"),
+            height=live_state.get("height"), x=live_state.get("x"),
+            y=live_state.get("y"), docked=live_state.get("docked"),
         )
 
         self._init_menu()
         self._init_ui()
         self._setup_controller_connections()
         self._connect_pane_signals()
+        self._apply_settings_state(settings_state)
+        self._connect_settings_signals()
         self.device_controller.populate_devices()
-        self._snap_to_bottom()
+        self._apply_bar_geometry()
         self._connect_screen_signals()
         self.gemini_window.show()
         self.live_window.show()
@@ -113,7 +129,13 @@ class MainWindow(QMainWindow):
     def _init_ui(self):
         central = QWidget()
         self.setCentralWidget(central)
-        root = QVBoxLayout(central)
+        # Outer row: the bar content plus a right-edge handle that resizes the width.
+        outer = QHBoxLayout(central)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
+
+        content = QWidget()
+        root = QVBoxLayout(content)
         root.setContentsMargins(6, 4, 6, 4)
         root.setSpacing(6)
 
@@ -125,7 +147,7 @@ class MainWindow(QMainWindow):
 
         # Bottom row: always-visible controls, mode/tool menus, status, close.
         row = QHBoxLayout()
-        row.setSpacing(8)
+        row.setSpacing(4)
 
         self.drag_handle = DragHandle()
         row.addWidget(self.drag_handle)
@@ -156,6 +178,11 @@ class MainWindow(QMainWindow):
 
         root.addLayout(row)
 
+        outer.addWidget(content, 1)
+        self.width_handle = PaneResizeHandle(self, orientation="horizontal")
+        self.width_handle.setToolTip("Drag to resize the bar")
+        outer.addWidget(self.width_handle)
+
         # Settings lives in its own dialog. Created eagerly (hidden) so the
         # widget getters in _setup_widget_references stay valid.
         self.settings_view = SettingsViewWidget()
@@ -176,61 +203,161 @@ class MainWindow(QMainWindow):
         """Total bar height, including the input row when the toggle is on."""
         return BAR_HEIGHT + (INPUT_ROW_HEIGHT if self.manual_switch.isChecked() else 0)
 
-    def _snap_to_bottom(self):
-        """Pin the bar between the side panes, just above the taskbar.
+    def _clamp_bar_width(self, width):
+        try:
+            width = int(width)
+        except (TypeError, ValueError):
+            width = BAR_WIDTH
+        screen = QGuiApplication.primaryScreen()
+        max_width = screen.availableGeometry().width() if screen is not None else BAR_WIDTH
+        return max(MIN_BAR_WIDTH, min(width, max_width))
 
-        ``availableGeometry`` already excludes the taskbar (and any other reserved
-        app bars), so no taskbar measurement is needed. The bar spans the middle
-        of the screen: ``screen width - left pane - right pane``, starting right
-        after whichever pane is currently pinned to the left edge.
+    def _apply_bar_geometry(self):
+        """Place the bar at its fixed width and stored position.
+
+        With no stored position the bar sits bottom-centre, just above the
+        taskbar (``availableGeometry`` already excludes the taskbar). A stored
+        position is restored, only clamped so it can't land off-screen.
         """
         screen = QGuiApplication.primaryScreen()
-        if screen is None:
-            return
-        avail = screen.availableGeometry()
-
-        left_width = right_width = 0
-        for pane in (self.live_window, self.gemini_window):
-            if pane.get_edge() == "left":
-                left_width = max(left_width, pane.get_width())
-            else:
-                right_width = max(right_width, pane.get_width())
-
-        width = max(avail.width() - left_width - right_width, 1)
+        width = self._clamp_bar_width(self._bar_width)
         height = self._current_bar_height()
+        x, y = self._bar_x, self._bar_y
+        if screen is not None:
+            avail = screen.availableGeometry()
+            if x is None or y is None:
+                x = avail.left() + max((avail.width() - width) // 2, 0)
+                y = avail.bottom() + 1 - height
+            else:
+                x = max(avail.left(), min(int(x), avail.right() - width + 1))
+                y = max(avail.top(), min(int(y), avail.bottom() - height + 1))
+        else:
+            x, y = int(x or 0), int(y or 0)
+        self._bar_width, self._bar_x, self._bar_y = width, x, y
         self.resize(width, height)
         # The window is frameless, so move() positions the visible top-left.
-        self.move(avail.left() + left_width, avail.bottom() + 1 - height)
+        self.move(x, y)
+
+    def get_width(self):
+        """Current bar width (used by the right-edge resize handle)."""
+        return self.width()
+
+    def resize_by_drag(self, delta_x, start_width):
+        """Resize the width from the right-edge handle, keeping the left edge."""
+        self._bar_width = self._clamp_bar_width(start_width + delta_x)
+        self.resize(self._bar_width, self.height())
+
+    def reset_width(self):
+        """Restore the default width (double-click the handle)."""
+        self._bar_width = self._clamp_bar_width(BAR_WIDTH)
+        self.resize(self._bar_width, self.height())
+        self.finish_resize()
+
+    def finish_resize(self):
+        """Persist the width once a resize drag settles."""
+        self._save_state()
+
+    def move_to(self, point):
+        """Move the bar from a drag position, clamped onto the screen."""
+        x, y = int(point.x()), int(point.y())
+        screen = QGuiApplication.primaryScreen()
+        if screen is not None:
+            avail = screen.availableGeometry()
+            x = max(avail.left(), min(x, avail.right() - self.width() + 1))
+            y = max(avail.top(), min(y, avail.bottom() - self.height() + 1))
+        self._bar_x, self._bar_y = x, y
+        self.move(x, y)
+
+    def finish_move(self):
+        """Persist the position once a move drag settles."""
+        self._save_state()
 
     def _on_manual_switch_toggled(self, checked):
-        """Show/hide the input row, growing or shrinking upward from the bottom."""
+        """Show/hide the input row, growing or shrinking upward from the bottom.
+
+        The bottom edge is captured before the row is shown/hidden, since
+        toggling it can transiently change the window's size hint.
+        """
+        bottom = self.y() + self.height()
         self.translation_section.setVisible(checked)
-        bottom = self.frameGeometry().bottom()
         height = self._current_bar_height()
         self.resize(self.width(), height)
-        self.move(self.x(), bottom + 1 - height)
+        self._bar_y = bottom - height
+        self.move(self.x(), self._bar_y)
 
     def _connect_pane_signals(self):
-        """Keep the bar in sync with, and persist, each pane's edge/width."""
+        """Persist each pane's geometry; the bar no longer follows the panes."""
         for pane in (self.gemini_window, self.live_window):
-            pane.geometry_changed.connect(self._snap_to_bottom)
-            pane.state_changed.connect(self._save_pane_state)
+            pane.state_changed.connect(self._save_state)
 
-    def _save_pane_state(self):
-        """Persist each pane's edge and width for the next launch."""
+    def _save_state(self):
+        """Persist the bar/pane geometry and Settings for the next launch."""
         save_state({
             "main_window": {
                 "always_on_top": self._always_on_top,
+                "width": self.width(),
+                "x": self.x(),
+                "y": self.y(),
             },
             "gemini_window": {
                 "edge": self.gemini_window.get_edge(),
+                "docked": self.gemini_window.is_docked(),
                 "width": self.gemini_window.get_width(),
+                "height": self.gemini_window.get_height(),
+                "x": self.gemini_window.get_x(),
+                "y": self.gemini_window.get_y(),
             },
             "live_window": {
                 "edge": self.live_window.get_edge(),
+                "docked": self.live_window.is_docked(),
                 "width": self.live_window.get_width(),
+                "height": self.live_window.get_height(),
+                "x": self.live_window.get_x(),
+                "y": self.live_window.get_y(),
+            },
+            "settings": {
+                "view_mode": self.view_mode_combo.currentIndex(),
+                "ai_reply_language": self.gemini_lang_combo.currentText(),
+                "purpose": self.purpose_combo.currentData(),
+                "pronunciation": self.pronunciation_checkbox.isChecked(),
+                "screen_protection": self.screen_protection_checkbox.isChecked(),
             },
         })
+
+    def _apply_settings_state(self, state):
+        """Restore persisted Settings onto the widgets (falls back to defaults)."""
+        view_mode = state.get("view_mode")
+        if isinstance(view_mode, int) and 0 <= view_mode < self.view_mode_combo.count():
+            self.view_mode_combo.setCurrentIndex(view_mode)
+
+        language = state.get("ai_reply_language")
+        if language:
+            index = self.gemini_lang_combo.findText(language)
+            if index >= 0:
+                self.gemini_lang_combo.setCurrentIndex(index)
+
+        # Purpose first: _on_purpose_changed resets pronunciation to its default.
+        purpose = state.get("purpose")
+        if purpose:
+            index = self.purpose_combo.findData(purpose)
+            if index >= 0:
+                self.purpose_combo.setCurrentIndex(index)
+
+        pronunciation = state.get("pronunciation")
+        if isinstance(pronunciation, bool):
+            self.pronunciation_checkbox.setChecked(pronunciation)
+
+        screen_protection = state.get("screen_protection")
+        if isinstance(screen_protection, bool):
+            self._set_screen_protection(screen_protection)
+
+    def _connect_settings_signals(self):
+        """Persist Settings whenever one of them changes."""
+        self.view_mode_combo.currentIndexChanged.connect(self._save_state)
+        self.gemini_lang_combo.currentTextChanged.connect(self._save_state)
+        self.purpose_combo.currentIndexChanged.connect(self._save_state)
+        self.pronunciation_checkbox.toggled.connect(self._save_state)
+        self.screen_protection_checkbox.toggled.connect(self._save_state)
 
     def _connect_screen_signals(self):
         screen = QGuiApplication.primaryScreen()
@@ -238,8 +365,8 @@ class MainWindow(QMainWindow):
             screen.availableGeometryChanged.connect(self._on_available_geometry_changed)
 
     def _on_available_geometry_changed(self, _rect):
-        """Re-snap when the taskbar is shown/hidden/resized or the screen changes."""
-        self._snap_to_bottom()
+        """Re-clamp the bar when the taskbar is shown/hidden/resized."""
+        self._apply_bar_geometry()
 
     def _open_settings(self):
         """Show the separate Settings dialog, honouring screen protection."""
@@ -270,8 +397,8 @@ class MainWindow(QMainWindow):
         self.act_translate.triggered.connect(lambda: self._on_mode_changed("translation"))
 
         self.mode_button = QToolButton()
-        self.mode_button.setText("Transcription")
-        self.mode_button.setToolTip("Switch between Live Transcription and Live Translation.")
+        self.mode_button.setText("Mode")
+        self.mode_button.setToolTip("Mode: Transcription. Switch between Live Transcription and Live Translation.")
         self.mode_button.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.mode_button.setMenu(self.mode_menu)
 
@@ -333,8 +460,12 @@ class MainWindow(QMainWindow):
         self.btn_start = self.control_buttons.get_start_button()
         
         self.status_label = self.status_bar.get_status_label()
+        # Trimmed for the fixed-width bar: the mode label duplicates the Mode
+        # menu and the memory readout is dropped.
         self.mode_status_label = self.status_bar.get_mode_label()
+        self.mode_status_label.setVisible(False)
         self.memory_label = self.status_bar.get_memory_label()
+        self.memory_label.setVisible(False)
     
     def _setup_widget_connections(self):
         self.view_mode_combo.currentIndexChanged.connect(self.live_window.get_view_stack().setCurrentIndex)
@@ -355,7 +486,7 @@ class MainWindow(QMainWindow):
             """
             QWidget { font-size: 13px; }
             QComboBox, QLineEdit { padding: 4px 6px; }
-            QPushButton, QToolButton { padding: 4px 10px; }
+            QPushButton, QToolButton { padding: 3px 8px; }
             QPushButton:checked { background-color: #d9534f; color: white; }
             QTextEdit { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; }
             """
@@ -389,7 +520,9 @@ class MainWindow(QMainWindow):
         is_translation = (mode == "translation")
         self.lang_selection.setVisible(is_translation)
         label = "Translation" if is_translation else "Transcription"
-        self.mode_button.setText(label)
+        # The button stays "Mode" (fixed-width bar); the active mode is shown in
+        # its tooltip and the menu checkmark.
+        self.mode_button.setToolTip(f"Mode: {label}. Switch between Live Transcription and Live Translation.")
         self.mode_status_label.setText(label)
         self._update_start_button_text()
 
@@ -397,7 +530,7 @@ class MainWindow(QMainWindow):
         """Set the start button label from the current mode (unless a session is running)."""
         if self.btn_start.isChecked():
             return
-        self.btn_start.setText("Start Translation" if self.act_translate.isChecked() else "Start Transcription")
+        self.btn_start.setText("Start")
 
     def _toggle_start(self, checked):
         if checked:
@@ -668,7 +801,7 @@ class MainWindow(QMainWindow):
     def _set_gemini_window_visible(self, visible):
         """Show or hide the separate Gemini suggestion pane."""
         if visible:
-            self.gemini_window._position_on_screen()
+            self.gemini_window._apply_geometry()
             self.gemini_window.showNormal()  # also restores if minimized
             self.gemini_window.raise_()
         else:
@@ -677,18 +810,22 @@ class MainWindow(QMainWindow):
     def _set_live_window_visible(self, visible):
         """Show or hide the separate live-view pane."""
         if visible:
-            self.live_window._position_on_screen()
+            self.live_window._apply_geometry()
             self.live_window.showNormal()  # also restores if minimized
             self.live_window.raise_()
         else:
             self.live_window.hide()
 
     def _set_pane_edge(self, window, edge):
-        """Move a pane to ``edge``, swapping the other pane to the opposite side."""
-        if edge not in ("left", "right") or window.get_edge() == edge:
+        """Dock a pane to ``edge``, swapping the other docked pane to the opposite side."""
+        if edge not in ("left", "right"):
+            return
+        # A same-edge pane that is already docked needs no change; a same-edge
+        # floating pane still re-docks to that edge.
+        if window.get_edge() == edge and window.is_docked():
             return
         other = self.live_window if window is self.gemini_window else self.gemini_window
-        if other.get_edge() == edge:
+        if other.is_docked() and other.get_edge() == edge:
             other.set_edge("left" if edge == "right" else "right")
         window.set_edge(edge)
 
@@ -704,7 +841,7 @@ class MainWindow(QMainWindow):
         self.show()
         self.raise_()
         self.activateWindow()
-        self._save_pane_state()
+        self._save_state()
 
     def _set_screen_protection(self, enabled):
         """Exclude this window from screen capture and mirror the state on both controls."""
@@ -721,9 +858,9 @@ class MainWindow(QMainWindow):
 
     def showEvent(self, event):
         super().showEvent(event)
-        # The frame metrics are only valid once shown, so re-snap the bar to the
-        # bottom edge after the first real show (and after re-shows).
-        QTimer.singleShot(0, self._snap_to_bottom)
+        # Re-apply the bar's geometry after the first real show (and re-shows),
+        # re-clamping a stored position onto the current screen.
+        QTimer.singleShot(0, self._apply_bar_geometry)
         # Changing window flags / re-showing resets the display affinity,
         # so re-apply it whenever the window becomes visible.
         if self._screen_protection_enabled:
@@ -737,8 +874,8 @@ class MainWindow(QMainWindow):
             # Release the global hotkeys
             self.hotkeys.unregister()
 
-            # Persist the pane layout, then close the panes and settings dialog
-            self._save_pane_state()
+            # Persist the pane layout and Settings, then close the panes and settings dialog
+            self._save_state()
             self.settings_dialog.close()
             self.gemini_window.close()
             self.live_window.close()
