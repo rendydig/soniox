@@ -9,7 +9,9 @@ from PySide6.QtGui import QKeySequence, QShortcut, QAction, QActionGroup, QGuiAp
 from src.config import MAX_TRANSCRIPTION_LINES
 from src.purposes import PURPOSES
 from src.text_formatter import append_timestamped_text, format_gemini_result
+from src.macos_window import set_always_on_top
 from src.screen_protection import set_capture_protection
+from src.screen_permission import has_permission, request_permission
 from src.screenshot import capture_screen_data_url
 from src.global_hotkeys import GlobalHotkeys
 from src.controllers import (
@@ -85,7 +87,20 @@ class MainWindow(QMainWindow):
         self.hotkeys = GlobalHotkeys( on_screenshot=self._capture_screenshot, on_clear=self._clear_screenshots, on_send_image=self._send_images_to_gemini, on_bullet_points=self._trigger_bullet_points_now,
         )
         self.hotkeys.register()
-        
+
+        # macOS gates screen capture behind the Screen Recording permission (the
+        # responsible process is this terminal/IDE, not Python). Ask up front so
+        # the system dialog appears instead of silently capturing the wallpaper
+        # later; no-op off macOS, where has_permission() is always True.
+        if not has_permission():
+            logger.warning(
+                "macOS Screen Recording permission not granted — screenshots will only "
+                "contain the desktop wallpaper. Enable it for this terminal/IDE in "
+                "System Settings → Privacy & Security → Screen & System Audio Recording "
+                "and restart the app."
+            )
+            request_permission()
+
         self._memory_monitor_timer = QTimer()
         self._memory_monitor_timer.timeout.connect(self._update_memory_usage)
         self._memory_monitor_timer.start(5000)
@@ -116,6 +131,11 @@ class MainWindow(QMainWindow):
         # the docked Gemini/Live panes.
         self.bullet_points_window = BulletPointsWindow( edge=bullet_points_state.get("edge"), width=bullet_points_state.get("width"), height=bullet_points_state.get("height"), x=bullet_points_state.get("x"), y=bullet_points_state.get("y"), docked=bullet_points_state.get("docked"),
         )
+
+        # The Tool ▾ "Always on Top" toggle governs all four windows. Start the
+        # panes in the persisted state (they are shown later in __init__).
+        for _pane in (self.gemini_window, self.live_window, self.bullet_points_window):
+            _pane.apply_always_on_top(self._always_on_top)
 
         self._init_menu()
         self._init_ui()
@@ -396,6 +416,7 @@ class MainWindow(QMainWindow):
 
     def _open_settings(self):
         """Show the separate Settings dialog, honouring screen protection."""
+        set_always_on_top(self.settings_dialog, True)
         if self._screen_protection_enabled:
             set_capture_protection(self.settings_dialog, True)
         self.settings_dialog.show()
@@ -761,6 +782,14 @@ class MainWindow(QMainWindow):
         """Capture the primary screen and append it to the Gemini pane."""
         data_url = capture_screen_data_url()
         if not data_url:
+            if not has_permission():
+                self._send_gemini_status(
+                    "failed",
+                    "image",
+                    text="Screen Recording permission required — enable it for your "
+                    "terminal/IDE in System Settings → Privacy & Security → Screen & "
+                    "System Audio Recording, then restart the app.",
+                )
             return
         self._screenshots.append(data_url)
         self.websocket_client.send_message({"type": "screenshot", "image": data_url})
@@ -906,7 +935,7 @@ class MainWindow(QMainWindow):
             self.speaker_combo.setCurrentIndex(default_speaker)
 
         if not speaker_list:
-            self.status_label.setText("No loopback output device found")
+            self.status_label.setText(self.device_controller.missing_speaker_message())
     
     def _on_device_error(self, msg: str):
         """Handle device errors."""
@@ -1005,6 +1034,13 @@ class MainWindow(QMainWindow):
         self.show()
         self.raise_()
         self.activateWindow()
+        # macOS: re-assert the native window level (setting flags recreates the
+        # NSWindow). No-op elsewhere.
+        set_always_on_top(self, enabled)
+        # The toggle governs the panes too, so they stay on top together.
+        self.gemini_window.apply_always_on_top(enabled)
+        self.live_window.apply_always_on_top(enabled)
+        self.bullet_points_window.apply_always_on_top(enabled)
         self._save_state()
 
     def _set_screen_protection(self, enabled):
@@ -1026,8 +1062,9 @@ class MainWindow(QMainWindow):
         # Re-apply the bar's geometry after the first real show (and re-shows),
         # re-clamping a stored position onto the current screen.
         QTimer.singleShot(0, self._apply_bar_geometry)
-        # Changing window flags / re-showing resets the display affinity,
-        # so re-apply it whenever the window becomes visible.
+        # Changing window flags / re-showing can reset both the capture
+        # exclusion and the native (macOS) window level, so re-apply on show.
+        set_always_on_top(self, self._always_on_top)
         if self._screen_protection_enabled:
             set_capture_protection(self, True)
 

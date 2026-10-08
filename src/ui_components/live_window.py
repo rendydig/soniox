@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QSta
 from PySide6.QtCore import Qt, QUrl, Signal
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWebEngineWidgets import QWebEngineView
+from src.macos_window import set_always_on_top
 from src.screen_protection import set_capture_protection
 from .pane_resize_handle import PaneResizeHandle
 from .pane_drag_handle import PaneDragHandle
@@ -37,6 +38,11 @@ class LiveWindow(QWidget):
             | Qt.WindowType.WindowStaysOnTopHint
             | Qt.WindowType.Tool
         )
+        # macOS: a Qt::Tool window is an NSPanel whose hidesOnDeactivate is YES,
+        # so macOS hides it the moment the app loses focus. This attribute (set
+        # before show()) keeps the pane visible while the app is inactive.
+        self.setAttribute(Qt.WidgetAttribute.WA_MacAlwaysShowToolWindow, True)
+        self._always_on_top = True
         self._screen_protection_enabled = True
         self._edge = edge if edge in ("left", "right") else "left"
         self._width = self._clamp_width(width if width else LIVE_WINDOW_WIDTH)
@@ -233,6 +239,18 @@ class LiveWindow(QWidget):
         self.set_height(self._screen_height())
         self.finish_resize()
 
+    def apply_always_on_top(self, enabled: bool):
+        """Pin (or unpin) this pane above other windows (Tool ▾ > Always on Top)."""
+        enabled = bool(enabled)
+        changed = self._always_on_top != enabled
+        self._always_on_top = enabled
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, enabled)
+        if changed and self.isVisible():
+            # Changing flags on a visible window hides it, so re-show it;
+            # showEvent re-applies the native level and the capture protection.
+            self.show()
+        set_always_on_top(self, enabled)
+
     def apply_screen_protection(self, enabled: bool):
         """Exclude (or restore) this window from screen capture."""
         self._screen_protection_enabled = bool(enabled)
@@ -249,7 +267,8 @@ class LiveWindow(QWidget):
 
     def showEvent(self, event):
         super().showEvent(event)
-        # Changing window flags / re-showing resets the display affinity,
-        # so re-apply it whenever the window becomes visible.
+        # Changing window flags / re-showing can reset both the capture
+        # exclusion and the native (macOS) window level, so re-apply on show.
+        set_always_on_top(self, self._always_on_top)
         if self._screen_protection_enabled:
             set_capture_protection(self, True)

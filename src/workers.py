@@ -38,10 +38,18 @@ class SonioxWorker(QThread):
         self._capture_thread = None
 
         if isinstance(device, dict) and device.get("backend") == "loopback":
+            # Windows: WASAPI loopback endpoint, read through PyAudioWPatch.
             self._backend = "loopback"
             self._device_id = None
             self._loopback_index = device["index"]
             self._sample_rate = int(device["rate"])
+        elif isinstance(device, dict) and device.get("backend") == "input":
+            # macOS: system audio captured from a virtual input device (BlackHole)
+            # through PortAudio, at the device's native rate.
+            self._backend = "sounddevice"
+            self._device_id = device["index"]
+            self._loopback_index = None
+            self._sample_rate = int(device.get("rate") or 16000)
         else:
             self._backend = "sounddevice"
             self._device_id = device

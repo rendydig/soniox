@@ -4,6 +4,8 @@ import logging
 from PySide6.QtCore import QBuffer, QIODevice, Qt
 from PySide6.QtGui import QGuiApplication
 
+from src.screen_permission import has_permission
+
 logger = logging.getLogger(__name__)
 
 # Downscale every capture to this width (height follows the aspect ratio) so the
@@ -20,8 +22,18 @@ def capture_screen_data_url(
 
     The image is scaled to ``max_width`` with the height following the aspect
     ratio, then JPEG-encoded at ``quality`` and base64-encoded for transport.
-    Returns an empty string if the screen could not be captured.
+    Returns an empty string if the screen could not be captured, or if the
+    process lacks the macOS Screen Recording permission (without it the capture
+    silently returns only the desktop wallpaper).
     """
+    if not has_permission():
+        logger.warning(
+            "Screen Recording permission is missing; a capture would only contain the "
+            "desktop wallpaper. Enable it in System Settings → Privacy & Security → "
+            "Screen & System Audio Recording, then restart this app."
+        )
+        return ""
+
     screen = QGuiApplication.primaryScreen()
     if screen is None:
         logger.warning("No primary screen available")

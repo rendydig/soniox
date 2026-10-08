@@ -79,9 +79,28 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
 - The bar is **always-on-top** by default (mirrors the panes): `MainWindow` sets
   `Qt.WindowType.WindowStaysOnTopHint` from `ui_state.json`'s `main_window.always_on_top`
   (default true) and exposes it as the Tool ▾ **Always on Top** checkable action
-  (`_set_always_on_top`). Toggling re-sets the flag and calls `show()` (changing flags on a
-  visible window hides it), which re-runs `showEvent`'s `_apply_bar_geometry` + capture
-  protection.
+  (`_set_always_on_top`). **The toggle governs all four windows**, not just the bar: it
+  also calls each pane's `apply_always_on_top`, and the panes start in the persisted state
+  (a loop right after they are constructed). Toggling re-sets the flag and calls `show()`
+  (changing flags on a visible window hides it), which re-runs `showEvent`'s
+  `_apply_bar_geometry` + capture protection, then re-asserts the native level via
+  `set_always_on_top`. Each pane keeps its own `_always_on_top` flag (default True) that
+  `showEvent` re-applies, so a re-show never silently re-pins an unpinned pane.
+- **Always on top on macOS**: Qt already maps `WindowStaysOnTopHint` onto a floating
+  `NSWindow` level (measured: 8 for every flag combination the app uses), so the flag is
+  not Windows-only. `src/macos_window.py::set_always_on_top` makes it explicit and
+  stronger — it pins the level to `NSFloatingWindowLevel` (3) and adds
+  `NSWindowCollectionBehaviorFullScreenAuxiliary` so the window also stays above a
+  *full-screen* app, clearing the bit again when disabled. It is re-applied from
+  `showEvent` in `MainWindow` and all three panes (setting window flags recreates the
+  `NSWindow`), and is a no-op off macOS.
+- **Staying on top while the app is inactive**: a `Qt::Tool` window is an `NSPanel` whose
+  `hidesOnDeactivate` defaults to **YES**, so macOS hid the panes the moment the app lost
+  focus — the long-standing "always on top doesn't work on macOS" symptom. Each pane now
+  sets `Qt.WidgetAttribute.WA_MacAlwaysShowToolWindow` **before** `show()` (setting it after
+  `show()` has no effect), and `macos_window.set_always_on_top` clears
+  `hidesOnDeactivate` natively too, since Qt re-creates the `NSWindow` when flags change.
+  The bar was never affected (a plain `Qt::Window` already has `hidesOnDeactivate = NO`).
 - `view_mode_combo` (Settings) drives the **Live Window**'s internal `view_stack` via
   `get_view_stack().setCurrentIndex`; index 0 = text editor, index 1 = Webview (default).
 - `TranslationSectionWidget` is a compact horizontal row: a fixed-height (~32px)
@@ -115,8 +134,11 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
 
 ## Screenshot hotkeys
 - Four **system-wide** hotkeys (work even when the app is unfocused), registered by
-  `src/global_hotkeys.py` (`GlobalHotkeys`, a `QAbstractNativeEventFilter`) using the
-  Windows API `RegisterHotKey` via ctypes — **no third-party dependency**:
+  `src/global_hotkeys.py` (`GlobalHotkeys`) with a per-platform backend, both via ctypes
+  — **no third-party dependency**: on **Windows** `RegisterHotKey` + a
+  `QAbstractNativeEventFilter`; on **macOS** the Carbon framework's
+  `RegisterEventHotKey`; any other platform logs a warning and registers nothing. On a
+  Mac the `Alt` modifier maps to the Option key:
   - `ALT+SHIFT+K` → capture the **primary screen**, downscale to `SCREENSHOT_MAX_WIDTH`
     (1200px, height follows the aspect ratio), JPEG-encode at quality 80, base64 → `data:`
     URL (`src/screenshot.py::capture_screen_data_url`), then send
@@ -160,6 +182,17 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
   the overflow.
 - `capture_screen_data_url` uses `QGuiApplication.primaryScreen().grabWindow(0)`; construct
   `QBuffer()` **without** a temporary `QByteArray` argument or `save()` segfaults.
+- **macOS Screen Recording permission** (macOS 10.15+): the CoreGraphics API behind
+  `grabWindow(0)` does **not** fail without permission — it silently returns only the desktop
+  wallpaper + menu bar (the classic "screenshot is just the desktop" symptom). The permission
+  belongs to the **responsible process** (the terminal/IDE that launched the app, *not* Python)
+  and needs that app to be **quit and relaunched** after granting it. `src/screen_permission.py`
+  wraps `CGPreflightScreenCaptureAccess` / `CGRequestScreenCaptureAccess` (ctypes, no third-party
+  dependency; no-op + always-granted off macOS): `MainWindow.__init__` preflights and calls
+  `request_permission()` once so the system dialog appears, `capture_screen_data_url` returns `""`
+  with a warning when permission is missing, and `_capture_screenshot` broadcasts a `gemini_status`
+  hint to the pane. Fix path: System Settings → Privacy & Security → Screen & System Audio
+  Recording (macOS 15 name) → enable the terminal/IDE → restart it.
 - Since the app's own windows use `WDA_EXCLUDEFROMCAPTURE`, they appear black in the capture
   (expected); screenshots are in-memory only (cleared on reload/close).
 
@@ -303,16 +336,30 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
 
 ## Audio capture architecture
 - **Host** input → `sounddevice.InputStream` (microphone), streamed at 16 kHz mono.
-- **Speaker** input → **output loopback** via `PyAudioWPatch`, so it can capture any
+- Device discovery is **split by OS** in `DeviceController.populate_devices`
+  (`src/config.py` exposes `IS_WINDOWS` / `IS_MACOS`): `_query_host_devices` is shared,
+  then `_query_windows_loopback_devices` or `_query_macos_system_audio_devices` fills the
+  speaker/system-audio combo. `missing_speaker_message()` gives the OS-specific
+  "not found" status text, `DeviceSettingsWidget` swaps its labels (and shows a BlackHole
+  setup hint only on macOS), and both descriptors are consumed by `SonioxWorker`.
+- **Speaker (Windows)** → **output loopback** via `PyAudioWPatch`, so it can capture any
   playback device, including Bluetooth headphones (Stereo Mix only covers the Realtek
   card, so it misses Bluetooth).
   - Device descriptors are dicts: `{"backend": "loopback", "index": int, "rate": int, "name": str}`.
   - Loopback streams open at the device's native rate (usually 48 kHz); Soniox accepts
     `sample_rate: 48000` directly, so no resampling is needed.
   - Virtual outputs (Voicemeeter, VB-Audio, Voice.ai, NVIDIA Broadcast) are filtered out
-    of the Speaker list via `VIRTUAL_OUTPUT_HINTS` in `device_controller.py`.
+    of the Speaker list via `WINDOWS_VIRTUAL_OUTPUT_HINTS` in `device_controller.py`.
   - Clean shutdown order matters: `stop.set()` → `stream.stop_stream()` (unblocks the
     blocking `read`) → `join()` → `close()` → `PyAudio().terminate()`.
+- **System audio (macOS)** → CoreAudio/PortAudio has **no loopback API**, so system audio
+  is read from the *input* side of a virtual device (BlackHole recommended; Soundflower /
+  Loopback Audio also match `MACOS_SYSTEM_AUDIO_HINTS`). Descriptors are dicts:
+  `{"backend": "input", "index": int, "rate": int, "name": str}` with the device's
+  native rate (48 kHz); the worker opens them through `sounddevice` (the `"input"` branch
+  in `SonioxWorker.__init__`). BlackHole 2ch accepts a mono 48 kHz stream, so no channel
+  fallback is needed. The user must route output to it (a Multi-Output Device keeps
+  playback audible) — the app cannot do that for them.
 
 ## Logging
 - All errors/warnings and diagnostics go to the **terminal** via Python `logging`;
@@ -337,7 +384,19 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
 ## Screen capture exclusion
 - `src/screen_protection.py` wraps `user32.SetWindowDisplayAffinity` to hide the main
   window from Windows screen capture while keeping it visible on the physical monitor
-  (`WDA_EXCLUDEFROMCAPTURE`, needs Win10 build 19041+). `MainWindow` applies it in
+  (`WDA_EXCLUDEFROMCAPTURE`, needs Win10 build 19041+). **macOS** has no exact
+  equivalent: it delegates to `src/macos_window.py`, which sets
+  `NSWindow.sharingType = NSWindowSharingNone` through the Objective-C runtime
+  (`ctypes`, no third-party dependency). Verified on this Mac: an excluded window
+  disappears completely from the app's own `QScreen.grabWindow(0)` screenshots
+  (`ALT+SHIFT+K`). Two caveats — Apple deprecated `sharingType` and ScreenCaptureKit
+  capturers on macOS 15+ may ignore it, and it is effectively **one-way**: once a window
+  is `None` it cannot be made shareable again, so `set_capture_exclusion(..., False)`
+  reports False and the window stays excluded until recreated.
+- The macOS module only acts under the Cocoa platform plugin (guarded via
+  `QGuiApplication.platformName()`), so the offscreen plugin and other OSes are safe
+  no-ops. `is_supported()` reflects this.
+- `MainWindow` applies it in
   `showEvent` (re-applies after flag/re-show resets). Toggled from either the
   `Tool ▾ > Screen Protection` item or the Settings checkbox; `_set_screen_protection`
   keeps both controls in sync (enabled by default). Only the top-level window is

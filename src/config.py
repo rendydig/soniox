@@ -1,7 +1,16 @@
 import os
+import sys
+
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Platform flags. The audio backends differ significantly: Windows captures
+# system audio through WASAPI loopback (PyAudioWPatch), while macOS has no
+# loopback API and instead requires a virtual input device such as BlackHole.
+IS_WINDOWS = sys.platform == "win32"
+IS_MACOS = sys.platform == "darwin"
+IS_LINUX = sys.platform.startswith("linux")
 
 SONIOX_API_KEY = os.environ.get("SONIOX_API_KEY")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
