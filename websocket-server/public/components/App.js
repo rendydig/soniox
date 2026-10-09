@@ -114,7 +114,7 @@ export const App = ({ hideControlType, edgeControlType } = {}) => {
                 </div>
             `}
             <div class="header">
-                <${StatusIndicator} connected=${connected} />
+                <${StatusIndicator} connected=${connected} showText=${!hideControlType} />
                 <div class="translation-toggle">
                     <label class="toggle-label">
                         <input 
@@ -122,7 +122,7 @@ export const App = ({ hideControlType, edgeControlType } = {}) => {
                             checked=${translationEnabled}
                             onChange=${(e) => setTranslationEnabled(e.target.checked)}
                         />
-                        <span class="toggle-text">Enable Translation</span>
+                        <span class="toggle-text">${hideControlType ? 'Translation' : 'Enable Translation'}</span>
                     </label>
                     <label class="toggle-label">
                         <input 
@@ -130,7 +130,7 @@ export const App = ({ hideControlType, edgeControlType } = {}) => {
                             checked=${correctionEnabled}
                             onChange=${(e) => setCorrectionEnabled(e.target.checked)}
                         />
-                        <span class="toggle-text">Enable Correction</span>
+                        <span class="toggle-text">${hideControlType ? 'Correction' : 'Enable Correction'}</span>
                     </label>
                 </div>
             </div>

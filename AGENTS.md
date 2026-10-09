@@ -79,13 +79,17 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
 
 ## UI structure
 - `MainWindow` (`src/ui.py`) is a **bottom bar**: a frameless, always-on-top window with a
-  **fixed default width** (`BAR_WIDTH`, 560px) and `BAR_HEIGHT` (60px). `_apply_bar_geometry`
+  **fixed default width** (`BAR_WIDTH`, 560px) and `BAR_HEIGHT` (40px). `_apply_bar_geometry`
   places it **bottom-centre** just above the Windows taskbar using
   `QScreen.availableGeometry()` (the taskbar is already excluded; no taskbar measurement is
   needed). The width is **user-resizable** via a right-edge `PaneResizeHandle` and the bar is
   movable via its `DragHandle`; its width and x/y are persisted in `ui_state.json`'s
   `main_window` and restored on launch, only re-clamped on-screen when the taskbar/screen
-  changes (never re-centred). The bar no longer derives its width from the panes.
+  changes (never re-centred). `_clamp_bar_width` floors the width at the trimmed control row's
+  own `minimumSizeHint` (measured ~455px, so the bar shrinks well below `BAR_WIDTH` and a stored
+  narrow width is restored as-is) and never exceeds the screen width; the `MIN_BAR_WIDTH`
+  constant is only a fallback used before the layout exists. The bar no longer derives its
+  width from the panes.
   `_apply_bar_geometry` runs on `showEvent` and on the primary screen's
   `availableGeometryChanged`.
 - The bar's layout (`_init_ui`) is an outer `QHBoxLayout` of `[content] · [width handle]`,
@@ -324,16 +328,20 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
 ## Pane layout (free-floating geometry, persisted)
 - Both panes are **free-floating**: a top `PaneDragHandle`
   (`src/ui_components/pane_drag_handle.py`, a 12px strip) drags the window anywhere on the
-  primary screen, the **inner-edge** `PaneResizeHandle` resizes the **width**, and a
-  **bottom-edge** `PaneResizeHandle` resizes the **height**. The handles live in the pane's
-  layout (a `QVBoxLayout` of `[drag strip] · [width handle + content] · [height handle]`)
-  because the `QWebEngineView` consumes mouse events. Drag → `window.resize_by_drag()` /
-  `resize_height_by_drag()` / `move_to()`; release → `finish_resize()` / `finish_move()`;
-  double-click → `reset_width()` / `reset_height()`. Width is clamped to
-  `[MIN_WINDOW_WIDTH (200), screen width]`, height to `[MIN_WINDOW_HEIGHT (120), screen
-  height]`, and x/y are clamped onto the primary screen.
+  primary screen, and eight `PaneEdgeHandle` border grips
+  (`src/ui_components/pane_edge_handle.py`) resize it freely from **any edge or corner**
+  (`left`/`right`/`top`/`bottom` + the four corners). The handles live in the pane's layout
+  (a `QGridLayout` with the content in the centre cell and the grips around it) because the
+  `QWebEngineView` consumes mouse events. The top-centre cell is the drag strip; its two
+  corner grips still resize from the top edge. Drag → `window.begin_edge_resize(direction,
+  pos)` / `perform_edge_resize(pos)` / `end_edge_resize()` for resize and `move_to()` for
+  move; release → persists via `finish_resize()` / `finish_move()`. Resizing anchors the
+  **opposite** edge (so dragging an edge past a limit stops instead of sliding the pane).
+  Width is clamped to `[MIN_WINDOW_WIDTH (200), screen width]`, height to `[MIN_WINDOW_HEIGHT
+  (120), screen height]`, and x/y are clamped onto the primary screen. (`PaneResizeHandle` is
+  still used only by the bottom bar's width handle.)
 - A pane is **docked** (edge-pinned at full height, `is_docked()`) by default; moving or
-  resizing the height un-docks it (`_docked = False`). Both panes carry a top-right control
+  resizing un-docks it (`_docked = False`). Both panes carry a top-right control
   cluster (`.gemini-controls` / `.pane-controls`): `⇤` (dock left) · `⇥` (dock right) ·
   `−` (hide). The edge buttons send
   `{"type": "set_gemini_window_edge" | "set_live_window_edge", "edge": "left" | "right"}`

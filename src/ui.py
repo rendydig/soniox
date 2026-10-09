@@ -13,7 +13,7 @@ from src.macos_window import set_always_on_top
 from src.screen_protection import set_capture_protection
 from src.screen_permission import has_permission, request_permission
 from src.screenshot import capture_screen_data_url
-from src.global_hotkeys import GlobalHotkeys
+from src.global_hotkeys import GlobalHotkeys, default_bindings, parse_bindings, serialize_bindings
 from src.controllers import (
     DeviceController,
     TranscriptionController,
@@ -42,11 +42,32 @@ logger = logging.getLogger(__name__)
 # Default width of the bottom bar. It is fixed (not derived from the panes) and
 # user-resizable; the narrowest it can shrink to is the trimmed content minimum.
 BAR_WIDTH = 560
-MIN_BAR_WIDTH = 540
+# Absolute fallback for the bar's minimum width, used only before its layout is
+# built (state load in __init__). The real floor is the trimmed control row's own
+# minimum size hint (see _clamp_bar_width), which lets the bar shrink below the
+# default width so a stored width is restored as-is.
+MIN_BAR_WIDTH = 455
 # Height of the bottom bar's always-visible control row (window frame included).
 # The manual-translation input row is revealed above it, growing the bar upward.
 BAR_HEIGHT = 40
 INPUT_ROW_HEIGHT = 40
+# Uniform height for the bar's interactive controls (buttons/toggles).
+CONTROL_HEIGHT = 24
+# Shared button styling. On macOS the native QPushButton and QToolButton bezels
+# render at different visual heights for the same widget height, so an explicit
+# border/background is required to make every control fill its rect and match.
+BUTTON_STYLESHEET = """
+QPushButton, QToolButton {
+    background-color: #f6f6f6;
+    border: 1px solid #c8c8c8;
+    border-radius: 5px;
+    padding: 3px 8px;
+}
+QPushButton:hover, QToolButton:hover { background-color: #ededed; }
+QPushButton:pressed, QToolButton:pressed { background-color: #dcdcdc; }
+QPushButton:checked { background-color: #d9534f; color: white; border-color: #c9433f; }
+QToolButton::menu-indicator { image: none; width: 0; }
+"""
 
 
 def _as_dict(value):
@@ -84,7 +105,14 @@ class MainWindow(QMainWindow):
         # System-wide hotkeys: ALT+SHIFT+K captures a screenshot, ALT+CTRL+SHIFT+K
         # clears the ones shown in the Gemini pane, CTRL+ALT+SHIFT+G sends the
         # captured screenshots to Gemini, and CTRL+ALT+P updates the bullet points.
-        self.hotkeys = GlobalHotkeys( on_screenshot=self._capture_screenshot, on_clear=self._clear_screenshots, on_send_image=self._send_images_to_gemini, on_bullet_points=self._trigger_bullet_points_now,
+        # Restore any user-customised global hotkeys from ui_state before registering.
+        stored_hotkeys = _as_dict(_as_dict(load_state().get("settings")).get("hotkeys"))
+        self.hotkeys = GlobalHotkeys(
+            on_screenshot=self._capture_screenshot,
+            on_clear=self._clear_screenshots,
+            on_send_image=self._send_images_to_gemini,
+            on_bullet_points=self._trigger_bullet_points_now,
+            bindings=parse_bindings(stored_hotkeys),
         )
         self.hotkeys.register()
 
@@ -234,7 +262,12 @@ class MainWindow(QMainWindow):
             width = BAR_WIDTH
         screen = QGuiApplication.primaryScreen()
         max_width = screen.availableGeometry().width() if screen is not None else BAR_WIDTH
-        return max(MIN_BAR_WIDTH, min(width, max_width))
+        # The floor is the trimmed control row's own minimum so the bar can
+        # shrink below its default width (the constant is only a fallback before
+        # the layout exists); the width can never exceed the screen.
+        central = self.centralWidget()
+        min_width = central.minimumSizeHint().width() if central is not None else MIN_BAR_WIDTH
+        return max(min_width, min(width, max_width))
 
     def _apply_bar_geometry(self):
         """Place the bar at its fixed width and stored position.
@@ -355,6 +388,7 @@ class MainWindow(QMainWindow):
                 "bullet_points": self.bullet_points_checkbox.isChecked(),
                 "bullet_points_window_visible": self.bullet_points_window_action.isChecked(),
                 "screen_protection": self.screen_protection_checkbox.isChecked(),
+                "hotkeys": self._hotkeys_from_editors(),
             },
         })
 
@@ -395,6 +429,16 @@ class MainWindow(QMainWindow):
         if isinstance(bullet_points_visible, bool):
             self.bullet_points_window_action.setChecked(bullet_points_visible)
 
+        # Global hotkeys: show the saved combination, else the platform default so
+        # the fields are never blank before the user edits them. Setting the
+        # sequence here does not emit editingFinished.
+        stored = serialize_bindings(parse_bindings(_as_dict(state.get("hotkeys"))))
+        defaults = serialize_bindings(default_bindings())
+        for action, editor in self.hotkey_editors.items():
+            shortcut = stored.get(action) or defaults.get(action)
+            if shortcut:
+                editor.setKeySequence(QKeySequence(shortcut))
+
     def _connect_settings_signals(self):
         """Persist Settings whenever one of them changes."""
         self.view_mode_combo.currentIndexChanged.connect(self._save_state)
@@ -404,6 +448,22 @@ class MainWindow(QMainWindow):
         self.bullet_points_checkbox.toggled.connect(self._save_state)
         self.bullet_points_window_action.toggled.connect(self._save_state)
         self.screen_protection_checkbox.toggled.connect(self._save_state)
+        self.settings_view.hotkeys_changed.connect(self._on_hotkeys_changed)
+
+    def _hotkeys_from_editors(self):
+        """Return ``{action_name: shortcut}`` from the Settings hotkey fields."""
+        bindings = {}
+        for action, editor in self.hotkey_editors.items():
+            text = editor.keySequence().toString()
+            if text:
+                bindings[action] = text
+        return bindings
+
+    def _on_hotkeys_changed(self):
+        """Re-register the system-wide hotkeys and persist the new combination."""
+        bindings = parse_bindings(self._hotkeys_from_editors())
+        self.hotkeys.rebind(bindings)
+        self._save_state()
 
     def _connect_screen_signals(self):
         screen = QGuiApplication.primaryScreen()
@@ -444,7 +504,9 @@ class MainWindow(QMainWindow):
         self.act_translate.triggered.connect(lambda: self._on_mode_changed("translation"))
 
         self.mode_button = QToolButton()
-        self.mode_button.setText("Mode")
+        # The ▾ sits right after the label; the native indicator is hidden in
+        # _apply_styles so it doesn't float at the far right of the button.
+        self.mode_button.setText("Mode ▾")
         self.mode_button.setToolTip("Mode: Transcription. Switch between Live Transcription and Live Translation.")
         self.mode_button.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.mode_button.setMenu(self.mode_menu)
@@ -490,7 +552,7 @@ class MainWindow(QMainWindow):
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, self._always_on_top)
 
         self.tool_button = QToolButton()
-        self.tool_button.setText("Tool")
+        self.tool_button.setText("Tool ▾")
         self.tool_button.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.tool_button.setMenu(self.tool_menu)
 
@@ -512,10 +574,18 @@ class MainWindow(QMainWindow):
         self.screen_protection_checkbox = self.settings_view.get_screen_protection_checkbox()
         
         self.gemini_lang_combo = self.settings_view.get_gemini_lang_combo()
+        self.hotkey_editors = self.settings_view.get_hotkey_editors()
         self.translation_input = self.translation_section.get_translation_input()
         
         self.btn_start = self.control_buttons.get_start_button()
-        
+        self.btn_new = self.control_buttons.get_new_button()
+
+        # Equal heights across the control row (and the Settings dialog's button).
+        for _button in (self.btn_start, self.btn_new, self.mode_button,
+                        self.tool_button, self.settings_button, self.close_button,
+                        self.settings_view.back_button):
+            _button.setFixedHeight(CONTROL_HEIGHT)
+
         self.status_label = self.status_bar.get_status_label()
         # Trimmed for the fixed-width bar: the mode label duplicates the Mode
         # menu and the memory readout is dropped.
@@ -545,11 +615,12 @@ class MainWindow(QMainWindow):
             """
             QWidget { font-size: 13px; }
             QComboBox, QLineEdit { padding: 4px 6px; }
-            QPushButton, QToolButton { padding: 3px 8px; }
-            QPushButton:checked { background-color: #d9534f; color: white; }
             QTextEdit { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; }
-            """
+            """ + BUTTON_STYLESHEET
         )
+        # The Settings dialog is a separate top-level window, so the MainWindow
+        # stylesheet does not reach it; give it the same button styling.
+        self.settings_dialog.setStyleSheet(BUTTON_STYLESHEET)
     
     def _setup_controller_connections(self):
         """Connect controller signals to UI handlers."""
@@ -856,6 +927,16 @@ class MainWindow(QMainWindow):
         """Handle the reply to a screenshot sent to Gemini."""
         self._send_gemini_result(result, "image")
 
+    def _regenerate_bullet_points(self):
+        """Rebuild the bullet list from the entire session transcript (Rebuild button)."""
+        transcriptions = self.session_store.snapshot().get("transcriptions") or []
+        lines = [
+            (entry.get("source"), entry.get("text"))
+            for entry in transcriptions
+            if entry.get("text")
+        ]
+        self.bullet_points_controller.hard_regenerate(lines)
+
     def _on_bullet_points_updated(self, items: list):
         """Broadcast the updated bullet-point list to the webview."""
         self.websocket_client.send_message({"type": "bullet_points", "items": list(items)})
@@ -912,6 +993,9 @@ class MainWindow(QMainWindow):
         elif msg_type == "set_bullet_points_window_edge":
             logger.info("Bullet Points window edge -> %s", data.get('edge'))
             self._set_pane_edge(self.bullet_points_window, data.get("edge"))
+        elif msg_type == "regenerate_bullet_points":
+            logger.info("Bullet points rebuild requested from webview")
+            self._regenerate_bullet_points()
 
     def _manual_reply(self):
         """Manually trigger a Gemini reply using the last final transcription (Ctrl+R / Cmd+R)."""

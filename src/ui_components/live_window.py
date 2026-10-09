@@ -1,10 +1,10 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QStackedWidget
+from PySide6.QtWidgets import QWidget, QGridLayout, QTextEdit, QStackedWidget
 from PySide6.QtCore import Qt, QUrl, Signal
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from src.macos_window import set_always_on_top
 from src.screen_protection import set_capture_protection
-from .pane_resize_handle import PaneResizeHandle
+from .pane_edge_handle import PaneEdgeHandle
 from .pane_drag_handle import PaneDragHandle
 
 # Default width of the always-on-top live-view pane.
@@ -17,13 +17,13 @@ MIN_WINDOW_HEIGHT = 120
 class LiveWindow(QWidget):
     """Frameless, always-on-top output window for the live view.
 
-    Free-floating: a top drag strip moves it anywhere on the primary screen,
-    the inner-edge handle resizes its width, and the bottom-edge handle resizes
-    its height. It can still be docked to the screen's left or right edge at
-    full height (switchable at runtime via the ⇤/⇥ buttons). It hosts the
-    output stack (text editor + webview) and is a separate top-level window (no
-    Qt parent) so it can carry its own screen capture protection, mirroring
-    ``MainWindow`` and ``GeminiWindow``.
+    Free-floating: a top drag strip moves it anywhere on the primary screen and
+    border grips resize it freely from any edge or corner. It can still be
+    docked to the screen's left or right edge at full height (switchable at
+    runtime via the ⇤/⇥ buttons). It hosts the output stack (text editor +
+    webview) and is a separate top-level window (no Qt parent) so it can carry
+    its own screen capture protection, mirroring ``MainWindow`` and
+    ``GeminiWindow``.
     """
 
     # Emitted while the pane is resized / moved, so the bar can re-snap.
@@ -59,16 +59,30 @@ class LiveWindow(QWidget):
             self._height = self._screen_height()
             self._x, self._y = self._edge_position()
 
+        # Active free-resize drag state (set by the border grips).
+        self._resize_direction = None
+        self._resize_origin = None
+        self._resize_start = None
+
         self._init_ui()
         self._apply_geometry()
 
     def _init_ui(self):
-        outer = QVBoxLayout(self)
+        outer = QGridLayout(self)
         outer.setContentsMargins(0, 0, 0, 0)
         outer.setSpacing(0)
 
+        # Border grips resize the pane from any edge or corner. The top-centre
+        # strip is the move handle; its two corner grips still resize from the
+        # top edge.
+        self._tl_handle = PaneEdgeHandle(self, "top-left")
         self._drag_handle = PaneDragHandle(self)
-        outer.addWidget(self._drag_handle)
+        self._tr_handle = PaneEdgeHandle(self, "top-right")
+        self._left_handle = PaneEdgeHandle(self, "left")
+        self._right_handle = PaneEdgeHandle(self, "right")
+        self._bl_handle = PaneEdgeHandle(self, "bottom-left")
+        self._bottom_handle = PaneEdgeHandle(self, "bottom")
+        self._br_handle = PaneEdgeHandle(self, "bottom-right")
 
         self.view_stack = QStackedWidget()
         self.transcription_editor = QTextEdit()
@@ -82,25 +96,17 @@ class LiveWindow(QWidget):
         self.view_stack.addWidget(self.webview)
         self.view_stack.setCurrentIndex(1)
 
-        self._content_row = QHBoxLayout()
-        self._content_row.setContentsMargins(0, 0, 0, 0)
-        self._content_row.setSpacing(0)
-        self._content_row.addWidget(self.view_stack)
-        outer.addLayout(self._content_row, 1)
-
-        self._height_handle = PaneResizeHandle(self, orientation="vertical")
-        outer.addWidget(self._height_handle)
-
-        self._width_handle = PaneResizeHandle(self, orientation="horizontal")
-        self._apply_edge_layout()
-
-    def _apply_edge_layout(self):
-        """Put the width handle on the pane's inner (screen-centre) edge."""
-        self._content_row.removeWidget(self._width_handle)
-        if self._edge == "right":
-            self._content_row.insertWidget(0, self._width_handle)
-        else:
-            self._content_row.addWidget(self._width_handle)
+        outer.addWidget(self._tl_handle, 0, 0)
+        outer.addWidget(self._drag_handle, 0, 1)
+        outer.addWidget(self._tr_handle, 0, 2)
+        outer.addWidget(self._left_handle, 1, 0)
+        outer.addWidget(self.view_stack, 1, 1)
+        outer.addWidget(self._right_handle, 1, 2)
+        outer.addWidget(self._bl_handle, 2, 0)
+        outer.addWidget(self._bottom_handle, 2, 1)
+        outer.addWidget(self._br_handle, 2, 2)
+        outer.setRowStretch(1, 1)
+        outer.setColumnStretch(1, 1)
 
     def _screen_height(self):
         screen = QGuiApplication.primaryScreen()
@@ -175,7 +181,6 @@ class LiveWindow(QWidget):
         if edge == self._edge and self._docked:
             return
         self._edge = edge
-        self._apply_edge_layout()
         self._dock()
         self.geometry_changed.emit()
         self.state_changed.emit()
@@ -212,14 +217,77 @@ class LiveWindow(QWidget):
         self._apply_geometry()
         self.geometry_changed.emit()
 
-    def resize_by_drag(self, delta_x, start_width):
-        """Width from a handle drag: grow toward the screen centre."""
-        width = start_width - delta_x if self._edge == "right" else start_width + delta_x
-        self.set_width(width)
+    def begin_edge_resize(self, direction, global_pos):
+        """Start a free resize drag from an edge or corner grip."""
+        self._resize_direction = direction
+        self._resize_origin = global_pos
+        self._resize_start = (self._x, self._y, self._width, self._height)
 
-    def resize_height_by_drag(self, delta_y, start_height):
-        """Height from the bottom handle: grow downward from the top edge."""
-        self.set_height(start_height + delta_y)
+    def perform_edge_resize(self, global_pos):
+        """Resize from the active edge(s), keeping the opposite edge anchored."""
+        direction = self._resize_direction
+        if direction is None or self._resize_start is None:
+            return
+        dx = global_pos.x() - self._resize_origin.x()
+        dy = global_pos.y() - self._resize_origin.y()
+        x, y, w, h = self._resize_start
+        if "left" in direction:
+            x, w = x + dx, w - dx
+        if "right" in direction:
+            w = w + dx
+        if "top" in direction:
+            y, h = y + dy, h - dy
+        if "bottom" in direction:
+            h = h + dy
+        x, y, w, h = self._edge_rect(x, y, w, h, direction)
+        if (x, y, w, h) == (self._x, self._y, self._width, self._height) and not self._docked:
+            return
+        self._x, self._y, self._width, self._height = x, y, w, h
+        self._docked = False
+        self._apply_geometry()
+        self.geometry_changed.emit()
+
+    def end_edge_resize(self):
+        """Finish a free resize drag and persist the new geometry."""
+        self._resize_direction = None
+        self._resize_start = None
+        self.finish_resize()
+
+    def _edge_rect(self, x, y, w, h, direction):
+        """Clamp a candidate rect to the pane minimums and the primary screen.
+
+        When a dragged edge passes a limit, the *opposite* edge stays put (the
+        anchored edge), so hitting the screen border stops growth instead of
+        sliding the whole pane.
+        """
+        w = max(MIN_WINDOW_WIDTH, w)
+        h = max(MIN_WINDOW_HEIGHT, h)
+        screen = QGuiApplication.primaryScreen()
+        if screen is None:
+            return x, y, w, h
+        geo = screen.geometry()
+        w = min(w, geo.width())
+        h = min(h, geo.height())
+        start_x, start_y, start_w, start_h = self._resize_start
+        if "left" in direction:
+            anchor_right = start_x + start_w
+            x = max(geo.left(), min(x, anchor_right - MIN_WINDOW_WIDTH))
+            w = anchor_right - x
+        elif "right" in direction:
+            x = max(geo.left(), min(x, geo.right() - MIN_WINDOW_WIDTH + 1))
+            w = max(MIN_WINDOW_WIDTH, min(w, geo.right() - x + 1))
+        else:
+            x = max(geo.left(), min(x, geo.right() - w + 1))
+        if "top" in direction:
+            anchor_bottom = start_y + start_h
+            y = max(geo.top(), min(y, anchor_bottom - MIN_WINDOW_HEIGHT))
+            h = anchor_bottom - y
+        elif "bottom" in direction:
+            y = max(geo.top(), min(y, geo.bottom() - MIN_WINDOW_HEIGHT + 1))
+            h = max(MIN_WINDOW_HEIGHT, min(h, geo.bottom() - y + 1))
+        else:
+            y = max(geo.top(), min(y, geo.bottom() - h + 1))
+        return x, y, w, h
 
     def finish_resize(self):
         """Persist the geometry once a resize drag settles."""

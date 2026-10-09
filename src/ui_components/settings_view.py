@@ -1,13 +1,24 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-                             QComboBox, QCheckBox, QPushButton)
+                             QComboBox, QCheckBox, QPushButton, QKeySequenceEdit)
 from PySide6.QtCore import Signal
 from src.purposes import PURPOSES, DEFAULT_PURPOSE
 from .device_settings import DeviceSettingsWidget
 from .language_selection import LanguageSelectionWidget
 
+# Global-hotkey editors: (action name as persisted, field label). The action
+# names must match ``src.global_hotkeys.HOTKEY_ACTIONS``.
+_HOTKEY_FIELDS = (
+    ("screenshot", "Screenshot:"),
+    ("clear_screenshots", "Clear screenshots:"),
+    ("send_images", "Send screenshots to AI:"),
+    ("bullet_points", "Bullet points update:"),
+)
+
 
 class SettingsViewWidget(QWidget):
     back_requested = Signal()
+    # Emitted when the user finishes editing a global-hotkey field.
+    hotkeys_changed = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -97,6 +108,30 @@ class SettingsViewWidget(QWidget):
         )
         layout.addWidget(self.screen_protection_checkbox)
 
+        hotkeys_label = QLabel("Global Hotkeys")
+        hotkeys_font = hotkeys_label.font()
+        if hotkeys_font.pointSize() > 0:
+            hotkeys_font.setPointSize(hotkeys_font.pointSize() + 1)
+        hotkeys_font.setBold(True)
+        hotkeys_label.setFont(hotkeys_font)
+        layout.addWidget(hotkeys_label)
+
+        self.hotkey_editors = {}
+        for action, label_text in _HOTKEY_FIELDS:
+            hotkey_row = QHBoxLayout()
+            hotkey_row.addWidget(QLabel(label_text))
+            editor = QKeySequenceEdit()
+            editor.setMaximumSequenceLength(1)
+            editor.setToolTip(
+                "Click and press a new combination (e.g. Ctrl+Alt+P). "
+                "It takes effect immediately and is remembered on restart."
+            )
+            editor.editingFinished.connect(self.hotkeys_changed.emit)
+            hotkey_row.addWidget(editor)
+            hotkey_row.addStretch()
+            layout.addLayout(hotkey_row)
+            self.hotkey_editors[action] = editor
+
         layout.addStretch()
 
     def get_device_combo(self):
@@ -125,3 +160,7 @@ class SettingsViewWidget(QWidget):
 
     def get_screen_protection_checkbox(self):
         return self.screen_protection_checkbox
+
+    def get_hotkey_editors(self):
+        """Return the ``{action_name: QKeySequenceEdit}`` mapping."""
+        return self.hotkey_editors

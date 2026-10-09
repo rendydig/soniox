@@ -2,8 +2,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import QWidget
 
-# Thickness of the straight edge strips and the square corner grips.
-EDGE_THICKNESS = 6
+# Thickness of the straight edge strips and the square corner grips. Uniform so
+# the border has no dead zones where a corner out-sizes a neighbouring edge.
+EDGE_THICKNESS = 12
 CORNER_SIZE = 12
 
 
@@ -75,5 +76,5 @@ class PaneEdgeHandle(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        color = QColor(102, 126, 234, 90) if self._hover else QColor(0, 0, 0, 0)
+        color = QColor(102, 126, 234, 90) if self._hover else QColor(0, 0, 0, 10)
         painter.fillRect(self.rect(), color)

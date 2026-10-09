@@ -77,6 +77,34 @@ class BulletPointsController(QObject):
         """Flush the buffer now. ``force`` updates even when auto is off (hotkey)."""
         self._maybe_flush(force=force)
 
+    def hard_regenerate(self, lines):
+        """Rebuild the whole list from the entire transcript (ignores the checkpoint).
+
+        ``lines`` is a list of ``(source, text)`` pairs. Buffered/in-flight lines
+        are dropped (the transcript supersedes them) but the current list stays
+        visible until the new one arrives. Works with auto on or off.
+        """
+        self._buffer = []
+        self._inflight_lines = []
+        if self._worker is not None:
+            # Suppress the old worker so a late result can't overwrite the rebuild.
+            self._worker.stop()
+            try:
+                self._worker.result.disconnect(self._on_result)
+                self._worker.error.disconnect(self._on_error)
+            except (RuntimeError, TypeError):
+                pass
+            self._old_workers.append(self._worker)
+            self._worker = None
+            self._cleanup_old_workers()
+        lines = list(lines or [])
+        if not lines:
+            logger.info("Bullet points rebuild skipped: empty transcript")
+            self.status_changed.emit("error")
+            return
+        logger.info("Rebuilding bullet points from %d transcript lines", len(lines))
+        self._start_worker([], lines, rebuild=True)
+
     def reset(self):
         """Clear the list and buffer (e.g. at the start of a session)."""
         self._bullets = []
@@ -101,9 +129,9 @@ class BulletPointsController(QObject):
         self._buffer = []
         self._start_worker(list(self._bullets), self._inflight_lines)
 
-    def _start_worker(self, current_bullets: list, lines: list):
+    def _start_worker(self, current_bullets: list, lines: list, rebuild: bool = False):
         try:
-            self._worker = BulletPointsWorker(current_bullets, lines)
+            self._worker = BulletPointsWorker(current_bullets, lines, rebuild=rebuild)
             self._worker.result.connect(self._on_result, Qt.ConnectionType.QueuedConnection)
             self._worker.error.connect(self._on_error, Qt.ConnectionType.QueuedConnection)
             self.status_changed.emit("started")

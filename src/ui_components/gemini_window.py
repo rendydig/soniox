@@ -17,12 +17,12 @@ MIN_WINDOW_HEIGHT = 120
 class GeminiWindow(QWidget):
     """Frameless, always-on-top window showing only the AI suggestion card.
 
-    Free-floating: a top drag strip moves it anywhere on the primary screen,
-    the inner-edge handle resizes its width, and the bottom-edge handle resizes
-    its height. It can still be docked to the screen's left or right edge at
-    full height (switchable at runtime via the ⇤/⇥ buttons). It is a separate
-    top-level window (no Qt parent) so it can carry its own screen capture
-    protection, mirroring ``MainWindow``.
+    Free-floating: a top drag strip moves it anywhere on the primary screen and
+    border grips resize it freely from any edge or corner. It can still be
+    docked to the screen's left or right edge at full height (switchable at
+    runtime via the ⇤/⇥ buttons). It is a separate top-level window (no Qt
+    parent) so it can carry its own screen capture protection, mirroring
+    ``MainWindow``.
     """
 
     # Emitted while the pane is resized / moved, so the bar can re-snap.
@@ -57,6 +57,11 @@ class GeminiWindow(QWidget):
         else:
             self._height = self._screen_height()
             self._x, self._y = self._edge_position()
+
+        # Active free-resize drag state (set by the border grips).
+        self._resize_direction = None
+        self._resize_origin = None
+        self._resize_start = None
 
         self._init_ui()
         self._apply_geometry()
@@ -166,7 +171,6 @@ class GeminiWindow(QWidget):
         if edge == self._edge and self._docked:
             return
         self._edge = edge
-        self._apply_edge_layout()
         self._dock()
         self.geometry_changed.emit()
         self.state_changed.emit()
@@ -203,14 +207,77 @@ class GeminiWindow(QWidget):
         self._apply_geometry()
         self.geometry_changed.emit()
 
-    def resize_by_drag(self, delta_x, start_width):
-        """Width from a handle drag: grow toward the screen centre."""
-        width = start_width - delta_x if self._edge == "right" else start_width + delta_x
-        self.set_width(width)
+    def begin_edge_resize(self, direction, global_pos):
+        """Start a free resize drag from an edge or corner grip."""
+        self._resize_direction = direction
+        self._resize_origin = global_pos
+        self._resize_start = (self._x, self._y, self._width, self._height)
 
-    def resize_height_by_drag(self, delta_y, start_height):
-        """Height from the bottom handle: grow downward from the top edge."""
-        self.set_height(start_height + delta_y)
+    def perform_edge_resize(self, global_pos):
+        """Resize from the active edge(s), keeping the opposite edge anchored."""
+        direction = self._resize_direction
+        if direction is None or self._resize_start is None:
+            return
+        dx = global_pos.x() - self._resize_origin.x()
+        dy = global_pos.y() - self._resize_origin.y()
+        x, y, w, h = self._resize_start
+        if "left" in direction:
+            x, w = x + dx, w - dx
+        if "right" in direction:
+            w = w + dx
+        if "top" in direction:
+            y, h = y + dy, h - dy
+        if "bottom" in direction:
+            h = h + dy
+        x, y, w, h = self._edge_rect(x, y, w, h, direction)
+        if (x, y, w, h) == (self._x, self._y, self._width, self._height) and not self._docked:
+            return
+        self._x, self._y, self._width, self._height = x, y, w, h
+        self._docked = False
+        self._apply_geometry()
+        self.geometry_changed.emit()
+
+    def end_edge_resize(self):
+        """Finish a free resize drag and persist the new geometry."""
+        self._resize_direction = None
+        self._resize_start = None
+        self.finish_resize()
+
+    def _edge_rect(self, x, y, w, h, direction):
+        """Clamp a candidate rect to the pane minimums and the primary screen.
+
+        When a dragged edge passes a limit, the *opposite* edge stays put (the
+        anchored edge), so hitting the screen border stops growth instead of
+        sliding the whole pane.
+        """
+        w = max(MIN_WINDOW_WIDTH, w)
+        h = max(MIN_WINDOW_HEIGHT, h)
+        screen = QGuiApplication.primaryScreen()
+        if screen is None:
+            return x, y, w, h
+        geo = screen.geometry()
+        w = min(w, geo.width())
+        h = min(h, geo.height())
+        start_x, start_y, start_w, start_h = self._resize_start
+        if "left" in direction:
+            anchor_right = start_x + start_w
+            x = max(geo.left(), min(x, anchor_right - MIN_WINDOW_WIDTH))
+            w = anchor_right - x
+        elif "right" in direction:
+            x = max(geo.left(), min(x, geo.right() - MIN_WINDOW_WIDTH + 1))
+            w = max(MIN_WINDOW_WIDTH, min(w, geo.right() - x + 1))
+        else:
+            x = max(geo.left(), min(x, geo.right() - w + 1))
+        if "top" in direction:
+            anchor_bottom = start_y + start_h
+            y = max(geo.top(), min(y, anchor_bottom - MIN_WINDOW_HEIGHT))
+            h = anchor_bottom - y
+        elif "bottom" in direction:
+            y = max(geo.top(), min(y, geo.bottom() - MIN_WINDOW_HEIGHT + 1))
+            h = max(MIN_WINDOW_HEIGHT, min(h, geo.bottom() - y + 1))
+        else:
+            y = max(geo.top(), min(y, geo.bottom() - h + 1))
+        return x, y, w, h
 
     def finish_resize(self):
         """Persist the geometry once a resize drag settles."""

@@ -1,26 +1,30 @@
 """System-wide screenshot / bullet-point hotkeys, implemented natively per platform.
 
-The same four shortcuts are registered on every platform:
+Four actions are registered, each with a configurable shortcut (defaults below):
 
-- ``ALT+SHIFT+K``           capture a screenshot
-- ``ALT+CTRL+SHIFT+K``      clear the captured screenshots
-- ``CTRL+ALT+SHIFT+G``      send the captured screenshots to the AI
-- ``CTRL+ALT+P``            force a bullet-points update
+- ``screenshot``         capture a screenshot          (Alt+Shift+K)
+- ``clear_screenshots``  clear the captured screenshots
+- ``send_images``        send the captured screenshots to the AI
+- ``bullet_points``      force a bullet-points update
 
 On **Windows** this uses ``user32.RegisterHotKey`` plus a Qt native event filter.
 On **macOS** it uses the Carbon framework's ``RegisterEventHotKey`` (loaded via
 ctypes, so there is no third-party dependency). Other platforms are a logged
 no-op, so importing/starting the app never crashes.
 
-The callbacks always run on the thread that registered the hotkeys (the Qt main
-thread), so they may safely touch widgets.
+Shortcuts are handled as Qt **portable** strings (``"Ctrl+Alt+P"``), so the user
+can rebind them from Settings. ``rebind(``{id: shortcut}``)`` unregisters the old
+set and registers the new one without restarting the app. The callbacks always
+run on the thread that registered the hotkeys (the Qt main thread), so they may
+safely touch widgets.
 """
 
 import ctypes
 import logging
 import sys
 
-from PySide6.QtCore import QAbstractNativeEventFilter
+from PySide6.QtCore import QAbstractNativeEventFilter, Qt
+from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import QApplication
 
 logger = logging.getLogger(__name__)
@@ -35,6 +39,76 @@ HOTKEY_CLEAR_SCREENSHOTS = 2
 HOTKEY_SEND_IMAGES = 3
 HOTKEY_BULLET_POINTS = 4
 
+# Stable action names used for persistence (ui_state.json / Settings).
+HOTKEY_ACTIONS = {
+    HOTKEY_SCREENSHOT: "screenshot",
+    HOTKEY_CLEAR_SCREENSHOTS: "clear_screenshots",
+    HOTKEY_SEND_IMAGES: "send_images",
+    HOTKEY_BULLET_POINTS: "bullet_points",
+}
+HOTKEY_IDS = {name: hotkey_id for hotkey_id, name in HOTKEY_ACTIONS.items()}
+
+
+def default_bindings():
+    """Default portable shortcut per hotkey id (mirrors the historical keys)."""
+    if _IS_MACOS:
+        # Qt swaps Ctrl/Cmd on macOS, so "Meta" is the physical Control key.
+        return {
+            HOTKEY_SCREENSHOT: "Alt+Shift+K",
+            HOTKEY_CLEAR_SCREENSHOTS: "Meta+Alt+Shift+K",
+            HOTKEY_SEND_IMAGES: "Meta+Alt+Shift+G",
+            HOTKEY_BULLET_POINTS: "Meta+Alt+P",
+        }
+    return {
+        HOTKEY_SCREENSHOT: "Alt+Shift+K",
+        HOTKEY_CLEAR_SCREENSHOTS: "Alt+Ctrl+Shift+K",
+        HOTKEY_SEND_IMAGES: "Ctrl+Alt+Shift+G",
+        HOTKEY_BULLET_POINTS: "Ctrl+Alt+P",
+    }
+
+
+def parse_bindings(mapping):
+    """Convert a persisted ``{action_name: shortcut}`` dict to ``{hotkey_id: shortcut}``."""
+    result = {}
+    if isinstance(mapping, dict):
+        for name, shortcut in mapping.items():
+            hotkey_id = HOTKEY_IDS.get(name)
+            if hotkey_id is not None and isinstance(shortcut, str) and shortcut.strip():
+                result[hotkey_id] = shortcut.strip()
+    return result
+
+
+def serialize_bindings(bindings):
+    """Convert ``{hotkey_id: shortcut}`` to ``{action_name: shortcut}`` for persistence."""
+    return {
+        HOTKEY_ACTIONS[hotkey_id]: shortcut
+        for hotkey_id, shortcut in (bindings or {}).items()
+        if hotkey_id in HOTKEY_ACTIONS
+    }
+
+
+def _parse_shortcut(shortcut):
+    """Return ``(Qt.Key, Qt.KeyboardModifier)`` for a single-combo shortcut, else ``None``."""
+    if not shortcut:
+        return None
+    try:
+        seq = QKeySequence(shortcut)
+    except (TypeError, ValueError):
+        return None
+    if seq.isEmpty() or seq.count() != 1:
+        return None
+    item = seq[0]
+    if hasattr(item, "key"):  # Qt6 QKeyCombination
+        key = int(item.key())
+        mods = item.keyboardModifiers()
+    else:  # pragma: no cover - older bindings returned a plain int
+        raw = int(item)
+        key = raw & ~0xFE000000
+        mods = Qt.KeyboardModifier(raw & 0xFE000000)
+    if key in (0, int(Qt.Key.Key_unknown)):
+        return None
+    return key, mods
+
 
 if _IS_WINDOWS:
     from ctypes import wintypes
@@ -43,10 +117,8 @@ if _IS_WINDOWS:
     MOD_ALT = 0x0001
     MOD_CONTROL = 0x0002
     MOD_SHIFT = 0x0004
+    MOD_WIN = 0x0008
     MOD_NOREPEAT = 0x4000
-    VK_K = 0x4B
-    VK_G = 0x47
-    VK_P = 0x50
 
     _user32 = ctypes.windll.user32
     _user32.RegisterHotKey.argtypes = [wintypes.HWND, ctypes.c_int, wintypes.UINT, wintypes.UINT]
@@ -54,19 +126,63 @@ if _IS_WINDOWS:
     _user32.UnregisterHotKey.argtypes = [wintypes.HWND, ctypes.c_int]
     _user32.UnregisterHotKey.restype = wintypes.BOOL
 
+    # Qt key -> Windows virtual-key code (letters, digits, F1-F24, space).
+    _WINDOWS_VK = {}
+    for _i, _ch in enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+        _WINDOWS_VK[int(getattr(Qt.Key, f"Key_{_ch}"))] = 0x41 + _i
+    for _d in range(10):
+        _WINDOWS_VK[int(getattr(Qt.Key, f"Key_{_d}"))] = 0x30 + _d
+    for _n in range(1, 25):
+        _WINDOWS_VK[int(getattr(Qt.Key, f"Key_F{_n}"))] = 0x70 + (_n - 1)
+    _WINDOWS_VK[int(Qt.Key.Key_Space)] = 0x20
+
+    def _to_windows(shortcut):
+        """Map a portable shortcut to ``(modifiers, virtual_key)`` or ``None``."""
+        parsed = _parse_shortcut(shortcut)
+        if parsed is None:
+            return None
+        key, mods = parsed
+        vk = _WINDOWS_VK.get(key)
+        if vk is None:
+            return None
+        mask = MOD_NOREPEAT
+        if mods & Qt.KeyboardModifier.AltModifier:
+            mask |= MOD_ALT
+        if mods & Qt.KeyboardModifier.ControlModifier:
+            mask |= MOD_CONTROL
+        if mods & Qt.KeyboardModifier.ShiftModifier:
+            mask |= MOD_SHIFT
+        if mods & Qt.KeyboardModifier.MetaModifier:
+            mask |= MOD_WIN
+        return mask, vk
+
 
 if _IS_MACOS:
     _Carbon = ctypes.CDLL("/System/Library/Frameworks/Carbon.framework/Carbon")
 
     # Modifier masks (Events.h).
+    _cmdKey = 0x0100
     _shiftKey = 0x0200
     _optionKey = 0x0800  # the "Alt" key on a Mac keyboard
     _controlKey = 0x1000
 
-    # Virtual key codes (HIToolbox Events.h).
-    _kVK_ANSI_K = 0x28
-    _kVK_ANSI_G = 0x05
-    _kVK_ANSI_P = 0x23
+    # Qt key -> Carbon virtual key code (ANSI letters/digits, F1-F12, space).
+    _MAC_KEYCODES = {
+        Qt.Key.Key_A: 0x00, Qt.Key.Key_S: 0x01, Qt.Key.Key_D: 0x02, Qt.Key.Key_F: 0x03,
+        Qt.Key.Key_H: 0x04, Qt.Key.Key_G: 0x05, Qt.Key.Key_Z: 0x06, Qt.Key.Key_X: 0x07,
+        Qt.Key.Key_C: 0x08, Qt.Key.Key_V: 0x09, Qt.Key.Key_B: 0x0B, Qt.Key.Key_Q: 0x0C,
+        Qt.Key.Key_W: 0x0D, Qt.Key.Key_E: 0x0E, Qt.Key.Key_R: 0x0F, Qt.Key.Key_Y: 0x10,
+        Qt.Key.Key_T: 0x11, Qt.Key.Key_1: 0x12, Qt.Key.Key_2: 0x13, Qt.Key.Key_3: 0x14,
+        Qt.Key.Key_4: 0x15, Qt.Key.Key_6: 0x16, Qt.Key.Key_5: 0x17, Qt.Key.Key_9: 0x19,
+        Qt.Key.Key_7: 0x1A, Qt.Key.Key_8: 0x1C, Qt.Key.Key_0: 0x1D, Qt.Key.Key_O: 0x1F,
+        Qt.Key.Key_U: 0x20, Qt.Key.Key_I: 0x22, Qt.Key.Key_P: 0x23, Qt.Key.Key_L: 0x25,
+        Qt.Key.Key_J: 0x26, Qt.Key.Key_K: 0x28, Qt.Key.Key_N: 0x2D, Qt.Key.Key_M: 0x2E,
+        Qt.Key.Key_F1: 0x7A, Qt.Key.Key_F2: 0x78, Qt.Key.Key_F3: 0x63, Qt.Key.Key_F4: 0x76,
+        Qt.Key.Key_F5: 0x60, Qt.Key.Key_F6: 0x61, Qt.Key.Key_F7: 0x62, Qt.Key.Key_F8: 0x64,
+        Qt.Key.Key_F9: 0x65, Qt.Key.Key_F10: 0x6D, Qt.Key.Key_F11: 0x67, Qt.Key.Key_F12: 0x6F,
+        Qt.Key.Key_Space: 0x31,
+    }
+    _MAC_KEYCODES = {int(k): v for k, v in _MAC_KEYCODES.items()}
 
     # Event class / kind / parameter constants.
     _kEventClassKeyboard = 0x6B657962       # 'keyb'
@@ -127,18 +243,45 @@ if _IS_MACOS:
     ]
     _Carbon.GetEventParameter.restype = ctypes.c_int32
 
+    def _to_macos(shortcut):
+        """Map a portable shortcut to ``(modifiers, keycode)`` or ``None``.
+
+        Qt swaps Ctrl/Cmd on macOS: ``ControlModifier`` is the Command key and
+        ``MetaModifier`` is the physical Control key, so the mapping is inverted
+        relative to the Carbon modifier names.
+        """
+        parsed = _parse_shortcut(shortcut)
+        if parsed is None:
+            return None
+        key, mods = parsed
+        code = _MAC_KEYCODES.get(key)
+        if code is None:
+            return None
+        mask = 0
+        if mods & Qt.KeyboardModifier.ControlModifier:
+            mask |= _cmdKey
+        if mods & Qt.KeyboardModifier.AltModifier:
+            mask |= _optionKey
+        if mods & Qt.KeyboardModifier.ShiftModifier:
+            mask |= _shiftKey
+        if mods & Qt.KeyboardModifier.MetaModifier:
+            mask |= _controlKey
+        return mask, code
+
 
 class GlobalHotkeys(QAbstractNativeEventFilter):
     """Register system-wide hotkeys and dispatch them to plain callables.
 
-    ``ALT+SHIFT+K`` triggers ``on_screenshot``, ``ALT+CTRL+SHIFT+K`` triggers
-    ``on_clear``, ``CTRL+ALT+SHIFT+G`` triggers ``on_send_image`` and
-    ``CTRL+ALT+P`` triggers ``on_bullet_points``. On a Mac keyboard ``Alt`` is
-    the Option key. The callbacks run on the Qt main thread, so they may safely
-    touch widgets.
+    Each action maps to a portable shortcut (see :func:`default_bindings`) and to
+    a callback; ``on_screenshot`` fires for ``screenshot``, ``on_clear`` for
+    ``clear_screenshots``, ``on_send_image`` for ``send_images`` and
+    ``on_bullet_points`` for ``bullet_points``. Bindings can be changed at runtime
+    with :meth:`rebind`. The callbacks run on the Qt main thread, so they may
+    safely touch widgets.
     """
 
-    def __init__(self, on_screenshot=None, on_clear=None, on_send_image=None, on_bullet_points=None):
+    def __init__(self, on_screenshot=None, on_clear=None, on_send_image=None,
+                 on_bullet_points=None, bindings=None):
         super().__init__()
         self._callbacks = {
             HOTKEY_SCREENSHOT: on_screenshot,
@@ -146,12 +289,26 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
             HOTKEY_SEND_IMAGES: on_send_image,
             HOTKEY_BULLET_POINTS: on_bullet_points,
         }
+        self._bindings = default_bindings()
+        self._apply_overrides(bindings)
         self._registered = []
         self._filter_installed = False
         # macOS state; unused on Windows.
         self._mac_handler = None
         self._mac_handler_ref = None
         self._mac_hotkey_refs = []
+
+    def _apply_overrides(self, bindings):
+        """Merge valid ``{hotkey_id: shortcut}`` overrides into the defaults."""
+        if not isinstance(bindings, dict):
+            return
+        for hotkey_id, shortcut in bindings.items():
+            if hotkey_id in self._bindings and isinstance(shortcut, str) and shortcut.strip():
+                self._bindings[hotkey_id] = shortcut.strip()
+
+    def bindings(self):
+        """Return a copy of the current ``{hotkey_id: shortcut}`` mapping."""
+        return dict(self._bindings)
 
     def register(self):
         if _IS_WINDOWS:
@@ -160,6 +317,18 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
             self._register_macos()
         else:
             logger.warning("Global hotkeys are not supported on this platform (%s)", sys.platform)
+
+    def rebind(self, bindings):
+        """Replace the shortcuts and re-register the system-wide hotkeys.
+
+        Unknown keys are logged and skipped; the rest still register. A hotkey
+        whose combination is already taken by another app fails to register (the
+        OS reports it) and is logged rather than raised.
+        """
+        self.unregister()
+        self._apply_overrides(bindings)
+        self.register()
+        logger.info("Global hotkeys rebound: %s", serialize_bindings(self._bindings))
 
     def unregister(self):
         if _IS_WINDOWS:
@@ -184,16 +353,15 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
             app.installNativeEventFilter(self)
             self._filter_installed = True
 
-        self._register_windows_hotkey(HOTKEY_SCREENSHOT, MOD_ALT | MOD_SHIFT | MOD_NOREPEAT, VK_K)
-        self._register_windows_hotkey(
-            HOTKEY_CLEAR_SCREENSHOTS, MOD_ALT | MOD_CONTROL | MOD_SHIFT | MOD_NOREPEAT, VK_K
-        )
-        self._register_windows_hotkey(
-            HOTKEY_SEND_IMAGES, MOD_CONTROL | MOD_ALT | MOD_SHIFT | MOD_NOREPEAT, VK_G
-        )
-        self._register_windows_hotkey(
-            HOTKEY_BULLET_POINTS, MOD_CONTROL | MOD_ALT | MOD_NOREPEAT, VK_P
-        )
+        for hotkey_id, shortcut in self._bindings.items():
+            parsed = _to_windows(shortcut)
+            if parsed is None:
+                logger.warning(
+                    "Cannot register hotkey id=%s: unsupported shortcut %r", hotkey_id, shortcut
+                )
+                continue
+            modifiers, vk = parsed
+            self._register_windows_hotkey(hotkey_id, modifiers, vk)
 
     def _register_windows_hotkey(self, hotkey_id: int, modifiers: int, vk: int):
         if _user32.RegisterHotKey(None, hotkey_id, modifiers, vk):
@@ -242,14 +410,15 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
             return
         self._mac_handler_ref = handler_ref
 
-        self._register_mac_hotkey(HOTKEY_SCREENSHOT, _optionKey | _shiftKey, _kVK_ANSI_K)
-        self._register_mac_hotkey(
-            HOTKEY_CLEAR_SCREENSHOTS, _optionKey | _controlKey | _shiftKey, _kVK_ANSI_K
-        )
-        self._register_mac_hotkey(
-            HOTKEY_SEND_IMAGES, _controlKey | _optionKey | _shiftKey, _kVK_ANSI_G
-        )
-        self._register_mac_hotkey(HOTKEY_BULLET_POINTS, _controlKey | _optionKey, _kVK_ANSI_P)
+        for hotkey_id, shortcut in self._bindings.items():
+            parsed = _to_macos(shortcut)
+            if parsed is None:
+                logger.warning(
+                    "Cannot register hotkey id=%s: unsupported shortcut %r", hotkey_id, shortcut
+                )
+                continue
+            modifiers, keycode = parsed
+            self._register_mac_hotkey(hotkey_id, modifiers, keycode)
 
     def _register_mac_hotkey(self, hotkey_id: int, modifiers: int, keycode: int):
         hotkey_ref = ctypes.c_void_p()

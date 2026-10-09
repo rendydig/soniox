@@ -5,7 +5,7 @@ import { ScreenshotLightbox } from './ScreenshotLightbox.js';
 
 const html = htm.bind(h);
 
-/** 4-column grid of screenshots captured with ALT+SHIFT+K; click to enlarge. */
+/** 7-column grid of screenshots captured with ALT+SHIFT+K; click to enlarge. */
 export const ScreenshotGallery = ({ screenshots }) => {
     const galleryRef = useRef(null);
     const [openId, setOpenId] = useState(null);

@@ -8,12 +8,17 @@ from src.config import BULLET_MAX_ITEMS, BULLET_MAX_LINE_CHARS
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_INSTRUCTION = f"""You maintain a concise, running bullet-point list of the key points \
-in a live two-person conversation.
+SYSTEM_INSTRUCTION = f"""You maintain a concise, running bullet-point list of the SUBSTANCE of a \
+live two-person conversation. Extract meaning, not narration.
 
 Rules:
 - Messages are labelled [host] (the person you are helping) and [speaker] (the other person).
 - You receive the CURRENT bullet list and NEW conversation lines.
+- Capture only topics, decisions, facts, numbers, open questions, and action items.
+- Explicitly IGNORE greetings, filler, acknowledgements, and turn-by-turn narration
+  ("host pauses", "speaker agrees", "they continue talking").
+- Merge aggressively: prefer FEWER, DENSER bullets over many thin ones. Never pad the
+  list to one bullet per line. For pure small talk an empty or very short list is correct.
 - Return the full UPDATED list: keep existing points that are still valid, merge/refine
   related ones, drop duplicates, and add points for the new lines.
 - Each bullet is a short standalone phrase (max ~12 words). No numbering, no sub-bullets.
@@ -57,18 +62,22 @@ class BulletPointsWorker(QThread):
     result = Signal(list)
     error = Signal(str)
 
-    def __init__(self, current_bullets: list, new_lines: list, parent=None):
+    def __init__(self, current_bullets: list, new_lines: list, parent=None, rebuild: bool = False):
         super().__init__(parent)
         self._current_bullets = list(current_bullets or [])
         self._new_lines = list(new_lines or [])
+        self._rebuild = rebuild
         self._is_running = True
 
     def _build_user_message(self) -> str:
-        bullets_json = json.dumps(self._current_bullets, ensure_ascii=False)
         lines = "\n".join(
             f"[{source}] {text[:BULLET_MAX_LINE_CHARS]}"
             for source, text in self._new_lines
         )
+        if self._rebuild:
+            # Whole-transcript rebuild: no inherited list, summarise from scratch.
+            return f"Full conversation transcript:\n{lines}"
+        bullets_json = json.dumps(self._current_bullets, ensure_ascii=False)
         return (
             f"Current bullet list (JSON): {bullets_json}\n\n"
             f"New conversation lines:\n{lines}"

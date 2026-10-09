@@ -94,7 +94,15 @@ const BulletPointsApp = () => {
                     onClick=${() => sendControl({ type: 'hide_bullet_points_window' })}
                 >−</button>
             </div>
-            <h2>☑ Bullet Points</h2>
+            <div class="bullet-header">
+                <h2>☑ Bullet Points</h2>
+                <button
+                    class="pane-control-btn bullet-rebuild-btn"
+                    title="Rebuild the list from the whole conversation"
+                    aria-label="Rebuild bullet points"
+                    onClick=${() => sendControl({ type: 'regenerate_bullet_points' })}
+                >Rebuild</button>
+            </div>
             <${BulletPointsList} items=${items} status=${status} />
         </div>
     `;

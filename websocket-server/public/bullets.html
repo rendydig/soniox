@@ -60,6 +60,28 @@
             flex: 0 0 auto;
         }
 
+        #bullets-root .bullet-header {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        #bullets-root .bullet-header h2 {
+            margin-bottom: 0;
+        }
+
+        /* Text button, sized like the round pane controls but wide enough for a label. */
+        .bullet-rebuild-btn {
+            width: auto;
+            padding: 0 10px;
+            border-radius: 11px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
         #bullets-root .live-text.bullet-view {
             flex: 1;
             min-height: 0;

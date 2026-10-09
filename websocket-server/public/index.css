@@ -6,7 +6,7 @@
 
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #ffffff;
         min-height: 100vh;
         padding: 0px;
         color: #333;
@@ -24,8 +24,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap;
-        gap: 16px;
+        flex-wrap: nowrap;
+        gap: 8px;
     }
 
     h1 {
@@ -43,11 +43,12 @@
     }
 
     .status-indicator {
-        width: 12px;
-        height: 12px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
         background: #ef4444;
         animation: pulse 2s infinite;
+        flex: 0 0 auto;
     }
 
     .status-indicator.connected {
@@ -344,20 +345,20 @@
     .toggle-label {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 4px;
         cursor: pointer;
         user-select: none;
     }
 
     .toggle-label input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
+        width: 14px;
+        height: 14px;
         cursor: pointer;
         accent-color: #667eea;
     }
 
     .toggle-text {
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 500;
         color: #667eea;
     }
@@ -456,9 +457,8 @@
     }
 
     .live-text.gemini-view {
-        background: #ede9fe;
+        background: transparent;
         color: #5b21b6;
-        border-left: 4px solid #8b5cf6;
         max-height: 40vh;
         font-style: normal;
     }
@@ -487,9 +487,8 @@
     }
 
     .live-text.bullet-view {
-        background: #ecfdf5;
+        background: transparent;
         color: #065f46;
-        border-left: 4px solid #10b981;
         font-style: normal;
         white-space: normal;
     }
@@ -526,6 +525,23 @@
         flex: 1;
         min-width: 0;
         color: #1f2937;
+        transition: opacity 180ms ease;
+    }
+
+    .bullet-text.out,
+    .bullet-text.in {
+        opacity: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .bullet-text {
+            transition: none;
+        }
+
+        .bullet-text.out,
+        .bullet-text.in {
+            opacity: 1;
+        }
     }
 
     .bullet-status {
@@ -547,7 +563,7 @@
         overflow-y: auto;
         margin-bottom: 8px;
         padding: 6px;
-        background: #f5f3ff;
+        background: transparent;
         border: 1px solid #ddd6fe;
         border-radius: 8px;
     }
@@ -562,7 +578,7 @@
         gap: 8px;
         margin-bottom: 6px;
         padding: 2px 0;
-        background: #f5f3ff;
+        background: transparent;
         font-size: 11px;
         font-weight: 600;
         color: #6d28d9;
@@ -575,8 +591,8 @@
 
     .screenshot-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
     }
 
     .screenshot-thumb {
