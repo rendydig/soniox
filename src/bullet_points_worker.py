@@ -23,7 +23,7 @@ Rules:
   related ones, drop duplicates, and add points for the new lines.
 - Each bullet is a short standalone phrase (max ~12 words). No numbering, no sub-bullets.
 - Keep at most {BULLET_MAX_ITEMS} of the most important points.
-- Write the bullets in clear English.
+- Write each bullet in the same language as the conversation it summarises. Keep proper nouns as-is.
 - Return ONLY a JSON array of strings, e.g. ["First point", "Second point"].
   Do not include prose, explanations, or code fences."""
 
