@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                              QComboBox, QCheckBox, QPushButton, QKeySequenceEdit)
 from PySide6.QtCore import Signal
-from src.purposes import PURPOSES, DEFAULT_PURPOSE
+from src.purposes import BUILTIN_PURPOSES, DEFAULT_PURPOSE
 from .device_settings import DeviceSettingsWidget
 from .language_selection import LanguageSelectionWidget
 
@@ -21,8 +21,11 @@ class SettingsViewWidget(QWidget):
     # Emitted when the user finishes editing a global-hotkey field.
     hotkeys_changed = Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, purpose_store=None, parent=None):
         super().__init__(parent)
+        # The store is the source of truth (built-ins + user edits + AI-learned
+        # purposes); without one we fall back to the built-in seed.
+        self._purpose_store = purpose_store
         self._init_ui()
 
     def _init_ui(self):
@@ -74,8 +77,12 @@ class SettingsViewWidget(QWidget):
         purpose_row = QHBoxLayout()
         purpose_label = QLabel("Purpose:")
         self.purpose_combo = QComboBox()
-        for key, purpose in PURPOSES.items():
-            self.purpose_combo.addItem(purpose["label"], key)
+        if self._purpose_store is not None:
+            for key, label in self._purpose_store.labels():
+                self.purpose_combo.addItem(label, key)
+        else:
+            for key, purpose in BUILTIN_PURPOSES.items():
+                self.purpose_combo.addItem(purpose["label"], key)
         default_index = self.purpose_combo.findData(DEFAULT_PURPOSE)
         if default_index >= 0:
             self.purpose_combo.setCurrentIndex(default_index)
@@ -84,6 +91,28 @@ class SettingsViewWidget(QWidget):
         purpose_row.addWidget(self.purpose_combo)
         purpose_row.addStretch()
         layout.addLayout(purpose_row)
+
+        host_role_row = QHBoxLayout()
+        host_role_label = QLabel("I am:")
+        self.host_role_combo = QComboBox()
+        self.host_role_combo.addItem("Smart (auto)", "smart")
+        self.host_role_combo.setMinimumWidth(150)
+        self.host_role_combo.setToolTip(
+            "Who you (the Host) are in this conversation. Smart lets the AI decide."
+        )
+        host_role_row.addWidget(host_role_label)
+        host_role_row.addWidget(self.host_role_combo)
+        host_role_row.addStretch()
+        layout.addLayout(host_role_row)
+
+        self.smart_decision_checkbox = QCheckBox("Smart Decision (JEV)")
+        # Default on; a no-op unless JEV is enabled + keyed in .env.
+        self.smart_decision_checkbox.setChecked(True)
+        self.smart_decision_checkbox.setToolTip(
+            "Let a fast decision model decide whether to reply, as whom, and which "
+            "speech act to use before the AI writes the reply."
+        )
+        layout.addWidget(self.smart_decision_checkbox)
 
         self.pronunciation_checkbox = QCheckBox("Pronunciation")
         self.pronunciation_checkbox.setChecked(False)
@@ -152,6 +181,33 @@ class SettingsViewWidget(QWidget):
 
     def get_purpose_combo(self):
         return self.purpose_combo
+
+    def get_host_role_combo(self):
+        return self.host_role_combo
+
+    def get_smart_decision_checkbox(self):
+        return self.smart_decision_checkbox
+
+    def populate_host_roles(self, roles, remembered="smart"):
+        """Refill the ``I am:`` combo from a purpose's roles.
+
+        A single-role purpose shows only ``Smart (auto)`` and is disabled (there
+        is nothing to choose). ``remembered`` is restored when it still exists.
+        """
+        was_blocked = self.host_role_combo.blockSignals(True)
+        self.host_role_combo.clear()
+        self.host_role_combo.addItem("Smart (auto)", "smart")
+        role_items = list((roles or {}).items())
+        if len(role_items) > 1:
+            for key, role in role_items:
+                self.host_role_combo.addItem(role.get("label", key), key)
+            self.host_role_combo.setEnabled(True)
+        else:
+            self.host_role_combo.setEnabled(False)
+            remembered = "smart"
+        index = self.host_role_combo.findData(remembered)
+        self.host_role_combo.setCurrentIndex(index if index >= 0 else 0)
+        self.host_role_combo.blockSignals(was_blocked)
 
     def get_pronunciation_checkbox(self):
         return self.pronunciation_checkbox

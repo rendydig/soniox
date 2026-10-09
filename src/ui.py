@@ -12,7 +12,7 @@ from src.config import (
     LAST_PICKUP_DEBOUNCE_MS,
     LAST_PICKUP_ENDPOINT_DEBOUNCE_MS,
 )
-from src.purposes import PURPOSES
+from src.purpose_store import PurposeStore
 from src.text_formatter import append_timestamped_text, format_gemini_result
 from src.macos_window import set_always_on_top
 from src.screen_protection import set_capture_protection
@@ -93,8 +93,11 @@ class MainWindow(QMainWindow):
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint, True)
         
         self.device_controller = DeviceController()
+        # Purpose registry: built-ins + user edits + AI-learned personas, persisted
+        # asynchronously to purposes.json (memory is the source of truth).
+        self.purpose_store = PurposeStore()
         self.transcription_controller = TranscriptionController()
-        self.translation_controller = TranslationController()
+        self.translation_controller = TranslationController(self.purpose_store)
         self.bullet_points_controller = BulletPointsController()
         self.last_pickup_controller = LastPickupController()
         # Session state (restored below, persisted asynchronously to disk).
@@ -147,6 +150,8 @@ class MainWindow(QMainWindow):
         self._screen_protection_enabled = True
         self._auto_reply_enabled = False
         self._last_pickup_auto_enabled = False
+        # Per-purpose "I am:" role choices (purpose_key -> role_key).
+        self._host_role_by_purpose = {}
         # CTRL+SHIFT+M hides every open pane and restores exactly the ones that
         # were open; the flag tracks which side of the toggle we are on.
         self._all_panes_hidden = False
@@ -251,7 +256,7 @@ class MainWindow(QMainWindow):
 
         # Settings lives in its own dialog. Created eagerly (hidden) so the
         # widget getters in _setup_widget_references stay valid.
-        self.settings_view = SettingsViewWidget()
+        self.settings_view = SettingsViewWidget(purpose_store=self.purpose_store)
         self.settings_dialog = QDialog()
         self.settings_dialog.setWindowTitle("Settings")
         # Separate top-level window: keep it above the always-on-top bar.
@@ -398,6 +403,8 @@ class MainWindow(QMainWindow):
                 "view_mode": self.view_mode_combo.currentIndex(),
                 "ai_reply_language": self.gemini_lang_combo.currentText(),
                 "purpose": self.purpose_combo.currentData(),
+                "host_role_by_purpose": dict(self._host_role_by_purpose),
+                "smart_decision": self.smart_decision_checkbox.isChecked(),
                 "pronunciation": self.pronunciation_checkbox.isChecked(),
                 "bullet_points": self.bullet_points_checkbox.isChecked(),
                 "bullet_points_window_visible": self.bullet_points_window_action.isChecked(),
@@ -419,12 +426,28 @@ class MainWindow(QMainWindow):
             if index >= 0:
                 self.gemini_lang_combo.setCurrentIndex(index)
 
+        # Per-purpose "I am:" choices must be in place before the Purpose is
+        # applied, so _on_purpose_changed can restore the remembered role.
+        host_roles = state.get("host_role_by_purpose")
+        if isinstance(host_roles, dict):
+            self._host_role_by_purpose = {str(k): str(v) for k, v in host_roles.items()}
+
         # Purpose first: _on_purpose_changed resets pronunciation to its default.
         purpose = state.get("purpose")
         if purpose:
             index = self.purpose_combo.findData(purpose)
             if index >= 0:
                 self.purpose_combo.setCurrentIndex(index)
+
+        # Smart Decision (JEV) toggle. setChecked fires the handler, which pushes
+        # the value to the controller and persists it.
+        smart_decision = state.get("smart_decision")
+        if isinstance(smart_decision, bool):
+            self.smart_decision_checkbox.setChecked(smart_decision)
+
+        # The combo may already sit on the stored purpose (so no change signal
+        # fired); populate the roles at least once.
+        self._refresh_host_roles(self.purpose_combo.currentData())
 
         pronunciation = state.get("pronunciation")
         if isinstance(pronunciation, bool):
@@ -592,6 +615,8 @@ class MainWindow(QMainWindow):
         self.transcription_editor = self.live_window.get_transcription_editor()
         self.pronunciation_checkbox = self.settings_view.get_pronunciation_checkbox()
         self.purpose_combo = self.settings_view.get_purpose_combo()
+        self.host_role_combo = self.settings_view.get_host_role_combo()
+        self.smart_decision_checkbox = self.settings_view.get_smart_decision_checkbox()
         self.bullet_points_checkbox = self.settings_view.get_bullet_points_checkbox()
         self.screen_protection_checkbox = self.settings_view.get_screen_protection_checkbox()
         
@@ -626,6 +651,8 @@ class MainWindow(QMainWindow):
         self.pronunciation_checkbox.toggled.connect(self.translation_controller.set_pronunciation_enabled)
         self.translation_controller.set_pronunciation_enabled(self.pronunciation_checkbox.isChecked())
         self.purpose_combo.currentIndexChanged.connect(self._on_purpose_changed)
+        self.host_role_combo.currentIndexChanged.connect(self._on_host_role_changed)
+        self.smart_decision_checkbox.toggled.connect(self._on_smart_decision_toggled)
         self.screen_protection_checkbox.toggled.connect(self._set_screen_protection)
         self.bullet_points_checkbox.toggled.connect(self._on_bullet_points_toggled)
         
@@ -663,6 +690,12 @@ class MainWindow(QMainWindow):
         self.translation_controller.auto_reply_result.connect(self._on_auto_reply_result)
         self.translation_controller.image_reply_result.connect(self._on_image_reply_result)
         self.translation_controller.reply_chunk.connect(self._on_reply_chunk)
+        self.translation_controller.reply_skipped.connect(self._on_reply_skipped)
+
+        # AI-learned purposes appear in the Purpose dropdown as they are registered
+        # (emitted from the auto-reply worker thread -> queued to the UI thread).
+        self.purpose_store.purposes_changed.connect(
+            self._on_purpose_added, Qt.ConnectionType.QueuedConnection)
         
         self.bullet_points_controller.updated.connect(self._on_bullet_points_updated)
         self.bullet_points_controller.status_changed.connect(self._send_bullet_status)
@@ -1069,12 +1102,52 @@ class MainWindow(QMainWindow):
         self.translation_controller.set_auto_reply_language(language)
 
     def _on_purpose_changed(self, index: int):
-        """Update the auto-reply purpose and apply its default pronunciation setting."""
+        """Update the auto-reply purpose, its roles, and default pronunciation."""
         key = self.purpose_combo.currentData()
+        if not key:
+            return
         self.translation_controller.set_auto_reply_purpose(key)
-        purpose = PURPOSES.get(key)
+        purpose = self.purpose_store.get(key)
         if purpose is not None:
             self.pronunciation_checkbox.setChecked(purpose.get("include_pronunciation_default", False))
+        self._refresh_host_roles(key)
+
+    def _refresh_host_roles(self, purpose_key):
+        """Repopulate the ``I am:`` combo for a purpose and apply its role."""
+        if not purpose_key:
+            return
+        roles = self.purpose_store.roles(purpose_key)
+        remembered = self._host_role_by_purpose.get(purpose_key, "smart")
+        self.settings_view.populate_host_roles(roles, remembered)
+        role = self.host_role_combo.currentData() or "smart"
+        self._host_role_by_purpose[purpose_key] = role
+        self.translation_controller.set_host_role(role)
+
+    def _on_host_role_changed(self, index: int):
+        """Persist the chosen ``I am:`` role and push it to the controller."""
+        key = self.purpose_combo.currentData()
+        role = self.host_role_combo.currentData() or "smart"
+        if key:
+            self._host_role_by_purpose[key] = role
+        self.translation_controller.set_host_role(role)
+        self._save_state()
+
+    def _on_smart_decision_toggled(self, checked: bool):
+        """Enable/disable the JEV decision gate and persist the choice."""
+        self.translation_controller.set_jev_enabled(checked)
+        self._save_state()
+
+    def _on_purpose_added(self, key: str):
+        """Insert an AI-learned purpose into the dropdown without changing selection."""
+        if not key or self.purpose_combo.findData(key) >= 0:
+            return
+        purpose = self.purpose_store.get(key)
+        self.purpose_combo.addItem(purpose.get("label", key), key)
+        logger.info("Purpose added to dropdown: %s", purpose.get("label", key))
+
+    def _on_reply_skipped(self, reason: str):
+        """JEV chose not to reply: tell the pane, persist nothing."""
+        self._send_gemini_status("skipped", "auto_reply", text=reason or "No reply needed")
 
     def _on_devices_populated(self, host_list: list, host_ids: list, speaker_list: list, speaker_items: list):
         """Handle devices populated from controller."""
@@ -1276,6 +1349,8 @@ class MainWindow(QMainWindow):
             self._save_state()
             # Flush + stop the async session writer.
             self.session_store.close()
+            # Flush + stop the async purpose writer (AI-learned personas are global).
+            self.purpose_store.close()
             self.settings_dialog.close()
             self.gemini_window.close()
             self.live_window.close()

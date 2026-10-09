@@ -10,3 +10,4 @@ assets
 logs
 ui_state.json
 sessions/
+purposes.json

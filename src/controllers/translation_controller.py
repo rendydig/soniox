@@ -20,6 +20,8 @@ class TranslationController(QObject):
     auto_reply_result = Signal(str)
     image_reply_result = Signal(str)
     reply_chunk = Signal(str, bool)
+    # Emitted when JEV suppresses a reply (reason text) — nothing is persisted.
+    reply_skipped = Signal(str)
     
     MAX_HISTORY_TURNS = 25
     HISTORY_LOG_FILE = os.path.join(
@@ -28,8 +30,13 @@ class TranslationController(QObject):
         "conversation_history.log"
     )
 
-    def __init__(self):
+    def __init__(self, purpose_store=None):
         super().__init__()
+        self._purpose_store = purpose_store
+        self._host_role = "smart"
+        # UI toggle (default on); JEV is also gated by the config master switch
+        # (JEV_ENABLED) and an API key, so an unconfigured setup is a no-op.
+        self._jev_enabled = True
         self._gemini_worker = None
         self._auto_reply_worker = None
         self._old_workers = []
@@ -110,6 +117,14 @@ class TranslationController(QObject):
     def set_auto_reply_purpose(self, purpose: str):
         """Set the purpose/persona used for the auto-reply."""
         self._auto_reply_purpose = purpose
+
+    def set_host_role(self, role: str):
+        """Set the Host's role key (``"smart"`` lets JEV pick it)."""
+        self._host_role = role or "smart"
+
+    def set_jev_enabled(self, enabled: bool):
+        """Enable/disable the JEV decision gate for auto-replies."""
+        self._jev_enabled = bool(enabled)
     
     def schedule_auto_reply(self, transcription_text: str, input_source: str = "speaker", delay_ms: int = None):
         """
@@ -159,11 +174,16 @@ class TranslationController(QObject):
                 conversation_history=list(self._conversation_history),
                 include_pronunciation=self._include_pronunciation,
                 purpose=self._auto_reply_purpose,
-                images=images
+                images=images,
+                purpose_store=self._purpose_store,
+                host_role=self._host_role,
+                jev_enabled=self._jev_enabled,
             )
             self._auto_reply_worker.result.connect(self._on_auto_reply_result, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.error.connect(self._on_auto_reply_error, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.chunk.connect(self._on_auto_reply_chunk, Qt.ConnectionType.QueuedConnection)
+            self._auto_reply_worker.skipped.connect(self._on_auto_reply_skipped, Qt.ConnectionType.QueuedConnection)
+            self._auto_reply_worker.status.connect(self._on_auto_reply_status, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.start()
             return True
         except Exception as e:
@@ -218,6 +238,21 @@ class TranslationController(QObject):
             self.auto_reply_result.emit(result)
         self.status_changed.emit("Auto-reply complete.")
     
+    def _on_auto_reply_status(self, text: str):
+        """Surface the resolved role/speech-act/language in the status text."""
+        if text:
+            self.status_changed.emit(text)
+
+    def _on_auto_reply_skipped(self, reason: str):
+        """Handle JEV suppressing a reply: clean up the worker, persist nothing."""
+        logger.debug("Auto-reply skipped: %s", reason)
+        self._auto_reply_is_image = False
+        if self._auto_reply_worker is not None:
+            self._old_workers.append(self._auto_reply_worker)
+            self._auto_reply_worker = None
+            self._cleanup_old_workers()
+        self.reply_skipped.emit(reason or "No reply needed")
+
     def _on_auto_reply_error(self, msg: str):
         """Handle errors from auto-reply worker."""
         logger.error("Auto-reply error: %s", msg)

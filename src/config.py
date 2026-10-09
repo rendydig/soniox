@@ -42,9 +42,31 @@ def _env_bool(name: str, default: bool) -> bool:
     return val.strip().lower() in ("1", "true", "yes", "on")
 
 
+def _env_float(name: str, default: float) -> float:
+    """Parse a float env var, falling back to ``default`` on bad input."""
+    val = os.environ.get(name)
+    if val is None:
+        return default
+    try:
+        return float(val)
+    except (TypeError, ValueError):
+        return default
+
+
 # When true, request no "thinking"/reasoning tokens from the model for faster
 # replies. Set DISABLE_MODEL_REASONING=false in .env to re-enable reasoning.
 DISABLE_MODEL_REASONING = _env_bool("DISABLE_MODEL_REASONING", True)
+
+# --- JEV (System One decision layer, "typesafe/jev-1.13" on OpenRouter) ---
+# Opt-in: the reply pipeline degrades to today's plain auto-reply when this is
+# off, the key is missing, or a decision call fails. JEV_BASE_URL intentionally
+# has no /v1 suffix — decisions live at {JEV_BASE_URL}/alpha/decisions.
+JEV_ENABLED = _env_bool("JEV_ENABLED", False)
+JEV_MODEL = os.environ.get("JEV_MODEL", "typesafe/jev-1.13")
+JEV_BASE_URL = os.environ.get("JEV_BASE_URL", "https://openrouter.ai/api")
+JEV_API_KEY = os.environ.get("JEV_API_KEY") or AI_API_KEY
+JEV_MIN_CONFIDENCE = _env_float("JEV_MIN_CONFIDENCE", 0.55)
+JEV_SHOULD_REPLY_MIN = _env_float("JEV_SHOULD_REPLY_MIN", 0.5)
 
 # Auto-reply streaming. The AI response is read incrementally and broadcast to
 # the panes as it is produced (word-by-word), instead of waiting for the full
@@ -57,7 +79,7 @@ AI_STREAM_CHUNK_INTERVAL_MS = 60
 # (endpoint detection has already waited out the silence), so it fires after
 # only AUTO_REPLY_ENDPOINT_DEBOUNCE_MS.
 AUTO_REPLY_DEBOUNCE_MS = 1200
-AUTO_REPLY_ENDPOINT_DEBOUNCE_MS = 0
+AUTO_REPLY_ENDPOINT_DEBOUNCE_MS = 900
 
 DEFAULT_AI_MODELS = {
     "gemini": "gemini-2.5-flash",
@@ -139,6 +161,19 @@ BULLET_MAX_LINE_CHARS = 300
 LAST_PICKUP_MAX_LINES = 40
 LAST_PICKUP_DEBOUNCE_MS = 1200
 LAST_PICKUP_ENDPOINT_DEBOUNCE_MS = 0
+
+# Optional Speaker profile file (context_speaker.txt). None/absent = unknown,
+# and the prompt then asks the model to infer the Speaker's role from context.
+SPEAKER_CONTEXT_FILE = os.environ.get("SPEAKER_CONTEXT_FILE")
+
+# Purpose store. Built-ins are the immutable seed (src/purposes.py); user edits
+# and AI-learned purposes are overlaid from PURPOSES_PATH, written back by a
+# background thread (debounced), and marked "(auto)" in the UI.
+PURPOSES_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "purposes.json"
+)
+PURPOSES_WRITE_DEBOUNCE_MS = 2000
+MAX_DYNAMIC_PURPOSES = 30
 
 # Session persistence. The current session is written to SESSION_DIR/current.json
 # by a background thread (debounced); New Session archives it and starts fresh.
