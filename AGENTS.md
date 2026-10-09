@@ -43,6 +43,39 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
 - `AI_MODEL` — model name; falls back to `GEMINI_MODEL`, then `gemini-2.5-flash`
 - `AI_BASE_URL` + `AI_API_KEY` — required only when `AI_PROVIDER=openai`
   (e.g. `https://openrouter.ai/api/v1`; screenshot replies need a vision-capable model)
+- `DISABLE_MODEL_REASONING` — default `true`; when on, the provider client requests no
+  "thinking"/reasoning tokens (Gemini `thinking_budget=0`; OpenRouter `reasoning.effort=none`),
+  roughly halving reply latency. Set `false` to re-enable reasoning.
+
+Auto-reply latency (constants in `src/config.py`):
+- `AUTO_REPLY_DEBOUNCE_MS` (1200) — debounce for a final **without** Soniox's `<end>` marker.
+- `AUTO_REPLY_ENDPOINT_DEBOUNCE_MS` (0) — delay for a final **with** `<end>` (true end of the
+  utterance; endpoint detection already waited out the silence), so replies fire almost
+  immediately. The `<end>` flag rides as the 4th arg of the `transcription_update` signal
+  (`src/workers.py` → `src/controllers/transcription_controller.py` → `src/ui.py`).
+- `SONIOX_MAX_ENDPOINT_DELAY_MS` (800; Soniox default 2000), `SONIOX_ENDPOINT_LATENCY_ADJUSTMENT_LEVEL`
+  (2) and `SONIOX_ENDPOINT_SENSITIVITY` (0.4) — sent in the Soniox session config
+  (`src/workers.py`) so endpoint detection emits `<end>` sooner. Aggressive preset: faster but
+  can slightly reduce word-recognition accuracy and split long speech into more segments; lower
+  them to trade speed back for accuracy.
+
+Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSocket):
+- `AIClient.generate_stream(system_instruction, messages)` (`src/ai_client.py`) is a generator:
+  Gemini uses `models.generate_content_stream`, OpenAI-compatible clients use
+  `chat.completions.create(..., stream=True)` and yield `delta.content`. The base class falls back
+  to one non-streaming `generate()` so every provider works.
+- `GeminiAutoReplyWorker` (auto-reply **and** image reply) has a `chunk = Signal(str)`; its `run()`
+  accumulates stream pieces and emits coalesced partial text at most every
+  `AI_STREAM_CHUNK_INTERVAL_MS` (60, `src/config.py`), then emits the full `result` at the end.
+  `GeminiWorker` (manual translate) stays non-streaming.
+- `TranslationController.reply_chunk = Signal(str, bool)` (text, is_image) forwards each partial;
+  `MainWindow._on_reply_chunk` → `_send_gemini_stream` broadcasts `{"type": "gemini_stream", ...}`
+  (raw, unformatted text — the final `gemini_result` is still `format_gemini_result`-ed and
+  **replaces** it). Partial chunks are **not** persisted to the session.
+- Frontend: `useWebSocketHandler.js` dispatches `gemini_stream` → `handleGeminiStream`
+  (`useTranscriptionHandlers.js`), which **updates the last item** when it is flagged `streaming`
+  and the mode matches, otherwise appends a new streaming item; `handleGeminiResult` then replaces
+  the list with the final item. `GeminiDisplayer` renders only the latest item, so it repaints live.
 
 ## UI structure
 - `MainWindow` (`src/ui.py`) is a **bottom bar**: a frameless, always-on-top window with a
@@ -117,12 +150,12 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
   left **or** right edge (default **right**, switchable at runtime) at full height by
   default. It hosts a `QWebEngineView` loading `http://localhost:8765/gemini`.
 - It shows **only** the Gemini card. The card was removed from `public/app.js`; the
-  Gemini-only page is `public/gemini.html` + `public/gemini-app.js` (reuses
+  Gemini-only page is `public/gemini.html` + `public/aireply-app.js` (reuses
   `WebSocketManager`, `useWebSocketHandler`, `useTranscriptionHandlers`, `GeminiDisplayer`;
   the server maps `/gemini` → `gemini.html` in `server.js`).
 - Toggled from the `Tool ▾` button's `Gemini Window` item (`_set_gemini_window_visible`);
   created in `MainWindow.__init__` and shown at startup. Closed in `MainWindow.closeEvent`.
-- The pane's top-right button (`public/gemini-app.js`) sends `hide_gemini_window`; the
+- The pane's top-right button (`public/aireply-app.js`) sends `hide_gemini_window`; the
   handler unchecks `gemini_window_action`, which hides the pane and keeps the menu item
   in sync (unchecked = hidden). Checking the item restores it. Since the window is a
   `Qt.Tool` with no taskbar entry, this menu item is the restore path.
@@ -165,7 +198,7 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
   in the pane.
 - `WebSocketClient.send_message(dict)` is the generic send used for these messages; the
   server needs no change (`server.js` rebroadcasts any unrecognized `type` to other clients).
-- The Gemini pane (`public/gemini-app.js`) appends each image to a
+- The Gemini pane (`public/aireply-app.js`) appends each image to a
   `ScreenshotGallery` (`public/components/ScreenshotGallery.js`, rendered **above**
   `GeminiDisplayer`); handlers `handleScreenshot` / `handleClearScreenshots` live in
   `useTranscriptionHandlers.js` and are dispatched by `useWebSocketHandler.js`. Images are

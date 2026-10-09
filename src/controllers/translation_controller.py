@@ -3,6 +3,7 @@ import logging
 from datetime import datetime
 from PySide6.QtCore import QObject, Signal, Qt, QTimer
 from src.gemini_worker import GeminiWorker, GeminiAutoReplyWorker
+from src.config import AUTO_REPLY_DEBOUNCE_MS
 from src.purposes import DEFAULT_PURPOSE
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ class TranslationController(QObject):
     translation_completed = Signal()
     auto_reply_result = Signal(str)
     image_reply_result = Signal(str)
+    reply_chunk = Signal(str, bool)
     
     MAX_HISTORY_TURNS = 25
     HISTORY_LOG_FILE = os.path.join(
@@ -109,20 +111,23 @@ class TranslationController(QObject):
         """Set the purpose/persona used for the auto-reply."""
         self._auto_reply_purpose = purpose
     
-    def schedule_auto_reply(self, transcription_text: str, input_source: str = "speaker"):
+    def schedule_auto_reply(self, transcription_text: str, input_source: str = "speaker", delay_ms: int = None):
         """
-        Schedule an auto-reply after 1.2 seconds of no new transcription.
-        
+        Schedule an auto-reply after a short period of no new transcription.
+
         Args:
             transcription_text: The transcribed text to respond to
             input_source: Who said this text — "host" (you) or "speaker" (the other person)
+            delay_ms: Debounce delay; defaults to AUTO_REPLY_DEBOUNCE_MS. Pass a
+                smaller value (e.g. 0) for an endpoint-marked end of utterance.
         """
+        delay_ms = AUTO_REPLY_DEBOUNCE_MS if delay_ms is None else delay_ms
         logger.debug("schedule_auto_reply called with: %r (from %s)", transcription_text, input_source)
         self._pending_transcription = transcription_text
         self._pending_input_source = input_source
         self._auto_reply_timer.stop()
-        self._auto_reply_timer.start(1200)
-        logger.debug("Timer started for 1200ms")
+        self._auto_reply_timer.start(delay_ms)
+        logger.debug("Timer started for %dms", delay_ms)
     
     def trigger_reply_now(self, transcription_text: str = None, input_source: str = "speaker"):
         """Trigger a Gemini reply immediately without debounce timer."""
@@ -158,6 +163,7 @@ class TranslationController(QObject):
             )
             self._auto_reply_worker.result.connect(self._on_auto_reply_result, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.error.connect(self._on_auto_reply_error, Qt.ConnectionType.QueuedConnection)
+            self._auto_reply_worker.chunk.connect(self._on_auto_reply_chunk, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.start()
             return True
         except Exception as e:
@@ -193,6 +199,10 @@ class TranslationController(QObject):
             return True
         return False
     
+    def _on_auto_reply_chunk(self, text: str):
+        """Forward a partial (streaming) auto-reply to the UI."""
+        self.reply_chunk.emit(text, self._auto_reply_is_image)
+
     def _on_auto_reply_result(self, result: str):
         """Handle auto-reply result from worker."""
         logger.debug("Auto-reply result received: %r...", result[:100])

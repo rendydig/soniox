@@ -8,7 +8,13 @@ import numpy as np
 import sounddevice as sd
 import websockets
 from PySide6.QtCore import QThread, Signal
-from src.config import SONIOX_API_KEY, WS_URL
+from src.config import (
+    SONIOX_API_KEY,
+    WS_URL,
+    SONIOX_MAX_ENDPOINT_DELAY_MS,
+    SONIOX_ENDPOINT_LATENCY_ADJUSTMENT_LEVEL,
+    SONIOX_ENDPOINT_SENSITIVITY,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +27,7 @@ except ImportError:
 class SonioxWorker(QThread):
     error = Signal(str, str)
     status = Signal(str, str)
-    transcription_update = Signal(str, bool, str)
+    transcription_update = Signal(str, bool, str, bool)
     translation_update = Signal(str, bool, str)
 
     def __init__(self, device, mode: str = "transcription", target_lang: str = "en", input_source: str = "host", parent=None):
@@ -163,6 +169,9 @@ class SonioxWorker(QThread):
                 "sample_rate": self._sample_rate,
                 "num_channels": self._channels,
                 "enable_endpoint_detection": True,
+                "max_endpoint_delay_ms": SONIOX_MAX_ENDPOINT_DELAY_MS,
+                "endpoint_latency_adjustment_level": SONIOX_ENDPOINT_LATENCY_ADJUSTMENT_LEVEL,
+                "endpoint_sensitivity": SONIOX_ENDPOINT_SENSITIVITY,
             }
 
             if self._mode == "translation":
@@ -247,6 +256,8 @@ class SonioxWorker(QThread):
                         
                         # Emit final transcription (English)
                         if final_transcription_tokens:
+                            # <end> may be tagged as a translation token, so scan all finals.
+                            endpoint = any(t.get("text") == "<end>" for t in tokens if t.get("is_final"))
                             text_parts = []
                             for t in final_transcription_tokens:
                                 token_text = t.get("text", "")
@@ -256,7 +267,7 @@ class SonioxWorker(QThread):
                                     text_parts.append(token_text)
                             final_transcription = "".join(text_parts)
                             logger.debug("[%s] Final Transcription (English): %r", self._input_source, final_transcription)
-                            self.transcription_update.emit(final_transcription, True, self._input_source)
+                            self.transcription_update.emit(final_transcription, True, self._input_source, endpoint)
                         
                         # Emit final translation (Indonesian)
                         if final_translation_tokens:
@@ -274,9 +285,9 @@ class SonioxWorker(QThread):
                         # Emit partial text (English - for live display)
                         part_text = "".join(t.get("text", "") for t in partial_tokens)
                         if part_text.strip():
-                            self.transcription_update.emit(part_text, False, self._input_source)
+                            self.transcription_update.emit(part_text, False, self._input_source, False)
                         elif final_transcription_tokens or final_translation_tokens:
-                            self.transcription_update.emit("", False, self._input_source)
+                            self.transcription_update.emit("", False, self._input_source, False)
                     
                     else:
                         # Transcription mode - original behavior
@@ -292,25 +303,28 @@ class SonioxWorker(QThread):
 
                         if final_tokens:
                             text_parts = []
+                            endpoint = False
                             for t in final_tokens:
                                 token_text = t.get("text", "")
                                 if token_text == "<end>":
+                                    endpoint = True
                                     text_parts.append("\n")
                                 else:
                                     text_parts.append(token_text)
                             final_text = "".join(text_parts)
                         else:
                             final_text = ""
+                            endpoint = False
                         
                         part_text = "".join(t.get("text", "") for t in partial_tokens)
 
                         if final_text:
-                            self.transcription_update.emit(final_text, True, self._input_source)
+                            self.transcription_update.emit(final_text, True, self._input_source, endpoint)
                         
                         if part_text.strip():
-                            self.transcription_update.emit(part_text, False, self._input_source)
+                            self.transcription_update.emit(part_text, False, self._input_source, False)
                         elif final_text:
-                            self.transcription_update.emit("", False, self._input_source)
+                            self.transcription_update.emit("", False, self._input_source, False)
 
             await asyncio.gather(sender(), receiver())
 

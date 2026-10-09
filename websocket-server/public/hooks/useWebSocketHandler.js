@@ -7,6 +7,7 @@ export const useWebSocketHandler = ({
     handleLiveTranslation,
     handleCorrectionResponse,
     handleGeminiResult,
+    handleGeminiStream,
     handleGeminiStatus,
     handleScreenshot,
     handleClearScreenshots,
@@ -48,6 +49,10 @@ export const useWebSocketHandler = ({
             if (typeof handleGeminiResult === 'function') {
                 handleGeminiResult(data.text, data.mode, data.timestamp);
             }
+        } else if (data.type === 'gemini_stream') {
+            if (typeof handleGeminiStream === 'function') {
+                handleGeminiStream(data.text, data.mode);
+            }
         } else if (data.type === 'gemini_status') {
             if (typeof handleGeminiStatus === 'function') {
                 handleGeminiStatus(data.status, data.mode, data.message);
@@ -82,6 +87,7 @@ export const useWebSocketHandler = ({
         handleLiveTranslation,
         handleCorrectionResponse,
         handleGeminiResult,
+        handleGeminiStream,
         handleGeminiStatus,
         handleScreenshot,
         handleClearScreenshots,

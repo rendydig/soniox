@@ -6,6 +6,7 @@ from src.config import (
     AI_MODEL,
     AI_PROVIDER,
     DEFAULT_AI_MODELS,
+    DISABLE_MODEL_REASONING,
     GEMINI_API_KEY,
 )
 
@@ -51,6 +52,16 @@ class AIClient:
     def generate(self, system_instruction: str, messages: list) -> str:
         raise NotImplementedError
 
+    def generate_stream(self, system_instruction: str, messages: list):
+        """Yield response text as it is produced.
+
+        The default falls back to one non-streaming call and yields the whole
+        response, so every provider works even without native streaming.
+        """
+        text = self.generate(system_instruction, messages)
+        if text:
+            yield text
+
 
 class GeminiClient(AIClient):
     """Google Gemini via the google-genai SDK."""
@@ -81,15 +92,34 @@ class GeminiClient(AIClient):
                 contents.append(types.Content(role=role, parts=parts))
         return contents
 
-    def generate(self, system_instruction: str, messages: list) -> str:
+    def _config(self, system_instruction: str):
         from google.genai import types
 
+        if DISABLE_MODEL_REASONING:
+            return types.GenerateContentConfig(
+                system_instruction=system_instruction,
+                thinking_config=types.ThinkingConfig(thinking_budget=0),
+            )
+        return types.GenerateContentConfig(system_instruction=system_instruction)
+
+    def generate(self, system_instruction: str, messages: list) -> str:
         response = self._client.models.generate_content(
             model=self._model,
             contents=self._to_contents(messages),
-            config=types.GenerateContentConfig(system_instruction=system_instruction),
+            config=self._config(system_instruction),
         )
         return response.text
+
+    def generate_stream(self, system_instruction: str, messages: list):
+        stream = self._client.models.generate_content_stream(
+            model=self._model,
+            contents=self._to_contents(messages),
+            config=self._config(system_instruction),
+        )
+        for chunk in stream:
+            text = getattr(chunk, "text", None)
+            if text:
+                yield text
 
 
 class OpenAICompatibleClient(AIClient):
@@ -126,12 +156,34 @@ class OpenAICompatibleClient(AIClient):
                 out.append({"role": role, "content": text})
         return out
 
+    def _extra_body(self):
+        # OpenRouter accepts the unified `reasoning` param; other OpenAI-compatible
+        # endpoints reject unknown top-level args, so only send it there.
+        if DISABLE_MODEL_REASONING and "openrouter.ai" in (AI_BASE_URL or ""):
+            return {"reasoning": {"effort": "none"}}
+        return None
+
     def generate(self, system_instruction: str, messages: list) -> str:
         response = self._client.chat.completions.create(
             model=self._model,
             messages=self._to_messages(system_instruction, messages),
+            extra_body=self._extra_body(),
         )
         return response.choices[0].message.content
+
+    def generate_stream(self, system_instruction: str, messages: list):
+        stream = self._client.chat.completions.create(
+            model=self._model,
+            messages=self._to_messages(system_instruction, messages),
+            extra_body=self._extra_body(),
+            stream=True,
+        )
+        for chunk in stream:
+            if not chunk.choices:
+                continue
+            content = getattr(chunk.choices[0].delta, "content", None)
+            if content:
+                yield content
 
 
 def get_ai_client() -> AIClient:

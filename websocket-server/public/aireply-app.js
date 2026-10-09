@@ -22,6 +22,7 @@ const GeminiApp = () => {
     const {
         /** Gemini Handlers */
         handleGeminiResult,
+        handleGeminiStream,
         handleGeminiStatus,
         /** Screenshot Handlers */
         handleScreenshot,
@@ -65,6 +66,7 @@ const GeminiApp = () => {
         handleLiveTranslation: noop,
         handleCorrectionResponse: noop,
         handleGeminiResult,
+        handleGeminiStream,
         handleGeminiStatus,
         handleScreenshot,
         handleClearScreenshots,

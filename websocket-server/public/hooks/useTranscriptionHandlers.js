@@ -239,6 +239,26 @@ export const useTranscriptionHandlers = ({
         console.log('[DEBUG] Gemini result replaced:', mode, text.slice(0, 80));
     }, [setGeminiResults, setGeminiStatus]);
 
+    /** Gemini partial (streaming) result — update the live item, or start one. */
+    const handleGeminiStream = useCallback((text, mode) => {
+        if (typeof setGeminiResults !== 'function') return;
+        const resolvedMode = mode || 'auto_reply';
+        setGeminiResults(prev => {
+            const last = prev[prev.length - 1];
+            if (last && last.streaming && last.mode === resolvedMode) {
+                return [...prev.slice(0, -1), { ...last, text: text || '' }];
+            }
+            return [{
+                text: text || '',
+                mode: resolvedMode,
+                streaming: true,
+                timestamp: new Date().toISOString(),
+                id: Date.now() + Math.random()
+            }];
+        });
+        console.log('[DEBUG] Gemini stream update:', resolvedMode, (text || '').length);
+    }, [setGeminiResults]);
+
     /** Gemini progress / failure status */
     const handleGeminiStatus = useCallback((status, mode, message) => {
         if (status === 'started') {
@@ -322,6 +342,7 @@ export const useTranscriptionHandlers = ({
         handleLiveTranslation,
         handleCorrectionResponse,
         handleGeminiResult,
+        handleGeminiStream,
         handleGeminiStatus,
         handleScreenshot,
         handleClearScreenshots,

@@ -7,7 +7,7 @@ class TranscriptionController(QObject):
     
     status_changed = Signal(str)
     error_occurred = Signal(str)
-    transcription_update = Signal(str, bool, str)
+    transcription_update = Signal(str, bool, str, bool)
     translation_update = Signal(str, bool, str)
     session_started = Signal()
     session_stopped = Signal()
@@ -106,9 +106,9 @@ class TranscriptionController(QObject):
         self.session_stopped.emit()
         self.status_changed.emit("Stopped")
     
-    def _on_transcription_update(self, text: str, is_final: bool, input_source: str):
+    def _on_transcription_update(self, text: str, is_final: bool, input_source: str, endpoint: bool = False):
         """Handle transcription updates from worker."""
-        self.transcription_update.emit(text, is_final, input_source)
+        self.transcription_update.emit(text, is_final, input_source, endpoint)
         
         if not is_final and text.strip():
             self.status_changed.emit(f"Live [{input_source}]: {text}")

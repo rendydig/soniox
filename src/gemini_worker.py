@@ -1,8 +1,14 @@
 import os
+import time
 import logging
 from PySide6.QtCore import QThread, Signal
 from src.ai_client import get_ai_client, IMAGE_CONTEXT_PROMPT
-from src.config import SELF_CONTEXT_FILE, PRONUNCIATION_GUIDES, SAMPLE_TEXTS
+from src.config import (
+    AI_STREAM_CHUNK_INTERVAL_MS,
+    SELF_CONTEXT_FILE,
+    PRONUNCIATION_GUIDES,
+    SAMPLE_TEXTS,
+)
 from src.purposes import PURPOSES, DEFAULT_PURPOSE
 
 logger = logging.getLogger(__name__)
@@ -169,6 +175,7 @@ Sample {self._target_language} text format: {_get_sample_text(self._target_langu
 class GeminiAutoReplyWorker(QThread):
     error = Signal(str)
     result = Signal(str)
+    chunk = Signal(str)
     
     def __init__(self, transcription_text: str, target_language: str, conversation_history: list = None, include_pronunciation: bool = True, purpose: str = DEFAULT_PURPOSE, images: list = None, parent=None):
         super().__init__(parent)
@@ -244,7 +251,23 @@ Format your response exactly as follows:
             for i, m in enumerate(messages):
                 logger.debug("  [%d] role=%s | images=%d | %r", i, m['role'], len(m.get('images') or []), m.get('text', '')[:200])
 
-            response = client.generate(system_instruction, messages)
+            # Stream the reply: emit coalesced partial text so the panes update
+            # word-by-word, then emit the final result once the stream ends.
+            parts = []
+            last_emit = 0.0
+            interval_s = AI_STREAM_CHUNK_INTERVAL_MS / 1000.0
+            for piece in client.generate_stream(system_instruction, messages):
+                if not self._is_running:
+                    return
+                if not piece:
+                    continue
+                parts.append(piece)
+                now = time.monotonic()
+                if now - last_emit >= interval_s:
+                    last_emit = now
+                    self.chunk.emit("".join(parts))
+
+            response = "".join(parts)
 
             if self._is_running and response:
                 self.result.emit(response)

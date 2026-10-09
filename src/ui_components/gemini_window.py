@@ -1,10 +1,10 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
+from PySide6.QtWidgets import QWidget, QGridLayout
 from PySide6.QtCore import Qt, QUrl, Signal
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from src.macos_window import set_always_on_top
 from src.screen_protection import set_capture_protection
-from .pane_resize_handle import PaneResizeHandle
+from .pane_edge_handle import PaneEdgeHandle
 from .pane_drag_handle import PaneDragHandle
 
 # Default width of the always-on-top suggestion pane.
@@ -15,7 +15,7 @@ MIN_WINDOW_HEIGHT = 120
 
 
 class GeminiWindow(QWidget):
-    """Frameless, always-on-top window showing only the Gemini suggestion card.
+    """Frameless, always-on-top window showing only the AI suggestion card.
 
     Free-floating: a top drag strip moves it anywhere on the primary screen,
     the inner-edge handle resizes its width, and the bottom-edge handle resizes
@@ -62,34 +62,36 @@ class GeminiWindow(QWidget):
         self._apply_geometry()
 
     def _init_ui(self):
-        outer = QVBoxLayout(self)
+        outer = QGridLayout(self)
         outer.setContentsMargins(0, 0, 0, 0)
         outer.setSpacing(0)
 
+        # Border grips resize the pane from any edge or corner. The top-centre
+        # strip is the move handle; its two corner grips still resize from the
+        # top edge.
+        self._tl_handle = PaneEdgeHandle(self, "top-left")
         self._drag_handle = PaneDragHandle(self)
-        outer.addWidget(self._drag_handle)
+        self._tr_handle = PaneEdgeHandle(self, "top-right")
+        self._left_handle = PaneEdgeHandle(self, "left")
+        self._right_handle = PaneEdgeHandle(self, "right")
+        self._bl_handle = PaneEdgeHandle(self, "bottom-left")
+        self._bottom_handle = PaneEdgeHandle(self, "bottom")
+        self._br_handle = PaneEdgeHandle(self, "bottom-right")
 
         self.webview = QWebEngineView()
         self.webview.setUrl(QUrl("http://localhost:8765/gemini"))
-        self._content_row = QHBoxLayout()
-        self._content_row.setContentsMargins(0, 0, 0, 0)
-        self._content_row.setSpacing(0)
-        self._content_row.addWidget(self.webview)
-        outer.addLayout(self._content_row, 1)
 
-        self._height_handle = PaneResizeHandle(self, orientation="vertical")
-        outer.addWidget(self._height_handle)
-
-        self._width_handle = PaneResizeHandle(self, orientation="horizontal")
-        self._apply_edge_layout()
-
-    def _apply_edge_layout(self):
-        """Put the width handle on the pane's inner (screen-centre) edge."""
-        self._content_row.removeWidget(self._width_handle)
-        if self._edge == "right":
-            self._content_row.insertWidget(0, self._width_handle)
-        else:
-            self._content_row.addWidget(self._width_handle)
+        outer.addWidget(self._tl_handle, 0, 0)
+        outer.addWidget(self._drag_handle, 0, 1)
+        outer.addWidget(self._tr_handle, 0, 2)
+        outer.addWidget(self._left_handle, 1, 0)
+        outer.addWidget(self.webview, 1, 1)
+        outer.addWidget(self._right_handle, 1, 2)
+        outer.addWidget(self._bl_handle, 2, 0)
+        outer.addWidget(self._bottom_handle, 2, 1)
+        outer.addWidget(self._br_handle, 2, 2)
+        outer.setRowStretch(1, 1)
+        outer.setColumnStretch(1, 1)
 
     def _screen_height(self):
         screen = QGuiApplication.primaryScreen()

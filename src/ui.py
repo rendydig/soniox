@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QDialog, QMenu, QToolButton, QPushButton, QMessageBox)
 from PySide6.QtCore import Qt, QEvent, QTimer, Signal
 from PySide6.QtGui import QKeySequence, QShortcut, QAction, QActionGroup, QGuiApplication
-from src.config import MAX_TRANSCRIPTION_LINES
+from src.config import MAX_TRANSCRIPTION_LINES, AUTO_REPLY_ENDPOINT_DEBOUNCE_MS
 from src.purposes import PURPOSES
 from src.text_formatter import append_timestamped_text, format_gemini_result
 from src.macos_window import set_always_on_top
@@ -459,7 +459,7 @@ class MainWindow(QMainWindow):
         self.gemini_window_action = QAction("Gemini Window", self)
         self.gemini_window_action.setCheckable(True)
         self.gemini_window_action.setChecked(True)
-        self.gemini_window_action.setToolTip("Show or hide the Gemini suggestion pane.")
+        self.gemini_window_action.setToolTip("Show or hide the AI suggestion pane.")
         self.gemini_window_action.toggled.connect(self._set_gemini_window_visible)
         self.tool_menu.addAction(self.gemini_window_action)
 
@@ -569,6 +569,7 @@ class MainWindow(QMainWindow):
         self.translation_controller.translation_started.connect(self._on_translation_started)
         self.translation_controller.auto_reply_result.connect(self._on_auto_reply_result)
         self.translation_controller.image_reply_result.connect(self._on_image_reply_result)
+        self.translation_controller.reply_chunk.connect(self._on_reply_chunk)
         
         self.bullet_points_controller.updated.connect(self._on_bullet_points_updated)
         self.bullet_points_controller.status_changed.connect(self._send_bullet_status)
@@ -671,7 +672,7 @@ class MainWindow(QMainWindow):
         self._send_session_state()
         logger.info("New session started (archived=%s)", archived)
 
-    def _on_transcription_update(self, transcription_text, is_final, input_source):
+    def _on_transcription_update(self, transcription_text, is_final, input_source, endpoint=False):
         # logger.debug("[%s] _on_transcription_update called: is_final=%s, text='%s...', auto_reply_enabled=%s", input_source, is_final, text[:50] if text else '', self._auto_reply_enabled)
         
         # Always send as "transcription" type (original English text)
@@ -699,6 +700,12 @@ class MainWindow(QMainWindow):
             if self._auto_reply_enabled and transcription_text.strip():
                 if input_source == "host":
                     logger.debug("[%s] Recording host speech (no auto-reply): %r", input_source, transcription_text)
+                elif endpoint:
+                    # <end> marks the true end of the utterance (endpoint detection
+                    # already waited out the silence), so skip the long debounce.
+                    logger.debug("[%s] Endpoint reached; scheduling fast auto-reply", input_source)
+                    self.translation_controller.schedule_auto_reply(
+                        transcription_text, input_source, delay_ms=AUTO_REPLY_ENDPOINT_DEBOUNCE_MS)
                 else:
                     self.translation_controller.schedule_auto_reply(transcription_text, input_source)
             else:
@@ -769,6 +776,14 @@ class MainWindow(QMainWindow):
             "text": text, "mode": mode, "timestamp": datetime.now().isoformat(),
         })
 
+    def _send_gemini_stream(self, text: str, mode: str):
+        """Broadcast a partial (streaming) Gemini result to the webview."""
+        if not text:
+            return
+        self.websocket_client.send_transcription(
+            text, False, additional_data={"mode": mode, "streaming": True}, message_type="gemini_stream"
+        )
+
     def _send_gemini_status(self, status: str, mode: str, text: str = None):
         """Broadcast a Gemini progress/failure status to the webview."""
         additional = {"status": status, "mode": mode}
@@ -829,6 +844,10 @@ class MainWindow(QMainWindow):
         if "auto-reply" not in msg.lower():
             self._send_gemini_status("failed", "manual", text="Translation failed.")
     
+    def _on_reply_chunk(self, text: str, is_image: bool):
+        """Stream a partial auto-reply/image-reply to the webview."""
+        self._send_gemini_stream(text, "image" if is_image else "auto_reply")
+
     def _on_auto_reply_result(self, result: str):
         """Handle auto-reply result."""
         self._send_gemini_result(result, "auto_reply")
@@ -959,7 +978,7 @@ class MainWindow(QMainWindow):
             pass
     
     def _set_gemini_window_visible(self, visible):
-        """Show or hide the separate Gemini suggestion pane."""
+        """Show or hide the separate AI suggestion pane."""
         if visible:
             self.gemini_window._apply_geometry()
             self.gemini_window.showNormal()  # also restores if minimized

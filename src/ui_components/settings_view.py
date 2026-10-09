@@ -67,7 +67,7 @@ class SettingsViewWidget(QWidget):
         default_index = self.purpose_combo.findData(DEFAULT_PURPOSE)
         if default_index >= 0:
             self.purpose_combo.setCurrentIndex(default_index)
-        self.purpose_combo.setToolTip("Persona used for the Gemini auto-reply.")
+        self.purpose_combo.setToolTip("Persona used for the AI auto-reply.")
         purpose_row.addWidget(purpose_label)
         purpose_row.addWidget(self.purpose_combo)
         purpose_row.addStretch()
