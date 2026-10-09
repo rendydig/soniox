@@ -12,6 +12,7 @@ _HOTKEY_FIELDS = (
     ("clear_screenshots", "Clear screenshots:"),
     ("send_images", "Send screenshots to AI:"),
     ("bullet_points", "Bullet points update:"),
+    ("toggle_windows", "Hide/Show all windows:"),
 )
 
 

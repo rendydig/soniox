@@ -6,7 +6,12 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QDialog, QMenu, QToolButton, QPushButton, QMessageBox)
 from PySide6.QtCore import Qt, QEvent, QTimer, Signal
 from PySide6.QtGui import QKeySequence, QShortcut, QAction, QActionGroup, QGuiApplication
-from src.config import MAX_TRANSCRIPTION_LINES, AUTO_REPLY_ENDPOINT_DEBOUNCE_MS
+from src.config import (
+    MAX_TRANSCRIPTION_LINES,
+    AUTO_REPLY_ENDPOINT_DEBOUNCE_MS,
+    LAST_PICKUP_DEBOUNCE_MS,
+    LAST_PICKUP_ENDPOINT_DEBOUNCE_MS,
+)
 from src.purposes import PURPOSES
 from src.text_formatter import append_timestamped_text, format_gemini_result
 from src.macos_window import set_always_on_top
@@ -18,7 +23,8 @@ from src.controllers import (
     DeviceController,
     TranscriptionController,
     TranslationController,
-    BulletPointsController
+    BulletPointsController,
+    LastPickupController
 )
 from src.websocket_client import WebSocketClient
 from src.websocket_server_manager import WebSocketServerManager
@@ -90,6 +96,7 @@ class MainWindow(QMainWindow):
         self.transcription_controller = TranscriptionController()
         self.translation_controller = TranslationController()
         self.bullet_points_controller = BulletPointsController()
+        self.last_pickup_controller = LastPickupController()
         # Session state (restored below, persisted asynchronously to disk).
         self.session_store = SessionStore()
         
@@ -104,7 +111,8 @@ class MainWindow(QMainWindow):
 
         # System-wide hotkeys: ALT+SHIFT+K captures a screenshot, ALT+CTRL+SHIFT+K
         # clears the ones shown in the Gemini pane, CTRL+ALT+SHIFT+G sends the
-        # captured screenshots to Gemini, and CTRL+ALT+P updates the bullet points.
+        # captured screenshots to Gemini, CTRL+ALT+P updates the bullet points, and
+        # CTRL+SHIFT+M (Cmd+Shift+M on macOS) hides/restores all open panes.
         # Restore any user-customised global hotkeys from ui_state before registering.
         stored_hotkeys = _as_dict(_as_dict(load_state().get("settings")).get("hotkeys"))
         self.hotkeys = GlobalHotkeys(
@@ -112,6 +120,7 @@ class MainWindow(QMainWindow):
             on_clear=self._clear_screenshots,
             on_send_image=self._send_images_to_gemini,
             on_bullet_points=self._trigger_bullet_points_now,
+            on_toggle_windows=self._toggle_all_panes,
             bindings=parse_bindings(stored_hotkeys),
         )
         self.hotkeys.register()
@@ -137,6 +146,11 @@ class MainWindow(QMainWindow):
         self._screenshots = []
         self._screen_protection_enabled = True
         self._auto_reply_enabled = False
+        self._last_pickup_auto_enabled = False
+        # CTRL+SHIFT+M hides every open pane and restores exactly the ones that
+        # were open; the flag tracks which side of the toggle we are on.
+        self._all_panes_hidden = False
+        self._panes_visibility_before_hide = {}
 
         # Separate top-level panes (not Qt children of this window). Their
         # geometry is restored from ui_state.json (written back on change).
@@ -387,6 +401,7 @@ class MainWindow(QMainWindow):
                 "pronunciation": self.pronunciation_checkbox.isChecked(),
                 "bullet_points": self.bullet_points_checkbox.isChecked(),
                 "bullet_points_window_visible": self.bullet_points_window_action.isChecked(),
+                "last_pickup_auto": self._last_pickup_auto_enabled,
                 "screen_protection": self.screen_protection_checkbox.isChecked(),
                 "hotkeys": self._hotkeys_from_editors(),
             },
@@ -424,10 +439,17 @@ class MainWindow(QMainWindow):
         if isinstance(bullet_points, bool):
             self.bullet_points_checkbox.setChecked(bullet_points)
 
+        # "Last Picked Up" auto toggle (ui_state). Set before the pane-visibility
+        # restore so the effective auto state is computed correctly.
+        last_pickup_auto = state.get("last_pickup_auto")
+        if isinstance(last_pickup_auto, bool):
+            self._last_pickup_auto_enabled = last_pickup_auto
+
         # Restore the pane's visibility so a manual-only setup survives a restart.
         bullet_points_visible = state.get("bullet_points_window_visible")
         if isinstance(bullet_points_visible, bool):
             self.bullet_points_window_action.setChecked(bullet_points_visible)
+        self._update_last_pickup_auto()
 
         # Global hotkeys: show the saved combination, else the platform default so
         # the fields are never blank before the user edits them. Setting the
@@ -645,6 +667,10 @@ class MainWindow(QMainWindow):
         self.bullet_points_controller.updated.connect(self._on_bullet_points_updated)
         self.bullet_points_controller.status_changed.connect(self._send_bullet_status)
         self.bullet_points_controller.error_occurred.connect(self._on_bullet_points_error)
+
+        self.last_pickup_controller.updated.connect(self._on_last_pickup_updated)
+        self.last_pickup_controller.status_changed.connect(self._send_last_pickup_status)
+        self.last_pickup_controller.error_occurred.connect(self._on_last_pickup_error)
         
         self.gemini_lang_combo.currentTextChanged.connect(self._on_auto_reply_language_changed)
 
@@ -703,6 +729,7 @@ class MainWindow(QMainWindow):
         """Restore the previous session's state into the controllers and editor."""
         data = self.session_store.snapshot()
         self.bullet_points_controller.load_bullets(data.get("bullets") or [])
+        self.last_pickup_controller.load_last_pickup(data.get("last_pickup") or "")
         self.translation_controller.load_conversation_history(data.get("conversation") or [])
         self._screenshots = list(data.get("screenshots") or [])
         for entry in data.get("transcriptions") or []:
@@ -738,6 +765,7 @@ class MainWindow(QMainWindow):
         self.transcription_editor.clear()
         self.translation_controller.clear_conversation_history()
         self.bullet_points_controller.reset()
+        self.last_pickup_controller.reset()
         self._screenshots.clear()
         # Empty state resets every webview (gemini/live/bullets).
         self._send_session_state()
@@ -761,6 +789,13 @@ class MainWindow(QMainWindow):
                 self.translation_controller.append_to_history(transcription_text, "", input_source)
                 # Always buffered (free); auto mode / the hotkey decide when to call the AI.
                 self.bullet_points_controller.add_line(input_source, transcription_text)
+                # "Last Picked Up": always buffer the line (host+speaker); a
+                # speaker utterance end schedules a refresh when auto is active.
+                self.last_pickup_controller.add_line(input_source, transcription_text)
+                if input_source != "host":
+                    delay = (LAST_PICKUP_ENDPOINT_DEBOUNCE_MS if endpoint
+                             else LAST_PICKUP_DEBOUNCE_MS)
+                    self.last_pickup_controller.schedule(delay)
                 # Persist to the session (async).
                 self.session_store.append("transcriptions", {
                     "source": input_source, "text": transcription_text,
@@ -946,9 +981,26 @@ class MainWindow(QMainWindow):
         """Broadcast a bullet-points progress/failure status to the webview."""
         self.websocket_client.send_message({"type": "bullet_points_status", "status": status})
 
+    def _on_last_pickup_updated(self, text: str):
+        """Broadcast the latest picked-up topic to the webview and persist it."""
+        self.websocket_client.send_message({"type": "last_pickup", "text": text or ""})
+        self.session_store.update("last_pickup", text or "")
+
+    def _send_last_pickup_status(self, status: str):
+        """Broadcast a last-pickup progress/failure status to the webview."""
+        self.websocket_client.send_message({"type": "last_pickup_status", "status": status})
+
+    def _on_last_pickup_error(self, msg: str):
+        """Handle last-pickup worker errors (logged, not popped up)."""
+        logger.warning("Last pickup error: %s", msg)
+
     def _send_session_state(self):
         """Send the full session state so webviews can repopulate on connect."""
-        self.websocket_client.send_message({"type": "session_state", **self.session_store.snapshot()})
+        payload = {"type": "session_state", **self.session_store.snapshot()}
+        # The auto-pickup toggle lives in ui_state (not the session), so include
+        # it here so the pane's checkbox reflects the current value on connect.
+        payload["last_pickup_auto"] = self._last_pickup_auto_enabled
+        self.websocket_client.send_message(payload)
 
     def _on_bullet_points_error(self, msg: str):
         """Handle bullet-points worker errors (logged, not popped up)."""
@@ -996,6 +1048,11 @@ class MainWindow(QMainWindow):
         elif msg_type == "regenerate_bullet_points":
             logger.info("Bullet points rebuild requested from webview")
             self._regenerate_bullet_points()
+        elif msg_type == "set_last_pickup_auto":
+            logger.info("Last pickup auto -> %s", data.get("enabled"))
+            self._last_pickup_auto_enabled = bool(data.get("enabled"))
+            self._update_last_pickup_auto()
+            self._save_state()
 
     def _manual_reply(self):
         """Manually trigger a Gemini reply using the last final transcription (Ctrl+R / Cmd+R)."""
@@ -1094,12 +1151,48 @@ class MainWindow(QMainWindow):
         else:
             self.bullet_points_window.hide()
         self._update_bullet_points_auto()
+        self._update_last_pickup_auto()
+
+    def _toggle_all_panes(self):
+        """CTRL+SHIFT+M (Cmd+Shift+M on macOS): hide all open panes, or restore
+        exactly the set that was open before they were hidden.
+
+        The Tool ▾ checkable actions are the single source of truth, so driving
+        them routes each change through the normal show/hide setters (keeping the
+        menu in sync and pausing/resuming bullet-point auto-updates).
+        """
+        panes = (
+            ("gemini", self.gemini_window_action),
+            ("live", self.live_window_action),
+            ("bullet_points", self.bullet_points_window_action),
+        )
+        if not self._all_panes_hidden:
+            self._panes_visibility_before_hide = {
+                name: action.isChecked() for name, action in panes
+            }
+            for _name, action in panes:
+                action.setChecked(False)
+            self._all_panes_hidden = True
+            open_names = [name for name, is_open in self._panes_visibility_before_hide.items() if is_open]
+            logger.info("Hotkey: hid all panes (was open: %s)", open_names or "none")
+        else:
+            for name, action in panes:
+                action.setChecked(self._panes_visibility_before_hide.get(name, False))
+            self._all_panes_hidden = False
+            open_names = [name for name, is_open in self._panes_visibility_before_hide.items() if is_open]
+            logger.info("Hotkey: restored panes (%s)", open_names or "none")
 
     def _update_bullet_points_auto(self):
         """Auto updates run only when the feature is enabled AND the pane is shown."""
         auto = (self.bullet_points_checkbox.isChecked()
                 and self.bullet_points_window_action.isChecked())
         self.bullet_points_controller.set_auto(auto)
+
+    def _update_last_pickup_auto(self):
+        """Auto pickup runs only when the pane toggle is on AND the pane is shown."""
+        auto = (self._last_pickup_auto_enabled
+                and self.bullet_points_window_action.isChecked())
+        self.last_pickup_controller.set_auto(auto)
 
     def _trigger_bullet_points_now(self):
         """CTRL+ALT+P: update the list on demand (silent; only when the pane is shown)."""
@@ -1196,6 +1289,9 @@ class MainWindow(QMainWindow):
 
             # Stop the bullet-points worker/timer
             self.bullet_points_controller.cleanup()
+
+            # Stop the last-pickup worker/timer
+            self.last_pickup_controller.cleanup()
             
             # Stop websocket
             self.websocket_client.stop()

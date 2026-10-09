@@ -13,6 +13,8 @@ export const useWebSocketHandler = ({
     handleClearScreenshots,
     handleBulletPoints,
     handleBulletPointsStatus,
+    handleLastPickup,
+    handleLastPickupStatus,
     handleSessionState,
     handleConnection
 }) => {
@@ -73,6 +75,14 @@ export const useWebSocketHandler = ({
             if (typeof handleBulletPointsStatus === 'function') {
                 handleBulletPointsStatus(data.status, data.message);
             }
+        } else if (data.type === 'last_pickup') {
+            if (typeof handleLastPickup === 'function') {
+                handleLastPickup(data.text);
+            }
+        } else if (data.type === 'last_pickup_status') {
+            if (typeof handleLastPickupStatus === 'function') {
+                handleLastPickupStatus(data.status, data.message);
+            }
         } else if (data.type === 'correction_response') {
             console.log('[WebSocket] Correction response:', data);
             handleCorrectionResponse(data);
@@ -93,6 +103,8 @@ export const useWebSocketHandler = ({
         handleClearScreenshots,
         handleBulletPoints,
         handleBulletPointsStatus,
+        handleLastPickup,
+        handleLastPickupStatus,
         handleSessionState,
         handleConnection
     ]);

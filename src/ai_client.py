@@ -49,16 +49,16 @@ class AIClient:
     ``images`` is optional. Each client adapts this to its own SDK format.
     """
 
-    def generate(self, system_instruction: str, messages: list) -> str:
+    def generate(self, system_instruction: str, messages: list, disable_reasoning: bool = None) -> str:
         raise NotImplementedError
 
-    def generate_stream(self, system_instruction: str, messages: list):
+    def generate_stream(self, system_instruction: str, messages: list, disable_reasoning: bool = None):
         """Yield response text as it is produced.
 
         The default falls back to one non-streaming call and yields the whole
         response, so every provider works even without native streaming.
         """
-        text = self.generate(system_instruction, messages)
+        text = self.generate(system_instruction, messages, disable_reasoning=disable_reasoning)
         if text:
             yield text
 
@@ -92,29 +92,31 @@ class GeminiClient(AIClient):
                 contents.append(types.Content(role=role, parts=parts))
         return contents
 
-    def _config(self, system_instruction: str):
+    def _config(self, system_instruction: str, disable_reasoning=None):
         from google.genai import types
 
-        if DISABLE_MODEL_REASONING:
+        # A per-call override wins over the global .env setting.
+        no_thinking = DISABLE_MODEL_REASONING if disable_reasoning is None else disable_reasoning
+        if no_thinking:
             return types.GenerateContentConfig(
                 system_instruction=system_instruction,
                 thinking_config=types.ThinkingConfig(thinking_budget=0),
             )
         return types.GenerateContentConfig(system_instruction=system_instruction)
 
-    def generate(self, system_instruction: str, messages: list) -> str:
+    def generate(self, system_instruction: str, messages: list, disable_reasoning=None) -> str:
         response = self._client.models.generate_content(
             model=self._model,
             contents=self._to_contents(messages),
-            config=self._config(system_instruction),
+            config=self._config(system_instruction, disable_reasoning),
         )
         return response.text
 
-    def generate_stream(self, system_instruction: str, messages: list):
+    def generate_stream(self, system_instruction: str, messages: list, disable_reasoning=None):
         stream = self._client.models.generate_content_stream(
             model=self._model,
             contents=self._to_contents(messages),
-            config=self._config(system_instruction),
+            config=self._config(system_instruction, disable_reasoning),
         )
         for chunk in stream:
             text = getattr(chunk, "text", None)
@@ -156,26 +158,27 @@ class OpenAICompatibleClient(AIClient):
                 out.append({"role": role, "content": text})
         return out
 
-    def _extra_body(self):
+    def _extra_body(self, disable_reasoning=None):
         # OpenRouter accepts the unified `reasoning` param; other OpenAI-compatible
         # endpoints reject unknown top-level args, so only send it there.
-        if DISABLE_MODEL_REASONING and "openrouter.ai" in (AI_BASE_URL or ""):
+        no_thinking = DISABLE_MODEL_REASONING if disable_reasoning is None else disable_reasoning
+        if no_thinking and "openrouter.ai" in (AI_BASE_URL or ""):
             return {"reasoning": {"effort": "none"}}
         return None
 
-    def generate(self, system_instruction: str, messages: list) -> str:
+    def generate(self, system_instruction: str, messages: list, disable_reasoning=None) -> str:
         response = self._client.chat.completions.create(
             model=self._model,
             messages=self._to_messages(system_instruction, messages),
-            extra_body=self._extra_body(),
+            extra_body=self._extra_body(disable_reasoning),
         )
         return response.choices[0].message.content
 
-    def generate_stream(self, system_instruction: str, messages: list):
+    def generate_stream(self, system_instruction: str, messages: list, disable_reasoning=None):
         stream = self._client.chat.completions.create(
             model=self._model,
             messages=self._to_messages(system_instruction, messages),
-            extra_body=self._extra_body(),
+            extra_body=self._extra_body(disable_reasoning),
             stream=True,
         )
         for chunk in stream:

@@ -16,7 +16,7 @@ from src.config import (
 
 logger = logging.getLogger(__name__)
 
-# Fields that make up a session (all lists).
+# Fields that make up a session (all lists, except the string fields below).
 SESSION_FIELDS = (
     "bullets",
     "conversation",
@@ -25,6 +25,12 @@ SESSION_FIELDS = (
     "gemini_results",
     "screenshots",
 )
+
+# Session fields stored as plain strings rather than lists.
+SESSION_TEXT_FIELDS = ("last_pickup",)
+
+# Every persisted field, in the order they are created / normalized.
+ALL_SESSION_FIELDS = SESSION_FIELDS + SESSION_TEXT_FIELDS
 
 # Per-field retention caps, so a long session can't grow without bound.
 SESSION_CAPS = {
@@ -44,6 +50,8 @@ def _new_session_data():
     }
     for field in SESSION_FIELDS:
         data[field] = []
+    for field in SESSION_TEXT_FIELDS:
+        data[field] = ""
     return data
 
 
@@ -110,7 +118,7 @@ class SessionStore:
     def new_session(self):
         """Archive the current session (if non-empty) and start a fresh one."""
         with self._lock:
-            has_content = any(self._data.get(f) for f in SESSION_FIELDS)
+            has_content = any(self._data.get(f) for f in ALL_SESSION_FIELDS)
             old = copy.deepcopy(self._data) if has_content else None
         archived = self._archive(old) if old is not None else None
         with self._lock:
@@ -190,4 +198,7 @@ class SessionStore:
         for field in SESSION_FIELDS:
             if not isinstance(base.get(field), list):
                 base[field] = []
+        for field in SESSION_TEXT_FIELDS:
+            if not isinstance(base.get(field), str):
+                base[field] = ""
         return base

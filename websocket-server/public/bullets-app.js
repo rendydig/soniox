@@ -14,11 +14,17 @@ const BulletPointsApp = () => {
     const [, setConnected] = useState(false);
     const [items, setItems] = useState([]);
     const [status, setStatus] = useState('');
+    const [tab, setTab] = useState('bullets');
+    const [lastPickup, setLastPickup] = useState('');
+    const [lastPickupStatus, setLastPickupStatus] = useState('');
+    const [autoPickup, setAutoPickup] = useState(false);
     const wsManager = useRef(null);
 
     const {
         handleBulletPoints,
         handleBulletPointsStatus,
+        handleLastPickup,
+        handleLastPickupStatus,
         handleSessionState
     } = useTranscriptionHandlers({
         /** Unused on this page — only the bullet list is shown. */
@@ -33,6 +39,9 @@ const BulletPointsApp = () => {
         corrections: {},
         setBulletPoints: setItems,
         setBulletPointsStatus: setStatus,
+        setLastPickup,
+        setLastPickupStatus,
+        setLastPickupAuto: setAutoPickup,
         wsManager
     });
 
@@ -57,6 +66,8 @@ const BulletPointsApp = () => {
         handleCorrectionResponse: noop,
         handleBulletPoints,
         handleBulletPointsStatus,
+        handleLastPickup,
+        handleLastPickupStatus,
         handleSessionState,
         handleConnection
     });
@@ -71,6 +82,35 @@ const BulletPointsApp = () => {
             }
         };
     }, [handleMessage]);
+
+    const toggleAutoPickup = useCallback((enabled) => {
+        setAutoPickup(enabled);
+        sendControl({ type: 'set_last_pickup_auto', enabled });
+    }, [sendControl]);
+
+    const bulletsView = html`
+        <${BulletPointsList} items=${items} status=${status} />
+    `;
+
+    const pickupView = html`
+        <div class="live-text pickup-view">
+            <label class="pickup-toggle">
+                <input
+                    type="checkbox"
+                    checked=${autoPickup}
+                    onChange=${(e) => toggleAutoPickup(e.target.checked)}
+                />
+                <span>Auto pickup aktif</span>
+            </label>
+            ${lastPickupStatus && html`<div class="bullet-status">${lastPickupStatus}</div>`}
+            ${lastPickup
+                ? html`<div class="pickup-text">${lastPickup}</div>`
+                : html`<div class="bullet-empty">
+                    Belum ada yang terambil. Nyalakan "Auto pickup" dan mulailah
+                    percakapan.
+                </div>`}
+        </div>
+    `;
 
     return html`
         <div class="card bullet-card">
@@ -95,15 +135,30 @@ const BulletPointsApp = () => {
                 >−</button>
             </div>
             <div class="bullet-header">
-                <h2>☑ Bullet Points</h2>
-                <button
-                    class="pane-control-btn bullet-rebuild-btn"
-                    title="Rebuild the list from the whole conversation"
-                    aria-label="Rebuild bullet points"
-                    onClick=${() => sendControl({ type: 'regenerate_bullet_points' })}
-                >Rebuild</button>
+                <div class="bullet-tabs" role="tablist">
+                    <button
+                        class="bullet-tab ${tab === 'bullets' ? 'active' : ''}"
+                        role="tab"
+                        aria-selected=${tab === 'bullets'}
+                        onClick=${() => setTab('bullets')}
+                    >☑ Bullet Points</button>
+                    <button
+                        class="bullet-tab ${tab === 'pickup' ? 'active' : ''}"
+                        role="tab"
+                        aria-selected=${tab === 'pickup'}
+                        onClick=${() => setTab('pickup')}
+                    >Last Picked Up</button>
+                </div>
+                ${tab === 'bullets' && html`
+                    <button
+                        class="pane-control-btn bullet-rebuild-btn"
+                        title="Rebuild the list from the whole conversation"
+                        aria-label="Rebuild bullet points"
+                        onClick=${() => sendControl({ type: 'regenerate_bullet_points' })}
+                    >Rebuild</button>
+                `}
             </div>
-            <${BulletPointsList} items=${items} status=${status} />
+            ${tab === 'bullets' ? bulletsView : pickupView}
         </div>
     `;
 };

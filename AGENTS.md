@@ -170,7 +170,7 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
   `GeminiWindow.showEvent` re-applies after re-shows.
 
 ## Screenshot hotkeys
-- Four **system-wide** hotkeys (work even when the app is unfocused), registered by
+- Five **system-wide** hotkeys (work even when the app is unfocused), registered by
   `src/global_hotkeys.py` (`GlobalHotkeys`) with a per-platform backend, both via ctypes
   — **no third-party dependency**: on **Windows** `RegisterHotKey` + a
   `QAbstractNativeEventFilter`; on **macOS** the Carbon framework's
@@ -184,10 +184,21 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
   - `CTRL+ALT+SHIFT+G` → send **all** captured screenshots to Gemini (see below).
   - `CTRL+ALT+P` → manual **bullet points** update (`MainWindow._trigger_bullet_points_now`;
     silent, only when the Bullet Points pane is visible — see the bullet points section).
+  - `CTRL+SHIFT+M` (Cmd+Shift+M on macOS — Qt maps the portable `Ctrl` to Command there)
+    → toggle **hide/restore all open panes** (`MainWindow._toggle_all_panes`). It snapshots
+    which of the Gemini / Live / Bullet Points Tool ▾ actions are checked, unchecks them all
+    (routing through the normal `_set_*_window_visible` setters so the menu stays in sync and
+    bullet auto-updates pause), then on the next press re-checks exactly that set. State is
+    tracked by `_all_panes_hidden` + `_panes_visibility_before_hide`. The main bar is never
+    affected, and because it drives the real actions, the hide is persisted like a manual
+    hide (e.g. `bullet_points_window_visible`) — no separate suppression.
 - Wiring lives in `MainWindow` (`src/ui.py`): `GlobalHotkeys` is created/registered in
   `__init__` (after `websocket_client.start()`), `_capture_screenshot` / `_clear_screenshots` /
-  `_send_images_to_gemini` are the callbacks, and `unregister()` runs in `closeEvent`. The
-  callbacks fire on the Qt main thread, so they may touch widgets/capture directly.
+  `_send_images_to_gemini` / `_trigger_bullet_points_now` / `_toggle_all_panes` are the
+  callbacks, and `unregister()` runs in `closeEvent`. The callbacks fire on the Qt main thread,
+  so they may touch widgets/capture directly. All five shortcuts are editable in the Settings
+  dialog's **Global Hotkeys** section (`settings_view.py::_HOTKEY_FIELDS`); the action names must
+  match `src.global_hotkeys.HOTKEY_ACTIONS`.
 - `MainWindow._screenshots` retains every capture as a data URL (appended in
   `_capture_screenshot`, cleared in `_clear_screenshots`) so Python can forward them to Gemini;
   it stays in sync with the webview gallery because both hotkeys are handled in Python.

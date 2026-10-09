@@ -133,6 +133,13 @@ BULLET_MAX_BUFFER_LINES = 12
 BULLET_PAUSED_BUFFER_MAX = 40
 BULLET_MAX_LINE_CHARS = 300
 
+# "Last Picked Up": extracts the latest topic/intent the speaker is expressing.
+# The whole rolling window (last N finalized lines) is sent on each call, and the
+# answer is always in Indonesian with reasoning disabled (cheap, fast capture).
+LAST_PICKUP_MAX_LINES = 40
+LAST_PICKUP_DEBOUNCE_MS = 1200
+LAST_PICKUP_ENDPOINT_DEBOUNCE_MS = 0
+
 # Session persistence. The current session is written to SESSION_DIR/current.json
 # by a background thread (debounced); New Session archives it and starts fresh.
 SESSION_DIR = os.path.join(

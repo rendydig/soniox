@@ -556,6 +556,62 @@
         font-style: italic;
     }
 
+    /* Tabs (Bullet Points / Last Picked Up) */
+    .bullet-tabs {
+        display: flex;
+        gap: 4px;
+    }
+
+    .bullet-tab {
+        border: none;
+        background: transparent;
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .bullet-tab:hover {
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+    .bullet-tab.active {
+        color: #065f46;
+        background: rgba(5, 150, 105, 0.12);
+    }
+
+    /* Last Picked Up tab */
+    .live-text.pickup-view {
+        background: transparent;
+        color: #065f46;
+        font-style: normal;
+        white-space: normal;
+    }
+
+    .pickup-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        color: #374151;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .pickup-toggle input {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .pickup-text {
+        color: #1f2937;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
     /* Screenshot gallery (ALT+SHIFT+K captures, ALT+CTRL+SHIFT+K clears) */
     .screenshot-gallery {
         flex: 0 1 auto;

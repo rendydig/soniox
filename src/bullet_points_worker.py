@@ -92,6 +92,7 @@ class BulletPointsWorker(QThread):
             response = client.generate(
                 SYSTEM_INSTRUCTION,
                 [{"role": "user", "text": self._build_user_message()}],
+                disable_reasoning=True,
             )
 
             if not self._is_running:

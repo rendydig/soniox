@@ -16,6 +16,9 @@ export const useTranscriptionHandlers = ({
     setScreenshots,
     setBulletPoints,
     setBulletPointsStatus,
+    setLastPickup,
+    setLastPickupStatus,
+    setLastPickupAuto,
     wsManager
 }) => {
     const correctionEnabledRef = useRef(correctionEnabled);
@@ -308,6 +311,26 @@ export const useTranscriptionHandlers = ({
         console.log('[DEBUG] Bullet points status:', status);
     }, [setBulletPointsStatus]);
 
+    /** Latest picked-up topic/intent from the Python app (Indonesian sentence). */
+    const handleLastPickup = useCallback((text) => {
+        if (typeof setLastPickup !== 'function') return;
+        setLastPickup(typeof text === 'string' ? text : '');
+        console.log('[DEBUG] Last pickup updated:', typeof text === 'string' ? text.length : 0);
+    }, [setLastPickup]);
+
+    /** Last-pickup progress / failure status. */
+    const handleLastPickupStatus = useCallback((status, message) => {
+        if (typeof setLastPickupStatus !== 'function') return;
+        if (status === 'started') {
+            setLastPickupStatus('Mendengarkan...');
+        } else if (status === 'failed' || status === 'error') {
+            setLastPickupStatus(message || 'Gagal memperbarui.');
+        } else {
+            setLastPickupStatus('');
+        }
+        console.log('[DEBUG] Last pickup status:', status);
+    }, [setLastPickupStatus]);
+
     /** Restore the persisted session into the panes (only the provided setters apply). */
     const handleSessionState = useCallback((data) => {
         const now = Date.now();
@@ -332,8 +355,14 @@ export const useTranscriptionHandlers = ({
         if (typeof setBulletPoints === 'function') {
             setBulletPoints(Array.isArray(data.bullets) ? data.bullets : []);
         }
+        if (typeof setLastPickup === 'function') {
+            setLastPickup(typeof data.last_pickup === 'string' ? data.last_pickup : '');
+        }
+        if (typeof setLastPickupAuto === 'function' && typeof data.last_pickup_auto === 'boolean') {
+            setLastPickupAuto(data.last_pickup_auto);
+        }
         console.log('[DEBUG] Session state applied');
-    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints]);
+    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints, setLastPickup, setLastPickupAuto]);
 
     return {
         handleFinalTranscription,
@@ -348,6 +377,8 @@ export const useTranscriptionHandlers = ({
         handleClearScreenshots,
         handleBulletPoints,
         handleBulletPointsStatus,
+        handleLastPickup,
+        handleLastPickupStatus,
         handleSessionState
     };
 };

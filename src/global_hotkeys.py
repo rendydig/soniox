@@ -1,11 +1,12 @@
 """System-wide screenshot / bullet-point hotkeys, implemented natively per platform.
 
-Four actions are registered, each with a configurable shortcut (defaults below):
+Five actions are registered, each with a configurable shortcut (defaults below):
 
 - ``screenshot``         capture a screenshot          (Alt+Shift+K)
 - ``clear_screenshots``  clear the captured screenshots
 - ``send_images``        send the captured screenshots to the AI
 - ``bullet_points``      force a bullet-points update
+- ``toggle_windows``     hide/restore all open panes  (Ctrl+Shift+M / Cmd+Shift+M)
 
 On **Windows** this uses ``user32.RegisterHotKey`` plus a Qt native event filter.
 On **macOS** it uses the Carbon framework's ``RegisterEventHotKey`` (loaded via
@@ -38,6 +39,7 @@ HOTKEY_SCREENSHOT = 1
 HOTKEY_CLEAR_SCREENSHOTS = 2
 HOTKEY_SEND_IMAGES = 3
 HOTKEY_BULLET_POINTS = 4
+HOTKEY_TOGGLE_WINDOWS = 5
 
 # Stable action names used for persistence (ui_state.json / Settings).
 HOTKEY_ACTIONS = {
@@ -45,6 +47,7 @@ HOTKEY_ACTIONS = {
     HOTKEY_CLEAR_SCREENSHOTS: "clear_screenshots",
     HOTKEY_SEND_IMAGES: "send_images",
     HOTKEY_BULLET_POINTS: "bullet_points",
+    HOTKEY_TOGGLE_WINDOWS: "toggle_windows",
 }
 HOTKEY_IDS = {name: hotkey_id for hotkey_id, name in HOTKEY_ACTIONS.items()}
 
@@ -53,17 +56,20 @@ def default_bindings():
     """Default portable shortcut per hotkey id (mirrors the historical keys)."""
     if _IS_MACOS:
         # Qt swaps Ctrl/Cmd on macOS, so "Meta" is the physical Control key.
+        # A portable "Ctrl+Shift+M" registers as Cmd+Shift+M on macOS.
         return {
             HOTKEY_SCREENSHOT: "Alt+Shift+K",
             HOTKEY_CLEAR_SCREENSHOTS: "Meta+Alt+Shift+K",
             HOTKEY_SEND_IMAGES: "Meta+Alt+Shift+G",
             HOTKEY_BULLET_POINTS: "Meta+Alt+P",
+            HOTKEY_TOGGLE_WINDOWS: "Ctrl+Shift+M",
         }
     return {
         HOTKEY_SCREENSHOT: "Alt+Shift+K",
         HOTKEY_CLEAR_SCREENSHOTS: "Alt+Ctrl+Shift+K",
         HOTKEY_SEND_IMAGES: "Ctrl+Alt+Shift+G",
         HOTKEY_BULLET_POINTS: "Ctrl+Alt+P",
+        HOTKEY_TOGGLE_WINDOWS: "Ctrl+Shift+M",
     }
 
 
@@ -274,20 +280,21 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
 
     Each action maps to a portable shortcut (see :func:`default_bindings`) and to
     a callback; ``on_screenshot`` fires for ``screenshot``, ``on_clear`` for
-    ``clear_screenshots``, ``on_send_image`` for ``send_images`` and
-    ``on_bullet_points`` for ``bullet_points``. Bindings can be changed at runtime
-    with :meth:`rebind`. The callbacks run on the Qt main thread, so they may
-    safely touch widgets.
+    ``clear_screenshots``, ``on_send_image`` for ``send_images``,
+    ``on_bullet_points`` for ``bullet_points`` and ``on_toggle_windows`` for
+    ``toggle_windows``. Bindings can be changed at runtime with :meth:`rebind`.
+    The callbacks run on the Qt main thread, so they may safely touch widgets.
     """
 
     def __init__(self, on_screenshot=None, on_clear=None, on_send_image=None,
-                 on_bullet_points=None, bindings=None):
+                 on_bullet_points=None, on_toggle_windows=None, bindings=None):
         super().__init__()
         self._callbacks = {
             HOTKEY_SCREENSHOT: on_screenshot,
             HOTKEY_CLEAR_SCREENSHOTS: on_clear,
             HOTKEY_SEND_IMAGES: on_send_image,
             HOTKEY_BULLET_POINTS: on_bullet_points,
+            HOTKEY_TOGGLE_WINDOWS: on_toggle_windows,
         }
         self._bindings = default_bindings()
         self._apply_overrides(bindings)
