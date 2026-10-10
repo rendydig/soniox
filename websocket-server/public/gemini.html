@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini Suggestion</title>
+    <title>AI Suggestion</title>
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <style>
@@ -30,6 +30,22 @@
             z-index: 10;
             display: flex;
             gap: 4px;
+        }
+
+        .gemini-context {
+            position: absolute;
+            top: 7px;
+            left: 10px;
+            z-index: 10;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* Keep clear of the ⇤ ⇥ − buttons on the right. */
+            max-width: calc(100% - 120px);
+            cursor: default;
         }
 
         .gemini-control-btn {

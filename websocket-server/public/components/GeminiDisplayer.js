@@ -38,7 +38,7 @@ export const GeminiDisplayer = ({ geminiResults, geminiStatus }) => {
     if (!hasContent) {
         return html`
             <div class="live-text gemini-view" ref=${geminiRef}>
-                Waiting for Gemini suggestion...
+                Waiting for AI suggestion...
             </div>
         `;
     }

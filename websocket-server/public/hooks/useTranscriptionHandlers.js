@@ -19,6 +19,7 @@ export const useTranscriptionHandlers = ({
     setLastPickup,
     setLastPickupStatus,
     setLastPickupAuto,
+    setPurposeState,
     wsManager
 }) => {
     const correctionEnabledRef = useRef(correctionEnabled);
@@ -331,6 +332,13 @@ export const useTranscriptionHandlers = ({
         console.log('[DEBUG] Last pickup status:', status);
     }, [setLastPickupStatus]);
 
+    /** Selected Purpose + "I am:" role pushed by the desktop app. */
+    const handlePurposeState = useCallback((purpose, role) => {
+        if (typeof setPurposeState !== 'function') return;
+        setPurposeState({ purpose, role });
+        console.log('[DEBUG] Purpose state:', purpose, role);
+    }, [setPurposeState]);
+
     /** Restore the persisted session into the panes (only the provided setters apply). */
     const handleSessionState = useCallback((data) => {
         const now = Date.now();
@@ -379,6 +387,7 @@ export const useTranscriptionHandlers = ({
         handleBulletPointsStatus,
         handleLastPickup,
         handleLastPickupStatus,
+        handlePurposeState,
         handleSessionState
     };
 };

@@ -146,7 +146,7 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
   views only requires repointing the getter, not changing session/translation logic.
 - Device changes apply on the next **Start** (combos are read in `_start_session`).
 
-## Gemini suggestion window
+## AI suggestion window
 - `GeminiWindow` (`src/ui_components/gemini_window.py`) is a **separate top-level window**
   (no Qt parent), frameless + `WindowStaysOnTopHint` + `Tool`, **free-floating** on the
   primary screen: `GEMINI_WINDOW_WIDTH` (400px) wide by default, movable via a top drag

@@ -79,7 +79,7 @@ AI_STREAM_CHUNK_INTERVAL_MS = 60
 # (endpoint detection has already waited out the silence), so it fires after
 # only AUTO_REPLY_ENDPOINT_DEBOUNCE_MS.
 AUTO_REPLY_DEBOUNCE_MS = 1200
-AUTO_REPLY_ENDPOINT_DEBOUNCE_MS = 900
+AUTO_REPLY_ENDPOINT_DEBOUNCE_MS = 1200
 
 DEFAULT_AI_MODELS = {
     "gemini": "gemini-2.5-flash",

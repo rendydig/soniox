@@ -141,7 +141,7 @@ const BulletPointsApp = () => {
                         role="tab"
                         aria-selected=${tab === 'bullets'}
                         onClick=${() => setTab('bullets')}
-                    >☑ Bullet Points</button>
+                    >Bullet Points</button>
                     <button
                         class="bullet-tab ${tab === 'pickup' ? 'active' : ''}"
                         role="tab"

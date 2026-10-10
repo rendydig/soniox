@@ -15,6 +15,7 @@ export const useWebSocketHandler = ({
     handleBulletPointsStatus,
     handleLastPickup,
     handleLastPickupStatus,
+    handlePurposeState,
     handleSessionState,
     handleConnection
 }) => {
@@ -83,6 +84,10 @@ export const useWebSocketHandler = ({
             if (typeof handleLastPickupStatus === 'function') {
                 handleLastPickupStatus(data.status, data.message);
             }
+        } else if (data.type === 'purpose_state') {
+            if (typeof handlePurposeState === 'function') {
+                handlePurposeState(data.purpose, data.role);
+            }
         } else if (data.type === 'correction_response') {
             console.log('[WebSocket] Correction response:', data);
             handleCorrectionResponse(data);
@@ -105,6 +110,7 @@ export const useWebSocketHandler = ({
         handleBulletPointsStatus,
         handleLastPickup,
         handleLastPickupStatus,
+        handlePurposeState,
         handleSessionState,
         handleConnection
     ]);

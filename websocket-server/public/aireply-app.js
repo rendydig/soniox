@@ -17,6 +17,7 @@ const GeminiApp = () => {
     const [geminiStatus, setGeminiStatus] = useState('');
     const [screenshots, setScreenshots] = useState([]);
     const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
+    const [purposeState, setPurposeState] = useState(null);
     const wsManager = useRef(null);
 
     const {
@@ -27,6 +28,8 @@ const GeminiApp = () => {
         /** Screenshot Handlers */
         handleScreenshot,
         handleClearScreenshots,
+        /** Purpose / role context */
+        handlePurposeState,
         /** Session restore */
         handleSessionState
     } = useTranscriptionHandlers({
@@ -43,6 +46,7 @@ const GeminiApp = () => {
         setGeminiResults,
         setGeminiStatus,
         setScreenshots,
+        setPurposeState,
         wsManager
     });
 
@@ -70,6 +74,7 @@ const GeminiApp = () => {
         handleGeminiStatus,
         handleScreenshot,
         handleClearScreenshots,
+        handlePurposeState,
         handleSessionState,
         handleConnection
     });
@@ -87,6 +92,11 @@ const GeminiApp = () => {
 
     return html`
         <div class="card gemini-card">
+            ${purposeState && html`
+                <div class="gemini-context" title=${`${purposeState.purpose} · ${purposeState.role}`}>
+                    ${purposeState.purpose} · ${purposeState.role}
+                </div>
+            `}
             <div class="gemini-controls">
                 <button
                     class="gemini-control-btn"
@@ -108,7 +118,7 @@ const GeminiApp = () => {
                 >−</button>
             </div>
             <h2>
-                ✨ Gemini Suggestion
+                ✨ AI suggestion
                 <div class="gemini-header-actions">
                     <label class="toggle-label">
                         <input

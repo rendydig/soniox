@@ -791,7 +791,7 @@
         cursor: default;
     }
 
-    /* Rendered Gemini suggestion (markdown -> HTML) */
+    /* Rendered AI suggestion (markdown -> HTML) */
     .markdown-body {
         font-size: 14px;
         line-height: 1.5;

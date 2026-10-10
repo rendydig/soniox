@@ -1034,6 +1034,15 @@ class MainWindow(QMainWindow):
         # it here so the pane's checkbox reflects the current value on connect.
         payload["last_pickup_auto"] = self._last_pickup_auto_enabled
         self.websocket_client.send_message(payload)
+        self._send_purpose_state()
+
+    def _send_purpose_state(self):
+        """Broadcast the selected Purpose + ``I am:`` role labels to the panes."""
+        self.websocket_client.send_message({
+            "type": "purpose_state",
+            "purpose": self.purpose_combo.currentText(),
+            "role": self.host_role_combo.currentText(),
+        })
 
     def _on_bullet_points_error(self, msg: str):
         """Handle bullet-points worker errors (logged, not popped up)."""
@@ -1111,6 +1120,7 @@ class MainWindow(QMainWindow):
         if purpose is not None:
             self.pronunciation_checkbox.setChecked(purpose.get("include_pronunciation_default", False))
         self._refresh_host_roles(key)
+        self._send_purpose_state()
 
     def _refresh_host_roles(self, purpose_key):
         """Repopulate the ``I am:`` combo for a purpose and apply its role."""
@@ -1130,6 +1140,7 @@ class MainWindow(QMainWindow):
         if key:
             self._host_role_by_purpose[key] = role
         self.translation_controller.set_host_role(role)
+        self._send_purpose_state()
         self._save_state()
 
     def _on_smart_decision_toggled(self, checked: bool):
