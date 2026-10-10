@@ -556,7 +556,102 @@
         font-style: italic;
     }
 
-    /* Tabs (Bullet Points / Last Picked Up) */
+    /* Countdown to the next automatic flush (auto mode only). Left-aligned
+       under the "Bullet Points" tab title; both sides count down from the
+       deadline published by the backend's QTimer. */
+    .bullet-countdown {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #059669;
+        font-size: 12px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
+    }
+
+    /* Small pulsing dot that marks a live countdown. */
+    .bullet-countdown-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #10b981;
+        animation: textPulse 1.5s ease-in-out infinite;
+    }
+
+    /* Speaker (KYC) profile tab */
+    .live-text.speaker-view {
+        background: transparent;
+        color: #065f46;
+        font-style: normal;
+        white-space: normal;
+    }
+
+    .kyc-section {
+        margin-bottom: 14px;
+    }
+
+    .kyc-section:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Small-caps green section heading. */
+    .kyc-heading {
+        color: #059669;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    /* Label + value identity row (Name / Location / Occupation). */
+    .kyc-row {
+        display: flex;
+        gap: 8px;
+        line-height: 1.5;
+        margin-bottom: 4px;
+    }
+
+    .kyc-label {
+        flex: 0 0 auto;
+        min-width: 84px;
+        color: #059669;
+        font-weight: 600;
+    }
+
+    .kyc-value {
+        flex: 1;
+        min-width: 0;
+        color: #1f2937;
+        overflow-wrap: anywhere;
+    }
+
+    /* List entries reuse the .bullet-item row with a small marker. */
+    .kyc-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .kyc-marker {
+        flex: 0 0 auto;
+        min-width: 18px;
+        color: #059669;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    /* Pain points get a distinct accent. */
+    .kyc-pain .kyc-marker {
+        color: #dc2626;
+    }
+
+    .kyc-pain .bullet-text {
+        color: #b91c1c;
+    }
+
+    /* Tabs (Bullet Points / Speaker / Last Picked Up) */
     .bullet-tabs {
         display: flex;
         gap: 4px;

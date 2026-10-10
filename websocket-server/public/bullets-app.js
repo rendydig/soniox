@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'https://esm.sh/preact@
 import htm from 'https://esm.sh/htm@3.1.1';
 import { WebSocketManager } from './websocket-manager.js';
 import { BulletPointsList } from './components/BulletPointsList.js';
+import { SpeakerProfile } from './components/SpeakerProfile.js';
 import { useWebSocketHandler } from './hooks/useWebSocketHandler.js';
 import { useTranscriptionHandlers } from './hooks/useTranscriptionHandlers.js';
 
@@ -13,6 +14,9 @@ const noop = () => {};
 const BulletPointsApp = () => {
     const [, setConnected] = useState(false);
     const [items, setItems] = useState([]);
+    const [speaker, setSpeaker] = useState({});
+    const [countdown, setCountdown] = useState(null);
+    const [now, setNow] = useState(() => Date.now());
     const [status, setStatus] = useState('');
     const [tab, setTab] = useState('bullets');
     const [lastPickup, setLastPickup] = useState('');
@@ -23,6 +27,7 @@ const BulletPointsApp = () => {
     const {
         handleBulletPoints,
         handleBulletPointsStatus,
+        handleBulletPointsCountdown,
         handleLastPickup,
         handleLastPickupStatus,
         handleSessionState
@@ -39,6 +44,8 @@ const BulletPointsApp = () => {
         corrections: {},
         setBulletPoints: setItems,
         setBulletPointsStatus: setStatus,
+        setBulletCountdown: setCountdown,
+        setSpeakerProfile: setSpeaker,
         setLastPickup,
         setLastPickupStatus,
         setLastPickupAuto: setAutoPickup,
@@ -66,6 +73,7 @@ const BulletPointsApp = () => {
         handleCorrectionResponse: noop,
         handleBulletPoints,
         handleBulletPointsStatus,
+        handleBulletPointsCountdown,
         handleLastPickup,
         handleLastPickupStatus,
         handleSessionState,
@@ -83,6 +91,22 @@ const BulletPointsApp = () => {
         };
     }, [handleMessage]);
 
+    // Ticks the clock the countdown is measured against. The deadline itself
+    // comes from the backend QTimer, so both sides count down from one instant.
+    useEffect(() => {
+        const id = setInterval(() => setNow(Date.now()), 500);
+        return () => clearInterval(id);
+    }, []);
+
+    /** "4:32" left until the next automatic flush (null when auto is off). */
+    const countdownLabel = (() => {
+        if (!countdown) return null;
+        const remaining = Math.max(0, Math.ceil(countdown.at * 1000 - now));
+        const minutes = Math.floor(remaining / 60000);
+        const seconds = String(Math.floor((remaining % 60000) / 1000)).padStart(2, '0');
+        return `${minutes}:${seconds}`;
+    })();
+
     const toggleAutoPickup = useCallback((enabled) => {
         setAutoPickup(enabled);
         sendControl({ type: 'set_last_pickup_auto', enabled });
@@ -90,6 +114,10 @@ const BulletPointsApp = () => {
 
     const bulletsView = html`
         <${BulletPointsList} items=${items} status=${status} />
+    `;
+
+    const speakerView = html`
+        <${SpeakerProfile} profile=${speaker} status=${status} />
     `;
 
     const pickupView = html`
@@ -102,13 +130,13 @@ const BulletPointsApp = () => {
                 />
                 <span>Auto pickup aktif</span>
             </label>
-            ${lastPickupStatus && html`<div class="bullet-status">${lastPickupStatus}</div>`}
             ${lastPickup
                 ? html`<div class="pickup-text">${lastPickup}</div>`
                 : html`<div class="bullet-empty">
                     Belum ada yang terambil. Nyalakan "Auto pickup" dan mulailah
                     percakapan.
                 </div>`}
+            ${lastPickupStatus && html`<div class="bullet-status">${lastPickupStatus}</div>`}
         </div>
     `;
 
@@ -135,30 +163,48 @@ const BulletPointsApp = () => {
                 >−</button>
             </div>
             <div class="bullet-header">
-                <div class="bullet-tabs" role="tablist">
-                    <button
-                        class="bullet-tab ${tab === 'bullets' ? 'active' : ''}"
-                        role="tab"
-                        aria-selected=${tab === 'bullets'}
-                        onClick=${() => setTab('bullets')}
-                    >Bullet Points</button>
-                    <button
-                        class="bullet-tab ${tab === 'pickup' ? 'active' : ''}"
-                        role="tab"
-                        aria-selected=${tab === 'pickup'}
-                        onClick=${() => setTab('pickup')}
-                    >Last Picked Up</button>
+                <div class="bullet-header-row">
+                    <div class="bullet-tabs" role="tablist">
+                        <button
+                            class="bullet-tab ${tab === 'bullets' ? 'active' : ''}"
+                            role="tab"
+                            aria-selected=${tab === 'bullets'}
+                            onClick=${() => setTab('bullets')}
+                        >Bullet Points</button>
+                        <button
+                            class="bullet-tab ${tab === 'speaker' ? 'active' : ''}"
+                            role="tab"
+                            aria-selected=${tab === 'speaker'}
+                            onClick=${() => setTab('speaker')}
+                        >Speaker</button>
+                        <button
+                            class="bullet-tab ${tab === 'pickup' ? 'active' : ''}"
+                            role="tab"
+                            aria-selected=${tab === 'pickup'}
+                            onClick=${() => setTab('pickup')}
+                        >Last Picked Up</button>
+                    </div>
+                    ${tab === 'bullets' && html`
+                        <button
+                            class="pane-control-btn bullet-rebuild-btn"
+                            title="Rebuild the list from the whole conversation"
+                            aria-label="Rebuild bullet points"
+                            onClick=${() => sendControl({ type: 'regenerate_bullet_points' })}
+                        >Rebuild</button>
+                    `}
                 </div>
-                ${tab === 'bullets' && html`
-                    <button
-                        class="pane-control-btn bullet-rebuild-btn"
-                        title="Rebuild the list from the whole conversation"
-                        aria-label="Rebuild bullet points"
-                        onClick=${() => sendControl({ type: 'regenerate_bullet_points' })}
-                    >Rebuild</button>
+                ${countdownLabel && html`
+                    <div
+                        class="bullet-countdown"
+                        role="timer"
+                        title="Time left until the next automatic bullet-points update"
+                    >
+                        <span class="bullet-countdown-dot" aria-hidden="true"></span>
+                        Next update in ${countdownLabel}
+                    </div>
                 `}
             </div>
-            ${tab === 'bullets' ? bulletsView : pickupView}
+            ${tab === 'bullets' ? bulletsView : tab === 'speaker' ? speakerView : pickupView}
         </div>
     `;
 };

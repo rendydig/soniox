@@ -1,4 +1,5 @@
 import logging
+import time
 
 from PySide6.QtCore import QObject, Qt, QTimer, Signal
 
@@ -25,25 +26,41 @@ class BulletPointsController(QObject):
     (the manual hotkey) regardless of ``auto``.
     """
 
-    updated = Signal(list)
+    updated = Signal(list, dict)  # (items, speaker profile)
     status_changed = Signal(str)
     error_occurred = Signal(str)
+    # (auto active, epoch seconds of the next interval tick; 0 when auto is off).
+    # The pane renders this as the countdown under the Bullet Points tab title,
+    # so the frontend and the backend QTimer share one deadline.
+    countdown_changed = Signal(bool, float)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self._auto = False
         self._bullets = []
+        self._speaker = {}
         self._buffer = []
         self._inflight_lines = []
         self._worker = None
         self._old_workers = []
+        self._next_flush_at = 0.0
 
         self._timer = QTimer(self)
         self._timer.setInterval(BULLET_FLUSH_INTERVAL_MS)
-        self._timer.timeout.connect(self._maybe_flush)
+        self._timer.timeout.connect(self._on_interval_tick)
 
     def is_auto(self):
         return self._auto
+
+    @property
+    def next_flush_at(self):
+        """Epoch seconds of the next interval tick (0 while auto is off)."""
+        return self._next_flush_at if self._auto else 0.0
+
+    def _arm_countdown(self):
+        """Publish the deadline of the *next* interval tick to the panes."""
+        self._next_flush_at = time.time() + BULLET_FLUSH_INTERVAL_MS / 1000.0
+        self.countdown_changed.emit(True, self._next_flush_at)
 
     def set_auto(self, auto: bool):
         """Turn automatic updates on/off, keeping the current list as a checkpoint."""
@@ -53,14 +70,27 @@ class BulletPointsController(QObject):
         self._auto = auto
         if auto:
             self._timer.start()
+            self._arm_countdown()
             # Show the checkpoint immediately, then catch up on buffered lines.
-            if self._bullets:
-                self.updated.emit(list(self._bullets))
+            if self._bullets or self._speaker:
+                self.updated.emit(list(self._bullets), dict(self._speaker))
             if self._buffer:
                 self._maybe_flush()
         else:
             self._timer.stop()
+            self._next_flush_at = 0.0
+            self.countdown_changed.emit(False, 0.0)
         logger.debug("Bullet points auto=%s (buffer=%d)", auto, len(self._buffer))
+
+    def _on_interval_tick(self):
+        """The repeating auto timer fired: re-arm the countdown, then flush.
+
+        Only this path (and ``set_auto``) moves the deadline, so an early
+        flush (full buffer / manual hotkey) never shifts the 5-minute cadence
+        the pane is counting down.
+        """
+        self._arm_countdown()
+        self._maybe_flush()
 
     def add_line(self, source: str, text: str):
         """Buffer a finalized line (always; free). Auto mode flushes early at N lines."""
@@ -103,19 +133,25 @@ class BulletPointsController(QObject):
             self.status_changed.emit("error")
             return
         logger.info("Rebuilding bullet points from %d transcript lines", len(lines))
-        self._start_worker([], lines, rebuild=True)
+        self._start_worker([], {}, lines, rebuild=True)
 
     def reset(self):
-        """Clear the list and buffer (e.g. at the start of a session)."""
+        """Clear the list, profile, and buffer (e.g. at the start of a session)."""
         self._bullets = []
+        self._speaker = {}
         self._buffer = []
-        self.updated.emit([])
+        self.updated.emit([], {})
 
-    def load_bullets(self, items):
-        """Seed the list from a restored session (no AI call, no broadcast)."""
+    def load_state(self, items, speaker=None):
+        """Seed the list and speaker profile from a restored session (no AI call)."""
         self._bullets = list(items or [])[:BULLET_MAX_ITEMS]
+        self._speaker = dict(speaker or {})
         self._buffer = []
-        logger.debug("Bullet points restored: %d items", len(self._bullets))
+        logger.debug(
+            "Bullet points restored: %d items, %d profile fields",
+            len(self._bullets),
+            len(self._speaker),
+        )
 
     def _maybe_flush(self, force: bool = False):
         """Start a worker only when (auto or forced), idle, and there is something new."""
@@ -127,11 +163,14 @@ class BulletPointsController(QObject):
             return
         self._inflight_lines = self._buffer
         self._buffer = []
-        self._start_worker(list(self._bullets), self._inflight_lines)
+        self._start_worker(list(self._bullets), dict(self._speaker), self._inflight_lines)
 
-    def _start_worker(self, current_bullets: list, lines: list, rebuild: bool = False):
+    def _start_worker(self, current_bullets: list, current_speaker: dict, lines: list,
+                     rebuild: bool = False):
         try:
-            self._worker = BulletPointsWorker(current_bullets, lines, rebuild=rebuild)
+            self._worker = BulletPointsWorker(
+                current_bullets, current_speaker, lines, rebuild=rebuild
+            )
             self._worker.result.connect(self._on_result, Qt.ConnectionType.QueuedConnection)
             self._worker.error.connect(self._on_error, Qt.ConnectionType.QueuedConnection)
             self.status_changed.emit("started")
@@ -142,11 +181,15 @@ class BulletPointsController(QObject):
             self._worker = None
             self.error_occurred.emit(f"Failed to start bullet points: {e}")
 
-    def _on_result(self, items: list):
+    def _on_result(self, payload: dict):
         self._recycle_worker()
         self._inflight_lines = []
-        self._bullets = list(items)[:BULLET_MAX_ITEMS]
-        self.updated.emit(list(self._bullets))
+        items = payload.get("items") if isinstance(payload, dict) else None
+        speaker = payload.get("speaker") if isinstance(payload, dict) else None
+        self._bullets = list(items or [])[:BULLET_MAX_ITEMS]
+        if isinstance(speaker, dict):
+            self._speaker = dict(speaker)
+        self.updated.emit(list(self._bullets), dict(self._speaker))
         self.status_changed.emit("complete")
 
     def _on_error(self, msg: str):

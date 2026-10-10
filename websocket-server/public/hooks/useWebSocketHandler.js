@@ -13,6 +13,7 @@ export const useWebSocketHandler = ({
     handleClearScreenshots,
     handleBulletPoints,
     handleBulletPointsStatus,
+    handleBulletPointsCountdown,
     handleLastPickup,
     handleLastPickupStatus,
     handlePurposeState,
@@ -70,11 +71,15 @@ export const useWebSocketHandler = ({
             }
         } else if (data.type === 'bullet_points') {
             if (typeof handleBulletPoints === 'function') {
-                handleBulletPoints(data.items || [], data.timestamp);
+                handleBulletPoints(data.items || [], data.speaker, data.timestamp);
             }
         } else if (data.type === 'bullet_points_status') {
             if (typeof handleBulletPointsStatus === 'function') {
                 handleBulletPointsStatus(data.status, data.message);
+            }
+        } else if (data.type === 'bullet_points_countdown') {
+            if (typeof handleBulletPointsCountdown === 'function') {
+                handleBulletPointsCountdown(data.auto, data.next_flush_at, data.interval_ms);
             }
         } else if (data.type === 'last_pickup') {
             if (typeof handleLastPickup === 'function') {
@@ -108,6 +113,7 @@ export const useWebSocketHandler = ({
         handleClearScreenshots,
         handleBulletPoints,
         handleBulletPointsStatus,
+        handleBulletPointsCountdown,
         handleLastPickup,
         handleLastPickupStatus,
         handlePurposeState,

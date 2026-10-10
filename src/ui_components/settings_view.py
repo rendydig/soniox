@@ -126,8 +126,9 @@ class SettingsViewWidget(QWidget):
         self.bullet_points_checkbox.setChecked(False)
         self.bullet_points_checkbox.setToolTip(
             "Automatically update a running bullet-point list of the conversation "
-            "(every 15s / 12 lines). Off = update on demand with CTRL+ALT+P while "
-            "the pane is open. Hiding the pane pauses auto updates."
+            "(every 5 minutes / 120 lines; the pane shows a countdown to the next "
+            "update). Off = update on demand with CTRL+ALT+P while the pane is "
+            "open. Hiding the pane pauses auto updates."
         )
         layout.addWidget(self.bullet_points_checkbox)
 

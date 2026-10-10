@@ -16,6 +16,8 @@ export const useTranscriptionHandlers = ({
     setScreenshots,
     setBulletPoints,
     setBulletPointsStatus,
+    setBulletCountdown,
+    setSpeakerProfile,
     setLastPickup,
     setLastPickupStatus,
     setLastPickupAuto,
@@ -292,12 +294,27 @@ export const useTranscriptionHandlers = ({
         console.log('[DEBUG] Screenshots cleared');
     }, [setScreenshots]);
 
-    /** Rolling bullet-point list update from the Python app. */
-    const handleBulletPoints = useCallback((items) => {
-        if (typeof setBulletPoints !== 'function') return;
-        setBulletPoints(Array.isArray(items) ? items : []);
+    /** Rolling bullet-point list + speaker (KYC) profile update from the Python app. */
+    const handleBulletPoints = useCallback((items, speaker) => {
+        if (typeof setBulletPoints === 'function') {
+            setBulletPoints(Array.isArray(items) ? items : []);
+        }
+        // Older payloads carry no profile (or a null one) — leave it untouched.
+        if (speaker && typeof speaker === 'object' && typeof setSpeakerProfile === 'function') {
+            setSpeakerProfile(speaker);
+        }
         console.log('[DEBUG] Bullet points updated:', Array.isArray(items) ? items.length : 0);
-    }, [setBulletPoints]);
+    }, [setBulletPoints, setSpeakerProfile]);
+
+    /** Auto-flush countdown: absolute deadline from the backend timer (0/auto off = hide). */
+    const handleBulletPointsCountdown = useCallback((auto, nextFlushAt, intervalMs) => {
+        if (typeof setBulletCountdown !== 'function') return;
+        const at = Number(nextFlushAt) || 0;
+        setBulletCountdown(auto && at > 0
+            ? { at, intervalMs: Number(intervalMs) || 0 }
+            : null);
+        console.log('[DEBUG] Bullet countdown:', auto, at);
+    }, [setBulletCountdown]);
 
     /** Bullet-points progress / failure status. */
     const handleBulletPointsStatus = useCallback((status, message) => {
@@ -363,6 +380,11 @@ export const useTranscriptionHandlers = ({
         if (typeof setBulletPoints === 'function') {
             setBulletPoints(Array.isArray(data.bullets) ? data.bullets : []);
         }
+        if (typeof setSpeakerProfile === 'function') {
+            setSpeakerProfile(
+                typeof data.speaker === 'object' && data.speaker ? data.speaker : {}
+            );
+        }
         if (typeof setLastPickup === 'function') {
             setLastPickup(typeof data.last_pickup === 'string' ? data.last_pickup : '');
         }
@@ -370,7 +392,7 @@ export const useTranscriptionHandlers = ({
             setLastPickupAuto(data.last_pickup_auto);
         }
         console.log('[DEBUG] Session state applied');
-    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints, setLastPickup, setLastPickupAuto]);
+    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints, setSpeakerProfile, setLastPickup, setLastPickupAuto]);
 
     return {
         handleFinalTranscription,
@@ -385,6 +407,7 @@ export const useTranscriptionHandlers = ({
         handleClearScreenshots,
         handleBulletPoints,
         handleBulletPointsStatus,
+        handleBulletPointsCountdown,
         handleLastPickup,
         handleLastPickupStatus,
         handlePurposeState,

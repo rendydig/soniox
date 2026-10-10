@@ -9,6 +9,7 @@ from PySide6.QtGui import QKeySequence, QShortcut, QAction, QActionGroup, QGuiAp
 from src.config import (
     MAX_TRANSCRIPTION_LINES,
     AUTO_REPLY_ENDPOINT_DEBOUNCE_MS,
+    BULLET_FLUSH_INTERVAL_MS,
     LAST_PICKUP_DEBOUNCE_MS,
     LAST_PICKUP_ENDPOINT_DEBOUNCE_MS,
 )
@@ -700,6 +701,7 @@ class MainWindow(QMainWindow):
         self.bullet_points_controller.updated.connect(self._on_bullet_points_updated)
         self.bullet_points_controller.status_changed.connect(self._send_bullet_status)
         self.bullet_points_controller.error_occurred.connect(self._on_bullet_points_error)
+        self.bullet_points_controller.countdown_changed.connect(self._send_bullet_countdown)
 
         self.last_pickup_controller.updated.connect(self._on_last_pickup_updated)
         self.last_pickup_controller.status_changed.connect(self._send_last_pickup_status)
@@ -761,7 +763,9 @@ class MainWindow(QMainWindow):
     def _restore_session(self):
         """Restore the previous session's state into the controllers and editor."""
         data = self.session_store.snapshot()
-        self.bullet_points_controller.load_bullets(data.get("bullets") or [])
+        self.bullet_points_controller.load_state(
+            data.get("bullets") or [], data.get("speaker") or {}
+        )
         self.last_pickup_controller.load_last_pickup(data.get("last_pickup") or "")
         self.translation_controller.load_conversation_history(data.get("conversation") or [])
         self._screenshots = list(data.get("screenshots") or [])
@@ -1005,14 +1009,33 @@ class MainWindow(QMainWindow):
         ]
         self.bullet_points_controller.hard_regenerate(lines)
 
-    def _on_bullet_points_updated(self, items: list):
-        """Broadcast the updated bullet-point list to the webview."""
-        self.websocket_client.send_message({"type": "bullet_points", "items": list(items)})
+    def _on_bullet_points_updated(self, items: list, speaker: dict):
+        """Broadcast the updated bullet list + speaker profile to the webview."""
+        self.websocket_client.send_message({
+            "type": "bullet_points",
+            "items": list(items or []),
+            "speaker": dict(speaker or {}),
+        })
         self.session_store.set_bullets(items)
+        self.session_store.set_speaker(speaker)
 
     def _send_bullet_status(self, status: str):
         """Broadcast a bullet-points progress/failure status to the webview."""
         self.websocket_client.send_message({"type": "bullet_points_status", "status": status})
+
+    def _send_bullet_countdown(self, auto: bool, next_flush_at: float):
+        """Broadcast the auto-flush countdown (pane shows it under the tab title).
+
+        ``next_flush_at`` is an absolute epoch deadline from the controller's
+        own QTimer, so the pane's ticking display and the backend timer count
+        down from the same instant; ``auto=False`` hides it.
+        """
+        self.websocket_client.send_message({
+            "type": "bullet_points_countdown",
+            "auto": bool(auto),
+            "next_flush_at": float(next_flush_at or 0.0),
+            "interval_ms": BULLET_FLUSH_INTERVAL_MS,
+        })
 
     def _on_last_pickup_updated(self, text: str):
         """Broadcast the latest picked-up topic to the webview and persist it."""
@@ -1035,6 +1058,10 @@ class MainWindow(QMainWindow):
         payload["last_pickup_auto"] = self._last_pickup_auto_enabled
         self.websocket_client.send_message(payload)
         self._send_purpose_state()
+        # A (re)connecting pane has no countdown yet: push the current one so a
+        # reload / pane re-show resumes the same number the backend is showing.
+        controller = self.bullet_points_controller
+        self._send_bullet_countdown(controller.is_auto(), controller.next_flush_at)
 
     def _send_purpose_state(self):
         """Broadcast the selected Purpose + ``I am:`` role labels to the panes."""

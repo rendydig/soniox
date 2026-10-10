@@ -29,8 +29,11 @@ SESSION_FIELDS = (
 # Session fields stored as plain strings rather than lists.
 SESSION_TEXT_FIELDS = ("last_pickup",)
 
+# Session fields stored as JSON objects (dicts) rather than lists.
+SESSION_OBJECT_FIELDS = ("speaker",)
+
 # Every persisted field, in the order they are created / normalized.
-ALL_SESSION_FIELDS = SESSION_FIELDS + SESSION_TEXT_FIELDS
+ALL_SESSION_FIELDS = SESSION_FIELDS + SESSION_TEXT_FIELDS + SESSION_OBJECT_FIELDS
 
 # Per-field retention caps, so a long session can't grow without bound.
 SESSION_CAPS = {
@@ -52,6 +55,8 @@ def _new_session_data():
         data[field] = []
     for field in SESSION_TEXT_FIELDS:
         data[field] = ""
+    for field in SESSION_OBJECT_FIELDS:
+        data[field] = {}
     return data
 
 
@@ -83,9 +88,11 @@ class SessionStore:
             return dict(self._data)
 
     def update(self, field, value):
-        """Replace a field's value (lists are copied so the store owns them)."""
+        """Replace a field's value (lists/dicts are copied so the store owns them)."""
         if isinstance(value, list):
             value = list(value)
+        elif isinstance(value, dict):
+            value = dict(value)
         with self._lock:
             self._data[field] = value
             self._data["updated_at"] = datetime.now(timezone.utc).isoformat()
@@ -107,11 +114,19 @@ class SessionStore:
     def set_bullets(self, bullets):
         self.update("bullets", list(bullets or []))
 
+    def set_speaker(self, profile):
+        self.update("speaker", dict(profile or {}))
+
     def clear_fields(self, fields):
         """Empty the given fields (used by New Session / reset)."""
         with self._lock:
             for field in fields:
-                self._data[field] = []
+                if field in SESSION_OBJECT_FIELDS:
+                    self._data[field] = {}
+                elif field in SESSION_TEXT_FIELDS:
+                    self._data[field] = ""
+                else:
+                    self._data[field] = []
             self._data["updated_at"] = datetime.now(timezone.utc).isoformat()
         self._dirty.set()
 
@@ -201,4 +216,7 @@ class SessionStore:
         for field in SESSION_TEXT_FIELDS:
             if not isinstance(base.get(field), str):
                 base[field] = ""
+        for field in SESSION_OBJECT_FIELDS:
+            if not isinstance(base.get(field), dict):
+                base[field] = {}
         return base

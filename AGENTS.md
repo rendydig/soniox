@@ -284,12 +284,22 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
   With auto on, a repeating `QTimer` (`BULLET_FLUSH_INTERVAL_MS`, 15 s) *polls* (ticks are free
   when the buffer is empty or a worker is running) and it also flushes early at
   `BULLET_MAX_BUFFER_LINES` (12). An idle/auto-off conversation costs **zero tokens**.
-- Each call sends the **current list + only the new lines** to `BulletPointsWorker`
-  (`src/bullet_points_worker.py`), which reuses `AIClient.generate` and the same `.env`
-  provider/model and returns the full updated list as JSON (`_parse_bullet_json` tolerates
-  code fences; malformed output keeps the previous list and retries). Cost stays flat
-  (O(list + delta)) instead of re-sending the whole transcript (O(N²)). The list is capped at
-  `BULLET_MAX_ITEMS` (12).
+- Each call sends the **current list + current speaker profile + only the new lines** to
+  `BulletPointsWorker` (`src/bullet_points_worker.py`), which reuses `AIClient.generate` and
+  the same `.env` provider/model and returns a JSON **object**
+  `{"bullets": [...], "speaker": {...}}` — one AI call keeps both the list and the
+  **KYC speaker profile** updated. `_parse_result_json` tolerates code fences/prose (and a
+  bare JSON **array**, which falls back to bullets + empty profile); malformed output keeps
+  the previous state and retries. Cost stays flat (O(list + delta)) instead of re-sending the
+  whole transcript (O(N²)). The list is capped at `BULLET_MAX_ITEMS` (12).
+- **Speaker (KYC) profile**: `speaker` in the worker output / session is a dict —
+  `{name, location, occupation}` (labelled rows) plus `interests`, `goals`, `pain_points`,
+  `facts` (short standalone items, ~8 each, `SPEAKER_MAX_LIST_ITEMS` in `src/config.py`,
+  enforced in the prompt **and** by trimming the parsed result). Facts/pain points are only
+  extracted from `[speaker]` lines (the host is "us", the speaker is the customer); profile
+  fields update **only when the speaker reveals them** (never guessed), unknown = `""`/`[]`.
+  `BulletPointsController` holds `_bullets` + `_speaker`, its `updated` signal is
+  `Signal(list, dict)`, and `load_state(items, speaker)` seeds both from a restored session.
 - **Auto / manual / checkpoint:** auto updates run only when the checkbox is on **and** the
   pane is visible; hiding the pane (Tool ▾ or its `−`) pauses the timer but keeps the current
   list as a checkpoint and keeps buffering. Re-showing broadcasts the checkpoint immediately
@@ -298,26 +308,44 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
   it works with auto off, but is a no-op (logged) when the pane is hidden (never auto-shows it).
 - `MainWindow` wires it: `_on_transcription_update` buffers final lines via `add_line`
   (unconditional); `_trigger_bullet_points_now` is the `CTRL+ALT+P` callback;
-  `_on_bullet_points_updated` broadcasts `{"type":"bullet_points","items":[...]}` and
+  `_on_bullet_points_updated(items, speaker)` broadcasts
+  `{"type":"bullet_points","items":[...],"speaker":{...}}` (persisted via `set_bullets` +
+  `set_speaker`) and
   `_send_bullet_status` broadcasts `{"type":"bullet_points_status","status":...}` over the
   WebSocket (`send_message`, rebroadcast by the server). Pane control messages:
   `hide_bullet_points_window`, `set_bullet_points_window_edge`.
+- **Auto-flush countdown**: `BulletPointsController.countdown_changed = Signal(bool, float)`
+  carries `(auto, next_flush_at)` where `next_flush_at` is the epoch deadline of the
+  controller's own `QTimer` (`BULLET_FLUSH_INTERVAL_MS`, 5 min). It is re-armed only in
+  `_on_interval_tick` (and on `set_auto`), so an early/manual flush never shifts the
+  cadence, and cleared to `(False, 0.0)` when auto turns off (checkbox **and** pane
+  visible). `MainWindow._send_bullet_countdown` broadcasts
+  `{"type":"bullet_points_countdown","auto":bool,"next_flush_at":s,"interval_ms":ms}`,
+  also pushed from `_send_session_state` so a reloaded pane resumes the same number.
+  The pane (`bullets-app.js`) ticks locally off that absolute deadline (shared by both
+  sides) and renders `Next update in 4:32` as `.bullet-countdown` under the tab row
+  (left-aligned beneath the *Bullet Points* tab title) — **only while auto is on**.
 - `BulletPointsWindow` (`src/ui_components/bullet_points_window.py`) mirrors
   `GeminiWindow`/`LiveWindow` (frameless, always-on-top, `Tool`, drag + width/height resize,
   dock left/right, own `set_capture_protection`) but starts **free-floating** on the right
   (not edge-docked) to avoid colliding with the docked panes. Its web view loads
   `http://localhost:8765/bullets` → `public/bullets.html` + `public/bullets-app.js`
   (server route `/bullets`), rendering `components/BulletPointsList.js` with a custom
-  CSS-drawn checkmark.
+  CSS-drawn checkmark. The pane has **three tabs** — Bullet Points / **Speaker** /
+  Last Picked Up; the Speaker tab renders `components/SpeakerProfile.js` (identity rows +
+  `.kyc-*` sections, `.kyc-pain` accent for pain points, shares the update status line and
+  an empty-state hint). The Rebuild button lives on the bullets tab but regenerates the
+  profile too (it is one AI call).
 - Persisted in `ui_state.json`: `settings.bullet_points` (auto, default false),
   `settings.bullet_points_window_visible` (default false) and a `bullet_points_window`
   geometry block. `_set_pane_edge` swaps any docked pane on the target edge across all three
   panes.
 
 ## Sessions (persistence, resume, new session)
-- A **session** is the conversation state persisted to `sessions/current.json` (gitignored):
-  `bullets`, `conversation`, `transcriptions`, `translations`, `gemini_results`, `screenshots`
-  (each capped in `src/config.py`). `SessionStore` (`src/session_store.py`) holds it in memory and
+- A **session** is the conversation state persisted to `sessions/current.json` (gitignored):  `bullets`, `conversation`, `transcriptions`, `translations`, `gemini_results`, `screenshots`
+  (each capped in `src/config.py`) plus the dict-typed `speaker` profile and the string
+  `last_pickup`.
+ `SessionStore` (`src/session_store.py`) holds it in memory and
   a **background daemon thread** JSON-dumps snapshots on a debounce
   (`SESSION_WRITE_DEBOUNCE_MS`, 2 s) via a temp file + `os.replace`, so file I/O never blocks the
   UI. `flush()` writes synchronously; `close()` (called from `closeEvent`) stops the thread after
@@ -330,7 +358,8 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
   `SessionStore.new_session()` archives the current session to `sessions/<id>.json` (when
   non-empty) and starts a fresh `current.json`; the editor/history/bullets/screenshots are cleared
   and an **empty `session_state`** is broadcast so every pane resets.
-- **Restore on launch**: `MainWindow._restore_session` seeds `BulletPointsController.load_bullets`,
+- **Restore on launch**: `MainWindow._restore_session` seeds
+  `BulletPointsController.load_state(bullets, speaker)`,
   `TranslationController.load_conversation_history`, `MainWindow._screenshots` and the
   transcription `QTextEdit`. Webviews restore their slice by sending
   `{"type":"request_session_state"}` when they receive the server's `connection` message;
