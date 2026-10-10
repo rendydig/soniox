@@ -158,9 +158,12 @@ BULLET_MAX_LINE_CHARS = 300
 # "Last Picked Up": extracts the latest topic/intent the speaker is expressing.
 # The whole rolling window (last N finalized lines) is sent on each call, and the
 # answer is always in Indonesian with reasoning disabled (cheap, fast capture).
+# Both paths debounce so a pickup fires only after the speaker pauses; a final
+# WITH Soniox's <end> marker no longer fires immediately (mirrors the auto-reply
+# pair above).
 LAST_PICKUP_MAX_LINES = 40
 LAST_PICKUP_DEBOUNCE_MS = 1200
-LAST_PICKUP_ENDPOINT_DEBOUNCE_MS = 0
+LAST_PICKUP_ENDPOINT_DEBOUNCE_MS = 1200
 
 # Optional Speaker profile file (context_speaker.txt). None/absent = unknown,
 # and the prompt then asks the model to infer the Speaker's role from context.

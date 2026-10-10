@@ -49,15 +49,23 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
 
 Auto-reply latency (constants in `src/config.py`):
 - `AUTO_REPLY_DEBOUNCE_MS` (1200) — debounce for a final **without** Soniox's `<end>` marker.
-- `AUTO_REPLY_ENDPOINT_DEBOUNCE_MS` (0) — delay for a final **with** `<end>` (true end of the
-  utterance; endpoint detection already waited out the silence), so replies fire almost
-  immediately. The `<end>` flag rides as the 4th arg of the `transcription_update` signal
+- `AUTO_REPLY_ENDPOINT_DEBOUNCE_MS` (1200) — delay for a final **with** `<end>` (true end of the
+  utterance). It now debounces like the non-endpoint path instead of firing immediately. The
+  `<end>` flag rides as the 4th arg of the `transcription_update` signal
   (`src/workers.py` → `src/controllers/transcription_controller.py` → `src/ui.py`).
 - `SONIOX_MAX_ENDPOINT_DELAY_MS` (800; Soniox default 2000), `SONIOX_ENDPOINT_LATENCY_ADJUSTMENT_LEVEL`
   (2) and `SONIOX_ENDPOINT_SENSITIVITY` (0.4) — sent in the Soniox session config
   (`src/workers.py`) so endpoint detection emits `<end>` sooner. Aggressive preset: faster but
   can slightly reduce word-recognition accuracy and split long speech into more segments; lower
   them to trade speed back for accuracy.
+
+"Last Picked Up" (the Bullet Points pane's second tab) uses its **own** pair of debounce
+constants, separate from auto-reply: `LAST_PICKUP_DEBOUNCE_MS` (1200) and
+`LAST_PICKUP_ENDPOINT_DEBOUNCE_MS` (1200). Every finalized **speaker** line re-arms the timer
+(`src/ui.py` → `LastPickupController.schedule`), so a pickup AI call fires only once the speaker
+pauses — the `<end>` path no longer fires at 0 ms. Host lines are buffered into the window but
+never schedule a pickup; the whole rolling window (`LAST_PICKUP_MAX_LINES`, 40) is sent to the
+AI, which answers with one Indonesian sentence about the latest speaker intent.
 
 Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSocket):
 - `AIClient.generate_stream(system_instruction, messages)` (`src/ai_client.py`) is a generator:

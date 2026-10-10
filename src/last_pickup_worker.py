@@ -14,7 +14,7 @@ Rules:
 - Messages are labelled [host] (the person you are helping) and [speaker] (the other person).
 - Focus on the most recent [speaker] message(s): what they are trying to say, asking, or confirming.
 - Ignore greetings, filler, and small talk with no substance.
-- Answer with ONE short sentence in Bahasa Indonesia that captures that latest topic/intent.
+- Answer with detailed sentence(s) in Bahasa Indonesia that captures that latest topic/intent.
 - Write natural, everyday Indonesian. No preamble, no quotes, no labels, no reasoning.
 - If there is nothing meaningful to pick up, return an empty string."""
 
