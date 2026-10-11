@@ -1,11 +1,12 @@
 """System-wide screenshot / bullet-point hotkeys, implemented natively per platform.
 
-Five actions are registered, each with a configurable shortcut (defaults below):
+Six actions are registered, each with a configurable shortcut (defaults below):
 
 - ``screenshot``         capture a screenshot          (Alt+Shift+K)
 - ``clear_screenshots``  clear the captured screenshots
 - ``send_images``        send the captured screenshots to the AI
 - ``bullet_points``      force a bullet-points update
+- ``last_pickup``        force a "Last Picked Up" update (Alt+Shift+L)
 - ``toggle_windows``     hide/restore all open panes  (Ctrl+Shift+M / Cmd+Shift+M)
 
 On **Windows** this uses ``user32.RegisterHotKey`` plus a Qt native event filter.
@@ -40,6 +41,7 @@ HOTKEY_CLEAR_SCREENSHOTS = 2
 HOTKEY_SEND_IMAGES = 3
 HOTKEY_BULLET_POINTS = 4
 HOTKEY_TOGGLE_WINDOWS = 5
+HOTKEY_LAST_PICKUP = 6
 
 # Stable action names used for persistence (ui_state.json / Settings).
 HOTKEY_ACTIONS = {
@@ -48,6 +50,7 @@ HOTKEY_ACTIONS = {
     HOTKEY_SEND_IMAGES: "send_images",
     HOTKEY_BULLET_POINTS: "bullet_points",
     HOTKEY_TOGGLE_WINDOWS: "toggle_windows",
+    HOTKEY_LAST_PICKUP: "last_pickup",
 }
 HOTKEY_IDS = {name: hotkey_id for hotkey_id, name in HOTKEY_ACTIONS.items()}
 
@@ -63,6 +66,7 @@ def default_bindings():
             HOTKEY_SEND_IMAGES: "Meta+Alt+Shift+G",
             HOTKEY_BULLET_POINTS: "Meta+Alt+P",
             HOTKEY_TOGGLE_WINDOWS: "Ctrl+Shift+M",
+            HOTKEY_LAST_PICKUP: "Alt+Shift+L",
         }
     return {
         HOTKEY_SCREENSHOT: "Alt+Shift+K",
@@ -70,6 +74,7 @@ def default_bindings():
         HOTKEY_SEND_IMAGES: "Ctrl+Alt+Shift+G",
         HOTKEY_BULLET_POINTS: "Ctrl+Alt+P",
         HOTKEY_TOGGLE_WINDOWS: "Ctrl+Shift+M",
+        HOTKEY_LAST_PICKUP: "Alt+Shift+L",
     }
 
 
@@ -281,13 +286,15 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
     Each action maps to a portable shortcut (see :func:`default_bindings`) and to
     a callback; ``on_screenshot`` fires for ``screenshot``, ``on_clear`` for
     ``clear_screenshots``, ``on_send_image`` for ``send_images``,
-    ``on_bullet_points`` for ``bullet_points`` and ``on_toggle_windows`` for
-    ``toggle_windows``. Bindings can be changed at runtime with :meth:`rebind`.
-    The callbacks run on the Qt main thread, so they may safely touch widgets.
+    ``on_bullet_points`` for ``bullet_points``, ``on_last_pickup`` for
+    ``last_pickup`` and ``on_toggle_windows`` for ``toggle_windows``. Bindings can
+    be changed at runtime with :meth:`rebind`. The callbacks run on the Qt main
+    thread, so they may safely touch widgets.
     """
 
     def __init__(self, on_screenshot=None, on_clear=None, on_send_image=None,
-                 on_bullet_points=None, on_toggle_windows=None, bindings=None):
+                 on_bullet_points=None, on_toggle_windows=None, on_last_pickup=None,
+                 bindings=None):
         super().__init__()
         self._callbacks = {
             HOTKEY_SCREENSHOT: on_screenshot,
@@ -295,6 +302,7 @@ class GlobalHotkeys(QAbstractNativeEventFilter):
             HOTKEY_SEND_IMAGES: on_send_image,
             HOTKEY_BULLET_POINTS: on_bullet_points,
             HOTKEY_TOGGLE_WINDOWS: on_toggle_windows,
+            HOTKEY_LAST_PICKUP: on_last_pickup,
         }
         self._bindings = default_bindings()
         self._apply_overrides(bindings)

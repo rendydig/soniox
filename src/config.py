@@ -207,7 +207,9 @@ SPEAKER_MAX_LIST_ITEMS = 8
 
 # "Last Picked Up": extracts the latest topic/intent the speaker is expressing.
 # The whole rolling window (last N finalized lines) is sent on each call, and the
-# answer is always in Indonesian with reasoning disabled (cheap, fast capture).
+# answer is Indonesian first, then the same content in the speaker's language
+# (labelled; only when that language is not Indonesian), with reasoning disabled
+# (cheap, fast capture).
 # Both paths debounce so a pickup fires only after the speaker pauses; a final
 # WITH Soniox's <end> marker no longer fires immediately (mirrors the auto-reply
 # pair above).

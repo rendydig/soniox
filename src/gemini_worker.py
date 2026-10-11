@@ -82,22 +82,40 @@ def _build_messages(conversation_history: list, latest_text: str, images: list =
     """Normalize conversation history into provider-neutral messages.
 
     Returns a list of ``{"role": "user" | "assistant", "text": str, "images": [...]}``
-    dicts. Consecutive same-role turns are merged, a leading host turn is dropped
-    (so the list starts with a user turn), the latest transcription is appended
-    unless already present, and screenshots are attached to the final user turn.
+    dicts. The trailing Speaker turn is kept as its own clean final user message
+    (so the latest utterance is never merged into a block or duplicated); the
+    remaining consecutive same-role turns are merged, a leading host turn is
+    dropped (so the list starts with a user turn), and screenshots are attached
+    to the final user turn.
     """
     logger.debug("Contents Length (%d turns):", len(conversation_history))
     for i, turn in enumerate(conversation_history):
         logger.debug("  [%d] role=%s | text=%s | suggestion=%s", i, turn['role'], turn['text'], turn['suggestion'])
 
+    # Drop completely empty entries up front.
+    turns = []
+    for t in conversation_history:
+        text = (t.get("text") or "").strip()
+        if text:
+            turns.append({"role": t.get("role"), "text": text})
+
+    # The list must start with a 'user' turn, so drop any leading unpaired host turn.
+    if turns and turns[0].get("role") == "host":
+        turns.pop(0)
+
+    # The trailing Speaker turn is the authoritative "latest utterance": keep it
+    # out of the merge so it stays a single, clean final user message.
+    latest_utterance = None
+    if turns and turns[-1].get("role") == "speaker":
+        latest_utterance = turns.pop()["text"]
+    if not latest_utterance:
+        latest_utterance = (latest_text or "").strip()
+
     # Merge consecutive turns with the same role to reduce fragmentation/noise
     merged_history = []
-    for t in conversation_history:
+    for t in turns:
         role = t.get("role")
-        text = (t.get("text") or "").strip()
-        # Skip completely empty entries
-        if not text:
-            continue
+        text = t["text"]
         if merged_history and merged_history[-1].get("role") == role:
             # Merge into previous entry
             prev_text = merged_history[-1].get("text", "")
@@ -107,10 +125,6 @@ def _build_messages(conversation_history: list, latest_text: str, images: list =
                 "role": role,
                 "text": text
             })
-
-    # The list must start with a 'user' turn, so drop any leading unpaired host turn.
-    if merged_history and merged_history[0].get("role") == "host":
-        merged_history.pop(0)
 
     messages = []
     idx = 0
@@ -140,16 +154,14 @@ def _build_messages(conversation_history: list, latest_text: str, images: list =
 
         idx += 1
 
-    # Build latest user input, but don't duplicate it if the caller already
-    # appended the current transcription as the most recent speaker turn.
-    latest_input = (latest_text or "").strip()
-    already_latest_speaker = (
-        merged_history
-        and merged_history[-1].get("role") == "speaker"
-        and merged_history[-1].get("text", "").strip() == latest_input
-    )
-    if latest_input and not already_latest_speaker:
-        messages.append({"role": "user", "text": latest_input})
+    # Guarantee the final turn is a single, clean Speaker utterance (never merged
+    # into a block and never duplicated).
+    if latest_utterance and not (
+        messages
+        and messages[-1].get("role") == "user"
+        and messages[-1].get("text", "").strip() == latest_utterance
+    ):
+        messages.append({"role": "user", "text": latest_utterance})
 
     # Attach screenshots to the final user turn, or append a new user turn when
     # the conversation ends with an assistant turn (or is empty).

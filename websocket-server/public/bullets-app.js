@@ -122,14 +122,22 @@ const BulletPointsApp = () => {
 
     const pickupView = html`
         <div class="live-text pickup-view">
-            <label class="pickup-toggle">
-                <input
-                    type="checkbox"
-                    checked=${autoPickup}
-                    onChange=${(e) => toggleAutoPickup(e.target.checked)}
-                />
-                <span>Auto pickup aktif</span>
-            </label>
+            <div class="pickup-actions">
+                <label class="pickup-toggle">
+                    <input
+                        type="checkbox"
+                        checked=${autoPickup}
+                        onChange=${(e) => toggleAutoPickup(e.target.checked)}
+                    />
+                    <span>Auto pickup aktif</span>
+                </label>
+                <button
+                    class="pane-control-btn bullet-rebuild-btn"
+                    title="Run the last-picked-up update now"
+                    aria-label="Pick up now"
+                    onClick=${() => sendControl({ type: 'trigger_last_pickup' })}
+                >Pick up now</button>
+            </div>
             ${lastPickup
                 ? html`<div class="pickup-text">${lastPickup}</div>`
                 : html`<div class="bullet-empty">

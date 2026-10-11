@@ -15,11 +15,15 @@ class LastPickupController(QObject):
 
     Finalized conversation lines are always buffered into a rolling window (the
     last ``LAST_PICKUP_MAX_LINES``); when ``auto`` is on, a debounced call sends
-    that whole window to the AI and emits the resulting Indonesian sentence. The
-    result is a single string that replaces the previous one.
+    that whole window to the AI and emits the resulting reply — Indonesian first,
+    then the same content labelled in the speaker's language (only when that
+    language is not Indonesian). The result is a single string that replaces the
+    previous one.
 
     The trigger is externally scheduled (the UI calls ``schedule`` at the end of
     a speaker utterance), so non-final/live text never reaches the AI.
+    ``trigger_now()`` runs on demand (the manual hotkey / pane button) regardless
+    of ``auto``.
     """
 
     updated = Signal(str)
@@ -33,6 +37,7 @@ class LastPickupController(QObject):
         self._worker = None
         self._old_workers = []
         self._rerun_pending = False
+        self._rerun_force = False
 
         self._timer = QTimer(self)
         self._timer.setSingleShot(True)
@@ -70,6 +75,11 @@ class LastPickupController(QObject):
         self._timer.stop()
         self._timer.start(max(0, int(delay_ms)))
 
+    def trigger_now(self):
+        """Run the pickup now (manual hotkey / pane button), regardless of ``auto``."""
+        self._timer.stop()
+        self._maybe_run(force=True)
+
     def reset(self):
         """Clear the window and the shown pickup (e.g. at the start of a session)."""
         self._timer.stop()
@@ -82,15 +92,16 @@ class LastPickupController(QObject):
         self._last_result = str(text or "")
         logger.debug("Last pickup restored: %d chars", len(self._last_result))
 
-    def _maybe_run(self):
-        """Start a worker only when auto, there is a window, and nothing is in flight."""
-        if not self._auto:
+    def _maybe_run(self, force: bool = False):
+        """Start a worker when (auto or forced), there is a window, and nothing is in flight."""
+        if not self._auto and not force:
             return
         if not self._lines:
             return
         if self._worker is not None and self._worker.isRunning():
             # A newer window arrived mid-call; refresh once this one finishes.
             self._rerun_pending = True
+            self._rerun_force = self._rerun_force or force
             return
         self._start_worker(list(self._lines))
 
@@ -121,7 +132,9 @@ class LastPickupController(QObject):
     def _run_pending(self):
         if self._rerun_pending:
             self._rerun_pending = False
-            self._maybe_run()
+            force = self._rerun_force
+            self._rerun_force = False
+            self._maybe_run(force=force)
 
     def _recycle_worker(self):
         if self._worker is not None:

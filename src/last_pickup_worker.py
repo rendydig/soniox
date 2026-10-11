@@ -14,8 +14,15 @@ Rules:
 - Messages are labelled [host] (the person you are helping) and [speaker] (the other person).
 - Focus on the most recent [speaker] message(s): what they are trying to say, asking, or confirming.
 - Ignore greetings, filler, and small talk with no substance.
-- Answer with detailed sentence(s) in Bahasa Indonesia that captures that latest topic/intent.
-- Write natural, everyday Indonesian. No preamble, no quotes, no labels, no reasoning.
+- Answer with one or two paragraphs separated by a blank line:
+  1. First paragraph: detailed sentence(s) in natural, everyday Bahasa Indonesia that capture
+     that latest topic/intent.
+  2. Second paragraph: the SAME meaning written in the language the Speaker is actually using,
+     prefixed with that language's English name and a colon (e.g. "English: ..."). Include this
+     paragraph ONLY when the Speaker's language is not Indonesian; if the Speaker is speaking
+     Indonesian, output only the first paragraph.
+- No preamble, no quotes, no reasoning. The only label allowed is the language name on the
+  second paragraph.
 - If there is nothing meaningful to pick up, return an empty string."""
 
 

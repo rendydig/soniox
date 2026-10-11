@@ -115,8 +115,9 @@ class MainWindow(QMainWindow):
 
         # System-wide hotkeys: ALT+SHIFT+K captures a screenshot, ALT+CTRL+SHIFT+K
         # clears the ones shown in the Gemini pane, CTRL+ALT+SHIFT+G sends the
-        # captured screenshots to Gemini, CTRL+ALT+P updates the bullet points, and
-        # CTRL+SHIFT+M (Cmd+Shift+M on macOS) hides/restores all open panes.
+        # captured screenshots to Gemini, CTRL+ALT+P updates the bullet points,
+        # ALT+SHIFT+L updates "Last Picked Up", and CTRL+SHIFT+M (Cmd+Shift+M on
+        # macOS) hides/restores all open panes.
         # Restore any user-customised global hotkeys from ui_state before registering.
         stored_hotkeys = _as_dict(_as_dict(load_state().get("settings")).get("hotkeys"))
         self.hotkeys = GlobalHotkeys(
@@ -125,6 +126,7 @@ class MainWindow(QMainWindow):
             on_send_image=self._send_images_to_gemini,
             on_bullet_points=self._trigger_bullet_points_now,
             on_toggle_windows=self._toggle_all_panes,
+            on_last_pickup=self._trigger_last_pickup_now,
             bindings=parse_bindings(stored_hotkeys),
         )
         self.hotkeys.register()
@@ -1117,6 +1119,9 @@ class MainWindow(QMainWindow):
         elif msg_type == "regenerate_bullet_points":
             logger.info("Bullet points rebuild requested from webview")
             self._regenerate_bullet_points()
+        elif msg_type == "trigger_last_pickup":
+            logger.info("Last pickup update requested from webview")
+            self._trigger_last_pickup_now()
         elif msg_type == "set_last_pickup_auto":
             logger.info("Last pickup auto -> %s", data.get("enabled"))
             self._last_pickup_auto_enabled = bool(data.get("enabled"))
@@ -1124,10 +1129,14 @@ class MainWindow(QMainWindow):
             self._save_state()
 
     def _manual_reply(self):
-        """Manually trigger a Gemini reply using the last final transcription (Ctrl+R / Cmd+R)."""
-        text = self._last_final_transcription.strip()
+        """Manually trigger a Gemini reply using the last Speaker utterance (Ctrl+R / Cmd+R)."""
+        text = ""
+        for turn in reversed(self.translation_controller.get_conversation_history()):
+            if turn.get("role") != "host" and (turn.get("text") or "").strip():
+                text = turn["text"].strip()
+                break
         if not text:
-            text = self.transcription_editor.toPlainText().strip()
+            text = self._last_final_transcription.strip()
         if not text:
             logger.warning("No transcription available to reply to.")
             return
@@ -1312,6 +1321,14 @@ class MainWindow(QMainWindow):
             return
         logger.info("Bullet points manual update requested")
         self.bullet_points_controller.flush_now(force=True)
+
+    def _trigger_last_pickup_now(self):
+        """ALT+SHIFT+L / "Pick up now": update on demand (silent; only when the pane is shown)."""
+        if not self.bullet_points_window_action.isChecked():
+            logger.info("Bullet points pane hidden; last-pickup update ignored")
+            return
+        logger.info("Last pickup manual update requested")
+        self.last_pickup_controller.trigger_now()
 
     def _set_pane_edge(self, window, edge):
         """Dock a pane to ``edge``, moving any docked pane on that edge to the opposite side."""

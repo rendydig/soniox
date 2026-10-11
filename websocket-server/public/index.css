@@ -701,10 +701,25 @@
         cursor: pointer;
     }
 
+    /* Auto-pickup toggle + "Pick up now" button on one row. */
+    .pickup-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .pickup-actions .pickup-toggle {
+        margin-bottom: 0;
+    }
+
     .pickup-text {
         color: #1f2937;
         font-size: 15px;
         line-height: 1.6;
+        /* Keep the blank-line-separated paragraphs (Indonesian + Speaker language). */
+        white-space: pre-wrap;
     }
 
     /* Screenshot gallery (ALT+SHIFT+K captures, ALT+CTRL+SHIFT+K clears) */
