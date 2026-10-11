@@ -21,8 +21,9 @@ SONIOX_API_KEY = os.environ.get("SONIOX_API_KEY")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 SELF_CONTEXT_FILE = os.environ.get("SELF_CONTEXT_FILE")
 
-# Soniox realtime transcription WebSocket endpoint.
-WS_URL = "wss://stt-rt.soniox.com/transcribe-websocket"
+# Soniox realtime transcription WebSocket endpoint. Overridable for testing
+# (e.g. a local fake Soniox server): SONIOX_WS_URL=ws://localhost:9999.
+WS_URL = os.environ.get("SONIOX_WS_URL", "wss://stt-rt.soniox.com/transcribe-websocket")
 
 # Soniox real-time endpoint detection tuning. Aggressive preset: endpoints are
 # emitted sooner at some cost to word-recognition accuracy and to how finely

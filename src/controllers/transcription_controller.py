@@ -43,15 +43,10 @@ class TranscriptionController(QObject):
             return False
         
         # Clean up any existing workers first
-        if self._host_worker is not None:
-            self._host_worker.stop()
-            self._host_worker.wait(1000)
-            self._host_worker = None
-        
-        if self._speaker_worker is not None:
-            self._speaker_worker.stop()
-            self._speaker_worker.wait(1000)
-            self._speaker_worker = None
+        self._stop_worker(self._host_worker)
+        self._host_worker = None
+        self._stop_worker(self._speaker_worker)
+        self._speaker_worker = None
         
         try:
             self._current_mode = mode
@@ -127,16 +122,33 @@ class TranscriptionController(QObject):
         """Handle errors from worker."""
         self.error_occurred.emit(f"[{input_source}] {msg}")
         
-        # Stop both workers on error
-        if self._host_worker:
-            self._host_worker.stop()
-        if self._speaker_worker:
-            self._speaker_worker.stop()
+        # Stop both workers on error. Wait for the threads to actually exit
+        # before dropping the last Python reference: a QThread destroyed while
+        # still running aborts the process.
+        self._stop_worker(self._host_worker)
+        self._host_worker = None
+        self._stop_worker(self._speaker_worker)
+        self._speaker_worker = None
         
         self._transcribing = False
-        self._host_worker = None
-        self._speaker_worker = None
         self.session_stopped.emit()
+
+    def _stop_worker(self, worker):
+        """Stop a SonioxWorker and ensure its thread has exited before dropping it.
+
+        ``stop()`` only flips a flag, so the thread may still be tearing down its
+        audio stream; a QThread destroyed while running aborts the process, so
+        wait (and terminate as a last resort) before letting it be collected.
+        """
+        if worker is None:
+            return
+        worker.stop()
+        if worker.isRunning():
+            worker.wait(2000)
+        if worker.isRunning():
+            worker.terminate()
+            worker.wait(1000)
+        worker.deleteLater()
     
     def _on_worker_finished(self, input_source: str):
         """Handle worker thread finished."""
@@ -149,12 +161,7 @@ class TranscriptionController(QObject):
     
     def cleanup(self):
         """Clean up resources."""
-        if self._host_worker is not None and self._host_worker.isRunning():
-            self._host_worker.stop()
-            self._host_worker.wait(3000)
-            self._host_worker = None
-        
-        if self._speaker_worker is not None and self._speaker_worker.isRunning():
-            self._speaker_worker.stop()
-            self._speaker_worker.wait(3000)
-            self._speaker_worker = None
+        self._stop_worker(self._host_worker)
+        self._host_worker = None
+        self._stop_worker(self._speaker_worker)
+        self._speaker_worker = None

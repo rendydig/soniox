@@ -1,6 +1,7 @@
 import sys
 import os
 import logging
+import threading
 from datetime import datetime
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QDialog, QMenu, QToolButton, QPushButton, QMessageBox)
@@ -45,6 +46,12 @@ from src.ui_state import load_state, save_state
 from src.session_store import SessionStore
 
 logger = logging.getLogger(__name__)
+
+# Long-run diagnostics: a one-line memory/thread/editor sample appended here
+# every HEALTH_LOG_INTERVAL_MS so growth (or a crash) is visible over hours.
+_LOGS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
+HEALTH_LOG = os.path.join(_LOGS_DIR, "health.log")
+HEALTH_LOG_INTERVAL_MS = 30000
 
 # Default width of the bottom bar. It is fixed (not derived from the panes) and
 # user-resizable; the narrowest it can shrink to is the trimmed content minimum.
@@ -147,7 +154,13 @@ class MainWindow(QMainWindow):
         self._memory_monitor_timer = QTimer()
         self._memory_monitor_timer.timeout.connect(self._update_memory_usage)
         self._memory_monitor_timer.start(5000)
-        
+
+        # Long-run health trace: append a memory/thread/editor sample to
+        # logs/health.log so growth over a multi-hour session is measurable.
+        self._health_timer = QTimer()
+        self._health_timer.timeout.connect(self._log_health)
+        self._health_timer.start(HEALTH_LOG_INTERVAL_MS)
+
         self._last_final_transcription = ""
         self._screenshots = []
         self._screen_protection_enabled = True
@@ -186,6 +199,11 @@ class MainWindow(QMainWindow):
         # panes in the persisted state (they are shown later in __init__).
         for _pane in (self.gemini_window, self.live_window, self.bullet_points_window):
             _pane.apply_always_on_top(self._always_on_top)
+            # A webview renderer dying is otherwise silent (blank pane); log it
+            # so a long-run crash leaves a trace.
+            _page = getattr(getattr(_pane, "webview", None), "page", lambda: None)()
+            if _page is not None:
+                _page.renderProcessTerminated.connect(self._on_render_process_terminated)
 
         self._init_menu()
         self._init_ui()
@@ -1237,7 +1255,61 @@ class MainWindow(QMainWindow):
             self.memory_label.setText(f"Lines: {trans_lines}/{MAX_TRANSCRIPTION_LINES}")
         except Exception:
             pass
-    
+
+    def _on_render_process_terminated(self, status, exit_code):
+        """A pane's Chromium renderer died (would otherwise show a blank pane)."""
+        logger.error("Webview renderer terminated: status=%s exit_code=%s", status, exit_code)
+
+    def _append_health(self, fields: str):
+        """Append one health sample line to logs/health.log (best effort)."""
+        line = "%s %s" % (datetime.now().isoformat(timespec="seconds"), fields)
+        try:
+            os.makedirs(_LOGS_DIR, exist_ok=True)
+            with open(HEALTH_LOG, "a", encoding="utf-8") as f:
+                f.write(line + "\n")
+        except OSError:
+            pass
+        logger.info("health: %s", line)
+
+    def _log_health(self):
+        """Sample process/editor health and the webview JS heaps."""
+        try:
+            import psutil
+            rss_mb = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+        except Exception:
+            rss_mb = -1.0
+        try:
+            blocks = self.transcription_editor.document().blockCount()
+        except Exception:
+            blocks = -1
+        try:
+            session_kb = os.path.getsize(self.session_store.path) / 1024
+        except OSError:
+            session_kb = -1.0
+        self._append_health(
+            "rss_mb=%.1f threads=%d editor_blocks=%d session_kb=%.1f"
+            % (rss_mb, threading.active_count(), blocks, session_kb)
+        )
+        # JS heap is only available asynchronously; each pane logs its own line.
+        for name, pane in (("gemini", self.gemini_window),
+                           ("live", self.live_window),
+                           ("bullets", self.bullet_points_window)):
+            view = getattr(pane, "webview", None)
+            if view is None:
+                continue
+            view.page().runJavaScript(
+                "(window.performance && performance.memory)"
+                " ? performance.memory.usedJSHeapSize : 0",
+                lambda value, _name=name: self._on_webview_heap(_name, value),
+            )
+
+    def _on_webview_heap(self, name, value):
+        try:
+            heap_mb = int(value) / 1024 / 1024
+        except (TypeError, ValueError):
+            return
+        self._append_health("webview_%s_heap_mb=%.1f" % (name, heap_mb))
+
     def _set_gemini_window_visible(self, visible):
         """Show or hide the separate AI suggestion pane."""
         if visible:
@@ -1396,6 +1468,7 @@ class MainWindow(QMainWindow):
         """Clean up resources on window close."""
         try:
             self._memory_monitor_timer.stop()
+            self._health_timer.stop()
 
             # Release the global hotkeys
             self.hotkeys.unregister()

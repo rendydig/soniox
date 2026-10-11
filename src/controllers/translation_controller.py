@@ -279,6 +279,11 @@ class TranslationController(QObject):
                 if worker.isRunning():
                     worker.stop()
                     worker.wait(500)
+                # A QThread destroyed while running aborts the process, so
+                # terminate as a last resort before dropping the reference.
+                if worker.isRunning():
+                    worker.terminate()
+                    worker.wait(500)
                 worker.deleteLater()
             self._old_workers = self._old_workers[5:]
     

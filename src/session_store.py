@@ -82,6 +82,11 @@ class SessionStore:
         self._thread.start()
 
     # --- public API ---------------------------------------------------
+    @property
+    def path(self):
+        """Absolute path of the current-session file (used for diagnostics)."""
+        return self._path
+
     def snapshot(self):
         """Return a shallow copy of the session (lists are owned + replaced)."""
         with self._lock:

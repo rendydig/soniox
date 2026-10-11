@@ -17,6 +17,12 @@ const SRT_PATH = path.join(__dirname, '..', 'transcript-converter', 'result-tran
 
 const clients = new Set();
 
+// Per-message logging (every partial/final transcription frame) is off by
+// default: at speech rate it floods stdout, and the app redirects stdout to
+// logs/websocket-server.log, so it grows unboundedly over a long session.
+// Set WS_VERBOSE=1 to re-enable it for debugging.
+const WS_VERBOSE = process.env.WS_VERBOSE === '1' || process.env.WS_VERBOSE === 'true';
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/recordings', express.static(RECORDINGS_PATH));
 app.use('/mp3-live', express.static(MP3_LIVE_PATH));
@@ -66,7 +72,9 @@ wss.on('connection', (ws, req) => {
   ws.on('message', async (data) => {
     try {
       const message = JSON.parse(data.toString());
-      console.log(`[WebSocket] Received: ${message.type} - is_final=${message.is_final} {${message.text}}`);
+      if (WS_VERBOSE) {
+        console.log(`[WebSocket] Received: ${message.type} - is_final=${message.is_final} {${message.text}}`);
+      }
       
       if (message.type === 'get_recordings') {
         console.log(`[WebSocket] Processing recordings list request`);
@@ -221,7 +229,9 @@ wss.on('connection', (ws, req) => {
         }
       });
       
-      console.log(`[WebSocket] Broadcasted to ${broadcastCount} clients`);
+      if (WS_VERBOSE) {
+        console.log(`[WebSocket] Broadcasted to ${broadcastCount} clients`);
+      }
       
     } catch (error) {
       console.error('[WebSocket] Error processing message:', error);

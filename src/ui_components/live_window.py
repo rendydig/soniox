@@ -87,6 +87,10 @@ class LiveWindow(QWidget):
         self.view_stack = QStackedWidget()
         self.transcription_editor = QTextEdit()
         self.transcription_editor.setPlaceholderText("Transcription will appear here...")
+        # The editor is an append-only log trimmed to MAX_TRANSCRIPTION_LINES;
+        # leaving undo enabled would grow QTextDocument's undo stack without
+        # bound over a long session (every insert and every trimmed line).
+        self.transcription_editor.setUndoRedoEnabled(False)
         self.transcription_editor.setStyleSheet(
             "QTextEdit { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 13px; }"
         )

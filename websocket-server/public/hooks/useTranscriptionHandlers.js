@@ -1,6 +1,11 @@
 import { useCallback, useRef, useEffect } from 'https://esm.sh/preact@10.19.3/hooks';
 import { splitIntoSentences } from '../utils.js';
 
+// Only the last few lines are ever rendered, but the state arrays would grow for
+// the whole session; cap them to match the backend's session retention
+// (SESSION_MAX_TRANSCRIPT_LINES = 500) so a multi-hour run stays bounded.
+const MAX_FINALIZED = 500;
+
 export const useTranscriptionHandlers = ({
     setFinalizedSentences,
     setLiveTextHost,
@@ -68,7 +73,7 @@ export const useTranscriptionHandlers = ({
                     timestamp: timestamp || new Date().toISOString(),
                     id: Date.now() + Math.random()
                 };
-                return [...prev, newSentence];
+                return [...prev, newSentence].slice(-MAX_FINALIZED);
             });
         } else {
             setFinalizedSentences(prev => {
@@ -113,7 +118,7 @@ export const useTranscriptionHandlers = ({
                     });
                 }
                 
-                return [...updatedPrev, ...newSentences];
+                return [...updatedPrev, ...newSentences].slice(-MAX_FINALIZED);
             });
         }
         
@@ -158,7 +163,7 @@ export const useTranscriptionHandlers = ({
                     timestamp: timestamp || new Date().toISOString(),
                     id: Date.now() + Math.random()
                 };
-                return [...prev, newTranslation];
+                return [...prev, newTranslation].slice(-MAX_FINALIZED);
             });
         } else {
             setFinalizedTranslations(prev => {
@@ -190,7 +195,7 @@ export const useTranscriptionHandlers = ({
                 
                 console.log('[DEBUG] Finalized translations added:', newTranslations);
                 
-                return [...updatedPrev, ...newTranslations];
+                return [...updatedPrev, ...newTranslations].slice(-MAX_FINALIZED);
             });
         }
         

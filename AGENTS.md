@@ -36,6 +36,9 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
 - `SONIOX_API_KEY` — required (streaming STT)
 - `GEMINI_API_KEY` — required when `AI_PROVIDER=gemini` (default)
 - `GROK_API_KEY` — optional (grammar correction in `websocket-server/gemini-correction.js`)
+- `SONIOX_WS_URL` — optional; overrides the Soniox WebSocket endpoint (default
+  `wss://stt-rt.soniox.com/transcribe-websocket`). Used by the stress harness to point
+  the app at a local fake Soniox server.
 
 AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
 - `AI_PROVIDER` — `gemini` (default) or `openai` (any OpenAI-compatible endpoint:
@@ -453,8 +456,25 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
     `sample_rate: 48000` directly, so no resampling is needed.
   - Virtual outputs (Voicemeeter, VB-Audio, Voice.ai, NVIDIA Broadcast) are filtered out
     of the Speaker list via `WINDOWS_VIRTUAL_OUTPUT_HINTS` in `device_controller.py`.
-  - Clean shutdown order matters: `stop.set()` → `stream.stop_stream()` (unblocks the
-    blocking `read`) → `join()` → `close()` → `PyAudio().terminate()`.
+  - **All audio capture runs in a separate process.** `SonioxWorker._capture_supervisor`
+    spawns `src/audio_capture_process.py` (`sys.executable -u`, no console window) and
+    streams raw int16 mono PCM back over its stdout, forwarding it into the same audio
+    queue. This covers **both** the host (microphone, `sounddevice`) and speaker
+    (loopback, PyAudioWPatch) workers. It is deliberate: the audio stack can hit a
+    **native access violation** — observed in `logs/faulthandler.log`, and reproduced
+    only when the *same Bluetooth headset* is used as Host (its mic → HFP) **and**
+    Speaker (its loopback → A2DP), i.e. an A2DP↔HFP profile switch — which cannot be
+    caught in Python and would otherwise kill the whole app. In a child process it only
+    kills the child: the supervisor detects the exit and **restarts it** (backoff,
+    `_CAPTURE_MAX_RESTARTS` = 5); past the cap it stops that worker only
+    (`_stop_flag = True`). The child's stderr goes to `logs/audio-capture.log`. If the
+    child cannot be spawned it falls back to the in-process capture
+    (`_in_process_capture`).
+  - Clean shutdown: the parent `terminate()`s the child (`_stop_capture_child`) — safe
+    because it is a separate process. The in-process fallback keeps the strict order
+    `stop_stream()`/`stop()` → `join()` → `close()` → `PyAudio().terminate()`, and
+    **skips `close()` if the capture thread is still alive** (closing under a blocked
+    native read would itself crash).
 - **System audio (macOS)** → CoreAudio/PortAudio has **no loopback API**, so system audio
   is read from the *input* side of a virtual device (BlackHole recommended; Soundflower /
   Loopback Audio also match `MACOS_SYSTEM_AUDIO_HINTS`). Descriptors are dicts:
@@ -475,6 +495,14 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
 - Each module uses `logger = logging.getLogger(__name__)`. Add new diagnostics as
   `logger.<level>(...)` with lazy `%`-style args, **not** `print()`, so they flow
   through the same console.
+- **Crash/long-run diagnostics** (`src/logging_setup.py::_install_crash_handlers`,
+  installed by `setup_logging`): `faulthandler` dumps a per-thread Python stack to
+  `logs/faulthandler.log` on a native fault (SIGSEGV/SIGABRT/…), and `sys.excepthook` +
+  `threading.excepthook` append unhandled exceptions to `logs/crash.log`.
+  `MainWindow._log_health` (every `HEALTH_LOG_INTERVAL_MS`, 30 s) appends a sample to
+  `logs/health.log` — RSS, thread count, editor block count, session-file size, and each
+  pane's webview JS heap (`performance.memory.usedJSHeapSize`) — so growth over a
+  multi-hour session is measurable. `QWebEnginePage.renderProcessTerminated` is logged too.
 
 ## Notes / gotchas
 - `sounddevice` has **no** WASAPI loopback API; `soundcard` crashes (heap corruption) —
@@ -513,3 +541,26 @@ venv/Scripts/python.exe -m py_compile src/*.py src/controllers/*.py src/ui_compo
 ```
 Manual: launch the app, set Host = mic and Speaker = a `[Loopback]` output, Start,
 play audio → `[SPEAKER]` lines should appear in the app and at `http://localhost:8765`.
+
+### Long-run stress test (throwaway)
+`_tmp_long_transcription_test.py` drives the real app with **real audio** through a
+**local fake Soniox** server (no real API, AI forced off) to reproduce/measure long-run
+behavior:
+```bash
+# 10 minutes, full app (webviews + Node server); speak into the mic for the run
+venv/Scripts/python.exe _tmp_long_transcription_test.py --minutes 10
+# Python+audio only (no browser panes / Node server)
+venv/Scripts/python.exe _tmp_long_transcription_test.py --minutes 10 --mode pipeline
+# flags: --mode full|pipeline, --host <devid>, --no-speaker, --port <n>
+```
+It redirects the session store to a temp dir, backs up `ui_state.json`, stubs the global
+hotkeys, and prints a start/peak/end report; samples land in `logs/health.log`, a native
+crash in `logs/faulthandler.log`, and the capture child's stderr in
+`logs/audio-capture.log`.
+**Verified 20-min run** (full mode, the crash scenario — same BT headset as Host mic
+`--host 1` and Speaker loopback `--speaker-index 66`): completed cleanly. RSS flat
+(523→685 warm-up then oscillated 613–685, slope ≈ **-1.2 MB/min**, no upward trend),
+threads constant 15, webview heaps constant 9.5 MB, editor blocks capped at 500, **no
+child restarts, no new `faulthandler.log` block, empty `audio-capture.log`/`crash.log`**,
+146.3 MB PCM reached the fake Soniox (≈153.6 MB expected → both streams flowed the whole
+run), clean shutdown with no orphaned capture children.

@@ -3,7 +3,10 @@ import json
 import queue
 import os
 import logging
+import subprocess
+import sys
 import threading
+import time
 import numpy as np
 import sounddevice as sd
 import websockets
@@ -22,6 +25,21 @@ try:
     import pyaudiowpatch as pyaudio
 except ImportError:
     pyaudio = None
+
+# Audio capture (both host/microphone and speaker/loopback) runs in a child
+# process (src/audio_capture_process.py) because the audio stack can hit a native
+# access violation — PortAudio via sounddevice, or PyAudioWPatch's WASAPI loopback
+# when a Bluetooth endpoint is reconfigured (A2DP<->HFP) — which cannot be caught
+# in Python and would otherwise kill the whole app. The parent restarts the child
+# on exit, so the app survives.
+_CAPTURE_CHILD_SCRIPT = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "audio_capture_process.py"
+)
+_CAPTURE_CHILD_LOG = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs", "audio-capture.log"
+)
+_CAPTURE_MAX_RESTARTS = 5
+_CREATE_NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
 
 class SonioxWorker(QThread):
@@ -42,6 +60,8 @@ class SonioxWorker(QThread):
         self._stream = None
         self._pyaudio = None
         self._capture_thread = None
+        self._child = None
+        self._child_restarts = 0
 
         if isinstance(device, dict) and device.get("backend") == "loopback":
             # Windows: WASAPI loopback endpoint, read through PyAudioWPatch.
@@ -65,8 +85,8 @@ class SonioxWorker(QThread):
     def stop(self):
         self._stop_flag = True
 
-    def _push_pcm(self, mono):
-        pcm16 = np.clip(mono * 32767, -32768, 32767).astype(np.int16).tobytes()
+    def _enqueue_pcm(self, pcm16: bytes):
+        """Queue a raw int16 mono chunk, shedding the backlog if it overflows."""
         try:
             self._audio_queue.put_nowait(pcm16)
             self._queue_overflow_count = 0
@@ -80,14 +100,167 @@ class SonioxWorker(QThread):
                         break
                 self._queue_overflow_count = 0
 
+    def _push_pcm(self, mono):
+        self._enqueue_pcm(np.clip(mono * 32767, -32768, 32767).astype(np.int16).tobytes())
+
+    def _spawn_capture_child(self):
+        """Start the isolated capture process for this worker's device; Popen or None."""
+        try:
+            os.makedirs(os.path.dirname(_CAPTURE_CHILD_LOG), exist_ok=True)
+            log_file = open(_CAPTURE_CHILD_LOG, "ab")
+        except OSError:
+            log_file = subprocess.DEVNULL
+        try:
+            proc = subprocess.Popen(
+                [sys.executable, "-u", _CAPTURE_CHILD_SCRIPT],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=log_file,
+                bufsize=0,
+                creationflags=_CREATE_NO_WINDOW,
+            )
+        except OSError as e:
+            logger.error("Failed to start %s capture process: %s", self._backend, e)
+            return None
+        cfg = {
+            "backend": self._backend,
+            "rate": self._sample_rate,
+            "channels": self._channels,
+            "frames_per_buffer": 1024,
+        }
+        if self._backend == "loopback":
+            cfg["index"] = self._loopback_index
+        else:
+            cfg["device"] = self._device_id
+        try:
+            proc.stdin.write(json.dumps(cfg).encode("utf-8") + b"\n")
+            proc.stdin.flush()
+        except OSError as e:
+            logger.error("Failed to configure capture process: %s", e)
+            proc.terminate()
+            return None
+        return proc
+
+    def _read_child_stdout(self, proc):
+        """Forward the child's raw PCM to the audio queue until it exits."""
+        out = proc.stdout
+        while not self._stop_flag:
+            try:
+                chunk = out.read(4096)
+            except (OSError, ValueError):
+                break
+            if not chunk:
+                break
+            self._enqueue_pcm(chunk)
+
+    def _capture_supervisor(self):
+        """Own the capture child: (re)start it and restart it if it crashes."""
+        while not self._stop_flag:
+            proc = self._spawn_capture_child()
+            if proc is None:
+                logger.warning("Falling back to in-process %s capture", self._backend)
+                self._in_process_capture()
+                return
+            self._child = proc
+            reader = threading.Thread(
+                target=self._read_child_stdout, args=(proc,), daemon=True
+            )
+            reader.start()
+            proc.wait()  # returns when the child exits (crash or stop)
+            reader.join(timeout=1)
+            self._child = None
+            if self._stop_flag:
+                return
+            self._child_restarts += 1
+            logger.warning(
+                "%s capture process exited (code=%s); restart %d/%d",
+                self._backend, proc.returncode, self._child_restarts,
+                _CAPTURE_MAX_RESTARTS,
+            )
+            if self._child_restarts > _CAPTURE_MAX_RESTARTS:
+                # Give up on this capture but keep the rest of the session alive:
+                # setting the stop flag ends this worker only.
+                logger.error("%s capture keeps crashing; stopping it", self._backend)
+                self.status.emit("Audio capture failed repeatedly; stopped",
+                                 self._input_source)
+                self._stop_flag = True
+                return
+            delay = min(1.0 * self._child_restarts, 3.0)
+            deadline = time.time() + delay
+            while time.time() < deadline and not self._stop_flag:
+                time.sleep(0.1)
+
+    def _in_process_capture(self):
+        """Fallback used only if the isolated capture process cannot start."""
+        if self._backend == "loopback":
+            self._in_process_loopback_capture()
+            return
+
+        def callback(indata, frames, time_info, status):
+            if not self._stop_flag:
+                self._push_pcm(indata[:, 0])
+
+        try:
+            self._stream = self._open_input_stream(callback)
+            self._stream.start()
+        except Exception as e:
+            self.error.emit(f"Failed to open input stream: {e}", self._input_source)
+            return
+        while not self._stop_flag:
+            time.sleep(0.1)
+
+    def _in_process_loopback_capture(self):
+        if pyaudio is None:
+            self.error.emit("PyAudioWPatch not installed", self._input_source)
+            return
+        try:
+            self._pyaudio = pyaudio.PyAudio()
+            self._stream = self._pyaudio.open(
+                format=pyaudio.paFloat32,
+                channels=2,
+                rate=self._sample_rate,
+                input=True,
+                input_device_index=self._loopback_index,
+                frames_per_buffer=1024,
+            )
+        except Exception as e:
+            self.error.emit(f"Failed to open loopback stream: {e}", self._input_source)
+            return
+        self._loopback_capture()
+
     def _loopback_capture(self):
         while not self._stop_flag:
             try:
                 data = self._stream.read(1024, exception_on_overflow=False)
-            except Exception:
+            except Exception as e:
+                # A read failure is expected on shutdown (the stream is being
+                # stopped); log it only if we were not asked to stop.
+                if not self._stop_flag:
+                    logger.warning("Loopback capture read failed: %s", e)
                 break
             mono = np.frombuffer(data, dtype=np.float32).reshape(-1, 2)[:, 0]
             self._push_pcm(mono)
+
+    def _stop_capture_child(self):
+        """Terminate the isolated capture process (safe: a separate process)."""
+        proc = self._child
+        self._child = None
+        if proc is None:
+            return
+        try:
+            proc.terminate()
+            proc.wait(timeout=3)
+        except Exception:
+            try:
+                proc.kill()
+            except Exception:
+                pass
+        for stream in (proc.stdin, proc.stdout):
+            try:
+                if stream is not None:
+                    stream.close()
+            except Exception:
+                pass
 
     def _is_wasapi_device(self):
         try:
@@ -114,33 +287,41 @@ class SonioxWorker(QThread):
             return sd.InputStream(**kwargs)
 
     def _close_stream(self):
-        if self._backend == "loopback":
-            if self._stream is not None:
-                try:
-                    self._stream.stop_stream()
-                except Exception:
-                    pass
-            if self._capture_thread is not None:
-                self._capture_thread.join(timeout=3)
+        # Preferred path: the isolated capture process owns the stream; stop it
+        # first (terminating a separate process can't corrupt this one).
+        self._stop_capture_child()
+        if self._capture_thread is not None:
+            self._capture_thread.join(timeout=3)
+            if self._capture_thread.is_alive():
+                # The in-process fallback's read is still blocking; closing the
+                # stream under it would free its buffers and crash the process.
+                # Leak it instead — the worker is being torn down anyway.
+                logger.warning(
+                    "%s capture thread did not stop; skipping stream close to "
+                    "avoid a native crash", self._backend
+                )
+                self._stream = None
                 self._capture_thread = None
-            if self._stream is not None:
-                try:
-                    self._stream.close()
-                except Exception:
-                    pass
-            if self._pyaudio is not None:
-                try:
-                    self._pyaudio.terminate()
-                except Exception:
-                    pass
-            self._stream = None
-        elif self._stream is not None:
+                return
+            self._capture_thread = None
+        # Close the in-process fallback stream, if one was ever opened.
+        if self._stream is not None:
             try:
-                self._stream.stop()
-                self._stream.close()
+                if self._backend == "loopback":
+                    self._stream.stop_stream()
+                    self._stream.close()
+                else:
+                    self._stream.stop()
+                    self._stream.close()
             except Exception:
                 pass
             self._stream = None
+        if self._pyaudio is not None:
+            try:
+                self._pyaudio.terminate()
+            except Exception:
+                pass
+            self._pyaudio = None
 
     def run(self):
         if not SONIOX_API_KEY:
@@ -184,28 +365,15 @@ class SonioxWorker(QThread):
             logger.debug("Config sent: %s", json.dumps(config, indent=2))
 
             async def sender():
-                def audio_callback(indata, frames, time_info, status):
-                    if not self._stop_flag:
-                        self._push_pcm(indata[:, 0])
-
-                if self._backend == "loopback":
-                    if pyaudio is None:
-                        self.error.emit("PyAudioWPatch not installed", self._input_source)
-                        return
-                    self._pyaudio = pyaudio.PyAudio()
-                    self._stream = self._pyaudio.open(
-                        format=pyaudio.paFloat32,
-                        channels=2,
-                        rate=self._sample_rate,
-                        input=True,
-                        input_device_index=self._loopback_index,
-                        frames_per_buffer=1024,
-                    )
-                    self._capture_thread = threading.Thread(target=self._loopback_capture, daemon=True)
-                    self._capture_thread.start()
-                else:
-                    self._stream = self._open_input_stream(audio_callback)
-                    self._stream.start()
+                if self._backend == "loopback" and pyaudio is None:
+                    self.error.emit("PyAudioWPatch not installed", self._input_source)
+                    return
+                # Capture in an isolated process (restarted on crash) so a native
+                # audio-stack fault can't take the app down.
+                self._capture_thread = threading.Thread(
+                    target=self._capture_supervisor, daemon=True
+                )
+                self._capture_thread.start()
                 try:
                     while not self._stop_flag:
                         try:
