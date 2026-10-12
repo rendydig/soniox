@@ -32,6 +32,18 @@ SPEECH_ACTS = {
     },
 }
 
+# The same acts, described from the Speaker's side. The criteria above are
+# framed around what the Host should do in the reply; these describe what the
+# Speaker just did, so the auto-reply can name the Speaker's move first.
+SPEAKER_ACT_CRITERIA = {
+    "assertive": "The Speaker states a fact, report, confirmation, or belief.",
+    "directive": "The Speaker asks a question, requests, commands, or suggests an action.",
+    "commissive": "The Speaker commits themselves to a future action — promises, offers, threatens.",
+    "expressive": "The Speaker expresses feelings or attitude — thanks, apology, congratulations, complaints.",
+    "declarative": "The Speaker changes reality by their utterance — decisions, appointments, dismissals.",
+    "other": "The Speaker's move does not fit any of the standard acts above.",
+}
+
 # The catch-all key; when JEV picks this (or is unsure) the Other flow runs.
 OTHER_ACT = "other"
 
@@ -39,6 +51,11 @@ OTHER_ACT = "other"
 def act_criteria() -> dict:
     """Return the ``{act_key: criteria}`` mapping for a JEV ``choice`` question."""
     return {key: act["criteria"] for key, act in SPEECH_ACTS.items()}
+
+
+def speaker_act_criteria() -> dict:
+    """Return the Speaker-side ``{act_key: criteria}`` mapping for JEV."""
+    return dict(SPEAKER_ACT_CRITERIA)
 
 
 def act_label(act_key: str) -> str:

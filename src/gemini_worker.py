@@ -68,13 +68,14 @@ Return ONLY a JSON object — no prose, no code fences — in this shape:
     "counterpart": "Who the Speaker is",
     "confidence": 0.0
   },
+  "speaker_move": "One English sentence naming the Speaker's act and what they asked, confirmed, or stated.",
   "reply": "The exact words the Host should say next."
 }
 
 Rules:
 - If the standard acts DO cover the situation, set "new_category" to null and just answer.
 - "key" must be lowercase snake_case; "label" title case and short.
-- Write "reply" in the same language the Speaker is using.
+- Write "speaker_move" in English; write "reply" in the same language the Speaker is using.
 - Keep "reply" short and spoken; do not narrate or mention being an AI."""
 
 
@@ -188,6 +189,27 @@ def _get_pronunciation_line(target_language: str) -> str:
 def _get_sample_text(target_language: str) -> str:
     """Get a sample text in the target language to show expected output format."""
     return SAMPLE_TEXTS.get(target_language, SAMPLE_TEXTS["Japanese"])
+
+
+def _analysis_prompt_lines(speaker_act: str = None) -> list:
+    """The English analysis line the model must emit before the reply.
+
+    ``speaker_act`` pins the act label when JEV already decided it, so the
+    analysis cannot contradict the status line; otherwise the model picks one.
+    """
+    act = (act_label(speaker_act) or speaker_act) if speaker_act else None
+    move = f"{act} — " if act else "<Assertive|Directive|Commissive|Expressive|Declarative> — "
+    return [
+        f"Speaker's move: [{move}in one English sentence, what the Speaker just "
+        "asked, confirmed, or stated]",
+    ]
+
+
+def _analysis_text(speaker_move: str) -> str:
+    """Render a free-form analysis block (Other flow); ``""`` when empty."""
+    if not speaker_move:
+        return ""
+    return f"Speaker's move: {speaker_move.strip()}\n\n"
 
 
 def _load_self_context() -> str:
@@ -309,7 +331,8 @@ class GeminiAutoReplyWorker(QThread):
 
     def __init__(self, transcription_text: str, target_language: str, conversation_history: list = None,
                  include_pronunciation: bool = True, purpose: str = DEFAULT_PURPOSE, images: list = None,
-                 purpose_store=None, host_role: str = "smart", jev_enabled: bool = False, parent=None):
+                 purpose_store=None, host_role: str = "smart", jev_enabled: bool = False,
+                 context: dict = None, parent=None):
         super().__init__(parent)
         self._transcription_text = transcription_text
         self._target_language = target_language
@@ -321,8 +344,16 @@ class GeminiAutoReplyWorker(QThread):
         self._host_role = host_role or "smart"
         self._jev_enabled = bool(jev_enabled)
         self._is_running = True
-        self._self_context = _load_self_context()
-        self._speaker_context = _load_speaker_context()
+        # The Host/Speaker context is pushed by the web service (the Context
+        # pane owns the files). ``None`` means nothing has arrived yet, so the
+        # .env files are read exactly as before; an empty string is the user
+        # explicitly selecting no context for that role.
+        if context is None:
+            self._self_context = _load_self_context()
+            self._speaker_context = _load_speaker_context()
+        else:
+            self._self_context = (context.get("host") or "").strip()
+            self._speaker_context = (context.get("speaker") or "").strip()
         self._decision_client = None
 
     # --- JEV helpers --------------------------------------------------
@@ -375,8 +406,16 @@ class GeminiAutoReplyWorker(QThread):
         return role_key, roles.get(role_key) or next(iter(roles.values()))
 
     # --- prompt / streaming -------------------------------------------
-    def _format_block(self, language: str, purpose: dict) -> str:
-        lines = [f"{language} Text: [Write your response using natural {language} script]"]
+    def _has_utterance(self) -> bool:
+        """True when there is a Speaker utterance to analyse (image-only replies have none)."""
+        return bool((self._transcription_text or "").strip())
+
+    def _format_block(self, language: str, purpose: dict, speaker_act: str = None) -> str:
+        lines = []
+        if self._has_utterance():
+            lines.extend(_analysis_prompt_lines(speaker_act))
+            lines.append("")
+        lines.append(f"{language} Text: [Write your response using natural {language} script]")
         if self._include_pronunciation:
             lines.append(_get_pronunciation_line(language))
             lines.append("English Translation: [Provide the meaning in clear English]")
@@ -384,7 +423,8 @@ class GeminiAutoReplyWorker(QThread):
         lines.append(f"Sample {language} text format: {_get_sample_text(language)}")
         return "\n".join(lines)
 
-    def _build_system_instruction(self, purpose, role, act_key=None, reply_language=None) -> str:
+    def _build_system_instruction(self, purpose, role, act_key=None, reply_language=None,
+                                  speaker_act=None) -> str:
         persona = role.get("persona", "")
         objective = "\n".join(f"- {line}" for line in role.get("objective", []))
         counterpart = role.get("counterpart")
@@ -392,6 +432,7 @@ class GeminiAutoReplyWorker(QThread):
         # Language priority: JEV choice -> detected Speaker language -> target.
         speaker_language = _detect_language(self._transcription_text)
         language = reply_language or speaker_language or self._target_language
+        has_utterance = self._has_utterance()
 
         identity_lines = [f"- You are acting as: {role.get('label', 'Host')}."]
         if counterpart:
@@ -400,12 +441,30 @@ class GeminiAutoReplyWorker(QThread):
             label = act_label(act_key)
             if label:
                 identity_lines.append(f"- Perform this speech act in your reply: {label}.")
+        if has_utterance:
+            label = act_label(speaker_act) if speaker_act else ""
+            if label:
+                identity_lines.append(
+                    f"- The Speaker's latest utterance is a {label} speech act; "
+                    "name it and say what they asked, confirmed, or stated."
+                )
+            else:
+                identity_lines.append(
+                    "- Classify the Speaker's latest utterance as one of: "
+                    "Assertive, Directive, Commissive, Expressive, Declarative."
+                )
         identity_block = "\n".join(identity_lines)
 
         if self._speaker_context:
             speaker_line = f"- Speaker profile: {self._speaker_context}"
         else:
             speaker_line = "- The Speaker profile is unknown; infer their role from the conversation."
+        # Pre-identifier for the Host. Omitted entirely when the user selected
+        # no context for that role (an empty string, not the .env default).
+        host_line = (
+            f"- Host profile (pre-identified): {self._self_context}\n"
+            if self._self_context else ""
+        )
 
         detected_line = (
             f"- The Speaker appears to be speaking {speaker_language} in their latest turn."
@@ -417,26 +476,31 @@ class GeminiAutoReplyWorker(QThread):
             "\nOutput only the sections shown above (no pronunciation, no English translation)."
         )
 
+        analysis_rule = (
+            "- Write the \"Speaker's move\" line in English, before the reply; "
+            "only the reply uses the language above.\n"
+            if has_utterance else ""
+        )
+
         return f"""{persona}
 
 - Messages with role 'user' are what the other person (Speaker) said.
 - Messages with role 'assistant' are what you (the Host) have said previously.
 {identity_block}
-- Your expertise areas: {self._self_context}.
-{speaker_line}
+{host_line}{speaker_line}
 
 Objective:
 {objective}
 
 Language:
 - Write the Host's reply in {language}.
-{detected_line}
+{analysis_rule}{detected_line}
 - If the Speaker switches language, mirror the new dominant language.
-- Label the first line with that language's name (e.g. "Indonesian Text:" instead of "{language} Text:").
+- Label the reply's first line with that language's name (e.g. "Indonesian Text:" instead of "{language} Text:").
 - Adapt the syllables/pronunciation to the language you actually use, and ignore the sample text below when it is not in that language.
 
 Format your response exactly as follows:
-{self._format_block(language, purpose)}{output_rule}"""
+{self._format_block(language, purpose, speaker_act)}{output_rule}"""
 
     def _emit_role_status(self, role, act_key=None, reply_language=None):
         parts = [f"Replying as {role.get('label', 'Host')}"]
@@ -481,7 +545,7 @@ Format your response exactly as follows:
 
     # --- Other flow (persona synthesis + learning) --------------------
     def _synthesize(self, client, purpose, role):
-        """One LLM call returning ``(new_category | None, reply | None)``."""
+        """One LLM call returning ``(new_category, reply, speaker_move)``."""
         recent = "\n".join(
             f"[{t['role']}] {t['text']}" for t in self._recent_turns()
         )
@@ -499,18 +563,19 @@ Format your response exactly as follows:
             )
         except Exception as e:
             logger.warning("Persona synthesis failed: %s", e)
-            return None, None
+            return None, None, None
 
         data = _parse_json_object(response)
         if not isinstance(data, dict):
             # Malformed output: keep the raw text as a plain reply, learn nothing.
             logger.warning("Persona synthesis returned unparsable JSON; using raw text")
-            return None, (response or "").strip() or None
+            return None, (response or "").strip() or None, None
         new_category = data.get("new_category")
         if not isinstance(new_category, dict):
             new_category = None
         reply = (data.get("reply") or "").strip() or None
-        return new_category, reply
+        speaker_move = (data.get("speaker_move") or "").strip() or None
+        return new_category, reply, speaker_move
 
     def _should_register(self, new_category) -> bool:
         """Dedup pre-check: skip registration when a category already covers it."""
@@ -546,10 +611,10 @@ Format your response exactly as follows:
             return True
         return covered < 0.5
 
-    def _run_other_flow(self, client, purpose, role):
+    def _run_other_flow(self, client, purpose, role, speaker_act=None):
         """Synthesize a new persona (learned + persisted) and answer with it."""
         logger.info("Other flow triggered: escalating to persona synthesis")
-        new_category, reply = self._synthesize(client, purpose, role)
+        new_category, reply, speaker_move = self._synthesize(client, purpose, role)
         if not self._is_running:
             return
 
@@ -565,14 +630,17 @@ Format your response exactly as follows:
                 logger.warning("Failed to register new persona: %s", e)
 
         if reply:
-            self.chunk.emit(reply)
+            text = _analysis_text(speaker_move) + reply
+            self.chunk.emit(text)
             if self._is_running:
-                self.result.emit(reply)
+                self.result.emit(text)
             return
 
         # No reply from synthesis: fall back to a normal reply with the act hint.
         self._emit_role_status(role, act_key)
-        system_instruction = self._build_system_instruction(purpose, role, act_key, None)
+        system_instruction = self._build_system_instruction(
+            purpose, role, act_key, None, speaker_act
+        )
         self._stream_reply(client, system_instruction)
 
     def run(self):
@@ -588,6 +656,7 @@ Format your response exactly as follows:
 
             act_key = None
             reply_language = None
+            speaker_act = None
 
             # JEV governs voice auto-replies only; a user-triggered screenshot
             # reply has no utterance to judge and must always produce an answer.
@@ -608,10 +677,17 @@ Format your response exactly as follows:
                         if choice in roles and confidence >= JEV_MIN_CONFIDENCE:
                             role_key, role = choice, roles[choice]
 
+                    # Speaker's act: names the Speaker's move in the analysis
+                    # preamble. "other" or low confidence falls back to the
+                    # model's own classification.
+                    choice, confidence = answer_choice(decision, "speaker_act")
+                    if choice and choice != OTHER_ACT and confidence >= JEV_MIN_CONFIDENCE:
+                        speaker_act = choice
+
                     # Speech act: "other" or low confidence escalates.
                     choice, confidence = answer_choice(decision, "speech_act")
                     if choice == OTHER_ACT or (choice and confidence < JEV_MIN_CONFIDENCE):
-                        self._run_other_flow(client, purpose, role)
+                        self._run_other_flow(client, purpose, role, speaker_act)
                         return
                     if choice:
                         act_key = choice
@@ -622,7 +698,7 @@ Format your response exactly as follows:
 
             self._emit_role_status(role, act_key, reply_language)
             system_instruction = self._build_system_instruction(
-                purpose, role, act_key, reply_language
+                purpose, role, act_key, reply_language, speaker_act
             )
             self._stream_reply(client, system_instruction)
         except Exception as e:

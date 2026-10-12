@@ -225,7 +225,7 @@ CLEANUP_CHECK_INTERVAL = 50
 #     after a failed call.
 #   BULLET_MAX_LINE_CHARS — each line sent to the AI is truncated to this many
 #     characters, bounding prompt size.
-BULLET_MAX_ITEMS = 12
+BULLET_MAX_ITEMS = 50
 BULLET_FLUSH_INTERVAL_MS = 300000 # 5 minutes
 BULLET_MAX_BUFFER_LINES = 120
 BULLET_PAUSED_BUFFER_MAX = 40

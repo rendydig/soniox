@@ -10,6 +10,7 @@ server that broadcasts results to a web UI.
 ## Setup
 ```bash
 # Python (venv already created with Python 3.13)
+# Windows: venv/Scripts/python.exe · macOS/Linux: venv/bin/python
 venv/Scripts/python.exe -m pip install -r requirement.txt
 
 # Node
@@ -24,7 +25,10 @@ venv/Scripts/python.exe main.py
 The app spawns `node server.js` on startup when nothing is listening on 8765
 (`src/websocket_server_manager.py`), writing server output to
 `logs/websocket-server.log`, and stops it on close — but only if the app
-started it (a manually started server is left untouched). To run the server
+started it (a manually started server is left untouched). An adopted listener is
+probed once with `GET /context`; when it does not serve that route (a leftover
+process running older code) the manager logs a warning, because the Context pane
+would otherwise just stay blank. To run the server
 yourself instead:
 ```bash
 cd websocket-server && npm start
@@ -55,6 +59,11 @@ venv/Scripts/python.exe tools/hubctl.py state          # inspect (starts it if n
 - `SONIOX_WS_URL` — optional; overrides the Soniox WebSocket endpoint (default
   `wss://stt-rt.soniox.com/transcribe-websocket`). Used by the stress harness to point
   the app at a local fake Soniox server.
+- `SELF_CONTEXT_FILE` / `SPEAKER_CONTEXT_FILE` — **seed + fallback only** since the Context
+  pane landed: the live selection is owned by `websocket-server/context-store.js` and stored in
+  `context_state.json` (gitignored). They are read once, on the first run, to seed the Host /
+  Speaker selection, and read by the Python worker only while the web service is unreachable.
+  Each role's file may live anywhere — inside or outside the repo.
 
 Central hub (Go, `hub/`; started on demand like the Node server):
 - `HUB_ADDR` — NDJSON/TCP listen address (default `127.0.0.1:8770`, loopback only)
@@ -124,6 +133,22 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
   (`useTranscriptionHandlers.js`), which **updates the last item** when it is flagged `streaming`
   and the mode matches, otherwise appends a new streaming item; `handleGeminiResult` then replaces
   the list with the final item. `GeminiDisplayer` renders only the latest item, so it repaints live.
+
+Auto-reply **analysis preamble** (always on for voice auto-replies — not for image replies):
+- Every reply is preceded by one **English** line, then a blank line, then the reply in the Speaker's
+  language: `Speaker's move: <Assertive|Directive|Commissive|Expressive|Declarative> — what the
+  Speaker asked/confirmed/stated`. Built by `_analysis_prompt_lines` / `_analysis_text`
+  (`src/gemini_worker.py`) and emitted inside the same `gemini_result` text, so no frontend change was
+  needed.
+- The Speaker's act is **hybrid**: when JEV is enabled it answers a dedicated `speaker_act` `choice`
+  question (`build_questions`, criteria from `speaker_act_criteria()` in `src/speech_acts.py`) and the
+  label is pinned into the prompt so it cannot contradict the status line; otherwise the reply model
+  classifies the utterance itself. `other`/low confidence falls back to the model.
+- Note JEV's *existing* `speech_act` question is the act the **Host** should perform in the reply —
+  it is not the Speaker's act. The `SPEECH_ACTS` criteria are Host-framed; `SPEAKER_ACT_CRITERIA` is
+  the Speaker-side wording.
+- `format_gemini_result` (`src/text_formatter.py`) knows the new header (plus `<Language> Text:`) and
+  no longer prepends a newline when a header sits at position 0.
 
 ## Central hub (Go) — M0 + M1 shipped
 `hub/` is a stdlib-only Go process that owns the **live session state** and the
@@ -228,7 +253,7 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   (`TranslationSectionWidget`, hidden by default) above the single control row. The control
   row holds `DragHandle` · Start/Stop + New (`ControlButtonsWidget`) · Mode ▾ (`QToolButton` +
   `QMenu` with the Live Transcription/Translation actions) · Tool ▾ (`QToolButton` + `QMenu`
-  with Screen Protection / Gemini Window / Live Window / Bullet Points / Always on Top) · Settings button ·
+  with Screen Protection / Gemini Window / Live Window / Bullet Points / Context / Always on Top) · Settings button ·
   `SwitchButton` (shows/hides the input row) · stretch · `StatusBarWidget` · close. The main
   window has **no** output view; transcription output lives in the Live Window pane.
 - The bar is **trimmed** to fit its fixed width: the Start button reads "Start"/"Stop" plus the
@@ -247,7 +272,7 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
 - The bar is **always-on-top** by default (mirrors the panes): `MainWindow` sets
   `Qt.WindowType.WindowStaysOnTopHint` from `ui_state.json`'s `main_window.always_on_top`
   (default true) and exposes it as the Tool ▾ **Always on Top** checkable action
-  (`_set_always_on_top`). **The toggle governs all four windows**, not just the bar: it
+  (`_set_always_on_top`). **The toggle governs all five windows**, not just the bar: it
   also calls each pane's `apply_always_on_top`, and the panes start in the persisted state
   (a loop right after they are constructed). Toggling re-sets the flag and calls `show()`
   (changing flags on a visible window hides it), which re-runs `showEvent`'s
@@ -512,8 +537,59 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   proportional digits can make it twitch by a pixel per second (a monospace font on
   `btn_start` is the fix if that bothers).
 
+## Context pane (Host / Speaker context)
+The **Context** pane (Tool ▾, hotkey `Ctrl+Alt+C`; macOS `Meta+Alt+C`) edits the two
+"pre-identifier" profiles the reply prompt uses: **Host** (`- Host profile (pre-identified): …`)
+and **Speaker** (`- Speaker profile: …`). It applies to the auto-reply pipeline only — voice
+auto-reply, image reply and the JEV decision call; bullet points, "Last Picked Up" and manual
+translate are untouched.
+
+- **Ownership**: the Node web service owns the context files
+  (`websocket-server/context-store.js`), not Python. It keeps the selection, a 10-entry
+  re-select history, and a `context_state.json` (repo root, gitignored) at the repo root; each
+  role's file may live **anywhere** (inside or outside the repo) and is stored repo-relative
+  when it is inside. Nothing here touches the Go hub.
+- **Python only mirrors**: every `context_state` broadcast lands in
+  `MainWindow._handle_webview_message` → `TranslationController.set_context()`, which passes the
+  two strings to `GeminiAutoReplyWorker(context=…)`. No thread, no file read on the reply path.
+  `context_get` is requested on the `connection` frame, so a reconnect re-syncs the mirror.
+- **Three states, deliberately distinct**: `context is None` = nothing has arrived yet → the
+  worker falls back to `_load_self_context()` / `_load_speaker_context()` (`.env`, today's
+  behaviour); `""` = the user picked **no context** for that role → the prompt line is omitted;
+  a path = the file's text. Do not collapse these.
+- **Missing file is not an error**: `problems[role] = "missing"` (or `"too_large"` for >64 KB),
+  `contents[role] = ""` (no context) and the pane shows a red **file not found** badge — the
+  selection is kept so the user can see which path to fix. A save to a missing/oversized file is
+  rejected with a `context_status` message instead of failing silently.
+- **Saving is debounce-on-typing**: 800 ms after the last keystroke the pane sends one
+  `context_save`, which **only overwrites the role's currently selected file** — it never
+  creates one (that is `context_new`, driven by a native Save dialog) and never deletes
+  anything. The draft is flushed early on tab switch, selection change, **Save** now, hiding the
+  pane and app close (the app sends `context_flush`; `beforeunload` is unreliable in Qt
+  WebEngine). Writes are atomic (`tmp` + `rename`), so a reader never sees a half-written file.
+- **Live reload**: the store watches the folders of the selected + recent files (`fs.watch`,
+  250 ms debounce) and rebroadcasts on an external edit (VS Code); a content signature keeps our
+  own writes from bouncing back as a loop.
+- **Protocol** (all over the existing :8765 WebSocket, like every other pane):
+  Node-handled `context_get` · `context_select {role, path}` · `context_clear_selection {role}` ·
+  `context_new {role, path}` · `context_save {role, path, text}` · `context_forget {role, path}`;
+  Qt-handled `context_browse {role}` (opens `QFileDialog.getOpenFileName`) ·
+  `context_new_request {role}` (opens `getSaveFileName`) · `context_flush`;
+  Node → all `context_state` (selection · problems · history · contents · revision) and
+  `context_status` (`saved` / `missing` / `invalid` / `too_large` / `no_target`).
+  `server.js` serializes the Node-handled ops through a promise queue, so a `context_save`
+  followed by a `context_select` cannot interleave.
+- **Pane parity**: `ContextWindow` (`src/ui_components/context_window.py`) is a copy of the
+  Bullet Points pane (frameless, always-on-top, drag/resize/dock, `⇤`/`⇥`/`−` buttons, screen
+  protection). Its visibility is persisted as `settings.context_window_visible` (the Gemini/Live
+  panes always start shown), it joins `Ctrl+Shift+M`'s hide-all set, the Always on Top and Screen
+  Protection toggles, the webview heap health line (`webview_context_heap_mb`) and the
+  edge-collision swap in `_set_pane_edge`. The HTML editor is
+  `websocket-server/public/context.html` + `context-app.js`, with a Write/**Preview** toggle
+  (Markdown, reusing `components/Markdown.js`).
+
 ## Pane layout (free-floating geometry, persisted)
-- Both panes are **free-floating**: a top `PaneDragHandle`
+- Every pane (Gemini, Live, Bullet Points, Context) is **free-floating**: a top `PaneDragHandle`
   (`src/ui_components/pane_drag_handle.py`, a 12px strip) drags the window anywhere on the
   primary screen, and eight `PaneEdgeHandle` border grips
   (`src/ui_components/pane_edge_handle.py`) resize it freely from **any edge or corner**
@@ -527,12 +603,13 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   Width is clamped to `[MIN_WINDOW_WIDTH (200), screen width]`, height to `[MIN_WINDOW_HEIGHT
   (120), screen height]`, and x/y are clamped onto the primary screen. (`PaneResizeHandle` is
   still used only by the bottom bar's width handle.)
-- A pane is **docked** (edge-pinned at full height, `is_docked()`) by default; moving or
-  resizing un-docks it (`_docked = False`). Both panes carry a top-right control
+- A pane is **docked** (edge-pinned at full height, `is_docked()`) by default — except Bullet
+  Points and Context, which start free-floating; moving or resizing un-docks it
+  (`_docked = False`). Every pane carries a top-right control
   cluster (`.gemini-controls` / `.pane-controls`): `⇤` (dock left) · `⇥` (dock right) ·
   `−` (hide). The edge buttons send
-  `{"type": "set_gemini_window_edge" | "set_live_window_edge", "edge": "left" | "right"}`
-  over the WebSocket (same rebroadcast path as the hide messages).
+  `{"type": "set_<pane>_window_edge", "edge": "left" | "right"}` over the WebSocket (same
+  rebroadcast path as the hide messages).
 - `MainWindow._handle_webview_message` routes them to `_set_pane_edge(window, edge)`, which
   re-docks a floating pane to that edge at full height (a same-edge **docked** pane is a
   no-op) and **auto-swaps** the other pane only if it is itself docked to the same edge, so
@@ -555,7 +632,8 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
 - The `settings` section persists the Settings dialog's non-device options — `view_mode`
   (default 1 = Webview), `ai_reply_language` (default "English"), `purpose` (default
   `language_learning`), `pronunciation` (default false), `bullet_points` (auto, default false),
-  `bullet_points_window_visible` (default false), and `screen_protection` (default true). `MainWindow._apply_settings_state` restores them (guarding bad values) after the
+  `bullet_points_window_visible` (default false), `context_window_visible` (default false), and
+  `screen_protection` (default true). `MainWindow._apply_settings_state` restores them (guarding bad values) after the
   widget/controller connections are wired, and `_connect_settings_signals` saves on every
   change. Purpose is applied **before** pronunciation because `_on_purpose_changed` resets
   pronunciation to the purpose's `include_pronunciation_default`. Device selection and the
@@ -660,6 +738,7 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
 ## Verification
 ```bash
 venv/Scripts/python.exe -m py_compile src/*.py src/controllers/*.py src/ui_components/*.py src/hub/*.py
+node --check websocket-server/server.js websocket-server/context-store.js
 cd hub && go vet ./... && go test ./...        # add -race for the bus/server tests
 ```
 Manual: launch the app, set Host = mic and Speaker = a `[Loopback]` output, Start,
@@ -680,6 +759,33 @@ play audio → `[SPEAKER]` lines should appear in the app and at `http://localho
   hand-started hub is adopted (no second process) and killed on `stop()`; a non-hub listener on the port
   is never adopted or killed; `tools/hubctl.py` still leaves its hub running after the command exits.
   26 checks; runs on throwaway ports so the real 8770 hub is untouched.
+
+### Context pane smoke tests (throwaway)
+Start a server first for the ones that talk to it (any port works, e.g.
+`cd websocket-server && PORT=8790 node server.js`); the pane checks open a window for a
+few seconds, because Qt WebEngine cannot render on the offscreen platform here.
+- `_tmp_context_prompt_check.py` — the three context states in the reply prompt (`None` →
+  `.env` fallback, `""` → line omitted, text → used) plus the JEV `host_profile`/
+  `speaker_profile` and the image-reply path. No server needed. 17 checks.
+- `_tmp_context_smoke.py` — the protocol end-to-end with two peers (an "editor" that
+  mutates and an "app" that only listens, i.e. the path the reply pipeline uses):
+  `context_get` shape, the `.env` seed, `context_new`/`context_save` reaching disk,
+  save-only-to-the-selected-file, missing/oversized degradation, the 10-entry MRU history,
+  external-edit rebroadcast, `clear_selection`/`forget`, host/speaker independence.
+  It restores the previous selection and deletes everything it created. 51 checks;
+  `CONTEXT_WS_URL` points it at another port.
+- `_tmp_context_app_check.py` — the app-side pane parity: builds a real `MainWindow` and
+  exercises all twelve `ui.py` places that enumerate the panes (Tool ▾ action, hotkey
+  callback, visibility toggle + persistence, dock/edge-swap, always-on-top, screen
+  protection, hide-all, `_save_state`, the message handlers, and the Browse/New dialogs with
+  `QFileDialog` stubbed). `ui_state.json`, the session store and the purpose store are
+  redirected to a temp dir, and the hub is disabled. 34 checks.
+- `_tmp_context_pane_check.py` — the pane really renders: loads `/context` in a
+  QWebEngineView and asserts the Preact DOM, the WS connection, the selected path and that
+  the editor's text equals `context_sample.txt` on disk. 15 checks.
+- `_tmp_context_autosave_check.py` — the debounce-on-typing loop: selects a temp file, types
+  into the textarea, asserts nothing is written during the debounce window, then that the
+  file holds exactly the typed text and the pane shows `Saved`. 8 checks.
 
 ### Long-run stress test (throwaway)
 `_tmp_long_transcription_test.py` drives the real app with **real audio** through a

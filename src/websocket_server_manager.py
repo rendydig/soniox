@@ -12,6 +12,8 @@ import subprocess
 import sys
 import time
 import logging
+import urllib.error
+import urllib.request
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SERVER_DIR = os.path.join(REPO_ROOT, "websocket-server")
@@ -33,6 +35,33 @@ def is_server_running(host: str = HOST, port: int = PORT, timeout: float = 0.3) 
         return False
 
 
+def serves_context_route(host: str = HOST, port: int = PORT, timeout: float = 1.0) -> bool:
+    """Whether the server also serves the Context pane's `/context` route.
+
+    A process listening on 8765 is adopted as-is, so a leftover server started
+    before this route existed would silently leave the Context pane blank.
+    """
+    try:
+        with urllib.request.urlopen(f"http://{host}:{port}/context", timeout=timeout) as response:
+            return response.status == 200
+    except (urllib.error.URLError, OSError, ValueError):
+        return False
+
+
+def warn_if_stale(host: str = HOST, port: int = PORT) -> None:
+    """Log a loud warning when the listening server predates the Context pane."""
+    if serves_context_route(host, port):
+        return
+    logger.warning(
+        "The web service on %s:%s does not serve /context — it is running older "
+        "code (a leftover process?), so the Context pane will not load. Stop it, "
+        "then restart the app: the app starts the current server itself. To run "
+        "the server by hand instead, stop the old one first and use "
+        "'cd websocket-server && npm start'.",
+        host, port,
+    )
+
+
 class WebSocketServerManager:
     """Start the Node server if 8765 is down; stop it only if we started it."""
 
@@ -47,6 +76,7 @@ class WebSocketServerManager:
         left untouched.
         """
         if is_server_running():
+            warn_if_stale()
             return True
 
         node = shutil.which("node")
@@ -77,6 +107,7 @@ class WebSocketServerManager:
         while time.time() < deadline:
             if is_server_running():
                 logger.info("Web service ready at http://localhost:%s", PORT)
+                warn_if_stale()
                 return True
             if self.process.poll() is not None:
                 logger.error("node server exited early (code %s); see %s", self.process.returncode, LOG_PATH)

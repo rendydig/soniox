@@ -5,7 +5,7 @@ import logging
 import threading
 from datetime import datetime
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-                             QDialog, QMenu, QToolButton, QPushButton, QMessageBox)
+                             QDialog, QFileDialog, QMenu, QToolButton, QPushButton, QMessageBox)
 from PySide6.QtCore import Qt, QEvent, QTimer, Signal
 from PySide6.QtGui import QKeySequence, QShortcut, QAction, QActionGroup, QGuiApplication
 from src.config import (
@@ -44,7 +44,8 @@ from src.ui_components import (
     DragHandle,
     GeminiWindow,
     LiveWindow,
-    BulletPointsWindow
+    BulletPointsWindow,
+    ContextWindow
 )
 from src.ui_components.pane_resize_handle import PaneResizeHandle
 from src.ui_state import load_state, save_state
@@ -54,7 +55,8 @@ logger = logging.getLogger(__name__)
 
 # Long-run diagnostics: a one-line memory/thread/editor sample appended here
 # every HEALTH_LOG_INTERVAL_MS so growth (or a crash) is visible over hours.
-_LOGS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_LOGS_DIR = os.path.join(_REPO_ROOT, "logs")
 HEALTH_LOG = os.path.join(_LOGS_DIR, "health.log")
 HEALTH_LOG_INTERVAL_MS = 30000
 
@@ -171,6 +173,7 @@ class MainWindow(QMainWindow):
             on_bullet_points=self._trigger_bullet_points_now,
             on_toggle_windows=self._toggle_all_panes,
             on_last_pickup=self._trigger_last_pickup_now,
+            on_context=self._toggle_context_window,
             bindings=parse_bindings(stored_hotkeys),
         )
         self.hotkeys.register()
@@ -226,6 +229,7 @@ class MainWindow(QMainWindow):
         gemini_state = _as_dict(state.get("gemini_window"))
         live_state = _as_dict(state.get("live_window"))
         bullet_points_state = _as_dict(state.get("bullet_points_window"))
+        context_window_state = _as_dict(state.get("context_window"))
         settings_state = _as_dict(state.get("settings"))
         self._always_on_top = bool(main_state.get("always_on_top", True))
         # Bar geometry: fixed default width, bottom-center unless the user moved it.
@@ -240,10 +244,15 @@ class MainWindow(QMainWindow):
         # the docked Gemini/Live panes.
         self.bullet_points_window = BulletPointsWindow( edge=bullet_points_state.get("edge"), width=bullet_points_state.get("width"), height=bullet_points_state.get("height"), x=bullet_points_state.get("x"), y=bullet_points_state.get("y"), docked=bullet_points_state.get("docked"),
         )
+        # Host/Speaker context editor. Like Bullet Points it defaults to
+        # free-floating and stays hidden until the Tool ▾ action (or hotkey).
+        self.context_window = ContextWindow( edge=context_window_state.get("edge"), width=context_window_state.get("width"), height=context_window_state.get("height"), x=context_window_state.get("x"), y=context_window_state.get("y"), docked=context_window_state.get("docked"),
+        )
 
-        # The Tool ▾ "Always on Top" toggle governs all four windows. Start the
+        # The Tool ▾ "Always on Top" toggle governs all five windows. Start the
         # panes in the persisted state (they are shown later in __init__).
-        for _pane in (self.gemini_window, self.live_window, self.bullet_points_window):
+        for _pane in (self.gemini_window, self.live_window, self.bullet_points_window,
+                      self.context_window):
             _pane.apply_always_on_top(self._always_on_top)
             # A webview renderer dying is otherwise silent (blank pane); log it
             # so a long-run crash leaves a trace.
@@ -466,6 +475,14 @@ class MainWindow(QMainWindow):
                 "x": self.bullet_points_window.get_x(),
                 "y": self.bullet_points_window.get_y(),
             },
+            "context_window": {
+                "edge": self.context_window.get_edge(),
+                "docked": self.context_window.is_docked(),
+                "width": self.context_window.get_width(),
+                "height": self.context_window.get_height(),
+                "x": self.context_window.get_x(),
+                "y": self.context_window.get_y(),
+            },
             "settings": {
                 "view_mode": self.view_mode_combo.currentIndex(),
                 "ai_reply_language": self.gemini_lang_combo.currentText(),
@@ -475,6 +492,7 @@ class MainWindow(QMainWindow):
                 "pronunciation": self.pronunciation_checkbox.isChecked(),
                 "bullet_points": self.bullet_points_checkbox.isChecked(),
                 "bullet_points_window_visible": self.bullet_points_window_action.isChecked(),
+                "context_window_visible": self.context_window_action.isChecked(),
                 "last_pickup_auto": self._last_pickup_auto_enabled,
                 "screen_protection": self.screen_protection_checkbox.isChecked(),
                 "hotkeys": self._hotkeys_from_editors(),
@@ -539,6 +557,12 @@ class MainWindow(QMainWindow):
         bullet_points_visible = state.get("bullet_points_window_visible")
         if isinstance(bullet_points_visible, bool):
             self.bullet_points_window_action.setChecked(bullet_points_visible)
+
+        # The Context pane is hidden until asked for, so its visibility is
+        # restored from state (unlike Gemini/Live, which always start shown).
+        context_visible = state.get("context_window_visible")
+        if isinstance(context_visible, bool):
+            self.context_window_action.setChecked(context_visible)
         self._update_last_pickup_auto()
 
         # Global hotkeys: show the saved combination, else the platform default so
@@ -559,6 +583,7 @@ class MainWindow(QMainWindow):
         self.pronunciation_checkbox.toggled.connect(self._save_state)
         self.bullet_points_checkbox.toggled.connect(self._save_state)
         self.bullet_points_window_action.toggled.connect(self._save_state)
+        self.context_window_action.toggled.connect(self._save_state)
         self.screen_protection_checkbox.toggled.connect(self._save_state)
         self.settings_view.hotkeys_changed.connect(self._on_hotkeys_changed)
 
@@ -652,6 +677,15 @@ class MainWindow(QMainWindow):
         )
         self.bullet_points_window_action.toggled.connect(self._set_bullet_points_window_visible)
         self.tool_menu.addAction(self.bullet_points_window_action)
+
+        self.context_window_action = QAction("Context", self)
+        self.context_window_action.setCheckable(True)
+        self.context_window_action.setChecked(False)
+        self.context_window_action.setToolTip(
+            "Show or hide the Host/Speaker context editor pane."
+        )
+        self.context_window_action.toggled.connect(self._set_context_window_visible)
+        self.tool_menu.addAction(self.context_window_action)
 
         self.always_on_top_action = QAction("Always on Top", self)
         self.always_on_top_action.setCheckable(True)
@@ -1247,6 +1281,24 @@ class MainWindow(QMainWindow):
             self._last_pickup_auto_enabled = bool(data.get("enabled"))
             self._update_last_pickup_auto()
             self._save_state()
+        elif msg_type == "connection":
+            # The web service announced a (re)connect, so ask it for the current
+            # Host/Speaker context (the reply path mirrors it in memory).
+            self.websocket_client.send_message({"type": "context_get"})
+        elif msg_type == "context_state":
+            self.translation_controller.set_context(data.get("contents"))
+        elif msg_type == "context_browse":
+            self._browse_context_file(data.get("role"))
+        elif msg_type == "context_new_request":
+            self._new_context_file(data.get("role"))
+        elif msg_type == "hide_context_window":
+            logger.info("Hide requested from Context window")
+            # Unchecking routes through _set_context_window_visible(False), which
+            # flushes the editor and keeps the Tool ▾ item in sync.
+            self.context_window_action.setChecked(False)
+        elif msg_type == "set_context_window_edge":
+            logger.info("Context window edge -> %s", data.get('edge'))
+            self._set_pane_edge(self.context_window, data.get("edge"))
 
     def _manual_reply(self):
         """Manually trigger a Gemini reply using the last Speaker utterance (Ctrl+R / Cmd+R)."""
@@ -1395,7 +1447,8 @@ class MainWindow(QMainWindow):
         # JS heap is only available asynchronously; each pane logs its own line.
         for name, pane in (("gemini", self.gemini_window),
                            ("live", self.live_window),
-                           ("bullets", self.bullet_points_window)):
+                           ("bullets", self.bullet_points_window),
+                           ("context", self.context_window)):
             view = getattr(pane, "webview", None)
             if view is None:
                 continue
@@ -1447,6 +1500,62 @@ class MainWindow(QMainWindow):
         self._update_bullet_points_auto()
         self._update_last_pickup_auto()
 
+    def _flush_context_editor(self):
+        """Ask the context pane to write any pending keystrokes now.
+
+        The pane autosaves on a typing debounce, so hiding it (or closing the
+        app) flushes first — `beforeunload` is not reliable in Qt WebEngine.
+        """
+        self.websocket_client.send_message({"type": "context_flush"})
+
+    def _set_context_window_visible(self, visible):
+        """Show or hide the Host/Speaker context editor pane."""
+        if visible:
+            self.context_window._apply_geometry()
+            self.context_window.showNormal()  # also restores if minimized
+            self.context_window.raise_()
+        else:
+            self._flush_context_editor()
+            self.context_window.hide()
+
+    def _toggle_context_window(self):
+        """Hotkey: flip the pane's visibility (the action persists the state)."""
+        self.context_window_action.setChecked(not self.context_window_action.isChecked())
+
+    def _context_role(self, role):
+        """Normalize a role coming from the pane ("host" / "speaker")."""
+        return role if role in ("host", "speaker") else "host"
+
+    def _browse_context_file(self, role):
+        """Pick an existing context file — anywhere on disk — for one role."""
+        role = self._context_role(role)
+        path, _ = QFileDialog.getOpenFileName(
+            self.context_window,
+            f"Select the {role} context file",
+            _REPO_ROOT,
+            "Text/Markdown (*.txt *.md)",
+        )
+        if path:
+            logger.info("Context %s file selected: %s", role, path)
+            self.websocket_client.send_message(
+                {"type": "context_select", "role": role, "path": path}
+            )
+
+    def _new_context_file(self, role):
+        """Create a new context file for one role (the pane then saves into it)."""
+        role = self._context_role(role)
+        path, _ = QFileDialog.getSaveFileName(
+            self.context_window,
+            f"New {role} context file",
+            os.path.join(_REPO_ROOT, f"{role}_context.md"),
+            "Text/Markdown (*.txt *.md)",
+        )
+        if path:
+            logger.info("Context %s file created: %s", role, path)
+            self.websocket_client.send_message(
+                {"type": "context_new", "role": role, "path": path}
+            )
+
     def _toggle_all_panes(self):
         """CTRL+SHIFT+M (Cmd+Shift+M on macOS): hide all open panes, or restore
         exactly the set that was open before they were hidden.
@@ -1459,6 +1568,7 @@ class MainWindow(QMainWindow):
             ("gemini", self.gemini_window_action),
             ("live", self.live_window_action),
             ("bullet_points", self.bullet_points_window_action),
+            ("context", self.context_window_action),
         )
         if not self._all_panes_hidden:
             self._panes_visibility_before_hide = {
@@ -1513,7 +1623,8 @@ class MainWindow(QMainWindow):
         if window.get_edge() == edge and window.is_docked():
             return
         opposite = "left" if edge == "right" else "right"
-        for other in (self.gemini_window, self.live_window, self.bullet_points_window):
+        for other in (self.gemini_window, self.live_window, self.bullet_points_window,
+                      self.context_window):
             if other is window:
                 continue
             if other.is_docked() and other.get_edge() == edge:
@@ -1539,6 +1650,7 @@ class MainWindow(QMainWindow):
         self.gemini_window.apply_always_on_top(enabled)
         self.live_window.apply_always_on_top(enabled)
         self.bullet_points_window.apply_always_on_top(enabled)
+        self.context_window.apply_always_on_top(enabled)
         self._save_state()
 
     def _set_screen_protection(self, enabled):
@@ -1549,6 +1661,7 @@ class MainWindow(QMainWindow):
         self.gemini_window.apply_screen_protection(enabled)
         self.live_window.apply_screen_protection(enabled)
         self.bullet_points_window.apply_screen_protection(enabled)
+        self.context_window.apply_screen_protection(enabled)
         if hasattr(self, "settings_dialog"):
             set_capture_protection(self.settings_dialog, enabled)
         for widget in (self.screen_protection_action, self.screen_protection_checkbox):
@@ -1586,6 +1699,10 @@ class MainWindow(QMainWindow):
             self.gemini_window.close()
             self.live_window.close()
             self.bullet_points_window.close()
+            # Flush pending keystrokes before the pane (and the app) goes away;
+            # the msleep below gives the write time to reach the web service.
+            self._flush_context_editor()
+            self.context_window.close()
 
             # Stop transcription first to stop audio streams
             self.transcription_controller.cleanup()

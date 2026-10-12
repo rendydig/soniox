@@ -50,6 +50,9 @@ class TranslationController(QObject):
         self._auto_reply_purpose = DEFAULT_PURPOSE
         self._conversation_history = []
         self._auto_reply_is_image = False
+        # Host/Speaker context mirrored from the web service (the Context pane).
+        # None means "not known yet", which keeps the worker on its .env files.
+        self._context = None
     
     def is_translating(self):
         """Check if currently translating."""
@@ -125,6 +128,30 @@ class TranslationController(QObject):
     def set_jev_enabled(self, enabled: bool):
         """Enable/disable the JEV decision gate for auto-replies."""
         self._jev_enabled = bool(enabled)
+
+    def set_context(self, contents):
+        """Mirror the Host/Speaker context pushed by the web service.
+
+        ``contents`` is ``{"host": str, "speaker": str}`` — the text of the file
+        each role selected, already read by the Node service, so the reply path
+        does no disk I/O at all. An empty string means the user picked no
+        context for that role; a non-dict payload is ignored so the last known
+        text survives.
+        """
+        if not isinstance(contents, dict):
+            logger.warning("Ignoring malformed context payload: %r", contents)
+            return
+        host = contents.get("host")
+        speaker = contents.get("speaker")
+        self._context = {
+            "host": host if isinstance(host, str) else "",
+            "speaker": speaker if isinstance(speaker, str) else "",
+        }
+        logger.debug(
+            "Context updated: host=%d chars, speaker=%d chars",
+            len(self._context["host"]),
+            len(self._context["speaker"]),
+        )
     
     def schedule_auto_reply(self, transcription_text: str, input_source: str = "speaker", delay_ms: int = None):
         """
@@ -178,6 +205,7 @@ class TranslationController(QObject):
                 purpose_store=self._purpose_store,
                 host_role=self._host_role,
                 jev_enabled=self._jev_enabled,
+                context=self._context,
             )
             self._auto_reply_worker.result.connect(self._on_auto_reply_result, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.error.connect(self._on_auto_reply_error, Qt.ConnectionType.QueuedConnection)

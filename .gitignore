@@ -9,6 +9,8 @@ assets
 *.mp3
 logs
 ui_state.json
+context_state.json
+context_sample.txt
 sessions/
 purposes.json
 hub/hub

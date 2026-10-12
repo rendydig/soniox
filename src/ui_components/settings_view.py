@@ -13,6 +13,7 @@ _HOTKEY_FIELDS = (
     ("send_images", "Send screenshots to AI:"),
     ("bullet_points", "Bullet points update:"),
     ("last_pickup", "Last picked up:"),
+    ("context", "Context window:"),
     ("toggle_windows", "Hide/Show all windows:"),
 )
 

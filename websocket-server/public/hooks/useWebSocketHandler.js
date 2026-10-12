@@ -18,6 +18,8 @@ export const useWebSocketHandler = ({
     handleLastPickupStatus,
     handlePurposeState,
     handleSessionState,
+    handleContextState,
+    handleContextStatus,
     handleConnection
 }) => {
     const processMessage = useCallback((data, type, finalHandler, liveHandler) => {
@@ -93,6 +95,14 @@ export const useWebSocketHandler = ({
             if (typeof handlePurposeState === 'function') {
                 handlePurposeState(data.purpose, data.role);
             }
+        } else if (data.type === 'context_state') {
+            if (typeof handleContextState === 'function') {
+                handleContextState(data);
+            }
+        } else if (data.type === 'context_status') {
+            if (typeof handleContextStatus === 'function') {
+                handleContextStatus(data.status, data.message);
+            }
         } else if (data.type === 'correction_response') {
             console.log('[WebSocket] Correction response:', data);
             handleCorrectionResponse(data);
@@ -118,6 +128,8 @@ export const useWebSocketHandler = ({
         handleLastPickupStatus,
         handlePurposeState,
         handleSessionState,
+        handleContextState,
+        handleContextStatus,
         handleConnection
     ]);
 

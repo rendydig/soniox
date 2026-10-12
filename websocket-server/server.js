@@ -4,6 +4,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs').promises;
 const { correctSentence } = require('./gemini-correction');
+const contextStore = require('./context-store');
 
 const app = express();
 const server = http.createServer(app);
@@ -16,6 +17,57 @@ const MP3_LIVE_PATH = path.join(__dirname, '..', 'transcript-converter', 'mp3-li
 const SRT_PATH = path.join(__dirname, '..', 'transcript-converter', 'result-transcripts');
 
 const clients = new Set();
+
+// Context store operations the server owns. Anything else with a `context_`
+// prefix (context_browse / context_new_request / context_flush) is meant for
+// the desktop app and falls through to the normal rebroadcast below.
+const CONTEXT_OPS = {
+  context_select: (m) => contextStore.select(m.role, m.path),
+  context_clear_selection: (m) => contextStore.clearSelection(m.role),
+  context_new: (m) => contextStore.newFile(m.role, m.path),
+  context_save: (m) => contextStore.save(m.role, m.path, m.text),
+  context_forget: (m) => contextStore.forget(m.role, m.path),
+};
+
+// Context operations are serialized: a pane may send `context_save` and
+// `context_select` back to back, and without a queue their awaits could
+// interleave (the save would then be checked against the new selection).
+let contextQueue = Promise.resolve();
+
+function enqueueContext(task) {
+  const run = contextQueue.then(task, task);
+  contextQueue = run.then(noop, noop);
+  return run;
+}
+
+function noop() {}
+
+function sendJson(ws, payload) {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(payload));
+  }
+}
+
+function broadcastJson(payload, except) {
+  const data = JSON.stringify(payload);
+  let count = 0;
+  clients.forEach((client) => {
+    if (client !== except && client.readyState === WebSocket.OPEN) {
+      client.send(data);
+      count++;
+    }
+  });
+  return count;
+}
+
+function contextStatus(ws, status, message) {
+  sendJson(ws, {
+    type: 'context_status',
+    status,
+    message,
+    timestamp: new Date().toISOString(),
+  });
+}
 
 // Per-message logging (every partial/final transcription frame) is off by
 // default: at speech rate it floods stdout, and the app redirects stdout to
@@ -54,6 +106,10 @@ app.get('/live', (req, res) => {
 
 app.get('/bullets', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'bullets.html'));
+});
+
+app.get('/context', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'context.html'));
 });
 
 wss.on('connection', (ws, req) => {
@@ -199,6 +255,42 @@ wss.on('connection', (ws, req) => {
         }
       }
       
+      if (message.type === 'context_get') {
+        const payload = await contextStore.getState();
+        sendJson(ws, {
+          type: 'context_state',
+          ...payload,
+          timestamp: new Date().toISOString(),
+        });
+        return;
+      }
+
+      if (CONTEXT_OPS[message.type]) {
+        const result = await enqueueContext(() => CONTEXT_OPS[message.type](message));
+        if (!result || !result.ok) {
+          const status = (result && result.status) || 'invalid';
+          const text = (result && result.message) || 'Context request failed';
+          console.log(`[Context] ${message.type} rejected: ${status} - ${text}`);
+          contextStatus(ws, status, text);
+          return;
+        }
+        const payload = {
+          type: 'context_state',
+          ...result.payload,
+          timestamp: new Date().toISOString(),
+        };
+        // The requesting pane is excluded from the generic broadcast, so send
+        // it the fresh state directly; everyone else (the desktop app, other
+        // panes) gets it through the broadcast.
+        sendJson(ws, payload);
+        const count = broadcastJson(payload, ws);
+        console.log(
+          `[Context] ${message.type} role=${message.role} ` +
+            `path=${message.path || '-'} -> ${count} client(s)`
+        );
+        return;
+      }
+
       if (message.type === 'correction_request') {
         console.log(`[WebSocket] Processing correction request for: "${message.sentence}"`);
         const correctionResult = await correctSentence(message.sentence);
@@ -248,6 +340,25 @@ wss.on('connection', (ws, req) => {
     clients.delete(ws);
   });
 });
+
+// Edits made outside the pane (VS Code, another editor) reach the clients
+// through the watcher; the store deduplicates our own writes by content
+// signature, so a save cannot bounce back as a broadcast loop.
+contextStore.onExternalChange((payload) => {
+  broadcastJson({ type: 'context_state', ...payload, timestamp: new Date().toISOString() });
+  console.log('[Context] External change detected; rebroadcast state');
+});
+
+contextStore
+  .init()
+  .then((firstRun) => {
+    console.log(
+      firstRun
+        ? `[Context] State created at ${contextStore.STATE_PATH} (seeded from .env)`
+        : `[Context] State loaded from ${contextStore.STATE_PATH}`
+    );
+  })
+  .catch((error) => console.error('[Context] Init failed:', error.message));
 
 server.listen(PORT, () => {
   console.log(`[Server] WebSocket server running on ws://localhost:${PORT}`);

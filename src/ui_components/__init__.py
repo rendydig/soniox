@@ -9,6 +9,7 @@ from .drag_handle import DragHandle
 from .gemini_window import GeminiWindow
 from .live_window import LiveWindow
 from .bullet_points_window import BulletPointsWindow
+from .context_window import ContextWindow
 
 __all__ = [
     'DeviceSettingsWidget',
@@ -22,4 +23,5 @@ __all__ = [
     'GeminiWindow',
     'LiveWindow',
     'BulletPointsWindow',
+    'ContextWindow',
 ]

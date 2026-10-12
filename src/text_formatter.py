@@ -9,9 +9,11 @@ def format_gemini_result(text: str) -> str:
     Add paragraph breaks before known Gemini output sections.
 
     Detects headers such as:
+      - Speaker's move:
       - Syllables/Pronunciation:
       - Code:
       - Example:
+      - <Language> Text:
       - English Translation:
       - <Language> Translation:
 
@@ -20,10 +22,17 @@ def format_gemini_result(text: str) -> str:
     if not text:
         return text
 
-    section_pattern = re.compile(r'^(Syllables/Pronunciation:|Code:|Example:|\w+ Translation:)\s*', re.MULTILINE)
+    section_pattern = re.compile(
+        r"^(Speaker's move:|Syllables/Pronunciation:|Code:|Example:"
+        r"|\w+ Text:|\w+ Translation:)\s*",
+        re.MULTILINE,
+    )
 
     def insert_breaks(match: re.Match) -> str:
         start = match.start()
+        # The very first header needs no separator above it.
+        if start == 0:
+            return match.group(0)
         # If a blank line already exists above the header, keep it as is.
         if start >= 2 and text[start - 2:start] == '\n\n':
             return match.group(0)

@@ -22,7 +22,7 @@ from src.config import (
     JEV_MODEL,
     LANGUAGES,
 )
-from src.speech_acts import SPEECH_ACTS, act_criteria
+from src.speech_acts import SPEECH_ACTS, act_criteria, speaker_act_criteria
 
 logger = logging.getLogger(__name__)
 
@@ -88,9 +88,9 @@ def build_questions(purpose: dict, roles: dict, checklist: list, smart_role: boo
                     languages: list, target_language: str = None) -> dict:
     """Build the JEV ``questions`` dict for one reply decision.
 
-    ``should_reply`` (noul) and ``speech_act`` (choice) are always present;
-    ``host_role`` only in Smart mode; ``reply_language`` when any candidate is
-    known; and one ``objective_N`` noul per checklist item.
+    ``should_reply`` (noul), ``speaker_act`` and ``speech_act`` (choice) are
+    always present; ``host_role`` only in Smart mode; ``reply_language`` when any
+    candidate is known; and one ``objective_N`` noul per checklist item.
     """
     questions = {
         "should_reply": {
@@ -112,6 +112,15 @@ def build_questions(purpose: dict, roles: dict, checklist: list, smart_role: boo
             "instructions": "Which role is the Host playing in this conversation?",
             "criteria": {key: role.get("label", key) for key, role in roles.items()},
         }
+
+    questions["speaker_act"] = {
+        "type": "choice",
+        "instructions": (
+            "Which speech act did the Speaker perform in their latest utterance "
+            "(the latest 'user' turn)?"
+        ),
+        "criteria": speaker_act_criteria(),
+    }
 
     policy = purpose.get("speech_act_policy") or []
     instructions = "Which speech act should the Host perform in the reply?"
