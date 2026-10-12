@@ -5,7 +5,6 @@ from PySide6.QtCore import QThread, Signal
 
 from src.ai_client import get_ai_client
 from src.config import (
-    BULLET_MAX_ITEMS,
     BULLET_MAX_LINE_CHARS,
     SPEAKER_MAX_LIST_ITEMS,
 )
@@ -23,17 +22,21 @@ live two-person conversation, AND a short structured "Know Your Customer" profil
 
 Rules:
 - Messages are labelled [host] (the person you are helping) and [speaker] (the other person).
-- You receive the CURRENT bullet list, the CURRENT speaker profile, and NEW conversation lines.
 - Capture only topics, decisions, facts, numbers, open questions, and action items.
 - Explicitly IGNORE greetings, filler, acknowledgements, and turn-by-turn narration
   ("host pauses", "speaker agrees", "they continue talking").
 - Merge aggressively: prefer FEWER, DENSER bullets over many thin ones. Never pad the
   list to one bullet per line. For pure small talk an empty or very short list is correct.
-- Return the full UPDATED list: keep existing points that are still valid, merge/refine
-  related ones, drop duplicates, and add points for the new lines.
 - Each bullet is a short standalone phrase (max ~12 words). No numbering, no sub-bullets.
-- Keep at most {BULLET_MAX_ITEMS} of the most important points.
 - Write each bullet in the same language as the conversation it summarises. Keep proper nouns as-is.
+
+The user message names the mode; follow it exactly:
+- INCREMENTAL: you receive the CURRENT bullet list, the CURRENT speaker profile, and NEW
+  conversation lines. Return ONLY bullets that are NEW — not already stated or clearly
+  implied by the current list. Never restate, reword, merge, or reorder existing points.
+  An empty array is the correct answer when the new lines add nothing.
+- REBUILD: you receive the full conversation transcript. Return the COMPLETE bullet list
+  built from the transcript.
 
 Speaker profile (JSON object):
 - The host is "us"; the [speaker] is the customer. Only the [speaker] is profiled.
@@ -153,19 +156,30 @@ class BulletPointsWorker(QThread):
         self._is_running = True
 
     def _build_user_message(self) -> str:
-        lines = "\n".join(
-            f"[{source}] {text[:BULLET_MAX_LINE_CHARS]}"
-            for source, text in self._new_lines
-        )
+        # Lines are ``(source, text)`` or ``(source, text, timestamp)`` depending
+        # on the caller; only the first two fields matter to the prompt.
+        rendered = []
+        for entry in self._new_lines:
+            try:
+                source, text = entry[0], entry[1]
+            except (TypeError, IndexError):
+                continue
+            rendered.append(f"[{source}] {str(text)[:BULLET_MAX_LINE_CHARS]}")
+        lines = "\n".join(rendered)
         if self._rebuild:
             # Whole-transcript rebuild: no inherited list/profile, start from scratch.
-            return f"Full conversation transcript:\n{lines}"
+            return (
+                f"Full conversation transcript:\n{lines}\n\n"
+                "REBUILD mode: return the COMPLETE bullet list."
+            )
         bullets_json = json.dumps(self._current_bullets, ensure_ascii=False)
         speaker_json = json.dumps(self._current_speaker, ensure_ascii=False)
         return (
             f"Current bullet list (JSON): {bullets_json}\n\n"
             f"Current speaker profile (JSON): {speaker_json}\n\n"
-            f"New conversation lines:\n{lines}"
+            f"New conversation lines:\n{lines}\n\n"
+            "INCREMENTAL mode: return ONLY new bullets not already covered by the "
+            "list above (empty array if none)."
         )
 
     def run(self):
@@ -188,8 +202,9 @@ class BulletPointsWorker(QThread):
                 self.error.emit("Could not parse bullet points from the AI response")
             else:
                 self.result.emit({
-                    "items": parsed["items"][:BULLET_MAX_ITEMS],
+                    "items": parsed["items"],
                     "speaker": parsed["speaker"],
+                    "mode": "replace" if self._rebuild else "append",
                 })
         except Exception as e:
             if self._is_running:

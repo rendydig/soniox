@@ -9,16 +9,16 @@ import (
 	"soniox-hub/internal/protocol"
 )
 
-// Retention caps. The first five mirror src/session_store.py's SESSION_CAPS and
-// src/controllers/translation_controller.py's MAX_HISTORY_TURNS; bullets mirror
-// BULLET_MAX_ITEMS (src/config.py). Bound by construction: no cap, no growth.
+// Retention caps. These mirror src/session_store.py's SESSION_CAPS and
+// src/controllers/translation_controller.py's MAX_HISTORY_TURNS. Bullets and
+// their windows are deliberately uncapped (append-only, one point per update):
+// every other list is bounded by construction, those two grow with the session.
 const (
 	CapTranscriptions = 500
 	CapTranslations   = 500
 	CapConversation   = 25
 	CapGeminiResults  = 100
 	CapScreenshots    = 20
-	CapBullets        = 12
 )
 
 // pyTimeLayout matches Python's datetime.now().isoformat(): local time, no
@@ -46,6 +46,7 @@ type State struct {
 	CreatedAt      string           `json:"created_at"`
 	UpdatedAt      string           `json:"updated_at"`
 	Bullets        []any            `json:"bullets"`
+	BulletWindows  []map[string]any `json:"bullet_windows"`
 	Conversation   []Turn           `json:"conversation"`
 	Transcriptions []Line           `json:"transcriptions"`
 	Translations   []Line           `json:"translations"`
@@ -76,9 +77,10 @@ type Store struct {
 	createdAt string
 	updatedAt string
 
-	bullets    []any
-	speaker    map[string]any
-	lastPickup string
+	bullets       []any
+	bulletWindows []map[string]any
+	speaker       map[string]any
+	lastPickup    string
 	config     map[string]any
 	purposes   map[string]any
 	status     string
@@ -151,6 +153,21 @@ func (s *Store) Apply(topic string, payload map[string]any) (changed bool) {
 		s.touchLocked()
 		return true
 
+	case protocol.TopicBullets:
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		if raw, ok := payload["items"]; ok {
+			s.setBulletsLocked(toAnySlice(raw))
+		}
+		if raw, ok := payload["speaker"]; ok {
+			s.speaker = cloneMap(toMap(raw))
+		}
+		if raw, ok := payload["windows"]; ok {
+			s.bulletWindows = toMapSlice(raw)
+		}
+		s.touchLocked()
+		return true
+
 	case protocol.TopicStatus, protocol.TopicError:
 		s.mu.Lock()
 		defer s.mu.Unlock()
@@ -169,14 +186,16 @@ func (s *Store) Apply(topic string, payload map[string]any) (changed bool) {
 // topicPurposes mirrors the browser-bound purpose_state frame.
 const topicPurposes = "purpose_state"
 
-// SetBullets replaces the bullet list (newest kept up to CapBullets).
+// setBulletsLocked replaces the bullet list (uncapped: append-only by design).
+func (s *Store) setBulletsLocked(bullets []any) {
+	s.bullets = cloneSlice(bullets)
+}
+
+// SetBullets replaces the bullet list.
 func (s *Store) SetBullets(bullets []any) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if len(bullets) > CapBullets {
-		bullets = bullets[len(bullets)-CapBullets:]
-	}
-	s.bullets = cloneSlice(bullets)
+	s.setBulletsLocked(bullets)
 	s.touchLocked()
 }
 
@@ -247,6 +266,9 @@ func (s *Store) Restore(raw map[string]any) error {
 	if in.Bullets != nil {
 		s.bullets = cloneSlice(in.Bullets)
 	}
+	if in.BulletWindows != nil {
+		s.bulletWindows = cloneMapSlice(in.BulletWindows)
+	}
 	if in.Speaker != nil {
 		s.speaker = cloneMap(in.Speaker)
 	}
@@ -265,6 +287,7 @@ func (s *Store) Snapshot() State {
 		CreatedAt:      s.createdAt,
 		UpdatedAt:      s.updatedAt,
 		Bullets:        cloneSlice(s.bullets),
+		BulletWindows:  cloneMapSlice(s.bulletWindows),
 		Conversation:   s.conversation.Slice(),
 		Transcriptions: s.transcriptions.Slice(),
 		Translations:   s.translations.Slice(),
@@ -290,6 +313,13 @@ func (s *Store) Bullets() []any {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return cloneSlice(s.bullets)
+}
+
+// BulletWindows returns the per-update provenance of the bullet list.
+func (s *Store) BulletWindows() []map[string]any {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return cloneMapSlice(s.bulletWindows)
 }
 
 // Speaker returns the current speaker profile.
@@ -326,6 +356,7 @@ func (s *Store) resetLocked() {
 	s.geminiResults.Clear()
 	s.screenshots.Clear()
 	s.bullets = []any{}
+	s.bulletWindows = []map[string]any{}
 	s.speaker = map[string]any{}
 	s.lastPickup = ""
 	s.status = ""
@@ -397,6 +428,42 @@ func cloneSlice(in []any) []any {
 	out := make([]any, len(in))
 	for i, item := range in {
 		out[i] = cloneAny(item)
+	}
+	return out
+}
+
+// cloneMapSlice copies a slice of maps element-wise (deep).
+func cloneMapSlice(in []map[string]any) []map[string]any {
+	if in == nil {
+		return []map[string]any{}
+	}
+	out := make([]map[string]any, len(in))
+	for i, item := range in {
+		out[i] = cloneMap(item)
+	}
+	return out
+}
+
+// toAnySlice coerces a decoded payload value to a slice, dropping non-slices.
+func toAnySlice(v any) []any {
+	items, _ := v.([]any)
+	return items
+}
+
+// toMap coerces a decoded payload value to a map.
+func toMap(v any) map[string]any {
+	m, _ := v.(map[string]any)
+	return m
+}
+
+// toMapSlice keeps the map entries of a decoded slice, cloning each one.
+func toMapSlice(v any) []map[string]any {
+	items, _ := v.([]any)
+	out := make([]map[string]any, 0, len(items))
+	for _, item := range items {
+		if m, ok := item.(map[string]any); ok {
+			out = append(out, cloneMap(m))
+		}
 	}
 	return out
 }

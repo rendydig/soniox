@@ -177,6 +177,8 @@ def main() -> int:
         "id": "20261012-060000",
         "created_at": "2026-10-12T06:00:00.000000",
         "bullets": [{"text": "restored bullet"}],
+        "bullet_windows": [{"mode": "auto", "start": "t0", "end": "t1", "lines": 3,
+                            "from_index": 0, "to_index": 0}],
         "conversation": [{"text": "hi", "role": "speaker", "suggestion": ""}],
         "transcriptions": [{"source": "host", "text": "restored", "timestamp": "t"}],
         "translations": [],
@@ -194,6 +196,24 @@ def main() -> int:
           and published.get("speaker", {}).get("name") == "Ada"
           and published.get("last_pickup") == "restored pickup")
     check("restore seeds the screenshots", len(published.get("screenshots") or []) == 1)
+    check("restore seeds the bullet windows", len(published.get("bullet_windows") or []) == 1)
+
+    # --- bullets topic (M1 dual-write) ------------------------------------
+    print("\n[bullets]")
+    publisher.publish(protocol.TOPIC_BULLETS, {
+        "items": ["point one", "point two"],
+        "speaker": {"name": "Ada", "occupation": "engineer"},
+        "windows": [{"mode": "auto", "start": "t0", "end": "t1", "lines": 3,
+                     "from_index": 0, "to_index": 1}],
+    })
+    barrier(publisher)
+    bullets_state = snapshot_session(publisher)
+    check("bullets topic stores the list", len(bullets_state.get("bullets") or []) == 2,
+          f"got {bullets_state.get('bullets')}")
+    check("bullets topic stores the windows", len(bullets_state.get("bullet_windows") or []) == 1,
+          f"got {bullets_state.get('bullet_windows')}")
+    check("bullets topic stores the speaker profile",
+          (bullets_state.get("speaker") or {}).get("name") == "Ada")
 
     # --- session.config ---------------------------------------------------
     print("\n[session config]")

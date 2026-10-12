@@ -32,6 +32,8 @@ export const useTranscriptionHandlers = ({
     const correctionEnabledRef = useRef(correctionEnabled);
     const correctionsRef = useRef(corrections);
     const sentenceIdCounter = useRef(0);
+    // Pending auto-clear for a transient bullet-points notice ("Nothing new yet").
+    const noticeTimer = useRef(null);
     
     useEffect(() => {
         correctionEnabledRef.current = correctionEnabled;
@@ -324,10 +326,18 @@ export const useTranscriptionHandlers = ({
     /** Bullet-points progress / failure status. */
     const handleBulletPointsStatus = useCallback((status, message) => {
         if (typeof setBulletPointsStatus !== 'function') return;
+        if (noticeTimer.current) {
+            clearTimeout(noticeTimer.current);
+            noticeTimer.current = null;
+        }
         if (status === 'started') {
             setBulletPointsStatus('Updating...');
         } else if (status === 'failed' || status === 'error') {
             setBulletPointsStatus(message || 'Update failed.');
+        } else if (status === 'no_new') {
+            // "Fetch new" found nothing buffered: show it briefly, then clear.
+            setBulletPointsStatus(message || 'Nothing new yet');
+            noticeTimer.current = setTimeout(() => setBulletPointsStatus(''), 2500);
         } else {
             setBulletPointsStatus('');
         }

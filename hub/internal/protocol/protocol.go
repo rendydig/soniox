@@ -68,6 +68,9 @@ const (
 	TopicScreenshotsAdd   = "screenshots.add"
 	TopicScreenshotsClear = "screenshots.clear"
 	TopicCommand          = "command"
+	// TopicBullets carries the bullet list, the KYC speaker profile and the
+	// per-update windows together (payload: {items, speaker, windows}).
+	TopicBullets = "bullets"
 )
 
 // PartialSuffix marks a disposable topic: a frame whose topic ends with it may

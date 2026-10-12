@@ -45,7 +45,8 @@ from src.ui_components import (
     GeminiWindow,
     LiveWindow,
     BulletPointsWindow,
-    ContextWindow
+    ContextWindow,
+    mic_icon,
 )
 from src.ui_components.pane_resize_handle import PaneResizeHandle
 from src.ui_state import load_state, save_state
@@ -727,9 +728,13 @@ class MainWindow(QMainWindow):
         
         self.btn_start = self.control_buttons.get_start_button()
         self.btn_new = self.control_buttons.get_new_button()
+        # Soft-mute toggle for the host (microphone) input. Never persisted, so
+        # it is always unchecked at launch (the app starts unmuted).
+        self.mic_button = self.control_buttons.get_mic_button()
+        self.mic_button.setFixedWidth(30)
 
         # Equal heights across the control row (and the Settings dialog's button).
-        for _button in (self.btn_start, self.btn_new, self.mode_button,
+        for _button in (self.btn_start, self.mic_button, self.btn_new, self.mode_button,
                         self.tool_button, self.settings_button, self.close_button,
                         self.settings_view.back_button):
             _button.setFixedHeight(CONTROL_HEIGHT)
@@ -750,6 +755,7 @@ class MainWindow(QMainWindow):
 
         self.translation_input.installEventFilter(self)
         self.btn_start.clicked.connect(self._toggle_start)
+        self.mic_button.toggled.connect(self._on_mic_muted_toggled)
         self.control_buttons.new_session_clicked.connect(self._new_session)
         self.pronunciation_checkbox.toggled.connect(self.translation_controller.set_pronunciation_enabled)
         self.translation_controller.set_pronunciation_enabled(self.pronunciation_checkbox.isChecked())
@@ -866,7 +872,9 @@ class MainWindow(QMainWindow):
         """Restore the previous session's state into the controllers and editor."""
         data = self.session_store.snapshot()
         self.bullet_points_controller.load_state(
-            data.get("bullets") or [], data.get("speaker") or {}
+            data.get("bullets") or [],
+            data.get("speaker") or {},
+            data.get("bullet_windows") or [],
         )
         self.last_pickup_controller.load_last_pickup(data.get("last_pickup") or "")
         self.translation_controller.load_conversation_history(data.get("conversation") or [])
@@ -977,6 +985,20 @@ class MainWindow(QMainWindow):
                 "source": input_source, "text": text,
                 "timestamp": datetime.now().isoformat(),
             })
+
+    def _on_mic_muted_toggled(self, muted):
+        """Mute/unmute the microphone (host) input; the Speaker keeps streaming.
+
+        A soft mute: the capture stream and the Soniox session stay alive (kept
+        open by keepalives), so unmuting resumes instantly and the microphone is
+        never taken exclusively from other apps. Not persisted.
+        """
+        self.transcription_controller.set_mic_muted(muted)
+        self.mic_button.setIcon(mic_icon(muted=muted))
+        self.mic_button.setToolTip(
+            "Unmute the microphone" if muted else "Mute the microphone (host input)")
+        self.status_label.setText("Microphone muted" if muted else "Listening...")
+        logger.info("Microphone %s", "muted" if muted else "unmuted")
 
     def _on_transcription_started(self):
         """Handle transcription session started."""
@@ -1140,25 +1162,39 @@ class MainWindow(QMainWindow):
         """Rebuild the bullet list from the entire session transcript (Rebuild button)."""
         transcriptions = self.session_store.snapshot().get("transcriptions") or []
         lines = [
-            (entry.get("source"), entry.get("text"))
+            (entry.get("source"), entry.get("text"), entry.get("timestamp"))
             for entry in transcriptions
             if entry.get("text")
         ]
         self.bullet_points_controller.hard_regenerate(lines)
 
-    def _on_bullet_points_updated(self, items: list, speaker: dict):
-        """Broadcast the updated bullet list + speaker profile to the webview."""
+    def _on_bullet_points_updated(self, items: list, speaker: dict, windows: list):
+        """Broadcast the updated bullet list + profile + windows and persist them.
+
+        Mirrored to the Go hub on the same topic (``bullets``) alongside the
+        WebSocket frame, so the hub owns the same state the panes render.
+        """
         self.websocket_client.send_message({
             "type": "bullet_points",
             "items": list(items or []),
             "speaker": dict(speaker or {}),
+            "windows": list(windows or []),
         })
         self.session_store.set_bullets(items)
         self.session_store.set_speaker(speaker)
+        self.session_store.set_bullet_windows(windows)
+        self.hub.bullets(items, speaker, windows)
 
-    def _send_bullet_status(self, status: str):
-        """Broadcast a bullet-points progress/failure status to the webview."""
-        self.websocket_client.send_message({"type": "bullet_points_status", "status": status})
+    def _send_bullet_status(self, status: str, message: str = ""):
+        """Broadcast a bullet-points progress/failure/notice status to the webview.
+
+        ``message`` is an optional human-readable line for a notice the pane
+        cannot derive from ``status`` alone (e.g. "Nothing new yet").
+        """
+        payload = {"type": "bullet_points_status", "status": status}
+        if message:
+            payload["message"] = message
+        self.websocket_client.send_message(payload)
 
     def _send_bullet_countdown(self, auto: bool, next_flush_at: float):
         """Broadcast the auto-flush countdown (pane shows it under the tab title).
@@ -1273,6 +1309,15 @@ class MainWindow(QMainWindow):
         elif msg_type == "regenerate_bullet_points":
             logger.info("Bullet points rebuild requested from webview")
             self._regenerate_bullet_points()
+        elif msg_type == "trigger_bullet_points":
+            # The pane's "Fetch new" button: an incremental update (merges only
+            # the newly buffered lines), never a rebuild.
+            logger.info("Bullet points incremental update requested from webview")
+            controller = self.bullet_points_controller
+            if not controller.flush_now(force=True) and not controller.is_busy():
+                # Nothing buffered since the last update: give the pane feedback
+                # instead of leaving the button looking dead.
+                self._send_bullet_status("no_new", message="Nothing new yet")
         elif msg_type == "trigger_last_pickup":
             logger.info("Last pickup update requested from webview")
             self._trigger_last_pickup_now()

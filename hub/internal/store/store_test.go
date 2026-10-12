@@ -52,11 +52,17 @@ func TestSnapshotIsACopy(t *testing.T) {
 	s.Apply(protocol.TopicTransFinal, map[string]any{"source": "host", "text": "one"})
 	s.SetBullets([]any{map[string]any{"text": "b1"}})
 	s.SetSpeaker(map[string]any{"name": "Ada"})
+	s.Apply(protocol.TopicBullets, map[string]any{
+		"items":   []any{map[string]any{"text": "b1"}},
+		"speaker": map[string]any{"name": "Ada"},
+		"windows": []any{map[string]any{"mode": "auto", "from_index": 0, "to_index": 0}},
+	})
 
 	snap := s.Snapshot()
 	snap.Transcriptions[0].Text = "MUTATED"
 	snap.Conversation[0].Text = "MUTATED"
 	snap.Bullets[0].(map[string]any)["text"] = "MUTATED"
+	snap.BulletWindows[0]["mode"] = "MUTATED"
 	snap.Speaker["name"] = "MUTATED"
 	snap.Translations = append(snap.Translations, Line{Text: "injected"})
 
@@ -70,11 +76,34 @@ func TestSnapshotIsACopy(t *testing.T) {
 	if fresh.Bullets[0].(map[string]any)["text"] != "b1" {
 		t.Fatalf("bullets mutated through the snapshot: %+v", fresh.Bullets)
 	}
+	if fresh.BulletWindows[0]["mode"] != "auto" {
+		t.Fatalf("bullet windows mutated through the snapshot: %+v", fresh.BulletWindows)
+	}
 	if fresh.Speaker["name"] != "Ada" {
 		t.Fatalf("speaker mutated through the snapshot: %+v", fresh.Speaker)
 	}
 	if len(fresh.Translations) != 0 {
 		t.Fatalf("translations mutated through the snapshot: %+v", fresh.Translations)
+	}
+}
+
+// Bullets are append-only: the store must not truncate them (there is no cap).
+func TestBulletsAreNotCapped(t *testing.T) {
+	s := New()
+	items := make([]any, 0, 80)
+	for i := 0; i < 80; i++ {
+		items = append(items, map[string]any{"text": "point"})
+	}
+	s.Apply(protocol.TopicBullets, map[string]any{"items": items})
+	s.Apply(protocol.TopicBullets, map[string]any{
+		"windows": []any{map[string]any{"mode": "auto", "from_index": 0, "to_index": 79}},
+	})
+	snap := s.Snapshot()
+	if len(snap.Bullets) != 80 {
+		t.Fatalf("bullets were truncated: %d", len(snap.Bullets))
+	}
+	if len(snap.BulletWindows) != 1 {
+		t.Fatalf("bullet_windows=%d want 1", len(snap.BulletWindows))
 	}
 }
 
@@ -125,6 +154,10 @@ func TestResetKeepsConfigAndClearsSession(t *testing.T) {
 	s.Apply(protocol.TopicSessionConfig, map[string]any{"auto_reply_enabled": true})
 	s.Apply(protocol.TopicTransFinal, map[string]any{"source": "host", "text": "hi"})
 	s.SetBullets([]any{"b"})
+	s.Apply(protocol.TopicBullets, map[string]any{
+		"items":   []any{"b"},
+		"windows": []any{map[string]any{"mode": "auto", "from_index": 0, "to_index": 0}},
+	})
 	s.SetLastPickup("picked")
 
 	s.Reset()
@@ -132,6 +165,9 @@ func TestResetKeepsConfigAndClearsSession(t *testing.T) {
 	snap := s.Snapshot()
 	if len(snap.Transcriptions) != 0 || len(snap.Conversation) != 0 || len(snap.Bullets) != 0 {
 		t.Fatalf("reset left state behind: %+v", snap)
+	}
+	if len(snap.BulletWindows) != 0 {
+		t.Fatalf("reset left bullet windows behind: %+v", snap.BulletWindows)
 	}
 	if snap.LastPickup != "" {
 		t.Fatalf("last_pickup not cleared: %q", snap.LastPickup)
@@ -147,6 +183,7 @@ func TestRestoreSeedsEveryField(t *testing.T) {
 		"id":             "20261012-060000",
 		"created_at":     "2026-10-12T06:00:00.000000",
 		"bullets":        []any{map[string]any{"text": "bullet"}},
+		"bullet_windows": []any{map[string]any{"mode": "auto", "from_index": 0, "to_index": 0}},
 		"conversation":   []any{map[string]any{"text": "hi", "role": "speaker", "suggestion": ""}},
 		"transcriptions": []any{map[string]any{"source": "host", "text": "hi", "timestamp": "t"}},
 		"translations":   []any{map[string]any{"source": "host", "text": "hai", "timestamp": "t"}},
@@ -173,6 +210,9 @@ func TestRestoreSeedsEveryField(t *testing.T) {
 	}
 	if len(snap.Bullets) != 1 || len(snap.GeminiResults) != 1 || len(snap.Screenshots) != 1 {
 		t.Fatalf("restore incomplete: %+v", snap)
+	}
+	if len(snap.BulletWindows) != 1 || snap.BulletWindows[0]["mode"] != "auto" {
+		t.Fatalf("bullet windows not restored: %+v", snap.BulletWindows)
 	}
 	if snap.LastPickup != "something" || snap.Speaker["name"] != "Ada" {
 		t.Fatalf("scalars not restored: %+v", snap)
@@ -208,7 +248,7 @@ func TestSnapshotJSONShape(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, key := range []string{
-		"id", "created_at", "updated_at", "bullets", "conversation",
+		"id", "created_at", "updated_at", "bullets", "bullet_windows", "conversation",
 		"transcriptions", "translations", "gemini_results", "screenshots",
 		"last_pickup", "speaker",
 	} {

@@ -192,15 +192,19 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   `response` · `error`.
 - **Topics**: `transcription.partial` / `transcription.final` (`{source,text,endpoint,timestamp}`) /
   `translation.final` / `status` / `error` / `session.config` / `screenshots.add` / `screenshots.clear` /
-  `command` in; browser-bound mirrors (`gemini_result`, `gemini_stream`, `bullet_points`, `purpose_state`,
-  `session_state`, …) fan out unchanged so the Node path stays byte-identical.
+  `bullets` (`{items,speaker,windows}` — the bullet list, KYC speaker profile and per-update windows,
+  which always change together) / `command` in; browser-bound mirrors (`gemini_result`,
+  `gemini_stream`, `bullet_points`, `purpose_state`, `session_state`, …) fan out unchanged so the
+  Node path stays byte-identical.
   **Partials are disposable** (any topic ending `.partial`); finals are never dropped.
 - **Sequence numbers are per topic** (`seq` 1,2,3… on `transcription.final`) and ride every `event` so a
   subscriber can detect a gap or a restart.
 - **Store** (`internal/store`): the `SessionStore` discipline ported — writers *replace* values, never
   mutate, and `Snapshot()` hands out deep copies. Every list is a fixed-capacity ring (no realloc), with
   the same caps as the Python side: transcriptions/translations 500, conversation 25 (=`MAX_HISTORY_TURNS`),
-  `gemini_results` 100, screenshots 20, bullets 12 (=`BULLET_MAX_ITEMS`). `session.config` and the purpose
+  `gemini_results` 100, screenshots 20. `bullets` + `bullet_windows` are the exception: they are
+  deliberately **uncapped** (append-only, one point per update), so they grow with the session.
+  `session.config` and the purpose
   registry are application-level and survive both `reset` and `restore`. `conversation` is derived from
   `transcription.final` (one turn per final, `{text, role: source, suggestion: ""}`), and a publisher's
   `timestamp` is kept verbatim so persisted lines match `datetime.now().isoformat()` exactly.
@@ -225,9 +229,11 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   `transcription.final` and `translation.final` alongside its existing Qt signals (`_publish_partial` /
   `_publish_final` / `_publish_translation`; the publisher is injected via
   `TranscriptionController.set_hub`, defaulting to a no-op), and the controller publishes `status` /
-  `error`. The hub therefore mirrors the same transcript the UI shows — verified by
-  `_tmp_hub_pipeline_smoke.py`, which drives the real worker against the fake Soniox server and asserts
-  the hub's finals equal the editor's lines.
+  `error`. `MainWindow._on_bullet_points_updated` also publishes `bullets` (via
+  `HubPublisher.bullets`) alongside the WebSocket frame, so the hub owns the same bullet list, speaker
+  profile and windows the panes render. The hub therefore mirrors the same transcript the UI shows —
+  verified by `_tmp_hub_pipeline_smoke.py`, which drives the real worker against the fake Soniox server
+  and asserts the hub's finals equal the editor's lines.
 - **Not done yet**: M2 (UI subscribes to the hub for display; the fan-out in
   `MainWindow._on_transcription_update` moves into the hub), M3 (agents as separate processes via
   `src/hub/supervisor.py` + `internal/dispatch`), M4 (debounce timers move to `internal/sched`), M5
@@ -432,39 +438,57 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
 - `BulletPointsController` (`src/controllers/bullet_points_controller.py`) keeps the list as
   **state** and **always buffers** finalized lines during a session (capped at
   `BULLET_PAUSED_BUFFER_MAX`, oldest dropped) — buffering is free, only AI calls cost tokens.
-  With auto on, a repeating `QTimer` (`BULLET_FLUSH_INTERVAL_MS`, 15 s) *polls* (ticks are free
+  With auto on, a repeating `QTimer` (`BULLET_FLUSH_INTERVAL_MS`, 5 min) *polls* (ticks are free
   when the buffer is empty or a worker is running) and it also flushes early at
-  `BULLET_MAX_BUFFER_LINES` (12). An idle/auto-off conversation costs **zero tokens**.
+  `BULLET_MAX_BUFFER_LINES` (120). An idle/auto-off conversation costs **zero tokens**.
 - Each call sends the **current list + current speaker profile + only the new lines** to
   `BulletPointsWorker` (`src/bullet_points_worker.py`), which reuses `AIClient.generate` and
   the same `.env` provider/model and returns a JSON **object**
-  `{"bullets": [...], "speaker": {...}}` — one AI call keeps both the list and the
-  **KYC speaker profile** updated. `_parse_result_json` tolerates code fences/prose (and a
-  bare JSON **array**, which falls back to bullets + empty profile); malformed output keeps
-  the previous state and retries. Cost stays flat (O(list + delta)) instead of re-sending the
-  whole transcript (O(N²)). The list is capped at `BULLET_MAX_ITEMS` (12).
+  `{"bullets": [...], "speaker": {...}}` plus a `mode` field. The worker is **delta-aware**: an
+  incremental call (`mode: "append"`) asks for and returns ONLY the new points, and the controller
+  appends them (`BulletPointsController._merge_new_items`, which drops exact duplicates after
+  casefolding/stripping punctuation and near-duplicates by Jaccard token similarity ≥ 0.8); a rebuild
+  (`mode: "replace"`) returns the complete list and replaces it. `_parse_result_json` tolerates code
+  fences/prose (and a bare JSON **array**, which falls back to bullets + empty profile); malformed
+  output keeps the previous state and retries. **There is no cap** — the list grows monotonically
+  (the old `BULLET_MAX_ITEMS` was removed, in `src/config.py` too).
+- **Windows / checkpoints**: every update also records one entry under `bullet_windows` (a separate
+  session list, parallel to `bullets`, so bullets stay strings) —
+  `{"mode": "auto"|"rebuild", "start", "end", "lines", "from_index", "to_index"}`. The time range
+  is the ISO timestamps of the lines the update covered (`add_line` stamps each buffered line; the
+  buffer holds `(source, text, ts)`), and the index range maps it to the bullets it produced. An append
+  records `from_index = len(previous)`..`len(new) - 1` (skipped when nothing new); a rebuild **resets**
+  the list to a single `rebuild` entry spanning the whole list, because it rewrote every bullet.
 - **Speaker (KYC) profile**: `speaker` in the worker output / session is a dict —
   `{name, location, occupation}` (labelled rows) plus `interests`, `goals`, `pain_points`,
   `facts` (short standalone items, ~8 each, `SPEAKER_MAX_LIST_ITEMS` in `src/config.py`,
   enforced in the prompt **and** by trimming the parsed result). Facts/pain points are only
   extracted from `[speaker]` lines (the host is "us", the speaker is the customer); profile
   fields update **only when the speaker reveals them** (never guessed), unknown = `""`/`[]`.
-  `BulletPointsController` holds `_bullets` + `_speaker`, its `updated` signal is
-  `Signal(list, dict)`, and `load_state(items, speaker)` seeds both from a restored session.
+  `BulletPointsController` holds `_bullets` + `_speaker` + `_bullet_windows`, its `updated` signal is
+  `Signal(list, dict, list)` (items, profile, windows), and `load_state(items, speaker, windows)` seeds
+  all three from a restored session.
 - **Auto / manual / checkpoint:** auto updates run only when the checkbox is on **and** the
   pane is visible; hiding the pane (Tool ▾ or its `−`) pauses the timer but keeps the current
   list as a checkpoint and keeps buffering. Re-showing broadcasts the checkpoint immediately
   and makes one catch-up call. **`CTRL+ALT+P`** (system-wide, `global_hotkeys.py`) does a
   **silent manual update** (`flush_now(force=True)`) that merges only the new buffered lines —
   it works with auto off, but is a no-op (logged) when the pane is hidden (never auto-shows it).
+  The bullets tab's **"Fetch new"** button is the same incremental catch-up without the hotkey:
+  it sends `{"type":"trigger_bullet_points"}`, `MainWindow` calls
+  `flush_now(force=True)`, and when nothing is buffered (and no call is in flight) the app replies
+  with a `bullet_points_status` `no_new` notice ("Nothing new yet") that the pane clears itself
+  after 2.5 s — so the button never looks dead. It is not a rebuild: the existing list is kept.
 - `MainWindow` wires it: `_on_transcription_update` buffers final lines via `add_line`
-  (unconditional); `_trigger_bullet_points_now` is the `CTRL+ALT+P` callback;
-  `_on_bullet_points_updated(items, speaker)` broadcasts
-  `{"type":"bullet_points","items":[...],"speaker":{...}}` (persisted via `set_bullets` +
-  `set_speaker`) and
-  `_send_bullet_status` broadcasts `{"type":"bullet_points_status","status":...}` over the
-  WebSocket (`send_message`, rebroadcast by the server). Pane control messages:
-  `hide_bullet_points_window`, `set_bullet_points_window_edge`.
+  (unconditional); `_trigger_bullet_points_now` is the `CTRL+ALT+P` callback (the webview
+  `trigger_bullet_points` message routes to the same `flush_now(force=True)`);
+  `_on_bullet_points_updated(items, speaker, windows)` broadcasts
+  `{"type":"bullet_points","items":[...],"speaker":{...},"windows":[...]}` (persisted via `set_bullets` +
+  `set_speaker` + `set_bullet_windows`, and mirrored to the hub via `self.hub.bullets`) and
+  `_send_bullet_status(status, message="")` broadcasts
+  `{"type":"bullet_points_status","status":...}` over the WebSocket (`send_message`, rebroadcast by
+  the server). Pane control messages: `hide_bullet_points_window`, `set_bullet_points_window_edge`,
+  `regenerate_bullet_points`, `trigger_bullet_points`.
 - **Auto-flush countdown**: `BulletPointsController.countdown_changed = Signal(bool, float)`
   carries `(auto, next_flush_at)` where `next_flush_at` is the epoch deadline of the
   controller's own `QTimer` (`BULLET_FLUSH_INTERVAL_MS`, 5 min). It is re-armed only in
@@ -485,17 +509,18 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   CSS-drawn checkmark. The pane has **three tabs** — Bullet Points / **Speaker** /
   Last Picked Up; the Speaker tab renders `components/SpeakerProfile.js` (identity rows +
   `.kyc-*` sections, `.kyc-pain` accent for pain points, shares the update status line and
-  an empty-state hint). The Rebuild button lives on the bullets tab but regenerates the
-  profile too (it is one AI call).
+  an empty-state hint). The bullets tab carries two text buttons: **Fetch new** (incremental —
+  merges only the newly buffered lines, keeps the list; `trigger_bullet_points`) and **Rebuild**
+  (regenerates the list from the whole transcript; also refreshes the profile, since it is one AI call).
 - Persisted in `ui_state.json`: `settings.bullet_points` (auto, default false),
   `settings.bullet_points_window_visible` (default false) and a `bullet_points_window`
   geometry block. `_set_pane_edge` swaps any docked pane on the target edge across all three
   panes.
 
 ## Sessions (persistence, resume, new session)
-- A **session** is the conversation state persisted to `sessions/current.json` (gitignored):  `bullets`, `conversation`, `transcriptions`, `translations`, `gemini_results`, `screenshots`
-  (each capped in `src/config.py`) plus the dict-typed `speaker` profile and the string
-  `last_pickup`.
+- A **session** is the conversation state persisted to `sessions/current.json` (gitignored):  `bullets`, `bullet_windows`, `conversation`, `transcriptions`, `translations`, `gemini_results`, `screenshots`
+  (each capped in `src/config.py` except `bullets`/`bullet_windows`, which are uncapped) plus the
+  dict-typed `speaker` profile and the string `last_pickup`.
  `SessionStore` (`src/session_store.py`) holds it in memory and
   a **background daemon thread** JSON-dumps snapshots on a debounce
   (`SESSION_WRITE_DEBOUNCE_MS`, 2 s) via a temp file + `os.replace`, so file I/O never blocks the
@@ -684,6 +709,24 @@ translate are untouched.
   fallback is needed. The user must route output to it (a Multi-Output Device keeps
   playback audible) — the app cannot do that for them.
 
+## Microphone mute (soft mute)
+- The control bar has a checkable **mic button** between Start/Stop and New
+  (`ControlButtonsWidget.btn_mic`, a `QToolButton` with a painted `mic_icon()`); toggling it calls
+  `MainWindow._on_mic_muted_toggled` → `TranscriptionController.set_mic_muted`. **Only the host
+  (microphone) worker is muted** — the Speaker (system-audio loopback) keeps streaming. **Not
+  persisted** (no `ui_state.json` key), so the app always launches unmuted; the state *is* re-applied
+  to the worker the next `start_session()` creates.
+- It is a **soft mute**, matching Google Meet: `SonioxWorker.set_muted` only stops the sender from
+  sending PCM. The capture child process keeps running (see "Audio capture architecture" — restarting
+  the audio stack is exactly the fragile path the child exists to isolate) and the device is never
+  opened exclusively, so other apps can keep using the mic. The OS still shows the mic as in use.
+- While muted the sender **drains the audio queue** (so it can't back up) and sends
+  `{"type": "keepalive"}` — a **text** JSON control frame, never binary — every
+  `SONIOX_MUTE_KEEPALIVE_MS` (10 s). That is mandatory: Soniox closes an idle stream after ~20 s
+  with no audio (`WebSocket status 1001`), after which unmuting would silently do nothing. Unmuting
+  resumes PCM on the next chunk with no reconnect.
+- Soniox bills the stream duration regardless of audio, so muting lowers what is transcribed, not the cost.
+
 ## Logging
 - All errors/warnings and diagnostics go to the **terminal** via Python `logging`;
   there are **no `QMessageBox` popups** (the worker error that used to show
@@ -786,6 +829,36 @@ few seconds, because Qt WebEngine cannot render on the offscreen platform here.
 - `_tmp_context_autosave_check.py` — the debounce-on-typing loop: selects a temp file, types
   into the textarea, asserts nothing is written during the debounce window, then that the
   file holds exactly the typed text and the pane shows `Saved`. 8 checks.
+
+### Bullet points (throwaway)
+- `_tmp_bullet_delta_check.py` — the delta/append contract with the worker start stubbed
+  (no AI calls): `_merge_new_items` drops exact + near duplicates but keeps low-overlap
+  phrases, `_build_user_message` differs between append and rebuild (and accepts 2- and
+  3-tuple lines), an append grows the list and fills `from_index`/`to_index` while recording
+  no window when nothing is new, a rebuild resets `bullet_windows`, and a payload with no
+  `mode` defaults to `replace`. No server needed. 28 checks.
+- `_tmp_bullet_manual_check.py` — the pane's **Fetch new** button, app-side: builds a real
+  `MainWindow` (worker start stubbed, no network) and drives `{"type":"trigger_bullet_points"}`.
+  An empty buffer replies with a `bullet_points_status` `no_new` notice (with a message) instead
+  of a silent no-op; buffered lines start an **incremental** update (`rebuild=False`) carrying the
+  existing list + the whole buffered window; `_send_bullet_status` forwards an optional message;
+  Rebuild still routes to a `rebuild=True` call from an empty list. No server needed. 15 checks.
+- `_tmp_bullet_pane_check.py` — the pane really renders (needs a server: `PORT=8793 node
+  server.js`): loads `/bullets` in a QWebEngineView, asserts the bullets tab shows Fetch new +
+  Rebuild inside `.bullet-header-actions` (pane controls still present), stubs `WebSocket.send`,
+  clicks both, and checks the app sent `trigger_bullet_points` and `regenerate_bullet_points`.
+  Covers the htm template, which `node --check` cannot. 11 checks.
+
+### Microphone mute (throwaway)
+- `_tmp_mute_check.py` — the soft-mute sender loop against a **fake `websockets` connection**
+  (no real API): live chunks go as binary frames; while muted nothing binary is sent, the queue
+  drains, and a `{"type": "keepalive"}` text frame arrives within the interval; unmuting resumes
+  PCM; stopping still sends the end-of-stream frame. Also the controller contract
+  (`set_mic_muted` reaches the live worker; a worker from `start_session` is muted before `.start()`)
+  and the painted icon (live vs muted differ, muted has the red slash). 22 checks.
+- `_tmp_mute_app_check.py` — the bar-side wiring: builds a real `MainWindow` and asserts the button
+  is in the control row, starts unchecked, toggles the controller state + icon + tooltip + status
+  label, and is absent from `ui_state.json`. 16 checks.
 
 ### Long-run stress test (throwaway)
 `_tmp_long_transcription_test.py` drives the real app with **real audio** through a

@@ -66,6 +66,7 @@ def cmd_state(args, client):
         for key, count in counts.items():
             print(f"  {key:<15} {count}")
         print(f"  bullets         {len(session.get('bullets') or [])}")
+        print(f"  bullet_windows  {len(session.get('bullet_windows') or [])}")
         print(f"  last_pickup     {session.get('last_pickup')!r}")
         speaker = session.get("speaker") or {}
         print(f"  speaker         {speaker.get('name') or '-'}")

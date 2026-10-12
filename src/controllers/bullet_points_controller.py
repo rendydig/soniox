@@ -1,5 +1,7 @@
 import logging
+import re
 import time
+from datetime import datetime
 
 from PySide6.QtCore import QObject, Qt, QTimer, Signal
 
@@ -7,11 +9,15 @@ from src.bullet_points_worker import BulletPointsWorker
 from src.config import (
     BULLET_FLUSH_INTERVAL_MS,
     BULLET_MAX_BUFFER_LINES,
-    BULLET_MAX_ITEMS,
     BULLET_PAUSED_BUFFER_MAX,
 )
 
 logger = logging.getLogger(__name__)
+
+# Similarity threshold for the near-duplicate guard in ``_merge_new_items``.
+_ITEM_SIMILARITY = 0.8
+# Punctuation stripped from the ends of a normalized bullet before comparing.
+_ITEM_TRIM_CHARS = ".,;:!?()[]{}\"'` \t"
 
 
 class BulletPointsController(QObject):
@@ -19,14 +25,20 @@ class BulletPointsController(QObject):
 
     The list is kept as state and each AI call receives the current list plus
     only the new lines, so cost stays flat instead of re-sending the transcript.
+    Updates are **append-only**: the AI returns only the points that are new for
+    the new lines and the controller merges them onto the existing list (a
+    rebuild call replaces the whole list instead). The list is not capped.
     Finalized lines are always buffered (free); the repeating timer *polls* only
     while ``auto`` is on, and ticks are free when the buffer is empty or a call
     is in flight. ``set_auto`` pauses/resumes the automatic updates while keeping
     the current list as a checkpoint; ``flush_now(force=True)`` updates on demand
-    (the manual hotkey) regardless of ``auto``.
+    (the manual hotkey) regardless of ``auto``. Each update also records a
+    *window* — the time range of the lines that produced it, with the index range
+    of the bullets it appended — under ``bullet_windows``.
     """
 
-    updated = Signal(list, dict)  # (items, speaker profile)
+    # (items, speaker profile, bullet windows)
+    updated = Signal(list, dict, list)
     status_changed = Signal(str)
     error_occurred = Signal(str)
     # (auto active, epoch seconds of the next interval tick; 0 when auto is off).
@@ -39,8 +51,10 @@ class BulletPointsController(QObject):
         self._auto = False
         self._bullets = []
         self._speaker = {}
+        self._bullet_windows = []
         self._buffer = []
         self._inflight_lines = []
+        self._inflight_window = None
         self._worker = None
         self._old_workers = []
         self._next_flush_at = 0.0
@@ -73,7 +87,7 @@ class BulletPointsController(QObject):
             self._arm_countdown()
             # Show the checkpoint immediately, then catch up on buffered lines.
             if self._bullets or self._speaker:
-                self.updated.emit(list(self._bullets), dict(self._speaker))
+                self.updated.emit(list(self._bullets), dict(self._speaker), self._windows_copy())
             if self._buffer:
                 self._maybe_flush()
         else:
@@ -97,25 +111,36 @@ class BulletPointsController(QObject):
         text = (text or "").strip()
         if not text:
             return
-        self._buffer.append((source, text))
+        self._buffer.append((source, text, datetime.now().isoformat()))
         if len(self._buffer) > BULLET_PAUSED_BUFFER_MAX:
             self._buffer = self._buffer[-BULLET_PAUSED_BUFFER_MAX:]
         if self._auto and len(self._buffer) >= BULLET_MAX_BUFFER_LINES:
             self._maybe_flush()
 
-    def flush_now(self, force: bool = False):
-        """Flush the buffer now. ``force`` updates even when auto is off (hotkey)."""
-        self._maybe_flush(force=force)
+    def flush_now(self, force: bool = False) -> bool:
+        """Flush the buffer now. ``force`` updates even when auto is off (hotkey/button).
+
+        Returns True when an update was actually started, False when there was
+        nothing buffered or a call was already in flight — the manual button
+        uses that to show the pane a "nothing new" notice.
+        """
+        return self._maybe_flush(force=force)
+
+    def is_busy(self) -> bool:
+        """True while a bullet-points AI call is in flight."""
+        return self._worker is not None and self._worker.isRunning()
 
     def hard_regenerate(self, lines):
         """Rebuild the whole list from the entire transcript (ignores the checkpoint).
 
-        ``lines`` is a list of ``(source, text)`` pairs. Buffered/in-flight lines
-        are dropped (the transcript supersedes them) but the current list stays
-        visible until the new one arrives. Works with auto on or off.
+        ``lines`` is a list of ``(source, text)`` or ``(source, text, timestamp)``
+        entries. Buffered/in-flight lines are dropped (the transcript supersedes
+        them) but the current list stays visible until the new one arrives. Works
+        with auto on or off.
         """
         self._buffer = []
         self._inflight_lines = []
+        self._inflight_window = None
         if self._worker is not None:
             # Suppress the old worker so a late result can't overwrite the rebuild.
             self._worker.stop()
@@ -133,37 +158,46 @@ class BulletPointsController(QObject):
             self.status_changed.emit("error")
             return
         logger.info("Rebuilding bullet points from %d transcript lines", len(lines))
+        self._inflight_window = self._make_window("rebuild", lines)
         self._start_worker([], {}, lines, rebuild=True)
 
     def reset(self):
-        """Clear the list, profile, and buffer (e.g. at the start of a session)."""
+        """Clear the list, profile, windows, and buffer (e.g. a new session)."""
         self._bullets = []
         self._speaker = {}
+        self._bullet_windows = []
         self._buffer = []
-        self.updated.emit([], {})
+        self.updated.emit([], {}, [])
 
-    def load_state(self, items, speaker=None):
-        """Seed the list and speaker profile from a restored session (no AI call)."""
-        self._bullets = list(items or [])[:BULLET_MAX_ITEMS]
+    def load_state(self, items, speaker=None, windows=None):
+        """Seed the list, speaker profile, and windows from a restored session."""
+        self._bullets = list(items or [])
         self._speaker = dict(speaker or {})
+        self._bullet_windows = [dict(w) for w in (windows or []) if isinstance(w, dict)]
         self._buffer = []
         logger.debug(
-            "Bullet points restored: %d items, %d profile fields",
+            "Bullet points restored: %d items, %d profile fields, %d windows",
             len(self._bullets),
             len(self._speaker),
+            len(self._bullet_windows),
         )
 
-    def _maybe_flush(self, force: bool = False):
-        """Start a worker only when (auto or forced), idle, and there is something new."""
+    def _maybe_flush(self, force: bool = False) -> bool:
+        """Start a worker when (auto or forced), idle, and there is something new.
+
+        Returns True when a worker was started.
+        """
         if not self._auto and not force:
-            return
+            return False
         if not self._buffer:
-            return
+            return False
         if self._worker is not None and self._worker.isRunning():
-            return
+            return False
         self._inflight_lines = self._buffer
         self._buffer = []
+        self._inflight_window = self._make_window("auto", self._inflight_lines)
         self._start_worker(list(self._bullets), dict(self._speaker), self._inflight_lines)
+        return True
 
     def _start_worker(self, current_bullets: list, current_speaker: dict, lines: list,
                      rebuild: bool = False):
@@ -184,13 +218,102 @@ class BulletPointsController(QObject):
     def _on_result(self, payload: dict):
         self._recycle_worker()
         self._inflight_lines = []
+        window = self._inflight_window
+        self._inflight_window = None
         items = payload.get("items") if isinstance(payload, dict) else None
         speaker = payload.get("speaker") if isinstance(payload, dict) else None
-        self._bullets = list(items or [])[:BULLET_MAX_ITEMS]
+        # Default "replace" keeps an old-style payload (no mode) safe.
+        mode = payload.get("mode", "replace") if isinstance(payload, dict) else "replace"
+        new_items = [str(item).strip() for item in (items or []) if str(item).strip()]
+
+        if mode == "append":
+            previous = len(self._bullets)
+            self._bullets = self._merge_new_items(self._bullets, new_items)
+            if len(self._bullets) > previous:
+                self._record_window(window, previous, len(self._bullets) - 1)
+        else:
+            # A rebuild rewrote the whole list, so old provenance no longer maps.
+            self._bullets = new_items
+            self._bullet_windows = []
+            if self._bullets:
+                self._record_window(window, 0, len(self._bullets) - 1)
         if isinstance(speaker, dict):
             self._speaker = dict(speaker)
-        self.updated.emit(list(self._bullets), dict(self._speaker))
+        self.updated.emit(list(self._bullets), dict(self._speaker), self._windows_copy())
         self.status_changed.emit("complete")
+
+    # --- windows (per-update provenance) ------------------------------
+
+    def _windows_copy(self):
+        """A shallow-copied snapshot of the recorded windows (own the dicts)."""
+        return [dict(w) for w in self._bullet_windows]
+
+    @staticmethod
+    def _entry_timestamp(entry) -> str:
+        """The ISO timestamp of a buffered line, or ``""`` when absent."""
+        if isinstance(entry, (list, tuple)) and len(entry) >= 3:
+            return str(entry[2] or "")
+        return ""
+
+    def _make_window(self, mode: str, lines):
+        """Describe the lines an update covers, or ``None`` when untimed."""
+        stamps = [t for t in (self._entry_timestamp(e) for e in (lines or [])) if t]
+        if not stamps:
+            return None
+        return {"mode": mode, "start": stamps[0], "end": stamps[-1], "lines": len(lines)}
+
+    def _record_window(self, window, from_index: int, to_index: int):
+        """Append one window entry mapping it to the bullets it produced."""
+        if not window:
+            return
+        entry = dict(window)
+        entry["from_index"] = from_index
+        entry["to_index"] = to_index
+        self._bullet_windows.append(entry)
+
+    # --- append merge -------------------------------------------------
+
+    @staticmethod
+    def _normalize_item(text: str) -> str:
+        """Casefolded, punctuation-stripped, whitespace-collapsed comparison key."""
+        key = str(text or "").casefold().strip().strip(_ITEM_TRIM_CHARS)
+        return re.sub(r"\s+", " ", key)
+
+    @classmethod
+    def _item_tokens(cls, key: str):
+        return set(cls._normalize_item(key).split())
+
+    @staticmethod
+    def _jaccard(a: set, b: set) -> float:
+        if not a or not b:
+            return 0.0
+        return len(a & b) / len(a | b)
+
+    def _merge_new_items(self, existing, new) -> list:
+        """Append only genuinely new bullets, dropping exact and near duplicates.
+
+        The model is asked for deltas, but a safety net keeps the list dense: an
+        item is skipped when it matches an existing/new item exactly (after
+        normalization) or is heavily overlapping (Jaccard token similarity
+        >= ``_ITEM_SIMILARITY``). Original wording and order are preserved.
+        """
+        result = [str(item).strip() for item in (existing or []) if str(item).strip()]
+        keys = [self._normalize_item(item) for item in result]
+        token_sets = [self._item_tokens(key) for key in keys]
+        for item in (new or []):
+            text = str(item).strip()
+            if not text:
+                continue
+            key = self._normalize_item(text)
+            if not key or key in keys:
+                continue
+            tokens = self._item_tokens(key)
+            if any(self._jaccard(tokens, other) >= _ITEM_SIMILARITY for other in token_sets):
+                continue
+            result.append(text)
+            keys.append(key)
+            token_sets.append(tokens)
+        return result
 
     def _on_error(self, msg: str):
         # Put the flushed lines back (before recycling) so they retry next tick.

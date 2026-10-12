@@ -34,6 +34,12 @@ SONIOX_MAX_ENDPOINT_DELAY_MS = 800
 SONIOX_ENDPOINT_LATENCY_ADJUSTMENT_LEVEL = 2
 SONIOX_ENDPOINT_SENSITIVITY = 0.4
 
+# Soft mute (the control bar's mic button). When the host (microphone) input is
+# muted we stop sending PCM but keep the Soniox session open: the service closes
+# an idle stream after ~20 s without audio, so the sender must emit the control
+# frame {"type": "keepalive"} (text JSON, not binary) at least that often.
+SONIOX_MUTE_KEEPALIVE_MS = 10000
+
 # AI provider selection. "gemini" uses the google-genai SDK; "openai" targets any
 # OpenAI-compatible endpoint (OpenRouter, x.ai, OpenAI, local servers).
 # AI_MODEL falls back to the legacy GEMINI_MODEL var, then to
@@ -212,9 +218,9 @@ CLEANUP_CHECK_INTERVAL = 50
 # Bullet points (rolling conversation summary). Tuned for token efficiency:
 # the AI receives the current list + only the new lines, batched on an interval
 # (BulletPointsController buffers finalized lines for free; each AI call then
-# produces a new full list in BulletPointsWorker).
-#   BULLET_MAX_ITEMS — hard cap on list size, enforced both in the prompt
-#     ("keep at most N") and by slicing the result/restored list.
+# returns only the NEW points in BulletPointsWorker and the controller appends
+# them). The list is deliberately UNCAPPED — it grows monotonically as the
+# session goes on, so there is no BULLET_MAX_ITEMS constant any more.
 #   BULLET_FLUSH_INTERVAL_MS — how often the auto-mode timer polls the buffer
 #     and fires an update when new lines are waiting (ticks are free when the
 #     buffer is empty or a call is in flight).
@@ -225,7 +231,6 @@ CLEANUP_CHECK_INTERVAL = 50
 #     after a failed call.
 #   BULLET_MAX_LINE_CHARS — each line sent to the AI is truncated to this many
 #     characters, bounding prompt size.
-BULLET_MAX_ITEMS = 50
 BULLET_FLUSH_INTERVAL_MS = 300000 # 5 minutes
 BULLET_MAX_BUFFER_LINES = 120
 BULLET_PAUSED_BUFFER_MAX = 40

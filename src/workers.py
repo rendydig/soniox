@@ -17,6 +17,7 @@ from src.config import (
     SONIOX_MAX_ENDPOINT_DELAY_MS,
     SONIOX_ENDPOINT_LATENCY_ADJUSTMENT_LEVEL,
     SONIOX_ENDPOINT_SENSITIVITY,
+    SONIOX_MUTE_KEEPALIVE_MS,
 )
 from src.hub.publisher import HubPublisher
 
@@ -64,6 +65,10 @@ class SonioxWorker(QThread):
         # nothing here can fail the audio path.
         self._hub = hub or _NULL_HUB
         self._stop_flag = False
+        # Soft mute: set from the Qt thread, read from this worker's asyncio
+        # loop (lock-free, like _stop_flag). While set, the sender drops audio
+        # and only emits keepalives, so the capture stream never restarts.
+        self._muted = False
         self._channels = 1
         self._audio_queue = queue.Queue(maxsize=32)
         self._queue_overflow_count = 0
@@ -94,6 +99,15 @@ class SonioxWorker(QThread):
 
     def stop(self):
         self._stop_flag = True
+
+    def set_muted(self, muted: bool):
+        """Stop (or resume) sending this worker's audio to Soniox.
+
+        Soft mute: the capture stream keeps running and the Soniox session is
+        held open with periodic keepalives, so unmuting resumes instantly with
+        no audio-stack restart (and the device is never taken exclusively).
+        """
+        self._muted = bool(muted)
 
     # --- hub publishing (dual-write) ----------------------------------
 
@@ -398,12 +412,27 @@ class SonioxWorker(QThread):
                     target=self._capture_supervisor, daemon=True
                 )
                 self._capture_thread.start()
+                keepalive_s = SONIOX_MUTE_KEEPALIVE_MS / 1000.0
+                last_keepalive = time.monotonic()
                 try:
                     while not self._stop_flag:
                         try:
                             chunk = self._audio_queue.get_nowait()
-                            await ws.send(chunk)
                         except queue.Empty:
+                            chunk = None
+                        if self._muted:
+                            # Keep draining (so the queue can't back up) but send
+                            # nothing except the keepalive Soniox needs to hold an
+                            # idle stream open. Text JSON frame, never binary.
+                            if time.monotonic() - last_keepalive >= keepalive_s:
+                                await ws.send(json.dumps({"type": "keepalive"}))
+                                last_keepalive = time.monotonic()
+                            await asyncio.sleep(0.01)
+                            continue
+                        last_keepalive = time.monotonic()
+                        if chunk is not None:
+                            await ws.send(chunk)
+                        else:
                             await asyncio.sleep(0.01)
                     await ws.send("")
                 finally:

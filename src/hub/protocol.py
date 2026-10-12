@@ -49,6 +49,9 @@ TOPIC_SESSION_CONFIG = "session.config"
 TOPIC_SCREENSHOTS_ADD = "screenshots.add"
 TOPIC_SCREENSHOTS_CLEAR = "screenshots.clear"
 TOPIC_COMMAND = "command"
+# Bullet points + KYC speaker profile + per-update windows, published together
+# (they always change as a unit). Payload: {items, speaker, windows}.
+TOPIC_BULLETS = "bullets"
 
 # Browser-bound mirror topics (the hub fans them out unchanged, so the Node
 # path stays byte-identical).

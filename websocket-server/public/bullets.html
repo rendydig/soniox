@@ -68,13 +68,21 @@
             margin-bottom: 16px;
         }
 
-        /* Tabs + Rebuild on one line; the countdown sits below, left-aligned
-           under the "Bullet Points" tab title. */
+        /* Tabs + the action buttons on one line (they stack on a narrow pane);
+           the countdown sits below, left-aligned under the tab title. */
         .bullet-header-row {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
             gap: 8px;
+        }
+
+        /* Fetch new / Rebuild, side by side on the right of the tab row. */
+        .bullet-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         #bullets-root .bullet-header h2 {
@@ -82,7 +90,7 @@
         }
 
         /* Text button, sized like the round pane controls but wide enough for a label. */
-        .bullet-rebuild-btn {
+        .bullet-action-btn {
             width: auto;
             padding: 0 10px;
             border-radius: 11px;

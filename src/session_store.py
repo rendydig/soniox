@@ -17,8 +17,12 @@ from src.config import (
 logger = logging.getLogger(__name__)
 
 # Fields that make up a session (all lists, except the string fields below).
+# ``bullet_windows`` is the per-update provenance of ``bullets``: one entry per
+# bullet-points update recording the time range it covered and the index range
+# of the bullets it appended (or the whole list for a rebuild).
 SESSION_FIELDS = (
     "bullets",
+    "bullet_windows",
     "conversation",
     "transcriptions",
     "translations",
@@ -118,6 +122,10 @@ class SessionStore:
 
     def set_bullets(self, bullets):
         self.update("bullets", list(bullets or []))
+
+    def set_bullet_windows(self, windows):
+        """Replace the bullet-points windows (own the entries, not the caller's)."""
+        self.update("bullet_windows", [dict(w) for w in (windows or []) if isinstance(w, dict)])
 
     def set_speaker(self, profile):
         self.update("speaker", dict(profile or {}))

@@ -80,6 +80,14 @@ class HubPublisher:
         payload.update(fields)
         return self.publish(protocol.TOPIC_COMMAND, payload)
 
+    def bullets(self, items, speaker, windows) -> bool:
+        """Publish the bullet list + speaker profile + windows as one topic."""
+        return self.publish(protocol.TOPIC_BULLETS, {
+            "items": list(items or []),
+            "speaker": dict(speaker or {}),
+            "windows": list(windows or []),
+        })
+
     def screenshot(self, data_url: str) -> bool:
         return self.publish(protocol.TOPIC_SCREENSHOTS_ADD, {"data_url": data_url})
 

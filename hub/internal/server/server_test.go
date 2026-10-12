@@ -155,6 +155,33 @@ func TestPublishReachesSubscriberInOrder(t *testing.T) {
 	}
 }
 
+// Publishing the combined bullets topic must update the list, the profile and
+// the windows in one shot.
+func TestPublishBulletsUpdatesStore(t *testing.T) {
+	addr, st, _ := newTestServer(t, "")
+	pub := hello(t, addr, protocol.RolePublisher, "app", "")
+	pub.send(&protocol.Envelope{
+		Type:  protocol.TypePublish,
+		Topic: protocol.TopicBullets,
+		Payload: map[string]any{
+			"items":   []any{map[string]any{"text": "point"}},
+			"speaker": map[string]any{"name": "Ada"},
+			"windows": []any{map[string]any{"mode": "auto", "from_index": 0, "to_index": 0}},
+		},
+	})
+	// There is no ack for a publish, so drive a round trip to prove it applied.
+	pub.send(&protocol.Envelope{Type: protocol.TypeRequest, ID: "b1", Op: protocol.OpSnapshot})
+	if resp := pub.recv(); resp.ID != "b1" {
+		t.Fatalf("response: %+v", resp)
+	}
+	if len(st.Bullets()) != 1 || len(st.BulletWindows()) != 1 {
+		t.Fatalf("bullets=%v windows=%v", st.Bullets(), st.BulletWindows())
+	}
+	if st.Speaker()["name"] != "Ada" {
+		t.Fatalf("speaker=%v", st.Speaker())
+	}
+}
+
 func TestPartialTopicIsFlaggedDisposable(t *testing.T) {
 	addr, _, _ := newTestServer(t, "")
 	sub := hello(t, addr, protocol.RoleUI, "ui", "")
@@ -219,6 +246,7 @@ func TestRequestSnapshotRestoreReset(t *testing.T) {
 		"id":             "20261012-060000",
 		"transcriptions": []any{map[string]any{"source": "host", "text": "restored", "timestamp": "t"}},
 		"bullets":        []any{"b"},
+		"bullet_windows": []any{map[string]any{"mode": "auto", "from_index": 0, "to_index": 0}},
 		"speaker":        map[string]any{"name": "Ada"},
 		"last_pickup":    "did something",
 	}})
@@ -236,6 +264,9 @@ func TestRequestSnapshotRestoreReset(t *testing.T) {
 	if session["id"] != "20261012-060000" {
 
 		t.Fatalf("id=%v", session["id"])
+	}
+	if windows, _ := session["bullet_windows"].([]any); len(windows) != 1 {
+		t.Fatalf("bullet_windows not restored: %+v", session["bullet_windows"])
 	}
 
 	// Reset clears the session.

@@ -4,6 +4,7 @@ from .settings_view import SettingsViewWidget
 from .switch_button import SwitchButton
 from .translation_section import TranslationSectionWidget
 from .control_buttons import ControlButtonsWidget
+from .mic_icon import mic_icon
 from .status_bar import StatusBarWidget
 from .drag_handle import DragHandle
 from .gemini_window import GeminiWindow
@@ -18,6 +19,7 @@ __all__ = [
     'SwitchButton',
     'TranslationSectionWidget',
     'ControlButtonsWidget',
+    'mic_icon',
     'StatusBarWidget',
     'DragHandle',
     'GeminiWindow',

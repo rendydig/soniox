@@ -132,7 +132,7 @@ const BulletPointsApp = () => {
                     <span>Auto pickup aktif</span>
                 </label>
                 <button
-                    class="pane-control-btn bullet-rebuild-btn"
+                    class="pane-control-btn bullet-action-btn"
                     title="Run the last-picked-up update now"
                     aria-label="Pick up now"
                     onClick=${() => sendControl({ type: 'trigger_last_pickup' })}
@@ -193,12 +193,20 @@ const BulletPointsApp = () => {
                         >Last Picked Up</button>
                     </div>
                     ${tab === 'bullets' && html`
-                        <button
-                            class="pane-control-btn bullet-rebuild-btn"
-                            title="Rebuild the list from the whole conversation"
-                            aria-label="Rebuild bullet points"
-                            onClick=${() => sendControl({ type: 'regenerate_bullet_points' })}
-                        >Rebuild</button>
+                        <div class="bullet-header-actions">
+                            <button
+                                class="pane-control-btn bullet-action-btn"
+                                title="Fetch only the new bullet points now (keeps the existing list)"
+                                aria-label="Fetch new bullet points"
+                                onClick=${() => sendControl({ type: 'trigger_bullet_points' })}
+                            >Fetch new</button>
+                            <button
+                                class="pane-control-btn bullet-action-btn"
+                                title="Rebuild the list from the whole conversation"
+                                aria-label="Rebuild bullet points"
+                                onClick=${() => sendControl({ type: 'regenerate_bullet_points' })}
+                            >Rebuild</button>
+                        </div>
                     `}
                 </div>
                 ${countdownLabel && html`

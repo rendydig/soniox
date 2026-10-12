@@ -20,6 +20,10 @@ class TranscriptionController(QObject):
         self._transcribing = False
         self._current_mode = "transcription"
         self._target_lang = None
+        # Soft mute of the host (microphone) input. Not persisted: the app always
+        # launches unmuted. Applies to the live worker too, and is re-applied to
+        # a worker created by the next start_session().
+        self._mic_muted = False
         # No-op until a hub is attached, so the controller works standalone.
         self._hub = hub or HubPublisher(None)
 
@@ -39,6 +43,12 @@ class TranscriptionController(QObject):
     def get_current_mode(self):
         """Get the current mode (transcription or translation)."""
         return self._current_mode
+
+    def set_mic_muted(self, muted: bool):
+        """Mute/unmute the host (microphone) input; applies to the live worker too."""
+        self._mic_muted = bool(muted)
+        if self._host_worker is not None:
+            self._host_worker.set_muted(self._mic_muted)
     
     def start_session(self, host_device_id: int, speaker_device: dict = None, mode: str = "transcription", target_lang: str = None):
         """
@@ -71,6 +81,9 @@ class TranscriptionController(QObject):
             self._host_worker.status.connect(self._on_status_update)
             self._host_worker.error.connect(self._on_error)
             self._host_worker.finished.connect(lambda: self._on_worker_finished("host"))
+            # Apply the current mute state before starting, so a muted session
+            # never streams a first burst of host audio.
+            self._host_worker.set_muted(self._mic_muted)
             
             self._host_worker.start()
             

@@ -65,7 +65,7 @@ export const BulletPointsList = ({ items, status }) => {
                 : html`
                     <div class="bullet-empty">
                         Waiting for the conversation… (enable Auto Bullet Points in Settings,
-                        or press CTRL+ALT+P to update)
+                        or use Fetch new / press CTRL+ALT+P to update)
                     </div>
                 `}
         </div>
