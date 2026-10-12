@@ -18,6 +18,7 @@ from src.config import (
     SONIOX_ENDPOINT_LATENCY_ADJUSTMENT_LEVEL,
     SONIOX_ENDPOINT_SENSITIVITY,
 )
+from src.hub.publisher import HubPublisher
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,10 @@ _CAPTURE_CHILD_LOG = os.path.join(
 _CAPTURE_MAX_RESTARTS = 5
 _CREATE_NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
+# Used when no hub publisher was injected: every publish is a no-op, so the
+# worker's hot path has no branch on hub availability.
+_NULL_HUB = HubPublisher(None)
+
 
 class SonioxWorker(QThread):
     error = Signal(str, str)
@@ -48,11 +53,16 @@ class SonioxWorker(QThread):
     transcription_update = Signal(str, bool, str, bool)
     translation_update = Signal(str, bool, str)
 
-    def __init__(self, device, mode: str = "transcription", target_lang: str = "en", input_source: str = "host", parent=None):
+    def __init__(self, device, mode: str = "transcription", target_lang: str = "en", input_source: str = "host", parent=None, hub=None):
         super().__init__(parent)
         self._mode = mode
         self._target_lang = target_lang
         self._input_source = input_source
+        # Dual-write: the hub receives every finalized line as well as every
+        # partial, in addition to the Qt signals that still drive the UI. The
+        # publisher is thread-safe and a no-op when the hub is unreachable, so
+        # nothing here can fail the audio path.
+        self._hub = hub or _NULL_HUB
         self._stop_flag = False
         self._channels = 1
         self._audio_queue = queue.Queue(maxsize=32)
@@ -84,6 +94,20 @@ class SonioxWorker(QThread):
 
     def stop(self):
         self._stop_flag = True
+
+    # --- hub publishing (dual-write) ----------------------------------
+
+    def _publish_partial(self, text: str):
+        """Publish a live partial: disposable, superseded by the next one."""
+        self._hub.transcription_partial(self._input_source, text)
+
+    def _publish_final(self, text: str, endpoint: bool = False):
+        """Publish a finalized line (the hub derives the conversation from these)."""
+        self._hub.transcription_final(self._input_source, text, endpoint=endpoint)
+
+    def _publish_translation(self, text: str):
+        """Publish a finalized translation."""
+        self._hub.translation_final(self._input_source, text)
 
     def _enqueue_pcm(self, pcm16: bytes):
         """Queue a raw int16 mono chunk, shedding the backlog if it overflows."""
@@ -436,6 +460,7 @@ class SonioxWorker(QThread):
                             final_transcription = "".join(text_parts)
                             logger.debug("[%s] Final Transcription (English): %r", self._input_source, final_transcription)
                             self.transcription_update.emit(final_transcription, True, self._input_source, endpoint)
+                            self._publish_final(final_transcription, endpoint)
                         
                         # Emit final translation (Indonesian)
                         if final_translation_tokens:
@@ -449,11 +474,13 @@ class SonioxWorker(QThread):
                             final_translation = "".join(text_parts)
                             logger.debug("[%s] Final Translation (Indonesian): %r", self._input_source, final_translation)
                             self.translation_update.emit(final_translation, True, self._input_source)
+                            self._publish_translation(final_translation)
                         
                         # Emit partial text (English - for live display)
                         part_text = "".join(t.get("text", "") for t in partial_tokens)
                         if part_text.strip():
                             self.transcription_update.emit(part_text, False, self._input_source, False)
+                            self._publish_partial(part_text)
                         elif final_transcription_tokens or final_translation_tokens:
                             self.transcription_update.emit("", False, self._input_source, False)
                     
@@ -488,9 +515,11 @@ class SonioxWorker(QThread):
 
                         if final_text:
                             self.transcription_update.emit(final_text, True, self._input_source, endpoint)
+                            self._publish_final(final_text, endpoint)
                         
                         if part_text.strip():
                             self.transcription_update.emit(part_text, False, self._input_source, False)
+                            self._publish_partial(part_text)
                         elif final_text:
                             self.transcription_update.emit("", False, self._input_source, False)
 

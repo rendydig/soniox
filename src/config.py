@@ -68,6 +68,37 @@ def _env_float(name: str, default: float) -> float:
 # replies. Set DISABLE_MODEL_REASONING=false in .env to re-enable reasoning.
 DISABLE_MODEL_REASONING = _env_bool("DISABLE_MODEL_REASONING", True)
 
+# Central hub (hub/, Go): the single owner of live session state and the
+# message bus, reached over NDJSON/TCP on loopback. The desktop app starts it
+# when port 8770 is down (src/hub/manager.py) and stops it on close, but only
+# if the app started it. Agents (separate processes) and the debug CLI
+# (tools/hubctl.py) connect the same way.
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#   HUB_ADDR        — host:port for the NDJSON listener (loopback only).
+#   HUB_HTTP_ADDR   — debug HTTP ("-" disables); /healthz and /state.
+#   HUB_TOKEN       — optional handshake token; when set, every client must
+#                     send it in its hello frame.
+#   HUB_BIN         — explicit path to the compiled hub binary. When unset,
+#                     hub/hub[.exe] is used and a missing binary is built once
+#                     with `go build` (skipped when `go` is not on PATH).
+#   HUB_ENABLED     — set false to run without a hub entirely.
+HUB_PORT = int(os.environ.get("HUB_PORT", "8770"))
+HUB_ADDR = os.environ.get("HUB_ADDR", f"127.0.0.1:{HUB_PORT}")
+HUB_HTTP_ADDR = os.environ.get("HUB_HTTP_ADDR", "127.0.0.1:8771")
+HUB_TOKEN = os.environ.get("HUB_TOKEN")
+HUB_BIN = os.environ.get("HUB_BIN")
+HUB_ENABLED = _env_bool("HUB_ENABLED", True)
+
+# Hub-owned artefacts (logs/ and sessions/ are gitignored). The event log is an
+# append-only JSONL trace of every published topic; the snapshot is a debounced
+# dump shaped like sessions/current.json.
+HUB_EVENTS_PATH = os.environ.get(
+    "HUB_EVENTS_PATH", os.path.join(_REPO_ROOT, "logs", "hub-events.jsonl")
+)
+HUB_SNAPSHOT_PATH = os.environ.get(
+    "HUB_SNAPSHOT_PATH", os.path.join(_REPO_ROOT, "sessions", "hub-state.json")
+)
+
 # --- JEV (System One decision layer, "typesafe/jev-1.13" on OpenRouter) ---
 # Opt-in: the reply pipeline degrades to today's plain auto-reply when this is
 # off, the key is missing, or a decision call fails. JEV_BASE_URL intentionally

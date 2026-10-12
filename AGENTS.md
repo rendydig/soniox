@@ -31,6 +31,22 @@ cd websocket-server && npm start
 ```
 Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://localhost:8765/gemini`.
 
+It also starts the **Go hub** the same way when nothing is listening on 8770
+(`src/hub/manager.py`), writing to `logs/hub.log`, and stops it on close. The app
+*owns* the hub (`HubManager(tie_lifecycle=True)`): a hub already listening is
+adopted instead of ignored, so it is terminated on close either way, and on
+Windows the hub (spawned or adopted) is put in a job object with
+`JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` so the kernel kills it whenever the app dies
+— including a crash or a Task Manager kill, where `closeEvent` never runs. A
+listener that is not one of our hubs (foreign process, unknown pid) is left
+alone with a warning. `tools/hubctl.py` and the `_tmp_hub_*` smokes use the
+default `tie_lifecycle=False`, so a hub they start still outlives the command.
+The hub is standalone-runnable: see "Central hub" below.
+```bash
+cd hub && go build -o hub.exe ./cmd/hub && ./hub.exe   # or just let the app start it
+venv/Scripts/python.exe tools/hubctl.py state          # inspect (starts it if needed)
+```
+
 ## Configuration
 `.env` at the repo root (gitignored; see `.env.example`) must define:
 - `SONIOX_API_KEY` — required (streaming STT)
@@ -39,6 +55,16 @@ Web monitor: `http://localhost:8765`. Gemini-only suggestion page: `http://local
 - `SONIOX_WS_URL` — optional; overrides the Soniox WebSocket endpoint (default
   `wss://stt-rt.soniox.com/transcribe-websocket`). Used by the stress harness to point
   the app at a local fake Soniox server.
+
+Central hub (Go, `hub/`; started on demand like the Node server):
+- `HUB_ADDR` — NDJSON/TCP listen address (default `127.0.0.1:8770`, loopback only)
+- `HUB_HTTP_ADDR` — debug HTTP address (default `127.0.0.1:8771`; `-` disables). `/healthz` and `/state`
+- `HUB_TOKEN` — optional handshake token; when set, every client must send it in its `hello` frame
+- `HUB_BIN` — explicit path to the compiled binary; otherwise `hub/hub[.exe]` is used and a missing
+  binary is built once with `go build` (skipped when `go` is not on PATH)
+- `HUB_ENABLED` — `false` runs the app with no hub at all (every publish becomes a no-op)
+- `HUB_EVENTS_PATH` (default `logs/hub-events.jsonl`) and `HUB_SNAPSHOT_PATH`
+  (default `sessions/hub-state.json`) — the hub's JSONL event log and debounced snapshot
 
 AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
 - `AI_PROVIDER` — `gemini` (default) or `openai` (any OpenAI-compatible endpoint:
@@ -99,6 +125,89 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
   and the mode matches, otherwise appends a new streaming item; `handleGeminiResult` then replaces
   the list with the final item. `GeminiDisplayer` renders only the latest item, so it repaints live.
 
+## Central hub (Go) — M0 + M1 shipped
+`hub/` is a stdlib-only Go process that owns the **live session state** and the
+**message bus**: publishers send topics, subscribers receive ordered events. It
+never touches audio — all stream lifecycle stays in `SonioxWorker`/the capture
+child — so nothing here can abort the PortAudio stream (see
+`docs/crash-issu.txt.md`). It replaces the plan's in-process fan-out; the app
+keeps working at every phase (M2-M6 in `plans/` are not done yet — the UI still
+renders from the Qt signals).
+
+```
+hub/
+  cmd/hub/main.go              # flags, listeners, graceful shutdown; Version 0.1.0
+  internal/protocol/           # envelope, NDJSON framing, topic matching
+  internal/server/             # accept loop; per-conn reader + writer goroutines
+  internal/store/              # RWMutex state + generic bounded ring
+  internal/bus/                # topic -> subscribers, per-subscriber queue
+  internal/sched/              # Debounce + Ticker (M4 will own the timing)
+  internal/dispatch/           # per-agent job queues + coalescing (M3)
+  internal/persist/            # append-only JSONL + debounced snapshot
+  internal/httpapi/            # /healthz, /state
+src/hub/
+  protocol.py                  # envelope helpers; constants mirror the Go side
+  client.py                    # HubClient: daemon thread + asyncio loop (mirrors WebSocketClient)
+  manager.py                   # HubManager: ensure_running()/stop(), auto-`go build`,
+                               # tie_lifecycle (adopt a running hub + Windows job object)
+  publisher.py                 # HubPublisher: named publishes, no-op when disconnected
+tools/hubctl.py                # debug CLI: state/health/tail/publish/config/reset/restore
+```
+- **Transport**: NDJSON over loopback TCP — one JSON object per line, `\n`-terminated, max 16 MiB per
+  frame (screenshot data URLs ride inside payloads). Chosen over Unix sockets because Python asyncio
+  has no `create_unix_connection` on the Windows Proactor loop.
+- **Envelope**: `{type, id, ts, topic, seq, role, name, token, topics, op, ok, error, job_id, action,
+  text, result, payload}`; unused fields are omitted. Payloads decode with `json.Number` so a re-encoded
+  frame is byte-comparable to what arrived (`1` never becomes `1.0`).
+- **Handshake**: the first frame must be `{"type":"hello","role":...,"name":...,"token":...}` →
+  `hello_ok` or `hello_err`. Roles: `publisher` / `ui` / `agent` / `bridge`.
+- **Client → hub**: `publish` · `subscribe` (topic patterns: exact, `prefix.*`, or `*`) · `unsubscribe`
+  · `request` (`op` = `snapshot` / `restore` / `reset`) → `response` · `result` / `result_chunk` (agents).
+- **Hub → client**: `hello_ok` / `hello_err` · `ack` (subscribe) · `event` (`{topic, seq, payload}`) ·
+  `response` · `error`.
+- **Topics**: `transcription.partial` / `transcription.final` (`{source,text,endpoint,timestamp}`) /
+  `translation.final` / `status` / `error` / `session.config` / `screenshots.add` / `screenshots.clear` /
+  `command` in; browser-bound mirrors (`gemini_result`, `gemini_stream`, `bullet_points`, `purpose_state`,
+  `session_state`, …) fan out unchanged so the Node path stays byte-identical.
+  **Partials are disposable** (any topic ending `.partial`); finals are never dropped.
+- **Sequence numbers are per topic** (`seq` 1,2,3… on `transcription.final`) and ride every `event` so a
+  subscriber can detect a gap or a restart.
+- **Store** (`internal/store`): the `SessionStore` discipline ported — writers *replace* values, never
+  mutate, and `Snapshot()` hands out deep copies. Every list is a fixed-capacity ring (no realloc), with
+  the same caps as the Python side: transcriptions/translations 500, conversation 25 (=`MAX_HISTORY_TURNS`),
+  `gemini_results` 100, screenshots 20, bullets 12 (=`BULLET_MAX_ITEMS`). `session.config` and the purpose
+  registry are application-level and survive both `reset` and `restore`. `conversation` is derived from
+  `transcription.final` (one turn per final, `{text, role: source, suggestion: ""}`), and a publisher's
+  `timestamp` is kept verbatim so persisted lines match `datetime.now().isoformat()` exactly.
+- **Bus** (`internal/bus`): each subscriber gets its own queue + drain goroutine, so one stalled reader
+  cannot block the hub or the others. On a saturated queue it **drops the oldest disposable frame and
+  never drops a durable one**; a partial arriving at an all-finals queue drops itself; past `HardCap`
+  (4096 pending) the subscriber is **evicted** and its connection closed (visible, never silent loss).
+- **Server**: one writer goroutine per connection owns the socket. `c.close()` only signals it; the
+  writer drains the outbound queue and then closes, so a final frame (e.g. `hello_err`) is flushed —
+  with a 2 s grace timer (and a 10 s per-frame write deadline) bounding a peer that stops reading.
+- **Persist** (`internal/persist`): every published topic is appended to `logs/hub-events.jsonl` with
+  oversized string values elided (`<N bytes elided>`), and a debounced (2 s) snapshot is written
+  atomically to `sessions/hub-state.json` in the `sessions/current.json` shape.
+- **Python side**: `HubClient` mirrors `WebSocketClient` (daemon thread + asyncio loop, sends via
+  `run_coroutine_threadsafe`, inbound frames marshalled onto the Qt main thread with
+  `MainWindow.hub_message`, exactly like `webview_message`); it stays Qt-free. `HubPublisher` is a no-op
+  whenever the hub is unreachable, so callers never check the connection. Lifecycle lives in
+  `MainWindow.__init__` (right after `_server_manager.ensure_running()`) and `closeEvent`; the manager is
+  built with `tie_lifecycle=True`, so the hub is adopted when one is already listening and dies with the
+  app even on a force-kill (job object — see the "Run" section).
+- **Wired today (M1 dual-write)**: `SonioxWorker` publishes `transcription.partial`,
+  `transcription.final` and `translation.final` alongside its existing Qt signals (`_publish_partial` /
+  `_publish_final` / `_publish_translation`; the publisher is injected via
+  `TranscriptionController.set_hub`, defaulting to a no-op), and the controller publishes `status` /
+  `error`. The hub therefore mirrors the same transcript the UI shows — verified by
+  `_tmp_hub_pipeline_smoke.py`, which drives the real worker against the fake Soniox server and asserts
+  the hub's finals equal the editor's lines.
+- **Not done yet**: M2 (UI subscribes to the hub for display; the fan-out in
+  `MainWindow._on_transcription_update` moves into the hub), M3 (agents as separate processes via
+  `src/hub/supervisor.py` + `internal/dispatch`), M4 (debounce timers move to `internal/sched`), M5
+  (persistence replaces `SessionStore`), M6 (fold the Node server in).
+
 ## UI structure
 - `MainWindow` (`src/ui.py`) is a **bottom bar**: a frameless, always-on-top window with a
   **fixed default width** (`BAR_WIDTH`, 560px) and `BAR_HEIGHT` (40px). `_apply_bar_geometry`
@@ -122,10 +231,10 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
   with Screen Protection / Gemini Window / Live Window / Bullet Points / Always on Top) · Settings button ·
   `SwitchButton` (shows/hides the input row) · stretch · `StatusBarWidget` · close. The main
   window has **no** output view; transcription output lives in the Live Window pane.
-- The bar is **trimmed** to fit its fixed width: the Start button reads "Start"/"Stop", the
-  Mode button reads "Mode" (active mode shown in its tooltip + the menu checkmark), and the
-  `StatusBarWidget`'s mode and memory labels are hidden, leaving only the eliding
-  `ElidedLabel` status text (`src/ui_components/elided_label.py`). Height is `BAR_HEIGHT`
+- The bar is **trimmed** to fit its fixed width: the Start button reads "Start"/"Stop" plus the
+  session elapsed time, the Mode button reads "Mode" (active mode shown in its tooltip + the
+  menu checkmark), and the `StatusBarWidget`'s mode and memory labels are hidden, leaving only
+  the eliding `ElidedLabel` status text (`src/ui_components/elided_label.py`). Height is `BAR_HEIGHT`
   (60px), growing to `BAR_HEIGHT + INPUT_ROW_HEIGHT` (100px) only while the translation-input
   row is shown, keeping the bottom edge fixed (`_on_manual_switch_toggled`).
 - `Settings` opens a **separate `QDialog`** (`_open_settings`) hosting
@@ -389,6 +498,19 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
 - Worker cleanup: `BulletPointsController.cleanup()` now stop → wait → terminate (like
   `TranslationController`) so a worker blocked in a synchronous HTTP call isn't destroyed while
   running (`QThread: Destroyed while thread is still running`).
+- **Session timer** (inside the Start/Stop button): the button label is composed by
+  `_update_start_button_text` as `Start HH:MM:SS` / `Stop HH:MM:SS` (the checked state picks
+  the verb, `_format_duration` formats the elapsed time). `MainWindow` owns the state —
+  `_session_elapsed_seconds` (accumulated) plus `_session_run_started` (a `time.monotonic()`
+  stamp) — and a 1 s `QTimer` (`_session_timer`, `SESSION_TIMER_INTERVAL_MS`) whose timeout is
+  wired straight to `_update_start_button_text`. `_on_transcription_started` →
+  `_start_session_timer`, `_on_transcription_stopped` (and the error path) →
+  `_pause_session_timer` (freezes, keeps the value shown), and `_new_session` →
+  `_reset_session_timer`; a launch always starts at `00:00:00` (never persisted). Elapsed time
+  comes from monotonic deltas, not tick counting, so a delayed tick can't drift. Because the
+  label is natural-width, the button (and the bar's `minimumSizeHint`) grows by the readout;
+  proportional digits can make it twitch by a pixel per second (a monospace font on
+  `btn_start` is the fix if that bothers).
 
 ## Pane layout (free-floating geometry, persisted)
 - Both panes are **free-floating**: a top `PaneDragHandle`
@@ -537,10 +659,27 @@ Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSoc
 
 ## Verification
 ```bash
-venv/Scripts/python.exe -m py_compile src/*.py src/controllers/*.py src/ui_components/*.py
+venv/Scripts/python.exe -m py_compile src/*.py src/controllers/*.py src/ui_components/*.py src/hub/*.py
+cd hub && go vet ./... && go test ./...        # add -race for the bus/server tests
 ```
 Manual: launch the app, set Host = mic and Speaker = a `[Loopback]` output, Start,
 play audio → `[SPEAKER]` lines should appear in the app and at `http://localhost:8765`.
+
+### Hub smoke tests (throwaway)
+- `_tmp_hub_smoke.py` — protocol/lifecycle end-to-end against a real hub: handshake, subscribe,
+  ordered events with `seq`, fan-out to two subscribers, `snapshot`/`restore`/`reset`, the JSONL event
+  log, the debounced snapshot, and `/healthz` + `/state`. It redirects the hub's artefacts to a temp dir
+  and skips the storage checks when a hub it did not start is already running. 31 checks.
+- `_tmp_hub_app_smoke.py` — the app-level lifecycle: `MainWindow` starts the hub, publishes through
+  `w.hub` (read back by an independent client), and closing the app stops the hub it started. 11 checks.
+- `_tmp_hub_pipeline_smoke.py` — M1: the real `SonioxWorker` against the fake Soniox server, asserting
+  the hub's finals equal the Live Window editor's lines and that the snapshot holds the same transcript.
+  13 checks; `--seconds N` sets the session length.
+- `_tmp_hub_lifecycle_smoke.py` — who owns the hub: spawn→`stop()` frees the port; a process that starts
+  a hub and then dies (`os._exit`) takes the hub with it (the job object, no `closeEvent`); a
+  hand-started hub is adopted (no second process) and killed on `stop()`; a non-hub listener on the port
+  is never adopted or killed; `tools/hubctl.py` still leaves its hub running after the command exits.
+  26 checks; runs on throwaway ports so the real 8770 hub is untouched.
 
 ### Long-run stress test (throwaway)
 `_tmp_long_transcription_test.py` drives the real app with **real audio** through a

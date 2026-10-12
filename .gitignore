@@ -11,3 +11,5 @@ logs
 ui_state.json
 sessions/
 purposes.json
+hub/hub
+hub/hub.exe

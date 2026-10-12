@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 import logging
 import threading
 from datetime import datetime
@@ -30,6 +31,10 @@ from src.controllers import (
 )
 from src.websocket_client import WebSocketClient
 from src.websocket_server_manager import WebSocketServerManager
+from src.hub import protocol as hub_protocol
+from src.hub.client import HubClient
+from src.hub.manager import HubManager
+from src.hub.publisher import HubPublisher
 from src.ui_components import (
     SettingsViewWidget,
     TranslationSectionWidget,
@@ -52,6 +57,10 @@ logger = logging.getLogger(__name__)
 _LOGS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
 HEALTH_LOG = os.path.join(_LOGS_DIR, "health.log")
 HEALTH_LOG_INTERVAL_MS = 30000
+
+# How often the bar's session timer repaints its HH:MM:SS readout. The elapsed
+# value is derived from time.monotonic() deltas, so a delayed tick never drifts.
+SESSION_TIMER_INTERVAL_MS = 1000
 
 # Default width of the bottom bar. It is fixed (not derived from the panes) and
 # user-resizable; the narrowest it can shrink to is the trimmed content minimum.
@@ -89,10 +98,20 @@ def _as_dict(value):
     return value if isinstance(value, dict) else {}
 
 
+def _format_duration(total_seconds):
+    """Format a duration as ``HH:MM:SS`` (hours are not wrapped at 24)."""
+    total = max(int(total_seconds or 0), 0)
+    hours, remainder = divmod(total, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+
 class MainWindow(QMainWindow):
     # Emitted from the WebSocket receive thread and marshalled onto the Qt
     # main thread via a QueuedConnection (see _setup_controller_connections).
     webview_message = Signal(dict)
+    # Hub events, marshalled from the hub client's asyncio thread the same way.
+    hub_message = Signal(dict)
 
     def __init__(self):
         super().__init__()
@@ -119,6 +138,24 @@ class MainWindow(QMainWindow):
         self.websocket_client = WebSocketClient("ws://localhost:8765")
         self.websocket_client.set_message_handler(self._on_ws_message_raw)
         self.websocket_client.start()
+
+        # Central hub (Go): the single owner of live session state and the
+        # message bus. Started here, before anything publishes into it. The app
+        # owns the hub's lifetime (tie_lifecycle): a hub already listening is
+        # adopted instead of ignored, and it is terminated on close — and, via a
+        # job object, even when this process is killed outright.
+        self._hub_manager = HubManager(tie_lifecycle=True)
+        self._hub_manager.ensure_running()
+        self.hub_client = HubClient(role=hub_protocol.ROLE_UI, name="desktop")
+        self.hub_client.set_message_handler(self._on_hub_message_raw)
+        self.hub_client.start()
+        # Thin named-publish helper: a no-op whenever the hub is unreachable, so
+        # callers never need a connection check.
+        self.hub = HubPublisher(self.hub_client)
+        # The Soniox workers publish their lines into the hub as well as emitting
+        # the Qt signals (dual-write); they are created per session, so handing
+        # the publisher to the controller here is enough.
+        self.transcription_controller.set_hub(self.hub)
 
         # System-wide hotkeys: ALT+SHIFT+K captures a screenshot, ALT+CTRL+SHIFT+K
         # clears the ones shown in the Gemini pane, CTRL+ALT+SHIFT+G sends the
@@ -160,6 +197,15 @@ class MainWindow(QMainWindow):
         self._health_timer = QTimer()
         self._health_timer.timeout.connect(self._log_health)
         self._health_timer.start(HEALTH_LOG_INTERVAL_MS)
+
+        # Session elapsed-time readout (bar). Ticks while a session runs, freezes
+        # on Stop and resumes from the frozen value on the next Start; only New
+        # Session (or an app launch) resets it to 00:00:00.
+        self._session_elapsed_seconds = 0.0
+        self._session_run_started = None
+        self._session_timer = QTimer()
+        self._session_timer.setInterval(SESSION_TIMER_INTERVAL_MS)
+        self._session_timer.timeout.connect(self._update_start_button_text)
 
         self._last_final_transcription = ""
         self._screenshots = []
@@ -661,6 +707,8 @@ class MainWindow(QMainWindow):
         self.mode_status_label.setVisible(False)
         self.memory_label = self.status_bar.get_memory_label()
         self.memory_label.setVisible(False)
+        # The Start/Stop button doubles as the session-time readout.
+        self._update_start_button_text()
     
     def _setup_widget_connections(self):
         self.view_mode_combo.currentIndexChanged.connect(self.live_window.get_view_stack().setCurrentIndex)
@@ -731,6 +779,7 @@ class MainWindow(QMainWindow):
 
         # WebSocket messages arrive on the asyncio thread; hop to the Qt thread.
         self.webview_message.connect(self._handle_webview_message, Qt.ConnectionType.QueuedConnection)
+        self.hub_message.connect(self._handle_hub_message, Qt.ConnectionType.QueuedConnection)
 
     def _on_mode_changed(self, mode):
         is_translation = (mode == "translation")
@@ -743,10 +792,9 @@ class MainWindow(QMainWindow):
         self._update_start_button_text()
 
     def _update_start_button_text(self):
-        """Set the start button label from the current mode (unless a session is running)."""
-        if self.btn_start.isChecked():
-            return
-        self.btn_start.setText("Start")
+        """Set the Start/Stop button label: the action plus the elapsed session time."""
+        label = "Stop" if self.btn_start.isChecked() else "Start"
+        self.btn_start.setText(f"{label} {_format_duration(self._current_session_seconds())}")
 
     def _toggle_start(self, checked):
         if checked:
@@ -824,6 +872,7 @@ class MainWindow(QMainWindow):
         self.bullet_points_controller.reset()
         self.last_pickup_controller.reset()
         self._screenshots.clear()
+        self._reset_session_timer()
         # Empty state resets every webview (gemini/live/bullets).
         self._send_session_state()
         logger.info("New session started (archived=%s)", archived)
@@ -897,18 +946,52 @@ class MainWindow(QMainWindow):
 
     def _on_transcription_started(self):
         """Handle transcription session started."""
-        self.btn_start.setText("Stop")
+        self._start_session_timer()
     
     def _on_transcription_stopped(self):
         """Handle transcription session stopped."""
         self.btn_start.setChecked(False)
         self._update_start_button_text()
+        self._pause_session_timer()
     
     def _on_transcription_error(self, msg: str):
         """Handle transcription errors."""
         self.btn_start.setChecked(False)
         self._update_start_button_text()
+        # An error also ends the session (the controller emits session_stopped);
+        # pause defensively so the readout can never keep ticking with no session.
+        self._pause_session_timer()
         logger.error("%s", msg)
+
+    def _current_session_seconds(self):
+        """Elapsed seconds for the session: accumulated + the current run."""
+        if self._session_run_started is None:
+            return self._session_elapsed_seconds
+        return self._session_elapsed_seconds + (time.monotonic() - self._session_run_started)
+
+    def _start_session_timer(self):
+        """Start (or resume) the elapsed-time readout."""
+        if self._session_run_started is not None:
+            return
+        self._session_run_started = time.monotonic()
+        self._session_timer.start()
+        self._update_start_button_text()
+
+    def _pause_session_timer(self):
+        """Freeze the readout, keeping the accumulated value for the next Start."""
+        if self._session_run_started is None:
+            return
+        self._session_elapsed_seconds = self._current_session_seconds()
+        self._session_run_started = None
+        self._session_timer.stop()
+        self._update_start_button_text()
+
+    def _reset_session_timer(self):
+        """Zero the readout (New Session / a fresh app launch)."""
+        self._session_elapsed_seconds = 0.0
+        self._session_run_started = None
+        self._session_timer.stop()
+        self._update_start_button_text()
 
     def _update_status(self, text: str):
         self.status_label.setText(text)
@@ -1098,6 +1181,25 @@ class MainWindow(QMainWindow):
     def _on_ws_message_raw(self, data: dict):
         """Receive a decoded WebSocket message (runs on the asyncio thread)."""
         self.webview_message.emit(data)
+
+    def _on_hub_message_raw(self, data: dict):
+        """Receive a hub frame (runs on the hub client's asyncio thread).
+
+        Marshalled onto the Qt main thread exactly like webview_message; the
+        hub client itself stays Qt-free (src/hub/client.py).
+        """
+        self.hub_message.emit(data)
+
+    def _handle_hub_message(self, data: dict):
+        """Handle a hub event (Qt main thread).
+
+        M0 only observes: the hub mirrors and meters every topic, while the
+        existing Qt signal paths still drive the UI. The display fan-out moves
+        here in M2, when the UI becomes a hub subscriber for display.
+        """
+        if data.get("type") != hub_protocol.EVENT:
+            return
+        logger.debug("[hub] %s seq=%s", data.get("topic"), data.get("seq"))
 
     def _handle_webview_message(self, data: dict):
         """Handle control messages sent from the webview (Qt main thread)."""
@@ -1469,6 +1571,7 @@ class MainWindow(QMainWindow):
         try:
             self._memory_monitor_timer.stop()
             self._health_timer.stop()
+            self._session_timer.stop()
 
             # Release the global hotkeys
             self.hotkeys.unregister()
@@ -1498,6 +1601,10 @@ class MainWindow(QMainWindow):
             
             # Stop websocket
             self.websocket_client.stop()
+
+            # Stop the hub client, then the hub itself (spawned or adopted)
+            self.hub_client.stop()
+            self._hub_manager.stop()
 
             # Stop the web service if this app started it
             self._server_manager.stop()

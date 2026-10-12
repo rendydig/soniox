@@ -1,4 +1,5 @@
 from PySide6.QtCore import QObject, Signal
+from src.hub.publisher import HubPublisher
 from src.workers import SonioxWorker
 
 
@@ -12,13 +13,24 @@ class TranscriptionController(QObject):
     session_started = Signal()
     session_stopped = Signal()
     
-    def __init__(self):
+    def __init__(self, hub=None):
         super().__init__()
         self._host_worker = None
         self._speaker_worker = None
         self._transcribing = False
         self._current_mode = "transcription"
         self._target_lang = None
+        # No-op until a hub is attached, so the controller works standalone.
+        self._hub = hub or HubPublisher(None)
+
+    def set_hub(self, hub):
+        """Attach the hub publisher used by the workers and for status/errors.
+
+        Called once at startup, after the hub client is up; the workers are
+        created per session in start_session, so they pick the publisher up
+        from here.
+        """
+        self._hub = hub or HubPublisher(None)
     
     def is_transcribing(self):
         """Check if currently transcribing."""
@@ -53,7 +65,7 @@ class TranscriptionController(QObject):
             self._target_lang = target_lang
             
             # Create host worker
-            self._host_worker = SonioxWorker(host_device_id, mode=mode, target_lang=target_lang, input_source="host")
+            self._host_worker = SonioxWorker(host_device_id, mode=mode, target_lang=target_lang, input_source="host", hub=self._hub)
             self._host_worker.transcription_update.connect(self._on_transcription_update)
             self._host_worker.translation_update.connect(self._on_translation_update)
             self._host_worker.status.connect(self._on_status_update)
@@ -67,7 +79,7 @@ class TranscriptionController(QObject):
                 # Small delay to prevent simultaneous audio stream initialization
                 from PySide6.QtCore import QThread
                 QThread.msleep(100)
-                self._speaker_worker = SonioxWorker(speaker_device, mode=mode, target_lang=target_lang, input_source="speaker")
+                self._speaker_worker = SonioxWorker(speaker_device, mode=mode, target_lang=target_lang, input_source="speaker", hub=self._hub)
                 self._speaker_worker.transcription_update.connect(self._on_transcription_update)
                 self._speaker_worker.translation_update.connect(self._on_translation_update)
                 self._speaker_worker.status.connect(self._on_status_update)
@@ -116,10 +128,12 @@ class TranscriptionController(QObject):
     
     def _on_status_update(self, status: str, input_source: str):
         """Handle status updates from workers."""
+        self._hub.status(input_source, status)
         self.status_changed.emit(f"[{input_source}] {status}")
     
     def _on_error(self, msg: str, input_source: str):
         """Handle errors from worker."""
+        self._hub.error(input_source, msg)
         self.error_occurred.emit(f"[{input_source}] {msg}")
         
         # Stop both workers on error. Wait for the threads to actually exit
