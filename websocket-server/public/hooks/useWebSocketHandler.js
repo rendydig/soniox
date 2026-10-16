@@ -16,6 +16,10 @@ export const useWebSocketHandler = ({
     handleBulletPointsCountdown,
     handleLastPickup,
     handleLastPickupStatus,
+    handleSummary,
+    handleSummaryStatus,
+    handleConsulting,
+    handleConsultingStatus,
     handlePurposeState,
     handleSessionState,
     handleContextState,
@@ -73,7 +77,7 @@ export const useWebSocketHandler = ({
             }
         } else if (data.type === 'bullet_points') {
             if (typeof handleBulletPoints === 'function') {
-                handleBulletPoints(data.items || [], data.speaker, data.timestamp);
+                handleBulletPoints(data.items || [], data.speaker, data.locks);
             }
         } else if (data.type === 'bullet_points_status') {
             if (typeof handleBulletPointsStatus === 'function') {
@@ -90,6 +94,22 @@ export const useWebSocketHandler = ({
         } else if (data.type === 'last_pickup_status') {
             if (typeof handleLastPickupStatus === 'function') {
                 handleLastPickupStatus(data.status, data.message);
+            }
+        } else if (data.type === 'summary') {
+            if (typeof handleSummary === 'function') {
+                handleSummary(data.text);
+            }
+        } else if (data.type === 'summary_status') {
+            if (typeof handleSummaryStatus === 'function') {
+                handleSummaryStatus(data.status, data.message);
+            }
+        } else if (data.type === 'consulting') {
+            if (typeof handleConsulting === 'function') {
+                handleConsulting(data.mode, data.text, data.confirmed);
+            }
+        } else if (data.type === 'consulting_status') {
+            if (typeof handleConsultingStatus === 'function') {
+                handleConsultingStatus(data.mode, data.status, data.message);
             }
         } else if (data.type === 'purpose_state') {
             if (typeof handlePurposeState === 'function') {
@@ -126,6 +146,10 @@ export const useWebSocketHandler = ({
         handleBulletPointsCountdown,
         handleLastPickup,
         handleLastPickupStatus,
+        handleSummary,
+        handleSummaryStatus,
+        handleConsulting,
+        handleConsultingStatus,
         handlePurposeState,
         handleSessionState,
         handleContextState,

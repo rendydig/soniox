@@ -37,8 +37,8 @@ class BulletPointsController(QObject):
     of the bullets it appended — under ``bullet_windows``.
     """
 
-    # (items, speaker profile, bullet windows)
-    updated = Signal(list, dict, list)
+    # (items, speaker profile, bullet windows, per-item lock flags)
+    updated = Signal(list, dict, list, list)
     status_changed = Signal(str)
     error_occurred = Signal(str)
     # (auto active, epoch seconds of the next interval tick; 0 when auto is off).
@@ -50,6 +50,9 @@ class BulletPointsController(QObject):
         super().__init__(parent)
         self._auto = False
         self._bullets = []
+        # Parallel to ``_bullets``: ``True`` pins an item so a Rebuild keeps it
+        # verbatim at the top instead of replacing it with the AI's list.
+        self._locked = []
         self._speaker = {}
         self._bullet_windows = []
         self._buffer = []
@@ -76,6 +79,15 @@ class BulletPointsController(QObject):
         self._next_flush_at = time.time() + BULLET_FLUSH_INTERVAL_MS / 1000.0
         self.countdown_changed.emit(True, self._next_flush_at)
 
+    def _emit_updated(self):
+        """Broadcast the list + profile + windows + locks as one ``updated``."""
+        self.updated.emit(
+            list(self._bullets),
+            dict(self._speaker),
+            self._windows_copy(),
+            list(self._locked),
+        )
+
     def set_auto(self, auto: bool):
         """Turn automatic updates on/off, keeping the current list as a checkpoint."""
         auto = bool(auto)
@@ -87,7 +99,7 @@ class BulletPointsController(QObject):
             self._arm_countdown()
             # Show the checkpoint immediately, then catch up on buffered lines.
             if self._bullets or self._speaker:
-                self.updated.emit(list(self._bullets), dict(self._speaker), self._windows_copy())
+                self._emit_updated()
             if self._buffer:
                 self._maybe_flush()
         else:
@@ -159,28 +171,80 @@ class BulletPointsController(QObject):
             return
         logger.info("Rebuilding bullet points from %d transcript lines", len(lines))
         self._inflight_window = self._make_window("rebuild", lines)
-        self._start_worker([], {}, lines, rebuild=True)
+        self._start_worker(self.locked_items(), {}, lines, rebuild=True)
 
     def reset(self):
-        """Clear the list, profile, windows, and buffer (e.g. a new session)."""
+        """Clear the list, profile, windows, locks, and buffer (e.g. a new session)."""
         self._bullets = []
+        self._locked = []
         self._speaker = {}
         self._bullet_windows = []
         self._buffer = []
-        self.updated.emit([], {}, [])
+        self._emit_updated()
 
-    def load_state(self, items, speaker=None, windows=None):
-        """Seed the list, speaker profile, and windows from a restored session."""
+    def load_state(self, items, speaker=None, windows=None, locks=None):
+        """Seed the list, speaker profile, windows, and locks from a session."""
         self._bullets = list(items or [])
+        self._locked = self._align_locks(self._bullets, locks)
         self._speaker = dict(speaker or {})
         self._bullet_windows = [dict(w) for w in (windows or []) if isinstance(w, dict)]
         self._buffer = []
         logger.debug(
-            "Bullet points restored: %d items, %d profile fields, %d windows",
+            "Bullet points restored: %d items, %d locked, %d profile fields, %d windows",
             len(self._bullets),
+            sum(1 for locked in self._locked if locked),
             len(self._speaker),
             len(self._bullet_windows),
         )
+
+    # --- locks (pinned-on-top rebuild) --------------------------------
+
+    @staticmethod
+    def _align_locks(items, locks):
+        """Normalize ``locks`` to a ``list[bool]`` matching ``len(items)``.
+
+        A short/absent list (an older session file) pads with ``False``; an
+        over-long one (a stale write) is truncated.
+        """
+        n = len(items or [])
+        source = list(locks or [])
+        return [bool(source[i]) if i < len(source) else False for i in range(n)]
+
+    def locked_items(self) -> list:
+        """The bullet texts currently pinned, in list order."""
+        return [text for text, locked in zip(self._bullets, self._locked) if locked]
+
+    def set_lock(self, index=None, text=None, locked=None) -> bool:
+        """Pin/unpin one bullet by exact ``text`` (preferred) or ``index``.
+
+        When ``locked`` is given the flag is set to it; otherwise it is flipped.
+        Returns ``False`` when the item can't be found or nothing changed.
+        """
+        target = None
+        if text is not None:
+            needle = str(text)
+            for i, item in enumerate(self._bullets):
+                if item == needle:
+                    target = i
+                    break
+        if target is None and index is not None:
+            try:
+                i = int(index)
+            except (TypeError, ValueError):
+                i = -1
+            if 0 <= i < len(self._bullets):
+                target = i
+        if target is None:
+            logger.debug("Bullet lock ignored: item not found (text=%r index=%r)", text, index)
+            return False
+        self._locked = self._align_locks(self._bullets, self._locked)
+        new_value = (not self._locked[target]) if locked is None else bool(locked)
+        if new_value == self._locked[target]:
+            return False
+        self._locked[target] = new_value
+        logger.info("Bullet %d lock=%s: %s", target, new_value, self._bullets[target])
+        self._emit_updated()
+        return True
 
     def _maybe_flush(self, force: bool = False) -> bool:
         """Start a worker when (auto or forced), idle, and there is something new.
@@ -229,17 +293,23 @@ class BulletPointsController(QObject):
         if mode == "append":
             previous = len(self._bullets)
             self._bullets = self._merge_new_items(self._bullets, new_items)
+            # The list only grows here; re-align so the tail pads with ``False``.
+            self._locked = self._align_locks(self._bullets, self._locked)
             if len(self._bullets) > previous:
                 self._record_window(window, previous, len(self._bullets) - 1)
         else:
             # A rebuild rewrote the whole list, so old provenance no longer maps.
-            self._bullets = new_items
+            # Locked items are kept verbatim at the top (their order preserved);
+            # the AI only returned the points it had not already been given.
+            locked = self.locked_items()
+            self._bullets = locked + new_items
+            self._locked = [True] * len(locked) + [False] * len(new_items)
             self._bullet_windows = []
             if self._bullets:
                 self._record_window(window, 0, len(self._bullets) - 1)
         if isinstance(speaker, dict):
             self._speaker = dict(speaker)
-        self.updated.emit(list(self._bullets), dict(self._speaker), self._windows_copy())
+        self._emit_updated()
         self.status_changed.emit("complete")
 
     # --- windows (per-update provenance) ------------------------------

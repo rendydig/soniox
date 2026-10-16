@@ -5,6 +5,9 @@ Preact app built its DOM, that the bullets tab shows both action buttons inside
 `.bullet-header-actions`, and that clicking them sends the right control messages
 over the WebSocket (`trigger_bullet_points` / `regenerate_bullet_points`) — the
 part `node --check` cannot cover, because htm templates only fail at render time.
+It then pushes a `bullet_points` frame (with a locked item) from a second WS
+client and asserts a padlock per bullet and that clicking one sends
+`set_bullet_lock`.
 
 Run a server first (any port): `cd websocket-server && PORT=8793 node server.js`
 A window appears for a few seconds; there is no headless path because Qt
@@ -84,6 +87,49 @@ PROBE_SCRIPT = """
 })()
 """
 
+# Push a bullet_points frame (one locked) from a second client, then inspect the
+# rendered lock buttons and click the first (spying on send).
+LOCK_SCRIPT = """
+(function () {
+    window.__lock = { ok: true };
+    var peer = new WebSocket('ws://localhost:%PORT%');
+    peer.onopen = function () {
+        peer.send(JSON.stringify({
+            type: 'bullet_points',
+            items: ['alpha point', 'beta point', 'gamma point'],
+            speaker: {},
+            windows: [],
+            locks: [false, true, false]
+        }));
+    };
+    setTimeout(function () {
+        try {
+            var locks = Array.prototype.slice.call(
+                document.querySelectorAll('.bullet-item .bullet-lock'));
+            window.__lock.count = locks.length;
+            window.__lock.lockedNumbers = Array.prototype.slice.call(
+                document.querySelectorAll('.bullet-item.locked')).map(function (li) {
+                    var n = li.querySelector('.bullet-number');
+                    return n ? n.textContent.trim() : '';
+                });
+            window.__lock.aria = locks.map(function (b) { return b.getAttribute('aria-pressed'); });
+            var sent = [];
+            var orig = WebSocket.prototype.send;
+            WebSocket.prototype.send = function (d) { sent.push(String(d)); return orig.apply(this, arguments); };
+            if (locks[0]) { locks[0].click(); }
+            WebSocket.prototype.send = orig;
+            window.__lock.sent = sent.map(function (s) {
+                try { return JSON.parse(s); } catch (e) { return s; }
+            });
+        } catch (e) {
+            window.__lock.ok = false;
+            window.__lock.error = String(e);
+        }
+    }, 700);
+    return 'started';
+})()
+""".replace("%PORT%", PORT)
+
 
 def collect(key):
     def _cb(value):
@@ -91,21 +137,37 @@ def collect(key):
     return _cb
 
 
+def _parse(key):
+    raw = results.get(key)
+    try:
+        return json.loads(raw) if isinstance(raw, str) else {}
+    except ValueError:
+        return {}
+
+
 def probe():
     page.runJavaScript(PROBE_SCRIPT, collect("probe"))
-    QTimer.singleShot(1500, report)
+    QTimer.singleShot(1500, probe_lock)
+
+
+def probe_lock():
+    page.runJavaScript(LOCK_SCRIPT, collect("lock_started"))
+    QTimer.singleShot(2200, probe_read_lock)
+
+
+def probe_read_lock():
+    page.runJavaScript(
+        "(function () { return JSON.stringify(window.__lock || {}); })()",
+        collect("lock"),
+    )
+    QTimer.singleShot(400, report)
 
 
 def report():
-    raw = results.get("probe")
-    try:
-        probe_result = json.loads(raw) if isinstance(raw, str) else {}
-    except ValueError:
-        probe_result = {}
-    if not isinstance(probe_result, dict):
-        probe_result = {}
+    probe_result = _parse("probe")
+    lock_result = _parse("lock")
     print("[1] the page renders")
-    check("the DOM probe returned data", bool(probe_result), str(raw)[:120])
+    check("the DOM probe returned data", bool(probe_result), str(results.get("probe"))[:120])
     check("the probe script did not throw", probe_result.get("ok") is True,
           str(probe_result.get("error")))
     check("root has content", (probe_result.get("rootLen") or 0) > 200, str(probe_result.get("rootLen")))
@@ -127,7 +189,25 @@ def report():
     check("Rebuild sends regenerate_bullet_points",
           "regenerate_bullet_points" in sent, str(sent))
 
-    print("\n[4] no JavaScript errors")
+    print("\n[4] each bullet renders a lock toggle")
+    check("the lock probe ran", lock_result.get("ok") is True, str(lock_result.get("error")))
+    check("one padlock per bullet", lock_result.get("count") == 3, str(lock_result.get("count")))
+    check("the locked item carries the .locked tint",
+          lock_result.get("lockedNumbers") == ["2."], str(lock_result.get("lockedNumbers")))
+    check("aria-pressed reflects the flags",
+          lock_result.get("aria") == ["false", "true", "false"], str(lock_result.get("aria")))
+
+    print("\n[5] clicking a padlock sends set_bullet_lock")
+    lock_sent = [m for m in (lock_result.get("sent") or []) if isinstance(m, dict)]
+    toggle = [m for m in lock_sent if m.get("type") == "set_bullet_lock"]
+    check("a set_bullet_lock frame was sent", len(toggle) == 1, str(lock_result.get("sent")))
+    check("it targets the clicked item with its text",
+          bool(toggle) and toggle[0].get("index") == 0
+          and toggle[0].get("text") == "alpha point"
+          and toggle[0].get("locked") is True,
+          str(toggle))
+
+    print("\n[6] no JavaScript errors")
     errors = [line for line in console if "Error" in line]
     check("console clean", not errors, "; ".join(errors[:3]))
     for line in console[:10]:

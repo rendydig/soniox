@@ -37,6 +37,11 @@ The user message names the mode; follow it exactly:
   An empty array is the correct answer when the new lines add nothing.
 - REBUILD: you receive the full conversation transcript. Return the COMPLETE bullet list
   built from the transcript.
+- REBUILD with locked points: when the user message carries a "Locked bullet points"
+  block, those points are ALREADY CAPTURED by the user. Never repeat, reword, reorder,
+  drop, or merge them. Return ONLY the bullet points from the transcript that are NOT
+  already covered by that locked list (an empty array if none). Do not re-list the locked
+  points in your answer — they are kept verbatim by the app.
 
 Speaker profile (JSON object):
 - The host is "us"; the [speaker] is the customer. Only the [speaker] is profiled.
@@ -167,7 +172,20 @@ class BulletPointsWorker(QThread):
             rendered.append(f"[{source}] {str(text)[:BULLET_MAX_LINE_CHARS]}")
         lines = "\n".join(rendered)
         if self._rebuild:
-            # Whole-transcript rebuild: no inherited list/profile, start from scratch.
+            # Whole-transcript rebuild. When the user has locked points, hand them
+            # over as "already captured" and ask for only the uncovered remainder.
+            if self._current_bullets:
+                locked_lines = "\n".join(
+                    f"{i + 1}. {str(item)[:BULLET_MAX_LINE_CHARS]}"
+                    for i, item in enumerate(self._current_bullets)
+                )
+                return (
+                    "Locked bullet points (already captured — do NOT repeat or reword):\n"
+                    f"{locked_lines}\n\n"
+                    f"Full conversation transcript:\n{lines}\n\n"
+                    "REBUILD mode: return ONLY the bullet points NOT already covered by the "
+                    "locked list above (empty array if none)."
+                )
             return (
                 f"Full conversation transcript:\n{lines}\n\n"
                 "REBUILD mode: return the COMPLETE bullet list."

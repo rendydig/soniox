@@ -116,6 +116,69 @@ button on the Last Picked Up tab (`bullets-app.js` → `{"type":"trigger_last_pi
 `_handle_webview_message`). They call `LastPickupController.trigger_now()`, which runs the worker
 even with `auto` off (`_maybe_run(force=True)`; a press mid-flight queues one forced rerun).
 
+**"Summary"** (the Bullet Points pane's fourth tab) is a one-click, **one-shot** whole-session
+summary. The **Summarize** button sends `{"type":"summarize"}`; `MainWindow._summarize_now` takes
+one `session_store.snapshot()` and feeds the transcript lines (the same
+`(source, text, timestamp)` mapping the rebuild uses), the bullet list and the speaker profile to
+`SummarizeController.trigger_now` → `SummarizeWorker` (`src/summarize_worker.py`), which reuses the
+`.env` provider/model with reasoning off. The reply is **structured markdown** — fixed sections
+`## Overview` / `## Key Points` / `## Decisions` / `## Open Questions` / `## Next Steps` /
+`## Speaker Highlights`, written in the conversation's language, with empty sections omitted — and
+is broadcast as `{"type":"summary","text":...}` then rendered via the shared `<Markdown>` component
+in `components/SummaryView.js`. Progress rides `{"type":"summary_status","status":...}` (`started`
+→ "Summarizing…", `error`/`failed`, and `no_input` → "Nothing to summarize yet", auto-cleared after
+2.5 s). There is **no timer and no auto mode** (button only, no hotkey); each line is truncated to
+`SUMMARY_MAX_LINE_CHARS` (300). The finished text is persisted as the string session field
+`summary`, so a pane reload / reconnect restores it through `session_state`
+(`useTranscriptionHandlers.handleSummary` / `handleSessionState`).
+The tab is also **editable**: it opens in **preview** (rendered markdown) and a **double-click**
+inside it switches to an **edit** mode (a raw-markdown `<textarea>`). Typing auto-saves with an
+800 ms debounce (`SummaryView.js` → `{"type":"summary_save","text":...}` → `_on_summary_updated`,
+which persists and echoes the `summary` topic so every state view agrees); a **Back** button flushes
+any pending edit and returns to preview. Switching tabs or the editor's `blur` also flushes, and a
+"Saving…"/"Saved" chip shows the debounce state. The AI **Summarize** button is hidden while
+editing; locking it out keeps an in-flight or generated summary from clobbering a manual edit.
+
+**"Consulting"** (the Bullet Points pane's fifth tab) is a manual three-step pipeline:
+**client-confirmed brief → gap analysis → execution roadmap**. It is deliberately one tab with
+three stacked sections, **manual only** (one button per section, no timer/auto), so cost is bounded
+per click. `ConsultingController` (`src/controllers/consulting_controller.py`) is modelled on
+`SummarizeController` with a per-call `mode` in `("brief", "gaps", "roadmap")`; it runs **one worker
+at a time** (busy guard), so the three buttons are mutually exclusive while a call is in flight.
+`ConsultingWorker` (`src/consulting_worker.py`) picks one `SYSTEM_INSTRUCTION` per mode and assembles
+the user message from the transcript lines (`[source] text`, truncated to `CONSULTING_MAX_LINE_CHARS`,
+300), the speaker profile, the mirrored Speaker/Host context, an optional confirmed brief and the
+flagged gaps; it reuses the `.env` provider/model with reasoning off (same as Summary).
+- **Client brief** — the **Draft brief** button sends `{"type":"draft_brief"}`; the reply is
+  structured markdown (`## Goals` / `## Pain Points` / `## Constraints` / `## Success Metrics` /
+  `## Scope` / `## Open Questions`, empty sections omitted, grounded in the `[speaker]`'s own words).
+  It is **editable** exactly like the Summary tab (preview → double-click → raw-markdown `<textarea>`,
+  800 ms debounce → `{"type":"consulting_save","mode":"brief","text":...}` → `_on_consulting_updated`).
+  **Confirm** sends `{"type":"confirm_brief"}`, which freezes the brief as the locked reference
+  (`brief_meta = {"confirmed": true, "confirmed_at": iso}`) and echoes the chip state. **Any change to
+  the brief — an AI (re)draft or a manual edit — clears the confirmation** (`brief_meta = {"confirmed":
+  false}`), so a changed brief must be re-confirmed; the pane's chip shows `Draft` vs `Confirmed`.
+- **Gap analysis** — the **Analyze gaps** button sends `{"type":"analyze_gaps"}`; the worker compares
+  the conversation against the **confirmed brief** when present, else falls back to the speaker
+  profile (+ Speaker context). It emits a markdown bullet per genuine gap (`**<flag>** — why it's a
+  gap`, then `Ask: "<question>"`), covering only thin-answer-for-goal-complexity, contradictions,
+  missing metrics and unstated constraints; empty when nothing. The section shows a reference badge
+  (`Confirmed brief` vs `Speaker profile`).
+- **Execution roadmap** — the **Generate roadmap** button (`{"type":"generate_roadmap"}`) is
+  **disabled with a hint until the brief is confirmed**; it turns the confirmed brief + flagged gaps
+  into a short summary line then 4–7 ordered steps (discovery/validation before build), folding every
+  gap into a step.
+- Each section renders via the shared `<Markdown>` component in `components/ConsultingView.js`
+  (green heading overrides so the renderer matches the pane accent). Progress rides
+  `{"type":"consulting_status","mode":...,"status":...}` (`started`, `error`/`failed`, `no_input` →
+  per-section notice, auto-cleared after 2.5 s). Each finished section is broadcast as
+  `{"type":"consulting","mode":...,"text":...,"confirmed":<bool for brief>}` and persisted as the
+  string session fields `brief` / `gaps` / `roadmap` plus the object field `brief_meta`, so a pane
+  reload / reconnect restores all of it through `session_state`
+  (`useTranscriptionHandlers.handleConsulting` / `handleSessionState`). An empty transcript shows a
+  `no_input` notice per section instead of a dead button; there is **no hotkey**. `_restore_session`
+  seeds the controller, New Session clears + archives it, and `closeEvent` cleans the worker up.
+
 Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSocket):
 - `AIClient.generate_stream(system_instruction, messages)` (`src/ai_client.py`) is a generator:
   Gemini uses `models.generate_content_stream`, OpenAI-compatible clients use
@@ -192,8 +255,8 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   `response` · `error`.
 - **Topics**: `transcription.partial` / `transcription.final` (`{source,text,endpoint,timestamp}`) /
   `translation.final` / `status` / `error` / `session.config` / `screenshots.add` / `screenshots.clear` /
-  `bullets` (`{items,speaker,windows}` — the bullet list, KYC speaker profile and per-update windows,
-  which always change together) / `command` in; browser-bound mirrors (`gemini_result`,
+  `bullets` (`{items,speaker,windows,locks}` — the bullet list, KYC speaker profile, per-update
+  windows and per-item lock flags, which always change together) / `command` in; browser-bound mirrors (`gemini_result`,
   `gemini_stream`, `bullet_points`, `purpose_state`, `session_state`, …) fan out unchanged so the
   Node path stays byte-identical.
   **Partials are disposable** (any topic ending `.partial`); finals are never dropped.
@@ -202,7 +265,7 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
 - **Store** (`internal/store`): the `SessionStore` discipline ported — writers *replace* values, never
   mutate, and `Snapshot()` hands out deep copies. Every list is a fixed-capacity ring (no realloc), with
   the same caps as the Python side: transcriptions/translations 500, conversation 25 (=`MAX_HISTORY_TURNS`),
-  `gemini_results` 100, screenshots 20. `bullets` + `bullet_windows` are the exception: they are
+  `gemini_results` 100, screenshots 20. `bullets` + `bullet_windows`/`bullet_locks` are the exception: they are
   deliberately **uncapped** (append-only, one point per update), so they grow with the session.
   `session.config` and the purpose
   registry are application-level and survive both `reset` and `restore`. `conversation` is derived from
@@ -459,15 +522,31 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   buffer holds `(source, text, ts)`), and the index range maps it to the bullets it produced. An append
   records `from_index = len(previous)`..`len(new) - 1` (skipped when nothing new); a rebuild **resets**
   the list to a single `rebuild` entry spanning the whole list, because it rewrote every bullet.
+- **Per-item Lock (pinned-on-top rebuild)**: each bullet in the pane carries a padlock toggle. The
+  lock flags live in a second **parallel** list `bullet_locks` (`list[bool]`, index-aligned with
+  `bullets`), so the worker prompt, the `bullets` session list, and the pane's item shape stay
+  untouched. Clicking the padlock sends `{"type":"set_bullet_lock","index":i,"text":<item>,"locked":bool}`;
+  `MainWindow._handle_webview_message` routes it to `BulletPointsController.set_lock(index, text,
+  locked)` (resolves by exact `text` first, else the bounds-checked `index`; returns falsy when the item
+  is missing or unchanged), which flips the flag and re-emits `updated`, broadcasting the whole list +
+  `locks` back to every pane. Locking is **Rebuild-only**: `hard_regenerate` hands `locked_items()` to the
+  worker as the "already captured" block (the worker asks for only the *uncovered* points), and on a
+  `mode == "replace"` result the controller composes `locked_items + ai_items` and sets
+  `_locked = [True]*L + [False]*N` — a rebuild can therefore never drop or reword a locked point, and it
+  can never destroy one (all items locked → the locked block is kept). "Fetch new" and the auto timer are
+  untouched: the locked items are already in the current list sent as context and are protected by the
+  near-duplicate merge, and `_locked` is only re-aligned (tail padded `False`) as the list grows. `reset()`
+  clears the locks; `load_state(items, speaker, windows, locks)` and `_align_locks` pad a short/absent
+  list (an older session file) with `False`.
 - **Speaker (KYC) profile**: `speaker` in the worker output / session is a dict —
   `{name, location, occupation}` (labelled rows) plus `interests`, `goals`, `pain_points`,
   `facts` (short standalone items, ~8 each, `SPEAKER_MAX_LIST_ITEMS` in `src/config.py`,
   enforced in the prompt **and** by trimming the parsed result). Facts/pain points are only
   extracted from `[speaker]` lines (the host is "us", the speaker is the customer); profile
   fields update **only when the speaker reveals them** (never guessed), unknown = `""`/`[]`.
-  `BulletPointsController` holds `_bullets` + `_speaker` + `_bullet_windows`, its `updated` signal is
-  `Signal(list, dict, list)` (items, profile, windows), and `load_state(items, speaker, windows)` seeds
-  all three from a restored session.
+  `BulletPointsController` holds `_bullets` + `_locked` + `_speaker` + `_bullet_windows`, its `updated` signal is
+  `Signal(list, dict, list, list)` (items, profile, windows, locks), and `load_state(items, speaker, windows, locks)` seeds
+  all four from a restored session.
 - **Auto / manual / checkpoint:** auto updates run only when the checkbox is on **and** the
   pane is visible; hiding the pane (Tool ▾ or its `−`) pauses the timer but keeps the current
   list as a checkpoint and keeps buffering. Re-showing broadcasts the checkpoint immediately
@@ -482,13 +561,14 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
 - `MainWindow` wires it: `_on_transcription_update` buffers final lines via `add_line`
   (unconditional); `_trigger_bullet_points_now` is the `CTRL+ALT+P` callback (the webview
   `trigger_bullet_points` message routes to the same `flush_now(force=True)`);
-  `_on_bullet_points_updated(items, speaker, windows)` broadcasts
-  `{"type":"bullet_points","items":[...],"speaker":{...},"windows":[...]}` (persisted via `set_bullets` +
-  `set_speaker` + `set_bullet_windows`, and mirrored to the hub via `self.hub.bullets`) and
+  `_on_bullet_points_updated(items, speaker, windows, locks)` broadcasts
+  `{"type":"bullet_points","items":[...],"speaker":{...},"windows":[...],"locks":[...]}` (persisted via
+  `set_bullets` + `set_speaker` + `set_bullet_windows` + `set_bullet_locks`, and mirrored to the hub via
+  `self.hub.bullets`) and
   `_send_bullet_status(status, message="")` broadcasts
   `{"type":"bullet_points_status","status":...}` over the WebSocket (`send_message`, rebroadcast by
   the server). Pane control messages: `hide_bullet_points_window`, `set_bullet_points_window_edge`,
-  `regenerate_bullet_points`, `trigger_bullet_points`.
+  `regenerate_bullet_points`, `trigger_bullet_points`, `set_bullet_lock`.
 - **Auto-flush countdown**: `BulletPointsController.countdown_changed = Signal(bool, float)`
   carries `(auto, next_flush_at)` where `next_flush_at` is the epoch deadline of the
   controller's own `QTimer` (`BULLET_FLUSH_INTERVAL_MS`, 5 min). It is re-armed only in
@@ -506,21 +586,29 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   (not edge-docked) to avoid colliding with the docked panes. Its web view loads
   `http://localhost:8765/bullets` → `public/bullets.html` + `public/bullets-app.js`
   (server route `/bullets`), rendering `components/BulletPointsList.js` with a custom
-  CSS-drawn checkmark. The pane has **three tabs** — Bullet Points / **Speaker** /
-  Last Picked Up; the Speaker tab renders `components/SpeakerProfile.js` (identity rows +
-  `.kyc-*` sections, `.kyc-pain` accent for pain points, shares the update status line and
-  an empty-state hint). The bullets tab carries two text buttons: **Fetch new** (incremental —
-  merges only the newly buffered lines, keeps the list; `trigger_bullet_points`) and **Rebuild**
-  (regenerates the list from the whole transcript; also refreshes the profile, since it is one AI call).
+  CSS-drawn checkmark. The pane has **five tabs** — Bullet Points / **Speaker** /
+  Last Picked Up / **Summary** / **Consulting**; the Speaker tab renders `components/SpeakerProfile.js` (identity
+  rows + `.kyc-*` sections, `.kyc-pain` accent for pain points, shares the update status line and
+  an empty-state hint), the Summary tab renders `components/SummaryView.js` (a Summarize button
+  plus the markdown summary in preview, or a double-click-to-edit autosaving textarea; green
+  overrides so the renderer matches the pane accent), and the Consulting tab renders
+  `components/ConsultingView.js` (three stacked sections — brief / gaps / roadmap — see the
+  "Consulting" paragraph above). The bullets
+  tab carries two text buttons: **Fetch new** (incremental — merges only the newly buffered lines,
+  keeps the list; `trigger_bullet_points`) and **Rebuild** (regenerates the list from the whole
+  transcript; also refreshes the profile, since it is one AI call). Each item also carries a padlock
+  toggle (`BulletPointsList.js`, a `currentColor` inline SVG with `aria-pressed` and a
+  "Lock this point (kept on Rebuild)"/"Unlock" title) that sends `set_bullet_lock`; locked items get the
+  `.bullet-item.locked` tint and the amber `.bullet-lock.locked` styling in `index.css`.
 - Persisted in `ui_state.json`: `settings.bullet_points` (auto, default false),
   `settings.bullet_points_window_visible` (default false) and a `bullet_points_window`
   geometry block. `_set_pane_edge` swaps any docked pane on the target edge across all three
   panes.
 
 ## Sessions (persistence, resume, new session)
-- A **session** is the conversation state persisted to `sessions/current.json` (gitignored):  `bullets`, `bullet_windows`, `conversation`, `transcriptions`, `translations`, `gemini_results`, `screenshots`
-  (each capped in `src/config.py` except `bullets`/`bullet_windows`, which are uncapped) plus the
-  dict-typed `speaker` profile and the string `last_pickup`.
+- A **session** is the conversation state persisted to `sessions/current.json` (gitignored):  `bullets`, `bullet_windows`, `bullet_locks`, `conversation`, `transcriptions`, `translations`, `gemini_results`, `screenshots`
+  (each capped in `src/config.py` except `bullets`/`bullet_windows`/`bullet_locks`, which are uncapped) plus the
+  dict-typed `speaker` profile and `brief_meta` and the strings `last_pickup`, `summary`, `brief`, `gaps` and `roadmap`.
  `SessionStore` (`src/session_store.py`) holds it in memory and
   a **background daemon thread** JSON-dumps snapshots on a debounce
   (`SESSION_WRITE_DEBOUNCE_MS`, 2 s) via a temp file + `os.replace`, so file I/O never blocks the
@@ -834,20 +922,76 @@ few seconds, because Qt WebEngine cannot render on the offscreen platform here.
 - `_tmp_bullet_delta_check.py` — the delta/append contract with the worker start stubbed
   (no AI calls): `_merge_new_items` drops exact + near duplicates but keeps low-overlap
   phrases, `_build_user_message` differs between append and rebuild (and accepts 2- and
-  3-tuple lines), an append grows the list and fills `from_index`/`to_index` while recording
+  3-tuple lines, naming the locked block when a rebuild carries locked points), an append grows
+  the list and fills `from_index`/`to_index` while recording
   no window when nothing is new, a rebuild resets `bullet_windows`, and a payload with no
-  `mode` defaults to `replace`. No server needed. 28 checks.
+  `mode` defaults to `replace`. Locks: `set_lock` toggles by index/text and no-ops on the same
+  value, a rebuild with two locked items composes `[locked…] + ai` with `_locked ==
+  [True,True,False…]`, an append pads `_locked` with `False`, and `load_state`/`reset` keep it
+  aligned. No server needed. 42 checks.
 - `_tmp_bullet_manual_check.py` — the pane's **Fetch new** button, app-side: builds a real
   `MainWindow` (worker start stubbed, no network) and drives `{"type":"trigger_bullet_points"}`.
   An empty buffer replies with a `bullet_points_status` `no_new` notice (with a message) instead
   of a silent no-op; buffered lines start an **incremental** update (`rebuild=False`) carrying the
   existing list + the whole buffered window; `_send_bullet_status` forwards an optional message;
-  Rebuild still routes to a `rebuild=True` call from an empty list. No server needed. 15 checks.
+  Rebuild still routes to a `rebuild=True` call from an empty list; a `set_bullet_lock` webview
+  message echoes a `bullet_points` frame carrying `locks` and persists it, and a rebuild with a
+  locked item receives it as `current_bullets`. No server needed. 21 checks.
 - `_tmp_bullet_pane_check.py` — the pane really renders (needs a server: `PORT=8793 node
   server.js`): loads `/bullets` in a QWebEngineView, asserts the bullets tab shows Fetch new +
   Rebuild inside `.bullet-header-actions` (pane controls still present), stubs `WebSocket.send`,
   clicks both, and checks the app sent `trigger_bullet_points` and `regenerate_bullet_points`.
-  Covers the htm template, which `node --check` cannot. 11 checks.
+  It then pushes a `bullet_points` frame (one item locked) from a second WS client and asserts one
+  padlock per bullet, the `.bullet-item.locked` tint + `aria-pressed`, and that clicking a padlock
+  sends `set_bullet_lock`. Covers the htm template, which `node --check` cannot. 16 checks.
+- `_tmp_session_store_smoke.py` — `bullet_locks` round-trips through `current.json` (normalized to
+  booleans), is cleared by `new_session`, and an older session file without the field normalizes to
+  `[]`.
+
+### Summary tab (throwaway)
+- `_tmp_summary_check.py` — `SummarizeWorker` + `SummarizeController` with the AI client stubbed
+  (no network): `_build_user_message` carries the transcript, bullets JSON and speaker JSON (lines
+  truncated to `SUMMARY_MAX_LINE_CHARS`), `trigger_now([])` returns False and emits `no_input`, a
+  normal run emits `started` → `updated` (reasoning off, one call), `load_summary` seeds without
+  broadcasting, `reset()` emits `""`, a failed call emits `error` + `status_changed("error")`, and
+  the `summary` field lands in `current.json` and survives in the archived session file. 30 checks.
+- `_tmp_summary_app_check.py` — the app-side wiring in a real `MainWindow` (worker start stubbed):
+  `{"type":"summarize"}` maps the transcript (non-empty lines, `(source, text, timestamp)`) plus the
+  bullet list and speaker profile into the controller, an empty transcript sends the
+  "Nothing to summarize yet" notice, `_on_summary_updated` broadcasts **and** persists, `_restore_session`
+  seeds the tab, a `summary_save` edit persists and is echoed, and New Session clears + archives it.
+  No server needed. 13 checks.
+- `_tmp_summary_pane_check.py` — the pane really renders (needs a server: `PORT=8794 node server.js`):
+  loads `/bullets`, clicks the Summary tab, asserts the `.summary-view` body + Summarize button +
+  empty-state hint, that clicking sends `summarize`, that an incoming `summary` frame (pushed by a
+  second WS client) renders as markdown with green h2 headings, and the edit flow — a **double-click**
+  opens the `.summary-editor` textarea seeded with the preview, typing sends a debounced `summary_save`,
+  and **Back** returns to preview showing the edit. 19 checks.
+
+### Consulting tab (throwaway)
+- `_tmp_consulting_check.py` — `ConsultingWorker` + `ConsultingController` with the AI client stubbed
+  (no network): the brief prompt carries the transcript + speaker profile + Speaker context; the gaps
+  prompt carries the **confirmed brief** when present and the profile + context when not; the roadmap
+  prompt carries the reference + flagged gaps (lines truncated to `CONSULTING_MAX_LINE_CHARS`); each
+  mode returns False and emits `no_input` on an empty transcript; a normal run emits
+  `started` → `updated(mode, text)` → `complete` (reasoning off, one call); the busy guard rejects a
+  second call without a notice; `load_state` seeds without broadcasting; `reset()` emits `""` for all
+  three modes; a failed call emits `error` + `status_changed(mode, "error")`; and
+  `brief`/`gaps`/`roadmap`/`brief_meta` land in `current.json` and survive archiving. 56 checks.
+- `_tmp_consulting_app_check.py` — the app-side wiring in a real `MainWindow` (worker start stubbed):
+  `draft_brief` maps the transcript (non-empty lines, `(source, text, timestamp)`) + speaker profile +
+  mirrored context; `analyze_gaps` uses the confirmed brief as the reference and `""` when unconfirmed;
+  `generate_roadmap` passes reference + gaps; an empty transcript sends a `no_input` notice per mode;
+  `_on_consulting_updated` broadcasts **and** persists (and clears the brief's confirmation);
+  `confirm_brief` sets `brief_meta.confirmed` + echoes it; `consulting_save` persists + echoes;
+  `_restore_session` seeds the controller; New Session clears + archives. No server needed. 31 checks.
+- `_tmp_consulting_pane_check.py` — the pane really renders (needs a server: `PORT=8795 node server.js`):
+  loads `/bullets`, opens the Consulting tab, asserts the three sections + buttons, that the roadmap
+  button starts **disabled** and enables once a confirmed `consulting` frame arrives, that clicking
+  Draft brief / Analyze gaps sends the right messages, that incoming frames render as markdown with
+  the Confirmed badges, that Confirm is locked while confirmed and sends `confirm_brief` after an edit,
+  and the brief edit flow (double-click → type → debounced `consulting_save` → Back shows the edit).
+  28 checks.
 
 ### Microphone mute (throwaway)
 - `_tmp_mute_check.py` — the soft-mute sender loop against a **fake `websockets` connection**

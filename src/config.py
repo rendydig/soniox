@@ -261,6 +261,26 @@ LAST_PICKUP_MAX_LINES = 40
 LAST_PICKUP_DEBOUNCE_MS = 2000
 LAST_PICKUP_ENDPOINT_DEBOUNCE_MS = 2000
 
+# "Summary" tab: a one-click manual summary of the WHOLE session (transcript +
+# bullet list + speaker profile) rendered as structured markdown and persisted
+# in the session. There is no timer and no auto mode — each Summarize press is a
+# single one-shot AI call, so cost is bounded per click.
+#   SUMMARY_MAX_LINE_CHARS — each transcript line sent to the AI is truncated to
+#     this many characters. The transcript itself comes from the session store,
+#     already capped at SESSION_MAX_TRANSCRIPT_LINES (500) lines; truncation is
+#     the per-line token-safety bound on top of that.
+SUMMARY_MAX_LINE_CHARS = 300
+
+# "Consulting" tab: a three-step manual pipeline (client-confirmed brief ->
+# gap analysis -> execution roadmap). Like Summary there is no timer and no auto
+# mode — each button press is a single one-shot AI call, so cost is bounded per
+# click. The transcript is read from the session store, already capped at
+# SESSION_MAX_TRANSCRIPT_LINES (500) lines.
+#   CONSULTING_MAX_LINE_CHARS — each transcript line sent to the AI is truncated
+#     to this many characters, the per-line token-safety bound on top of the
+#     session cap.
+CONSULTING_MAX_LINE_CHARS = 300
+
 # Optional Speaker profile file (context_speaker.txt). None/absent = unknown,
 # and the prompt then asks the model to infer the Speaker's role from context.
 SPEAKER_CONTEXT_FILE = os.environ.get("SPEAKER_CONTEXT_FILE")

@@ -87,6 +87,35 @@ func TestSnapshotIsACopy(t *testing.T) {
 	}
 }
 
+// Bullet locks round-trip through Apply/Snapshot and survive a restore.
+func TestBulletLocksRoundTrip(t *testing.T) {
+	s := New()
+	s.Apply(protocol.TopicBullets, map[string]any{
+		"items": []any{"b1", "b2", "b3"},
+		"locks": []any{true, false, true},
+	})
+	locks := s.BulletLocks()
+	if len(locks) != 3 || locks[0] != true || locks[1] != false || locks[2] != true {
+		t.Fatalf("locks not stored: %+v", locks)
+	}
+	// A caller mutating the getter's slice must not touch the live state.
+	locks[0] = false
+	if s.BulletLocks()[0] != true {
+		t.Fatal("locks mutated through the getter")
+	}
+	// Restore seeds them from a persisted snapshot.
+	raw := map[string]any{
+		"bullets":      []any{"b1"},
+		"bullet_locks": []any{true},
+	}
+	if err := s.Restore(raw); err != nil {
+		t.Fatal(err)
+	}
+	if got := s.Snapshot().BulletLocks; len(got) != 1 || got[0] != true {
+		t.Fatalf("locks not restored: %+v", got)
+	}
+}
+
 // Bullets are append-only: the store must not truncate them (there is no cap).
 func TestBulletsAreNotCapped(t *testing.T) {
 	s := New()
@@ -248,8 +277,8 @@ func TestSnapshotJSONShape(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, key := range []string{
-		"id", "created_at", "updated_at", "bullets", "bullet_windows", "conversation",
-		"transcriptions", "translations", "gemini_results", "screenshots",
+		"id", "created_at", "updated_at", "bullets", "bullet_windows", "bullet_locks",
+		"conversation", "transcriptions", "translations", "gemini_results", "screenshots",
 		"last_pickup", "speaker",
 	} {
 		if _, ok := m[key]; !ok {

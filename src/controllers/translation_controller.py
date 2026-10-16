@@ -152,6 +152,15 @@ class TranslationController(QObject):
             len(self._context["host"]),
             len(self._context["speaker"]),
         )
+
+    def get_context(self):
+        """Return the mirrored Host/Speaker context, or ``None`` before any update.
+
+        ``None`` means nothing has arrived yet (the reply path falls back to the
+        ``.env`` files); a dict with empty strings means the user selected no
+        context for that role. Callers must preserve that distinction.
+        """
+        return dict(self._context) if isinstance(self._context, dict) else None
     
     def schedule_auto_reply(self, transcription_text: str, input_source: str = "speaker", delay_ms: int = None):
         """

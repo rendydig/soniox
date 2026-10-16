@@ -27,7 +27,9 @@ from src.controllers import (
     TranscriptionController,
     TranslationController,
     BulletPointsController,
-    LastPickupController
+    LastPickupController,
+    SummarizeController,
+    ConsultingController
 )
 from src.websocket_client import WebSocketClient
 from src.websocket_server_manager import WebSocketServerManager
@@ -130,6 +132,8 @@ class MainWindow(QMainWindow):
         self.translation_controller = TranslationController(self.purpose_store)
         self.bullet_points_controller = BulletPointsController()
         self.last_pickup_controller = LastPickupController()
+        self.summarize_controller = SummarizeController()
+        self.consulting_controller = ConsultingController()
         # Session state (restored below, persisted asynchronously to disk).
         self.session_store = SessionStore()
         
@@ -814,6 +818,14 @@ class MainWindow(QMainWindow):
         self.last_pickup_controller.updated.connect(self._on_last_pickup_updated)
         self.last_pickup_controller.status_changed.connect(self._send_last_pickup_status)
         self.last_pickup_controller.error_occurred.connect(self._on_last_pickup_error)
+
+        self.summarize_controller.updated.connect(self._on_summary_updated)
+        self.summarize_controller.status_changed.connect(self._send_summary_status)
+        self.summarize_controller.error_occurred.connect(self._on_summary_error)
+
+        self.consulting_controller.updated.connect(self._on_consulting_updated)
+        self.consulting_controller.status_changed.connect(self._send_consulting_status)
+        self.consulting_controller.error_occurred.connect(self._on_consulting_error)
         
         self.gemini_lang_combo.currentTextChanged.connect(self._on_auto_reply_language_changed)
 
@@ -875,8 +887,15 @@ class MainWindow(QMainWindow):
             data.get("bullets") or [],
             data.get("speaker") or {},
             data.get("bullet_windows") or [],
+            data.get("bullet_locks") or [],
         )
         self.last_pickup_controller.load_last_pickup(data.get("last_pickup") or "")
+        self.summarize_controller.load_summary(data.get("summary") or "")
+        self.consulting_controller.load_state(
+            data.get("brief") or "",
+            data.get("gaps") or "",
+            data.get("roadmap") or "",
+        )
         self.translation_controller.load_conversation_history(data.get("conversation") or [])
         self._screenshots = list(data.get("screenshots") or [])
         for entry in data.get("transcriptions") or []:
@@ -913,6 +932,8 @@ class MainWindow(QMainWindow):
         self.translation_controller.clear_conversation_history()
         self.bullet_points_controller.reset()
         self.last_pickup_controller.reset()
+        self.summarize_controller.reset()
+        self.consulting_controller.reset()
         self._screenshots.clear()
         self._reset_session_timer()
         # Empty state resets every webview (gemini/live/bullets).
@@ -1168,8 +1189,8 @@ class MainWindow(QMainWindow):
         ]
         self.bullet_points_controller.hard_regenerate(lines)
 
-    def _on_bullet_points_updated(self, items: list, speaker: dict, windows: list):
-        """Broadcast the updated bullet list + profile + windows and persist them.
+    def _on_bullet_points_updated(self, items: list, speaker: dict, windows: list, locks: list):
+        """Broadcast the updated bullet list + profile + windows + locks and persist them.
 
         Mirrored to the Go hub on the same topic (``bullets``) alongside the
         WebSocket frame, so the hub owns the same state the panes render.
@@ -1179,11 +1200,13 @@ class MainWindow(QMainWindow):
             "items": list(items or []),
             "speaker": dict(speaker or {}),
             "windows": list(windows or []),
+            "locks": list(locks or []),
         })
         self.session_store.set_bullets(items)
         self.session_store.set_speaker(speaker)
         self.session_store.set_bullet_windows(windows)
-        self.hub.bullets(items, speaker, windows)
+        self.session_store.set_bullet_locks(locks)
+        self.hub.bullets(items, speaker, windows, locks)
 
     def _send_bullet_status(self, status: str, message: str = ""):
         """Broadcast a bullet-points progress/failure/notice status to the webview.
@@ -1222,6 +1245,136 @@ class MainWindow(QMainWindow):
     def _on_last_pickup_error(self, msg: str):
         """Handle last-pickup worker errors (logged, not popped up)."""
         logger.warning("Last pickup error: %s", msg)
+
+    def _summarize_now(self):
+        """Summarize button: send the whole session to the AI for a markdown summary.
+
+        One snapshot feeds the transcript lines (with the same
+        ``(source, text, timestamp)`` mapping the rebuild uses), the bullet list
+        and the speaker profile, so the three inputs are consistent.
+        """
+        snapshot = self.session_store.snapshot()
+        lines = [
+            (entry.get("source"), entry.get("text"), entry.get("timestamp"))
+            for entry in (snapshot.get("transcriptions") or [])
+            if entry.get("text")
+        ]
+        started = self.summarize_controller.trigger_now(
+            lines,
+            snapshot.get("bullets") or [],
+            snapshot.get("speaker") or {},
+        )
+        if not started and not self.summarize_controller.is_busy():
+            # Nothing to summarize (empty transcript): give the pane feedback
+            # instead of leaving the button looking dead (mirrors no_new).
+            self._send_summary_status("no_input", message="Nothing to summarize yet")
+
+    def _on_summary_updated(self, text: str):
+        """Broadcast the session summary to the webview and persist it."""
+        self.websocket_client.send_message({"type": "summary", "text": text or ""})
+        self.session_store.update("summary", text or "")
+
+    def _send_summary_status(self, status: str, message: str = ""):
+        """Broadcast a summary progress/failure/notice status to the webview."""
+        payload = {"type": "summary_status", "status": status}
+        if message:
+            payload["message"] = message
+        self.websocket_client.send_message(payload)
+
+    def _on_summary_error(self, msg: str):
+        """Handle summarize worker errors (logged, not popped up)."""
+        logger.warning("Summarize error: %s", msg)
+
+    def _consulting_lines(self, snapshot):
+        """Map the session transcript to ``(source, text, timestamp)`` triples."""
+        return [
+            (entry.get("source"), entry.get("text"), entry.get("timestamp"))
+            for entry in (snapshot.get("transcriptions") or [])
+            if entry.get("text")
+        ]
+
+    def _consulting_reference(self, snapshot):
+        """The locked reference: the confirmed brief, else ``""`` (profile fallback)."""
+        meta = snapshot.get("brief_meta") or {}
+        if isinstance(meta, dict) and meta.get("confirmed"):
+            return snapshot.get("brief") or ""
+        return ""
+
+    def _draft_brief(self):
+        """Draft brief button: draft a structured client brief from the conversation."""
+        snapshot = self.session_store.snapshot()
+        started = self.consulting_controller.draft_brief(
+            self._consulting_lines(snapshot),
+            snapshot.get("speaker") or {},
+            self.translation_controller.get_context(),
+        )
+        if not started and not self.consulting_controller.is_busy():
+            # Nothing to brief (empty transcript): give the pane feedback instead
+            # of leaving the button looking dead (mirrors the summary notice).
+            self._send_consulting_status("brief", "no_input", message="Nothing to brief yet")
+
+    def _analyze_gaps(self):
+        """Gaps button: flag thin/contradictory parts against the locked reference."""
+        snapshot = self.session_store.snapshot()
+        started = self.consulting_controller.analyze_gaps(
+            self._consulting_lines(snapshot),
+            self._consulting_reference(snapshot),
+            snapshot.get("speaker") or {},
+            self.translation_controller.get_context(),
+        )
+        if not started and not self.consulting_controller.is_busy():
+            self._send_consulting_status("gaps", "no_input", message="Nothing to analyze yet")
+
+    def _generate_roadmap(self):
+        """Roadmap button: turn the confirmed brief + gaps into a prioritized plan."""
+        snapshot = self.session_store.snapshot()
+        started = self.consulting_controller.generate_roadmap(
+            self._consulting_lines(snapshot),
+            self._consulting_reference(snapshot),
+            snapshot.get("gaps") or "",
+            snapshot.get("speaker") or {},
+            self.translation_controller.get_context(),
+        )
+        if not started and not self.consulting_controller.is_busy():
+            self._send_consulting_status("roadmap", "no_input", message="Nothing to plan yet")
+
+    def _on_consulting_updated(self, mode: str, text: str):
+        """Broadcast one consulting section to the webview and persist it.
+
+        Any change to the brief — an AI draft or a manual edit — clears its
+        confirmation: the reference is only as good as what the user signed off
+        on, so a changed brief must be re-confirmed before the roadmap treats it
+        as locked.
+        """
+        text = text or ""
+        self.session_store.update(mode, text)
+        confirmed = False
+        if mode == "brief":
+            self.session_store.update("brief_meta", {"confirmed": False})
+        self.websocket_client.send_message({
+            "type": "consulting", "mode": mode, "text": text, "confirmed": confirmed,
+        })
+
+    def _confirm_brief(self):
+        """Freeze the current brief as the locked reference and echo it back."""
+        snapshot = self.session_store.snapshot()
+        text = snapshot.get("brief") or ""
+        meta = {"confirmed": True, "confirmed_at": datetime.now().isoformat()}
+        self.session_store.update("brief_meta", meta)
+        self.websocket_client.send_message({
+            "type": "consulting", "mode": "brief", "text": text, "confirmed": True,
+        })
+
+    def _send_consulting_status(self, mode: str, status: str, message: str = ""):
+        """Broadcast a consulting progress/failure/notice status to the webview."""
+        payload = {"type": "consulting_status", "mode": mode, "status": status}
+        if message:
+            payload["message"] = message
+        self.websocket_client.send_message(payload)
+
+    def _on_consulting_error(self, msg: str):
+        """Handle consulting worker errors (logged, not popped up)."""
+        logger.warning("Consulting error: %s", msg)
 
     def _send_session_state(self):
         """Send the full session state so webviews can repopulate on connect."""
@@ -1318,6 +1471,11 @@ class MainWindow(QMainWindow):
                 # Nothing buffered since the last update: give the pane feedback
                 # instead of leaving the button looking dead.
                 self._send_bullet_status("no_new", message="Nothing new yet")
+        elif msg_type == "set_bullet_lock":
+            logger.info("Bullet points lock toggle from webview: %s", data.get("index"))
+            self.bullet_points_controller.set_lock(
+                data.get("index"), data.get("text"), data.get("locked")
+            )
         elif msg_type == "trigger_last_pickup":
             logger.info("Last pickup update requested from webview")
             self._trigger_last_pickup_now()
@@ -1326,6 +1484,30 @@ class MainWindow(QMainWindow):
             self._last_pickup_auto_enabled = bool(data.get("enabled"))
             self._update_last_pickup_auto()
             self._save_state()
+        elif msg_type == "summarize":
+            logger.info("Summary requested from webview")
+            self._summarize_now()
+        elif msg_type == "summary_save":
+            # Manual edit from the Summary tab (debounced in the pane): persist it
+            # and echo it back so every pane/state view agrees (same path as the
+            # AI-generated summary).
+            self._on_summary_updated(data.get("text") or "")
+        elif msg_type == "draft_brief":
+            logger.info("Consulting brief draft requested from webview")
+            self._draft_brief()
+        elif msg_type == "analyze_gaps":
+            logger.info("Consulting gap analysis requested from webview")
+            self._analyze_gaps()
+        elif msg_type == "generate_roadmap":
+            logger.info("Consulting roadmap requested from webview")
+            self._generate_roadmap()
+        elif msg_type == "confirm_brief":
+            logger.info("Consulting brief confirmed from webview")
+            self._confirm_brief()
+        elif msg_type == "consulting_save":
+            # Manual edit from the Consulting tab (debounced in the pane): persist
+            # it and echo it back (same path as an AI-drafted section).
+            self._on_consulting_updated(data.get("mode") or "brief", data.get("text") or "")
         elif msg_type == "connection":
             # The web service announced a (re)connect, so ask it for the current
             # Host/Speaker context (the reply path mirrors it in memory).
@@ -1760,6 +1942,12 @@ class MainWindow(QMainWindow):
 
             # Stop the last-pickup worker/timer
             self.last_pickup_controller.cleanup()
+
+            # Stop the summarize worker
+            self.summarize_controller.cleanup()
+
+            # Stop the consulting worker
+            self.consulting_controller.cleanup()
             
             # Stop websocket
             self.websocket_client.stop()

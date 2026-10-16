@@ -4,6 +4,8 @@ import htm from 'https://esm.sh/htm@3.1.1';
 import { WebSocketManager } from './websocket-manager.js';
 import { BulletPointsList } from './components/BulletPointsList.js';
 import { SpeakerProfile } from './components/SpeakerProfile.js';
+import { SummaryView } from './components/SummaryView.js';
+import { ConsultingView } from './components/ConsultingView.js';
 import { useWebSocketHandler } from './hooks/useWebSocketHandler.js';
 import { useTranscriptionHandlers } from './hooks/useTranscriptionHandlers.js';
 
@@ -15,6 +17,7 @@ const BulletPointsApp = () => {
     const [, setConnected] = useState(false);
     const [items, setItems] = useState([]);
     const [speaker, setSpeaker] = useState({});
+    const [locks, setLocks] = useState([]);
     const [countdown, setCountdown] = useState(null);
     const [now, setNow] = useState(() => Date.now());
     const [status, setStatus] = useState('');
@@ -22,6 +25,13 @@ const BulletPointsApp = () => {
     const [lastPickup, setLastPickup] = useState('');
     const [lastPickupStatus, setLastPickupStatus] = useState('');
     const [autoPickup, setAutoPickup] = useState(false);
+    const [summary, setSummary] = useState('');
+    const [summaryStatus, setSummaryStatus] = useState('');
+    const [brief, setBrief] = useState('');
+    const [gaps, setGaps] = useState('');
+    const [roadmap, setRoadmap] = useState('');
+    const [briefConfirmed, setBriefConfirmed] = useState(false);
+    const [consultingStatus, setConsultingStatus] = useState({});
     const wsManager = useRef(null);
 
     const {
@@ -30,6 +40,10 @@ const BulletPointsApp = () => {
         handleBulletPointsCountdown,
         handleLastPickup,
         handleLastPickupStatus,
+        handleSummary,
+        handleSummaryStatus,
+        handleConsulting,
+        handleConsultingStatus,
         handleSessionState
     } = useTranscriptionHandlers({
         /** Unused on this page — only the bullet list is shown. */
@@ -45,10 +59,18 @@ const BulletPointsApp = () => {
         setBulletPoints: setItems,
         setBulletPointsStatus: setStatus,
         setBulletCountdown: setCountdown,
+        setBulletLocks: setLocks,
         setSpeakerProfile: setSpeaker,
         setLastPickup,
         setLastPickupStatus,
         setLastPickupAuto: setAutoPickup,
+        setSummary,
+        setSummaryStatus,
+        setBrief,
+        setGaps,
+        setRoadmap,
+        setBriefConfirmed,
+        setConsultingStatus,
         wsManager
     });
 
@@ -59,6 +81,27 @@ const BulletPointsApp = () => {
             ws.send(JSON.stringify(payload));
         }
     }, []);
+
+    /** Persist a manually edited summary (debounced by the Summary tab). */
+    const handleSummaryEdit = useCallback((text) => {
+        setSummary(typeof text === 'string' ? text : '');
+        sendControl({ type: 'summary_save', text: typeof text === 'string' ? text : '' });
+    }, [sendControl]);
+
+    /** Persist a manually edited consulting section (debounced by the Consulting tab). */
+    const handleConsultingEdit = useCallback((mode, text) => {
+        const value = typeof text === 'string' ? text : '';
+        if (mode === 'brief') {
+            setBrief(value);
+            // Editing the brief drops the confirmation until it is re-confirmed.
+            setBriefConfirmed(false);
+        } else if (mode === 'gaps') {
+            setGaps(value);
+        } else if (mode === 'roadmap') {
+            setRoadmap(value);
+        }
+        sendControl({ type: 'consulting_save', mode, text: value });
+    }, [sendControl]);
 
     /** On (re)connect, ask Python for the persisted session state. */
     const handleConnection = useCallback(() => {
@@ -76,6 +119,10 @@ const BulletPointsApp = () => {
         handleBulletPointsCountdown,
         handleLastPickup,
         handleLastPickupStatus,
+        handleSummary,
+        handleSummaryStatus,
+        handleConsulting,
+        handleConsultingStatus,
         handleSessionState,
         handleConnection
     });
@@ -113,11 +160,45 @@ const BulletPointsApp = () => {
     }, [sendControl]);
 
     const bulletsView = html`
-        <${BulletPointsList} items=${items} status=${status} />
+        <${BulletPointsList}
+            items=${items}
+            status=${status}
+            locks=${locks}
+            onToggleLock=${(index) => sendControl({
+                type: 'set_bullet_lock',
+                index,
+                text: items[index],
+                locked: !locks[index]
+            })}
+        />
     `;
 
     const speakerView = html`
         <${SpeakerProfile} profile=${speaker} status=${status} />
+    `;
+
+    const summaryView = html`
+        <${SummaryView}
+            summary=${summary}
+            status=${summaryStatus}
+            onSummarize=${() => sendControl({ type: 'summarize' })}
+            onEdit=${handleSummaryEdit}
+        />
+    `;
+
+    const consultingView = html`
+        <${ConsultingView}
+            brief=${brief}
+            gaps=${gaps}
+            roadmap=${roadmap}
+            briefConfirmed=${briefConfirmed}
+            status=${consultingStatus}
+            onDraftBrief=${() => sendControl({ type: 'draft_brief' })}
+            onAnalyzeGaps=${() => sendControl({ type: 'analyze_gaps' })}
+            onGenerateRoadmap=${() => sendControl({ type: 'generate_roadmap' })}
+            onConfirmBrief=${() => sendControl({ type: 'confirm_brief' })}
+            onEdit=${handleConsultingEdit}
+        />
     `;
 
     const pickupView = html`
@@ -184,13 +265,25 @@ const BulletPointsApp = () => {
                             role="tab"
                             aria-selected=${tab === 'speaker'}
                             onClick=${() => setTab('speaker')}
-                        >Speaker</button>
+                        >Speaker Profile</button>
                         <button
                             class="bullet-tab ${tab === 'pickup' ? 'active' : ''}"
                             role="tab"
                             aria-selected=${tab === 'pickup'}
                             onClick=${() => setTab('pickup')}
                         >Last Picked Up</button>
+                        <button
+                            class="bullet-tab ${tab === 'summary' ? 'active' : ''}"
+                            role="tab"
+                            aria-selected=${tab === 'summary'}
+                            onClick=${() => setTab('summary')}
+                        >Summary</button>
+                        <button
+                            class="bullet-tab ${tab === 'consulting' ? 'active' : ''}"
+                            role="tab"
+                            aria-selected=${tab === 'consulting'}
+                            onClick=${() => setTab('consulting')}
+                        >Consulting</button>
                     </div>
                     ${tab === 'bullets' && html`
                         <div class="bullet-header-actions">
@@ -220,7 +313,15 @@ const BulletPointsApp = () => {
                     </div>
                 `}
             </div>
-            ${tab === 'bullets' ? bulletsView : tab === 'speaker' ? speakerView : pickupView}
+            ${tab === 'bullets'
+                ? bulletsView
+                : tab === 'speaker'
+                    ? speakerView
+                    : tab === 'pickup'
+                        ? pickupView
+                        : tab === 'summary'
+                            ? summaryView
+                            : consultingView}
         </div>
     `;
 };

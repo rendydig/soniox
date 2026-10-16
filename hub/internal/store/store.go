@@ -47,6 +47,7 @@ type State struct {
 	UpdatedAt      string           `json:"updated_at"`
 	Bullets        []any            `json:"bullets"`
 	BulletWindows  []map[string]any `json:"bullet_windows"`
+	BulletLocks    []any            `json:"bullet_locks"`
 	Conversation   []Turn           `json:"conversation"`
 	Transcriptions []Line           `json:"transcriptions"`
 	Translations   []Line           `json:"translations"`
@@ -79,6 +80,7 @@ type Store struct {
 
 	bullets       []any
 	bulletWindows []map[string]any
+	bulletLocks   []any
 	speaker       map[string]any
 	lastPickup    string
 	config     map[string]any
@@ -165,6 +167,9 @@ func (s *Store) Apply(topic string, payload map[string]any) (changed bool) {
 		if raw, ok := payload["windows"]; ok {
 			s.bulletWindows = toMapSlice(raw)
 		}
+		if raw, ok := payload["locks"]; ok {
+			s.bulletLocks = cloneSlice(toAnySlice(raw))
+		}
 		s.touchLocked()
 		return true
 
@@ -196,6 +201,14 @@ func (s *Store) SetBullets(bullets []any) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.setBulletsLocked(bullets)
+	s.touchLocked()
+}
+
+// SetBulletLocks replaces the per-item lock flags (parallel to the bullets).
+func (s *Store) SetBulletLocks(locks []any) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.bulletLocks = cloneSlice(locks)
 	s.touchLocked()
 }
 
@@ -269,6 +282,9 @@ func (s *Store) Restore(raw map[string]any) error {
 	if in.BulletWindows != nil {
 		s.bulletWindows = cloneMapSlice(in.BulletWindows)
 	}
+	if in.BulletLocks != nil {
+		s.bulletLocks = cloneSlice(in.BulletLocks)
+	}
 	if in.Speaker != nil {
 		s.speaker = cloneMap(in.Speaker)
 	}
@@ -288,6 +304,7 @@ func (s *Store) Snapshot() State {
 		UpdatedAt:      s.updatedAt,
 		Bullets:        cloneSlice(s.bullets),
 		BulletWindows:  cloneMapSlice(s.bulletWindows),
+		BulletLocks:    cloneSlice(s.bulletLocks),
 		Conversation:   s.conversation.Slice(),
 		Transcriptions: s.transcriptions.Slice(),
 		Translations:   s.translations.Slice(),
@@ -320,6 +337,13 @@ func (s *Store) BulletWindows() []map[string]any {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return cloneMapSlice(s.bulletWindows)
+}
+
+// BulletLocks returns the per-item lock flags (parallel to the bullet list).
+func (s *Store) BulletLocks() []any {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return cloneSlice(s.bulletLocks)
 }
 
 // Speaker returns the current speaker profile.
@@ -357,6 +381,7 @@ func (s *Store) resetLocked() {
 	s.screenshots.Clear()
 	s.bullets = []any{}
 	s.bulletWindows = []map[string]any{}
+	s.bulletLocks = []any{}
 	s.speaker = map[string]any{}
 	s.lastPickup = ""
 	s.status = ""

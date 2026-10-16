@@ -533,6 +533,59 @@
         opacity: 0;
     }
 
+    /* Per-item padlock: a Rebuild keeps locked points verbatim at the top. */
+    .bullet-lock {
+        flex: 0 0 auto;
+        align-self: flex-start;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        margin-top: 1px;
+        border: none;
+        border-radius: 4px;
+        background: transparent;
+        color: #9ca3af;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity 150ms ease, color 150ms ease, background 150ms ease;
+    }
+
+    .bullet-lock:hover {
+        opacity: 1;
+        color: #6b7280;
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .bullet-lock:focus-visible {
+        opacity: 1;
+        outline: 2px solid #f59e0b;
+        outline-offset: 1px;
+    }
+
+    .bullet-lock.locked {
+        opacity: 1;
+        color: #b45309;
+        background: rgba(245, 158, 11, 0.16);
+    }
+
+    .bullet-lock.locked:hover {
+        color: #92400e;
+        background: rgba(245, 158, 11, 0.24);
+    }
+
+    .bullet-lock-icon {
+        display: block;
+    }
+
+    /* Subtle tint so pinned points stand out in the list. */
+    .bullet-item.locked {
+        background: rgba(245, 158, 11, 0.08);
+        border-radius: 6px;
+    }
+
     @media (prefers-reduced-motion: reduce) {
         .bullet-text {
             transition: none;
@@ -720,6 +773,223 @@
         line-height: 1.6;
         /* Keep the blank-line-separated paragraphs (Indonesian + Speaker language). */
         white-space: pre-wrap;
+    }
+
+    /* Summary tab: preview by default, double-click to edit (auto-saves). */
+    .live-text.summary-view {
+        background: transparent;
+        color: #065f46;
+        font-style: normal;
+        white-space: normal;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Title + action control(s) on one row. */
+    .summary-actions {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .summary-actions-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .summary-title {
+        color: #374151;
+        font-weight: 600;
+    }
+
+    .summary-actions .bullet-action-btn:disabled {
+        opacity: 0.55;
+        cursor: default;
+    }
+
+    /* "Saving…" / "Saved" confirmation shown while editing. */
+    .summary-save-status {
+        color: #059669;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .summary-save-status.saving {
+        color: #6b7280;
+    }
+
+    .summary-text {
+        flex: 0 0 auto;
+        color: #1f2937;
+        font-size: 15px;
+        line-height: 1.6;
+        cursor: text;
+    }
+
+    /* Empty-state is a valid double-click target too (write a summary by hand). */
+    .summary-view .summary-editable {
+        cursor: text;
+    }
+
+    /* Raw-markdown editor (edit mode). */
+    .summary-editor {
+        flex: 1 1 auto;
+        min-height: 140px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #fff;
+        color: #1f2937;
+        font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        resize: none;
+        white-space: pre-wrap;
+    }
+
+    .summary-editor:focus {
+        outline: none;
+        border-color: #059669;
+        box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+    }
+
+    /* Green headings/links/rules so the markdown matches the pane accent
+       (the .markdown-body defaults are purple, for the Gemini pane). */
+    .summary-view .markdown-body h1,
+    .summary-view .markdown-body h2,
+    .summary-view .markdown-body h3,
+    .summary-view .markdown-body h4 {
+        color: #065f46;
+    }
+
+    .summary-view .markdown-body a {
+        color: #047857;
+    }
+
+    .summary-view .markdown-body hr {
+        border-top-color: #a7f3d0;
+    }
+
+    /* Consulting tab: three stacked sections (client brief / gap analysis / roadmap). */
+    .live-text.consulting-view {
+        background: transparent;
+        color: #065f46;
+        font-style: normal;
+        white-space: normal;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .consulting-section {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    /* Hairline between stacked sections (all but the first). */
+    .consulting-section + .consulting-section {
+        border-top: 1px solid #d1fae5;
+        padding-top: 12px;
+    }
+
+    .consulting-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .consulting-actions-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .consulting-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #374151;
+        font-weight: 600;
+    }
+
+    /* Small Draft/Confirmed (or reference) chip. */
+    .consulting-badge {
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #e5e7eb;
+        color: #6b7280;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .consulting-badge.confirmed {
+        background: rgba(5, 150, 105, 0.15);
+        color: #047857;
+    }
+
+    .consulting-actions .bullet-action-btn:disabled {
+        opacity: 0.55;
+        cursor: default;
+    }
+
+    .consulting-text {
+        color: #1f2937;
+        font-size: 14px;
+        line-height: 1.6;
+        cursor: text;
+    }
+
+    .consulting-view .consulting-editable {
+        cursor: text;
+    }
+
+    .consulting-editor {
+        min-height: 140px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #fff;
+        color: #1f2937;
+        font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        resize: vertical;
+        white-space: pre-wrap;
+    }
+
+    .consulting-editor:focus {
+        outline: none;
+        border-color: #059669;
+        box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+    }
+
+    /* Green headings/links/rules so the markdown matches the pane accent. */
+    .consulting-view .markdown-body h1,
+    .consulting-view .markdown-body h2,
+    .consulting-view .markdown-body h3,
+    .consulting-view .markdown-body h4 {
+        color: #065f46;
+    }
+
+    .consulting-view .markdown-body a {
+        color: #047857;
+    }
+
+    .consulting-view .markdown-body hr {
+        border-top-color: #a7f3d0;
     }
 
     /* Screenshot gallery (ALT+SHIFT+K captures, ALT+CTRL+SHIFT+K clears) */

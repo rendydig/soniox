@@ -20,9 +20,12 @@ logger = logging.getLogger(__name__)
 # ``bullet_windows`` is the per-update provenance of ``bullets``: one entry per
 # bullet-points update recording the time range it covered and the index range
 # of the bullets it appended (or the whole list for a rebuild).
+# ``bullet_locks`` is a parallel list[bool] index-aligned with ``bullets``: a
+# ``True`` pins that bullet so a Rebuild keeps it verbatim at the top.
 SESSION_FIELDS = (
     "bullets",
     "bullet_windows",
+    "bullet_locks",
     "conversation",
     "transcriptions",
     "translations",
@@ -31,10 +34,12 @@ SESSION_FIELDS = (
 )
 
 # Session fields stored as plain strings rather than lists.
-SESSION_TEXT_FIELDS = ("last_pickup",)
+SESSION_TEXT_FIELDS = ("last_pickup", "summary", "brief", "gaps", "roadmap")
 
 # Session fields stored as JSON objects (dicts) rather than lists.
-SESSION_OBJECT_FIELDS = ("speaker",)
+# ``brief_meta`` carries the Consulting tab's confirmation state
+# (``{"confirmed": bool, "confirmed_at": iso}``) alongside the ``brief`` text.
+SESSION_OBJECT_FIELDS = ("speaker", "brief_meta")
 
 # Every persisted field, in the order they are created / normalized.
 ALL_SESSION_FIELDS = SESSION_FIELDS + SESSION_TEXT_FIELDS + SESSION_OBJECT_FIELDS
@@ -126,6 +131,10 @@ class SessionStore:
     def set_bullet_windows(self, windows):
         """Replace the bullet-points windows (own the entries, not the caller's)."""
         self.update("bullet_windows", [dict(w) for w in (windows or []) if isinstance(w, dict)])
+
+    def set_bullet_locks(self, locks):
+        """Replace the per-item lock flags (parallel to ``bullets``)."""
+        self.update("bullet_locks", [bool(x) for x in (locks or [])])
 
     def set_speaker(self, profile):
         self.update("speaker", dict(profile or {}))

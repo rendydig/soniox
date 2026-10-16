@@ -131,6 +131,35 @@ try:
 
     print("\n[5] is_busy reflects the worker state")
     check("idle with the stubbed start", controller.is_busy() is False)
+
+    print("\n[6] locking a bullet echoes the list + locks")
+    sent.clear()
+    calls.clear()
+    controller.load_state(["first point", "second point", "third point"])
+    window._handle_webview_message({
+        "type": "set_bullet_lock", "index": 1, "text": "second point", "locked": True,
+    })
+    echo = [m for m in sent if m.get("type") == "bullet_points"]
+    check("a bullet_points echo was broadcast", len(echo) == 1, str(sent))
+    check("the echo carries the lock flags",
+          bool(echo) and echo[0].get("locks") == [False, True, False], str(echo))
+    check("the echoed items match the list",
+          bool(echo) and echo[0].get("items") == ["first point", "second point", "third point"],
+          str(echo))
+    check("the lock persisted to the session store",
+          window.session_store.snapshot().get("bullet_locks") == [False, True, False],
+          str(window.session_store.snapshot().get("bullet_locks")))
+
+    print("\n[7] a rebuild passes the locked items to the worker")
+    sent.clear()
+    calls.clear()
+    window.session_store.update("transcriptions", [
+        {"source": "speaker", "text": "hello", "timestamp": "2026-10-12T10:00:00.0"},
+    ])
+    window._handle_webview_message({"type": "regenerate_bullet_points"})
+    check("a rebuild worker was started", calls and calls[0]["rebuild"] is True, str(calls))
+    check("the rebuild receives the locked list as current_bullets",
+          calls and calls[0]["bullets"] == ["second point"], str(calls))
 finally:
     if window is not None:
         window.close()

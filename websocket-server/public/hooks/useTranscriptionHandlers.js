@@ -22,10 +22,18 @@ export const useTranscriptionHandlers = ({
     setBulletPoints,
     setBulletPointsStatus,
     setBulletCountdown,
+    setBulletLocks,
     setSpeakerProfile,
     setLastPickup,
     setLastPickupStatus,
     setLastPickupAuto,
+    setSummary,
+    setSummaryStatus,
+    setBrief,
+    setGaps,
+    setRoadmap,
+    setBriefConfirmed,
+    setConsultingStatus,
     setPurposeState,
     wsManager
 }) => {
@@ -34,6 +42,11 @@ export const useTranscriptionHandlers = ({
     const sentenceIdCounter = useRef(0);
     // Pending auto-clear for a transient bullet-points notice ("Nothing new yet").
     const noticeTimer = useRef(null);
+    // Separate timer for the summary tab's "Nothing to summarize yet" notice, so
+    // the two notices can't clobber each other's auto-clear.
+    const summaryNoticeTimer = useRef(null);
+    // And one for the Consulting tab's transient `no_input` notice.
+    const consultingNoticeTimer = useRef(null);
     
     useEffect(() => {
         correctionEnabledRef.current = correctionEnabled;
@@ -302,7 +315,7 @@ export const useTranscriptionHandlers = ({
     }, [setScreenshots]);
 
     /** Rolling bullet-point list + speaker (KYC) profile update from the Python app. */
-    const handleBulletPoints = useCallback((items, speaker) => {
+    const handleBulletPoints = useCallback((items, speaker, locks) => {
         if (typeof setBulletPoints === 'function') {
             setBulletPoints(Array.isArray(items) ? items : []);
         }
@@ -310,8 +323,12 @@ export const useTranscriptionHandlers = ({
         if (speaker && typeof speaker === 'object' && typeof setSpeakerProfile === 'function') {
             setSpeakerProfile(speaker);
         }
+        // Parallel lock flags (index-aligned with the list); absent on older payloads.
+        if (typeof setBulletLocks === 'function') {
+            setBulletLocks(Array.isArray(locks) ? locks.map((l) => l === true) : []);
+        }
         console.log('[DEBUG] Bullet points updated:', Array.isArray(items) ? items.length : 0);
-    }, [setBulletPoints, setSpeakerProfile]);
+    }, [setBulletPoints, setSpeakerProfile, setBulletLocks]);
 
     /** Auto-flush countdown: absolute deadline from the backend timer (0/auto off = hide). */
     const handleBulletPointsCountdown = useCallback((auto, nextFlushAt, intervalMs) => {
@@ -364,6 +381,71 @@ export const useTranscriptionHandlers = ({
         console.log('[DEBUG] Last pickup status:', status);
     }, [setLastPickupStatus]);
 
+    /** Whole-session summary text from the Python app (structured markdown). */
+    const handleSummary = useCallback((text) => {
+        if (typeof setSummary !== 'function') return;
+        setSummary(typeof text === 'string' ? text : '');
+        console.log('[DEBUG] Summary updated:', typeof text === 'string' ? text.length : 0);
+    }, [setSummary]);
+
+    /** Summary progress / failure status. */
+    const handleSummaryStatus = useCallback((status, message) => {
+        if (typeof setSummaryStatus !== 'function') return;
+        if (summaryNoticeTimer.current) {
+            clearTimeout(summaryNoticeTimer.current);
+            summaryNoticeTimer.current = null;
+        }
+        if (status === 'started') {
+            setSummaryStatus('Summarizing…');
+        } else if (status === 'failed' || status === 'error') {
+            setSummaryStatus(message || 'Summarization failed.');
+        } else if (status === 'no_input') {
+            // Summarize found nothing to work with: show it briefly, then clear.
+            setSummaryStatus(message || 'Nothing to summarize yet');
+            summaryNoticeTimer.current = setTimeout(() => setSummaryStatus(''), 2500);
+        } else {
+            setSummaryStatus('');
+        }
+        console.log('[DEBUG] Summary status:', status);
+    }, [setSummaryStatus]);
+
+    /** Consulting section text from the Python app (brief / gaps / roadmap). */
+    const handleConsulting = useCallback((mode, text, confirmed) => {
+        const value = typeof text === 'string' ? text : '';
+        if (mode === 'brief') {
+            if (typeof setBrief === 'function') setBrief(value);
+            // Only the brief carries a confirmation; a (re)draft clears it.
+            if (typeof setBriefConfirmed === 'function') setBriefConfirmed(confirmed === true);
+        } else if (mode === 'gaps') {
+            if (typeof setGaps === 'function') setGaps(value);
+        } else if (mode === 'roadmap') {
+            if (typeof setRoadmap === 'function') setRoadmap(value);
+        }
+        console.log('[DEBUG] Consulting updated:', mode, value.length);
+    }, [setBrief, setGaps, setRoadmap, setBriefConfirmed]);
+
+    /** Consulting progress / failure / notice status (keyed to one section). */
+    const handleConsultingStatus = useCallback((mode, status, message) => {
+        if (typeof setConsultingStatus !== 'function') return;
+        if (consultingNoticeTimer.current) {
+            clearTimeout(consultingNoticeTimer.current);
+            consultingNoticeTimer.current = null;
+        }
+        if (status === 'started') {
+            setConsultingStatus({ mode, status: 'started', message: '' });
+        } else if (status === 'failed' || status === 'error') {
+            setConsultingStatus({ mode, status: 'error', message: message || 'Call failed.' });
+        } else if (status === 'no_input') {
+            // Nothing to work with: show it briefly, then clear.
+            setConsultingStatus({ mode, status: 'no_input', message: message || 'Nothing to work with yet' });
+            consultingNoticeTimer.current = setTimeout(
+                () => setConsultingStatus({ mode: '', status: '', message: '' }), 2500);
+        } else {
+            setConsultingStatus({ mode: '', status: '', message: '' });
+        }
+        console.log('[DEBUG] Consulting status:', mode, status);
+    }, [setConsultingStatus]);
+
     /** Selected Purpose + "I am:" role pushed by the desktop app. */
     const handlePurposeState = useCallback((purpose, role) => {
         if (typeof setPurposeState !== 'function') return;
@@ -395,6 +477,11 @@ export const useTranscriptionHandlers = ({
         if (typeof setBulletPoints === 'function') {
             setBulletPoints(Array.isArray(data.bullets) ? data.bullets : []);
         }
+        if (typeof setBulletLocks === 'function') {
+            setBulletLocks(
+                Array.isArray(data.bullet_locks) ? data.bullet_locks.map((l) => l === true) : []
+            );
+        }
         if (typeof setSpeakerProfile === 'function') {
             setSpeakerProfile(
                 typeof data.speaker === 'object' && data.speaker ? data.speaker : {}
@@ -403,11 +490,30 @@ export const useTranscriptionHandlers = ({
         if (typeof setLastPickup === 'function') {
             setLastPickup(typeof data.last_pickup === 'string' ? data.last_pickup : '');
         }
+        if (typeof setSummary === 'function') {
+            setSummary(typeof data.summary === 'string' ? data.summary : '');
+        }
+        if (typeof setBrief === 'function') {
+            setBrief(typeof data.brief === 'string' ? data.brief : '');
+        }
+        if (typeof setGaps === 'function') {
+            setGaps(typeof data.gaps === 'string' ? data.gaps : '');
+        }
+        if (typeof setRoadmap === 'function') {
+            setRoadmap(typeof data.roadmap === 'string' ? data.roadmap : '');
+        }
+        if (typeof setBriefConfirmed === 'function') {
+            const meta = data.brief_meta;
+            setBriefConfirmed(!!(meta && typeof meta === 'object' && meta.confirmed === true));
+        }
+        if (typeof setConsultingStatus === 'function') {
+            setConsultingStatus({ mode: '', status: '', message: '' });
+        }
         if (typeof setLastPickupAuto === 'function' && typeof data.last_pickup_auto === 'boolean') {
             setLastPickupAuto(data.last_pickup_auto);
         }
         console.log('[DEBUG] Session state applied');
-    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints, setSpeakerProfile, setLastPickup, setLastPickupAuto]);
+    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints, setBulletLocks, setSpeakerProfile, setLastPickup, setSummary, setBrief, setGaps, setRoadmap, setBriefConfirmed, setConsultingStatus, setLastPickupAuto]);
 
     return {
         handleFinalTranscription,
@@ -425,6 +531,10 @@ export const useTranscriptionHandlers = ({
         handleBulletPointsCountdown,
         handleLastPickup,
         handleLastPickupStatus,
+        handleSummary,
+        handleSummaryStatus,
+        handleConsulting,
+        handleConsultingStatus,
         handlePurposeState,
         handleSessionState
     };

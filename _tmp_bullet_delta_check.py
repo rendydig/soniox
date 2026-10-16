@@ -4,10 +4,13 @@ Exercises ``BulletPointsController`` directly with the worker start stubbed out,
 so nothing hits the network:
 
   (a) ``_merge_new_items`` drops exact duplicates and near-duplicates
-  (b) ``_build_user_message`` differs between append (incremental) and rebuild
+  (b) ``_build_user_message`` differs between append (incremental) and rebuild, and
+      names the locked block when a rebuild carries locked points
   (c) an append result grows the list and fills from_index/to_index correctly
   (d) a rebuild result resets ``bullet_windows``
   (e) a payload with no ``mode`` defaults to "replace"
+  (f) locks: toggle by index/text, pin locked items on top of a rebuild, and keep
+      ``_locked`` index-aligned through appends/load_state/reset
 
     venv/bin/python _tmp_bullet_delta_check.py
 
@@ -98,6 +101,15 @@ def main() -> int:
           "[speaker] hello" in append_msg and "t1" not in append_msg, append_msg)
     check("2-tuple lines still render",
           "[host] hai" in BulletPointsWorker([], {}, [("host", "hai")])._build_user_message())
+
+    locked_msg = BulletPointsWorker(
+        ["keep me", "keep me too"], {}, [("speaker", "hello", "t1")], rebuild=True
+    )._build_user_message()
+    check("rebuild with locks names the locked block",
+          "Locked bullet points" in locked_msg and "keep me" in locked_msg, locked_msg)
+    check("rebuild with locks asks only for the uncovered points",
+          "NOT already covered" in locked_msg and "COMPLETE bullet list" not in locked_msg,
+          locked_msg)
 
     # --- (c) append grows the list + window indices ----------------------
     print("\n[append]")
@@ -192,6 +204,57 @@ def main() -> int:
     controller.load_state([str(i) for i in range(80)])
     check("load_state does not cap the list", len(controller._bullets) == 80,
           f"got {len(controller._bullets)}")
+
+    # --- (f) locks --------------------------------------------------------
+    print("\n[locks]")
+    controller = new_controller()
+    controller.load_state(["alpha", "beta", "gamma"])
+    check("load_state defaults missing locks to all False",
+          controller._locked == [False, False, False], f"got {controller._locked}")
+    check("set_lock by index toggles",
+          controller.set_lock(index=1) is True and controller._locked == [False, True, False],
+          f"got {controller._locked}")
+    check("locked_items reflects the flag", controller.locked_items() == ["beta"],
+          f"got {controller.locked_items()}")
+    check("set_lock by text resolves the item",
+          controller.set_lock(text="gamma", locked=True) is True
+          and controller._locked == [False, True, True],
+          f"got {controller._locked}")
+    check("set_lock with the same value is a no-op",
+          controller.set_lock(index=1, locked=True) is False)
+    check("set_lock on a missing item returns False",
+          controller.set_lock(text="nope") is False and controller.set_lock(index=99) is False)
+    controller.load_state(["x", "y", "z"], locks=[True])
+    check("load_state pads a short locks list with False",
+          controller._locked == [True, False, False],
+          f"got {controller._locked}")
+
+    # Rebuild keeps the locked items verbatim on top, in order.
+    controller.load_state(["beta", "gamma", "delta"], locks=[True, True, False])
+    controller.hard_regenerate([("speaker", "hi", "t1")])
+    check("rebuild passes the locked items to the worker",
+          controller._fake_calls[-1]["bullets"] == ["beta", "gamma"],
+          f"got {controller._fake_calls[-1]}")
+    controller._on_result({"items": ["ai one", "ai two"], "speaker": {}, "mode": "replace"})
+    check("rebuild puts locked items first then the AI's points",
+          controller._bullets == ["beta", "gamma", "ai one", "ai two"],
+          f"got {controller._bullets}")
+    check("rebuild sets the lock flags [True,True,False,False]",
+          controller._locked == [True, True, False, False], f"got {controller._locked}")
+
+    controller.add_line("speaker", "new line")
+    controller._maybe_flush(force=True)
+    controller._on_result({"items": ["ai three"], "speaker": {}, "mode": "append"})
+    check("an append pads the lock flags with False",
+          controller._bullets == ["beta", "gamma", "ai one", "ai two", "ai three"]
+          and controller._locked == [True, True, False, False, False],
+          f"got bullets={controller._bullets} locks={controller._locked}")
+
+    controller.load_state(["keep"], locks=[True])
+    controller.reset()
+    check("reset clears the locks",
+          controller._locked == [] and controller.locked_items() == [],
+          f"got {controller._locked}")
 
     print(f"\n{len(PASSED)} passed, {len(FAILED)} failed")
     for label in FAILED:
