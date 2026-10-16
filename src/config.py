@@ -215,6 +215,17 @@ MAX_TRANSCRIPTION_LINES = 500
 MAX_GEMINI_LINES = 300
 CLEANUP_CHECK_INTERVAL = 50
 
+# Pane translucency. The four always-on-top panes (Gemini / Live / Bullet Points /
+# Context) are separate frameless top-level windows hosting a QWebEngineView;
+# compositing the whole window at this opacity lets the app behind them stay
+# visible. Whole-window opacity is used because it is the only translucency that
+# composites reliably with QtWebEngine — per-pixel WA_TranslucentBackground renders
+# black on macOS. 1.0 = fully opaque. Overridable in .env; changeable at runtime
+# from Tool ▾ > Pane Opacity or the Settings slider (persisted in ui_state.json).
+#   PANE_OPACITY_PRESETS — the radio choices in the Tool ▾ submenu.
+PANE_OPACITY = _env_float("PANE_OPACITY", 0.7)
+PANE_OPACITY_PRESETS = (1.0, 0.9, 0.8, 0.7, 0.6, 0.5)
+
 # Bullet points (rolling conversation summary). Tuned for token efficiency:
 # the AI receives the current list + only the new lines, batched on an interval
 # (BulletPointsController buffers finalized lines for free; each AI call then

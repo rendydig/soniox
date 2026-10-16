@@ -1,6 +1,9 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-                             QComboBox, QCheckBox, QPushButton, QKeySequenceEdit)
-from PySide6.QtCore import Signal
+                             QComboBox, QCheckBox, QPushButton, QKeySequenceEdit,
+                             QSlider)
+from PySide6.QtCore import Qt, Signal
+from src.config import PANE_OPACITY
+from src.pane_opacity import MIN_PANE_OPACITY
 from src.purposes import BUILTIN_PURPOSES, DEFAULT_PURPOSE
 from .device_settings import DeviceSettingsWidget
 from .language_selection import LanguageSelectionWidget
@@ -141,6 +144,25 @@ class SettingsViewWidget(QWidget):
         )
         layout.addWidget(self.screen_protection_checkbox)
 
+        opacity_row = QHBoxLayout()
+        opacity_row.addWidget(QLabel("Pane Opacity:"))
+        self.pane_opacity_slider = QSlider(Qt.Orientation.Horizontal)
+        self.pane_opacity_slider.setRange(int(MIN_PANE_OPACITY * 100), 100)
+        self.pane_opacity_slider.setValue(int(round(PANE_OPACITY * 100)))
+        self.pane_opacity_slider.setMinimumWidth(150)
+        self.pane_opacity_slider.setToolTip(
+            "How see-through the four panes are. Lower = the app behind them shows "
+            "through more; 100% = fully opaque."
+        )
+        self.pane_opacity_value_label = QLabel(f"{self.pane_opacity_slider.value()}%")
+        self.pane_opacity_slider.valueChanged.connect(
+            lambda percent: self.pane_opacity_value_label.setText(f"{percent}%")
+        )
+        opacity_row.addWidget(self.pane_opacity_slider)
+        opacity_row.addWidget(self.pane_opacity_value_label)
+        opacity_row.addStretch()
+        layout.addLayout(opacity_row)
+
         hotkeys_label = QLabel("Global Hotkeys")
         hotkeys_font = hotkeys_label.font()
         if hotkeys_font.pointSize() > 0:
@@ -220,6 +242,9 @@ class SettingsViewWidget(QWidget):
 
     def get_screen_protection_checkbox(self):
         return self.screen_protection_checkbox
+
+    def get_pane_opacity_slider(self):
+        return self.pane_opacity_slider
 
     def get_hotkey_editors(self):
         """Return the ``{action_name: QKeySequenceEdit}`` mapping."""

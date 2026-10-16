@@ -4,6 +4,7 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from src.macos_window import set_always_on_top
 from src.screen_protection import set_capture_protection
+from src.pane_opacity import clamp_opacity, set_pane_opacity
 from .pane_edge_handle import PaneEdgeHandle
 from .pane_drag_handle import PaneDragHandle
 
@@ -47,6 +48,7 @@ class BulletPointsWindow(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_MacAlwaysShowToolWindow, True)
         self._always_on_top = True
         self._screen_protection_enabled = True
+        self._opacity = 1.0
         self._edge = edge if edge in ("left", "right") else "right"
         self._width = self._clamp_width(width if width else BULLET_POINTS_WINDOW_WIDTH)
 
@@ -329,13 +331,26 @@ class BulletPointsWindow(QWidget):
         self._screen_protection_enabled = bool(enabled)
         set_capture_protection(self, enabled)
 
+    def apply_opacity(self, value):
+        """Composite the whole pane at ``value`` opacity (Tool ▾ > Pane Opacity).
+
+        The entire window — including the web content — fades together, which is
+        what lets the app behind the pane stay readable.
+        """
+        self._opacity = clamp_opacity(value)
+        set_pane_opacity(self, self._opacity)
+
+    def get_opacity(self):
+        return self._opacity
+
     def get_webview(self):
         return self.webview
 
     def showEvent(self, event):
         super().showEvent(event)
-        # Changing window flags / re-showing can reset both the capture
-        # exclusion and the native (macOS) window level, so re-apply on show.
+        # Changing window flags / re-showing can reset the capture exclusion, the
+        # native (macOS) window level and the window opacity, so re-apply on show.
         set_always_on_top(self, self._always_on_top)
         if self._screen_protection_enabled:
             set_capture_protection(self, True)
+        set_pane_opacity(self, self._opacity)

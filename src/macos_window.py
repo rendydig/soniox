@@ -180,6 +180,20 @@ def set_always_on_top(widget, enabled: bool) -> bool:
     return True
 
 
+def get_opacity(widget):
+    """Return the window's native ``alphaValue`` (or None off macOS)."""
+    if not _usable():
+        return None
+    win = _ns_window(widget)
+    if win is None:
+        return None
+    try:
+        msg = _send(ctypes.c_double, ctypes.c_void_p, ctypes.c_void_p)
+        return float(msg(win, _sel(b"alphaValue")))
+    except Exception:
+        return None
+
+
 def set_capture_exclusion(widget, enabled: bool) -> bool:
     """Hide ``widget`` from (or restore it to) capture via ``sharingType``.
 

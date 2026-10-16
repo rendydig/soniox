@@ -866,6 +866,28 @@ translate are untouched.
   covered via `apply_screen_protection` and its own `showEvent`, and the Settings dialog
   gets one from `_set_screen_protection` / `_open_settings`.
 
+## Pane opacity (translucent panes)
+- The four always-on-top panes (`GeminiWindow` / `LiveWindow` / `BulletPointsWindow` /
+  `ContextWindow`) composite at a configurable **whole-window opacity**, default **70%**
+  (`PANE_OPACITY`, `.env`-overridable). `src/pane_opacity.py` owns the clamp
+  (`MIN_PANE_OPACITY` 0.3 .. `MAX_PANE_OPACITY` 1.0) and the `apply`; each pane keeps an
+  `_opacity`, exposes `apply_opacity()` / `get_opacity()`, and re-applies it in `showEvent`
+  (a flag change / re-show recreates the `NSWindow`).
+- **Why whole-window opacity (`QWidget.setWindowOpacity`)**: Qt maps it onto
+  `NSWindow.alphaValue` on macOS and a layered window on Windows, so the whole window —
+  web content included — composites at the requested alpha. Per-pixel translucency
+  (`WA_TranslucentBackground` + a transparent `QWebEnginePage`) is **rejected**: QtWebEngine
+  renders transparent areas as **black** on macOS. Qt stores the opacity in an 8-bit field,
+  so `windowOpacity()` reads back quantized (0.7 → 178/255 ≈ 0.698); `macos_window.py`
+  gains `get_opacity()` (a `CGFloat` `objc_msgSend` readback) for the native check.
+- Controls are mirrored: the **Tool ▾ ▸ Pane Opacity** submenu (`PANE_OPACITY_PRESETS`
+  = 100/90/80/70/60/50%, an exclusive `QActionGroup`) and the Settings dialog's **Pane
+  Opacity** slider (30–100, with a `%` label). `_set_pane_opacity()` applies to all four
+  panes and `_mirror_pane_opacity()` syncs both controls (relaxing the group's exclusivity
+  while a slider value matching no preset is applied); the slider applies live on
+  `valueChanged` and persists on `sliderReleased`. Persisted as `settings.pane_opacity` in
+  `ui_state.json`; the control bar is out of scope and stays fully opaque.
+
 ## Verification
 ```bash
 venv/Scripts/python.exe -m py_compile src/*.py src/controllers/*.py src/ui_components/*.py src/hub/*.py
@@ -1003,6 +1025,18 @@ few seconds, because Qt WebEngine cannot render on the offscreen platform here.
 - `_tmp_mute_app_check.py` — the bar-side wiring: builds a real `MainWindow` and asserts the button
   is in the control row, starts unchecked, toggles the controller state + icon + tooltip + status
   label, and is absent from `ui_state.json`. 16 checks.
+
+### Pane opacity (throwaway)
+- `_tmp_pane_opacity_check.py` — whole-window pane opacity, app-side: builds a real
+  `MainWindow` (no session), asserts `clamp_opacity` (0.1→0.3, 1.5→1.0, `"0.7"`→0.7,
+  `None`→the 0.7 default, 0.55→0.55), that all four panes start at 70% (and, on macOS,
+  that the native `NSWindow.alphaValue` really got it via `macos_window.get_opacity`), that
+  a flag change + re-show keeps the opacity, the Tool ▾ "Pane Opacity" submenu (6 presets,
+  70% checked) and the Settings slider (70, label `70%`), `_set_pane_opacity` driving every
+  pane + both controls (0.5 / 0.73 / clamped 0.1), the slider applying live and persisting on
+  `sliderReleased`, and `settings.pane_opacity` round-tripping into a fresh `MainWindow`.
+  Qt quantizes `windowOpacity()` to 8 bits, so the comparisons use a 1/255 tolerance.
+  No server needed. 40 checks.
 
 ### Long-run stress test (throwaway)
 `_tmp_long_transcription_test.py` drives the real app with **real audio** through a

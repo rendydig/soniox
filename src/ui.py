@@ -14,11 +14,14 @@ from src.config import (
     BULLET_FLUSH_INTERVAL_MS,
     LAST_PICKUP_DEBOUNCE_MS,
     LAST_PICKUP_ENDPOINT_DEBOUNCE_MS,
+    PANE_OPACITY,
+    PANE_OPACITY_PRESETS,
 )
 from src.purpose_store import PurposeStore
 from src.text_formatter import append_timestamped_text, format_gemini_result
 from src.macos_window import set_always_on_top
 from src.screen_protection import set_capture_protection
+from src.pane_opacity import clamp_opacity
 from src.screen_permission import has_permission, request_permission
 from src.screenshot import capture_screen_data_url
 from src.global_hotkeys import GlobalHotkeys, default_bindings, parse_bindings, serialize_bindings
@@ -237,6 +240,10 @@ class MainWindow(QMainWindow):
         context_window_state = _as_dict(state.get("context_window"))
         settings_state = _as_dict(state.get("settings"))
         self._always_on_top = bool(main_state.get("always_on_top", True))
+        # Whole-window opacity for the four panes (stored under settings, next to
+        # screen_protection — the other control mirrored between the Tool menu and
+        # the Settings dialog).
+        self._pane_opacity = clamp_opacity(settings_state.get("pane_opacity"), PANE_OPACITY)
         # Bar geometry: fixed default width, bottom-center unless the user moved it.
         self._bar_width = self._clamp_bar_width(main_state.get("width"))
         self._bar_x = main_state.get("x")
@@ -258,6 +265,9 @@ class MainWindow(QMainWindow):
         # panes in the persisted state (they are shown later in __init__).
         for _pane in (self.gemini_window, self.live_window, self.bullet_points_window,
                       self.context_window):
+            # Opacity first, so a re-show triggered by the top-most flag change
+            # cannot drop it (showEvent re-applies either way).
+            _pane.apply_opacity(self._pane_opacity)
             _pane.apply_always_on_top(self._always_on_top)
             # A webview renderer dying is otherwise silent (blank pane); log it
             # so a long-run crash leaves a trace.
@@ -500,6 +510,7 @@ class MainWindow(QMainWindow):
                 "context_window_visible": self.context_window_action.isChecked(),
                 "last_pickup_auto": self._last_pickup_auto_enabled,
                 "screen_protection": self.screen_protection_checkbox.isChecked(),
+                "pane_opacity": self._pane_opacity,
                 "hotkeys": self._hotkeys_from_editors(),
             },
         })
@@ -547,6 +558,13 @@ class MainWindow(QMainWindow):
         if isinstance(screen_protection, bool):
             self._set_screen_protection(screen_protection)
 
+        # Pane opacity is applied after _init_menu / _init_ui (via
+        # _setup_widget_references), so both the Tool ▾ presets and the Settings
+        # slider exist by the time this runs.
+        pane_opacity = state.get("pane_opacity")
+        if pane_opacity is not None:
+            self._set_pane_opacity(pane_opacity)
+
         # Enabling shows the pane (via _on_bullet_points_toggled); disabled stays hidden.
         bullet_points = state.get("bullet_points")
         if isinstance(bullet_points, bool):
@@ -590,6 +608,12 @@ class MainWindow(QMainWindow):
         self.bullet_points_window_action.toggled.connect(self._save_state)
         self.context_window_action.toggled.connect(self._save_state)
         self.screen_protection_checkbox.toggled.connect(self._save_state)
+        # Opacity: apply live on drag, persist once the drag settles (mirrors how
+        # pane geometry persists on state_changed at drag end, not every move).
+        self.pane_opacity_slider.valueChanged.connect(
+            lambda percent: self._set_pane_opacity(percent / 100.0)
+        )
+        self.pane_opacity_slider.sliderReleased.connect(self._save_state)
         self.settings_view.hotkeys_changed.connect(self._on_hotkeys_changed)
 
     def _hotkeys_from_editors(self):
@@ -699,6 +723,24 @@ class MainWindow(QMainWindow):
         self.always_on_top_action.toggled.connect(self._set_always_on_top)
         self.tool_menu.addAction(self.always_on_top_action)
 
+        self.pane_opacity_menu = self.tool_menu.addMenu("Pane Opacity")
+        self.pane_opacity_menu.setToolTip(
+            "Composite the panes at this opacity so the app behind them stays visible."
+        )
+        self.pane_opacity_group = QActionGroup(self)
+        self.pane_opacity_actions = {}
+        for _preset in PANE_OPACITY_PRESETS:
+            _percent = int(round(_preset * 100))
+            _action = QAction(f"{_percent}%", self)
+            _action.setCheckable(True)
+            _action.setChecked(abs(_preset - self._pane_opacity) < 0.01)
+            _action.triggered.connect(
+                lambda _checked=False, v=_preset: self._set_pane_opacity(v, persist=True)
+            )
+            self.pane_opacity_group.addAction(_action)
+            self.pane_opacity_menu.addAction(_action)
+            self.pane_opacity_actions[_percent] = _action
+
         # Applied before the window is shown, so no hide/re-show churn.
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, self._always_on_top)
 
@@ -725,6 +767,7 @@ class MainWindow(QMainWindow):
         self.smart_decision_checkbox = self.settings_view.get_smart_decision_checkbox()
         self.bullet_points_checkbox = self.settings_view.get_bullet_points_checkbox()
         self.screen_protection_checkbox = self.settings_view.get_screen_protection_checkbox()
+        self.pane_opacity_slider = self.settings_view.get_pane_opacity_slider()
         
         self.gemini_lang_combo = self.settings_view.get_gemini_lang_combo()
         self.hotkey_editors = self.settings_view.get_hotkey_editors()
@@ -1879,6 +1922,30 @@ class MainWindow(QMainWindow):
         self.bullet_points_window.apply_always_on_top(enabled)
         self.context_window.apply_always_on_top(enabled)
         self._save_state()
+
+    def _set_pane_opacity(self, value, persist=False):
+        """Composite every pane at ``value`` and mirror both controls onto it."""
+        value = clamp_opacity(value)
+        self._pane_opacity = value
+        for pane in (self.gemini_window, self.live_window, self.bullet_points_window,
+                     self.context_window):
+            pane.apply_opacity(value)
+        self._mirror_pane_opacity(value)
+        if persist:
+            self._save_state()
+
+    def _mirror_pane_opacity(self, value):
+        """Sync the Tool ▾ radio preset and the Settings slider to ``value``."""
+        percent = int(round(value * 100))
+        # An exclusive QActionGroup refuses to leave nothing checked, so relax it
+        # while a slider value that matches no preset is applied.
+        self.pane_opacity_group.setExclusive(False)
+        for preset_percent, action in self.pane_opacity_actions.items():
+            action.setChecked(preset_percent == percent)
+        self.pane_opacity_group.setExclusive(True)
+        blocked = self.pane_opacity_slider.blockSignals(True)
+        self.pane_opacity_slider.setValue(percent)
+        self.pane_opacity_slider.blockSignals(blocked)
 
     def _set_screen_protection(self, enabled):
         """Exclude this window from screen capture and mirror the state on both controls."""
