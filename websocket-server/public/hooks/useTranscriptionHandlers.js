@@ -18,6 +18,7 @@ export const useTranscriptionHandlers = ({
     corrections,
     setGeminiResults,
     setGeminiStatus,
+    setReplyInProgress,
     setScreenshots,
     setBulletPoints,
     setBulletPointsStatus,
@@ -265,19 +266,25 @@ export const useTranscriptionHandlers = ({
     const handleGeminiResult = useCallback((text, mode, timestamp) => {
         if (!text || text.trim().length === 0) return;
 
-        setGeminiResults([{
-            text: text.trim(),
-            mode: mode || 'manual',
-            timestamp: timestamp || new Date().toISOString(),
-            id: Date.now() + Math.random()
-        }]);
-        setGeminiStatus('');
+        if (typeof setGeminiResults === 'function') {
+            setGeminiResults([{
+                text: text.trim(),
+                mode: mode || 'manual',
+                timestamp: timestamp || new Date().toISOString(),
+                id: Date.now() + Math.random()
+            }]);
+        }
+        if (typeof setGeminiStatus === 'function') setGeminiStatus('');
+        if (typeof setReplyInProgress === 'function') setReplyInProgress(false);
         console.log('[DEBUG] Gemini result replaced:', mode, text.slice(0, 80));
-    }, [setGeminiResults, setGeminiStatus]);
+    }, [setGeminiResults, setGeminiStatus, setReplyInProgress]);
 
     /** Gemini partial (streaming) result — update the live item, or start one. */
     const handleGeminiStream = useCallback((text, mode) => {
         if (typeof setGeminiResults !== 'function') return;
+        // A chunk means a request is in flight: covers a page reloaded mid-answer,
+        // which would otherwise never see the "started" frame.
+        if (typeof setReplyInProgress === 'function') setReplyInProgress(true);
         const resolvedMode = mode || 'auto_reply';
         setGeminiResults(prev => {
             const last = prev[prev.length - 1];
@@ -293,17 +300,23 @@ export const useTranscriptionHandlers = ({
             }];
         });
         console.log('[DEBUG] Gemini stream update:', resolvedMode, (text || '').length);
-    }, [setGeminiResults]);
+    }, [setGeminiResults, setReplyInProgress]);
 
     /** Gemini progress / failure status */
     const handleGeminiStatus = useCallback((status, mode, message) => {
         if (status === 'started') {
-            setGeminiStatus('Translating...');
+            if (typeof setGeminiStatus === 'function') setGeminiStatus('Translating...');
+            if (typeof setReplyInProgress === 'function') setReplyInProgress(true);
         } else if (status === 'failed') {
-            setGeminiStatus(message || 'Translation failed.');
+            if (typeof setGeminiStatus === 'function') setGeminiStatus(message || 'Translation failed.');
+            if (typeof setReplyInProgress === 'function') setReplyInProgress(false);
+        } else if (status === 'complete' || status === 'skipped') {
+            // The request is over (the reply itself arrives on gemini_result / is
+            // suppressed); only the title spinner has to stop.
+            if (typeof setReplyInProgress === 'function') setReplyInProgress(false);
         }
         console.log('[DEBUG] Gemini status:', status, mode);
-    }, [setGeminiStatus]);
+    }, [setGeminiStatus, setReplyInProgress]);
 
     /** Screenshot captured by the desktop app (ALT+SHIFT+K) — append to the gallery. */
     const handleScreenshot = useCallback((image, timestamp) => {

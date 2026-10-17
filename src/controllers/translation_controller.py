@@ -22,6 +22,11 @@ class TranslationController(QObject):
     reply_chunk = Signal(str, bool)
     # Emitted when JEV suppresses a reply (reason text) — nothing is persisted.
     reply_skipped = Signal(str)
+    # (in_progress, is_image): True when a reply worker starts, False when it
+    # finishes — result, skip or error. The pane renders its title spinner from
+    # this, so it must be emitted on *every* exit: the auto-reply error path
+    # broadcasts no gemini_status, which would otherwise leave it spinning.
+    reply_activity = Signal(bool, bool)
     # A JEV prediction of the active session objective (index, confidence, source),
     # forwarded from the reply worker so the tracker gets it for free.
     objective_observed = Signal(int, float, str)
@@ -317,6 +322,7 @@ class TranslationController(QObject):
             self._auto_reply_worker.objectives_satisfied.connect(
                 self.objectives_satisfied.emit, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.start()
+            self.reply_activity.emit(True, is_image)
             return True
         except Exception as e:
             logger.error("Exception starting auto-reply: %s", e)
@@ -412,6 +418,7 @@ class TranslationController(QObject):
             self.image_reply_result.emit(result)
         else:
             self.auto_reply_result.emit(result)
+        self.reply_activity.emit(False, is_image)
         self.status_changed.emit("Auto-reply complete.")
         self._run_pending_auto_reply()
     
@@ -423,22 +430,26 @@ class TranslationController(QObject):
     def _on_auto_reply_skipped(self, reason: str):
         """Handle JEV suppressing a reply: clean up the worker, persist nothing."""
         logger.debug("Auto-reply skipped: %s", reason)
+        is_image = self._auto_reply_is_image
         self._auto_reply_is_image = False
         if self._auto_reply_worker is not None:
             self._old_workers.append(self._auto_reply_worker)
             self._auto_reply_worker = None
             self._cleanup_old_workers()
+        self.reply_activity.emit(False, is_image)
         self.reply_skipped.emit(reason or "No reply needed")
         self._run_pending_auto_reply()
 
     def _on_auto_reply_error(self, msg: str):
         """Handle errors from auto-reply worker."""
         logger.error("Auto-reply error: %s", msg)
+        is_image = self._auto_reply_is_image
         self._auto_reply_is_image = False
         if self._auto_reply_worker is not None:
             self._old_workers.append(self._auto_reply_worker)
             self._auto_reply_worker = None
             self._cleanup_old_workers()
+        self.reply_activity.emit(False, is_image)
         self.error_occurred.emit(msg)
         self.status_changed.emit("Auto-reply error.")
         self._run_pending_auto_reply()

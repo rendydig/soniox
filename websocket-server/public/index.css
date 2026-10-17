@@ -439,6 +439,39 @@
         justify-content: space-between;
     }
 
+    /* Title + progress ring. The span keeps the ring next to the label while
+       ``space-between`` still pins the toggle/buttons to the right edge. */
+    .gemini-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .ai-spinner {
+        flex: 0 0 auto;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        border: 2px solid rgba(102, 126, 234, 0.25);
+        border-top-color: #667eea;
+        animation: aiSpin 0.7s linear infinite;
+    }
+
+    @keyframes aiSpin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .ai-spinner {
+            animation: textPulse 1.5s ease-in-out infinite;
+            border-top-color: rgba(102, 126, 234, 0.25);
+            border-left-color: #667eea;
+        }
+    }
+
     .btn-gemini {
         flex: 0 0 auto;
         padding: 4px 12px;

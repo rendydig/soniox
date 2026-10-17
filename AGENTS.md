@@ -476,7 +476,7 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   (`TranslationSectionWidget`, hidden by default) above the single control row. The control
   row holds `DragHandle` · Start/Stop + New (`ControlButtonsWidget`) · Mode ▾ (`QToolButton` +
   `QMenu` with the Live Transcription/Translation actions) · Tool ▾ (`QToolButton` + `QMenu`
-  with Screen Protection / Gemini Window / Live Window / Bullet Points / Context / Always on Top) · Settings button ·
+  with Screen Protection / AI Suggestion / Live Window / Bullet Points / Context / Always on Top) · Settings button ·
   `SwitchButton` (shows/hides the input row) · stretch · `StatusBarWidget` · close. The main
   window has **no** output view; transcription output lives in the Live Window pane.
 - The bar is **trimmed** to fit its fixed width: the Start button reads "Start"/"Stop" plus the
@@ -536,7 +536,7 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   Gemini-only page is `public/gemini.html` + `public/aireply-app.js` (reuses
   `WebSocketManager`, `useWebSocketHandler`, `useTranscriptionHandlers`, `GeminiDisplayer`;
   the server maps `/gemini` → `gemini.html` in `server.js`).
-- Toggled from the `Tool ▾` button's `Gemini Window` item (`_set_gemini_window_visible`);
+- Toggled from the `Tool ▾` button's `AI Suggestion` item (`_set_gemini_window_visible`);
   created in `MainWindow.__init__` and shown at startup. Closed in `MainWindow.closeEvent`.
 - The pane's top-right button (`public/aireply-app.js`) sends `hide_gemini_window`; the
   handler unchecks `gemini_window_action`, which hides the pane and keeps the menu item
@@ -544,6 +544,16 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   `Qt.Tool` with no taskbar entry, this menu item is the restore path.
 - Hide/show only toggles visibility — the `QWebEngineView` is created once and never
   recreated or `reload()`ed, so the page and its WebSocket connection persist (no reload).
+- **In-flight ring on the card title**: while a reply request is in flight the header renders
+  a small spinning ring (`prefers-reduced-motion` swaps it for a pulse) after
+  "✨ AI suggestion". It is driven by the `reply_activity(in_progress, is_image)` signal from
+  `TranslationController` — emitted when a reply worker *starts* and on **every** exit
+  (result / skip / **error**, the last one mattering because the auto-reply error path
+  broadcasts no `gemini_status`) — which `MainWindow._on_reply_activity` turns into the
+  existing `gemini_status` frame (`started` / `complete`). `useTranscriptionHandlers` maps
+  `started` → spinner on, `complete`/`failed`/`skipped` → off, and `gemini_result`/`gemini_stream`
+  also settle it (a page reloaded mid-answer). The image-reply path no longer sends its own
+  `started` frame (`_send_images_to_gemini`), so all three reply paths report progress identically.
 - Because it is a distinct top-level window, it needs its **own** `set_capture_protection`
   call: `_set_screen_protection` forwards to `gemini_window.apply_screen_protection`, and
   `GeminiWindow.showEvent` re-applies after re-shows.
@@ -1397,6 +1407,25 @@ few seconds, because Qt WebEngine cannot render on the offscreen platform here.
   caught exactly the kind of bug `node --check` cannot: a conditional block in the middle of the
   render tree made Preact throw `insertBefore` and drop the timeline (the component now keeps every
   block in the DOM and hides the empty ones with an `empty` class). 24 checks.
+
+### AI suggestion pane (throwaway)
+- `_tmp_aireply_activity_check.py` — the reply ring's app-side wiring in a real `MainWindow` (the
+  reply worker is stubbed, no network, no thread): the Tool ▾ action now reads **AI Suggestion**
+  (with its tooltip intact); a started reply broadcasts
+  `gemini_status {status:"started", mode:"auto_reply"}`; the result, a **skip** and an
+  **error** each broadcast `{status:"complete"}` (the error path matters most — its
+  "AI auto-reply error: …" message makes `_on_translation_error` suppress the `failed` banner,
+  so "complete" is the only thing that stops the ring); the image path reports the same way with
+  `mode:"image"` **once** (`_send_images_to_gemini` no longer sends its own `started`); a
+  **queued rerun** does not emit a second "started" but the completion still lands after it; and
+  an empty gallery still sends `failed`. No server needed. 20 checks.
+- `_tmp_aireply_pane_check.py` — the pane really renders (needs a server: `PORT=8797 node
+  server.js`): loads `/gemini`, asserts the header renders "✨ AI suggestion" with the ⇤/⇥/−
+  controls, the Auto reply toggle and Reply now, that **no ring** is shown before a request, that a
+  pushed `gemini_status started` turns the ring on, a streaming chunk keeps it on, and the final
+  `gemini_result` turns it off and renders the reply, then that `started` → `complete` turns it off
+  again — with a clean console. Covers the htm template + the `started`/`complete` mapping, which
+  `node --check` cannot. 13 checks.
 
 ### Microphone mute (throwaway)
 - `_tmp_mute_check.py` — the soft-mute sender loop against a **fake `websockets` connection**

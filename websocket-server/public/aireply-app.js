@@ -15,6 +15,7 @@ const GeminiApp = () => {
     const [, setConnected] = useState(false);
     const [geminiResults, setGeminiResults] = useState([]);
     const [geminiStatus, setGeminiStatus] = useState('');
+    const [replyInProgress, setReplyInProgress] = useState(false);
     const [screenshots, setScreenshots] = useState([]);
     const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
     const [purposeState, setPurposeState] = useState(null);
@@ -45,6 +46,7 @@ const GeminiApp = () => {
         corrections: {},
         setGeminiResults,
         setGeminiStatus,
+        setReplyInProgress,
         setScreenshots,
         setPurposeState,
         wsManager
@@ -118,7 +120,17 @@ const GeminiApp = () => {
                 >−</button>
             </div>
             <h2>
-                ✨ AI suggestion
+                <span class="gemini-title">
+                    ✨ AI suggestion
+                    ${replyInProgress && html`
+                        <span
+                            class="ai-spinner"
+                            role="status"
+                            aria-label="AI is composing a reply"
+                            title="AI is composing a reply"
+                        ></span>
+                    `}
+                </span>
                 <div class="gemini-header-actions">
                     <label class="toggle-label">
                         <input

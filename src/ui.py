@@ -693,7 +693,7 @@ class MainWindow(QMainWindow):
         self.screen_protection_action.toggled.connect(self._set_screen_protection)
         self.tool_menu.addAction(self.screen_protection_action)
 
-        self.gemini_window_action = QAction("Gemini Window", self)
+        self.gemini_window_action = QAction("AI Suggestion", self)
         self.gemini_window_action.setCheckable(True)
         self.gemini_window_action.setChecked(True)
         self.gemini_window_action.setToolTip("Show or hide the AI suggestion pane.")
@@ -856,6 +856,7 @@ class MainWindow(QMainWindow):
         self.translation_controller.image_reply_result.connect(self._on_image_reply_result)
         self.translation_controller.reply_chunk.connect(self._on_reply_chunk)
         self.translation_controller.reply_skipped.connect(self._on_reply_skipped)
+        self.translation_controller.reply_activity.connect(self._on_reply_activity)
 
         # AI-learned purposes appear in the Purpose dropdown as they are registered
         # (emitted from the auto-reply worker thread -> queued to the UI thread).
@@ -1234,7 +1235,8 @@ class MainWindow(QMainWindow):
             self._send_gemini_status("failed", "image", text="No screenshots to send.")
             logger.info("No screenshots to send")
             return
-        self._send_gemini_status("started", "image")
+        # The "started" frame comes from the controller's reply_activity signal,
+        # so every reply path (auto, manual, image) reports progress the same way.
         self.translation_controller.trigger_image_reply(list(self._screenshots))
 
     def _on_translation_started(self):
@@ -1258,6 +1260,19 @@ class MainWindow(QMainWindow):
     def _on_reply_chunk(self, text: str, is_image: bool):
         """Stream a partial auto-reply/image-reply to the webview."""
         self._send_gemini_stream(text, "image" if is_image else "auto_reply")
+
+    def _on_reply_activity(self, in_progress: bool, is_image: bool):
+        """Tell the pane a reply request started/finished (its title spinner).
+
+        ``started``/``complete`` ride the existing gemini_status frame, so no new
+        protocol is needed. The image-reply path would otherwise emit no
+        progress at all, and the auto-reply error path is the only exit that
+        broadcasts nothing else — hence the explicit "complete".
+        """
+        self._send_gemini_status(
+            "started" if in_progress else "complete",
+            "image" if is_image else "auto_reply",
+        )
 
     def _on_auto_reply_result(self, result: str):
         """Handle auto-reply result."""
