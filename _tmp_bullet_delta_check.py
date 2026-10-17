@@ -11,6 +11,8 @@ so nothing hits the network:
   (e) a payload with no ``mode`` defaults to "replace"
   (f) locks: toggle by index/text, pin locked items on top of a rebuild, and keep
       ``_locked`` index-aligned through appends/load_state/reset
+  (g) speaker-profile locks: toggle a scalar and a list item, keep a locked value
+      verbatim through append/rebuild/empty answers, and name it in the prompt
 
     venv/bin/python _tmp_bullet_delta_check.py
 
@@ -26,6 +28,7 @@ sys.path.insert(0, REPO_ROOT)
 from PySide6.QtCore import QCoreApplication  # noqa: E402
 
 from src.bullet_points_worker import BulletPointsWorker  # noqa: E402
+from src.config import SPEAKER_MAX_LIST_ITEMS  # noqa: E402
 from src.controllers.bullet_points_controller import BulletPointsController  # noqa: E402
 
 PASSED = []
@@ -46,9 +49,11 @@ def new_controller() -> BulletPointsController:
     controller = BulletPointsController()
     controller._fake_calls = []
 
-    def fake_start_worker(current_bullets, current_speaker, lines, rebuild=False):
+    def fake_start_worker(current_bullets, current_speaker, lines, rebuild=False,
+                          locked_speaker=None):
         controller._fake_calls.append(
-            {"bullets": list(current_bullets), "lines": list(lines), "rebuild": rebuild}
+            {"bullets": list(current_bullets), "lines": list(lines), "rebuild": rebuild,
+             "locked_speaker": dict(locked_speaker or {})}
         )
 
     controller._start_worker = fake_start_worker
@@ -255,6 +260,125 @@ def main() -> int:
     check("reset clears the locks",
           controller._locked == [] and controller.locked_items() == [],
           f"got {controller._locked}")
+
+    # --- (g) speaker-profile locks ---------------------------------------
+    print("\n[speaker locks]")
+    PROFILE = {
+        "name": "Maya", "location": "Jakarta", "occupation": "Head of Ops",
+        "interests": ["coffee", "running"],
+        "goals": ["cut onboarding time"],
+        "pain_points": ["briefs get lost"],
+        "facts": ["runs a 12-person team"],
+    }
+    speaker = new_controller()
+    speaker.load_state([], PROFILE)
+    check("load_state pads the speaker locks to the profile shape",
+          speaker.get_speaker_locks()["name"] is False
+          and speaker.get_speaker_locks()["interests"] == [False, False],
+          f"got {speaker.get_speaker_locks()}")
+    check("nothing is locked to begin with", speaker.locked_speaker() == {},
+          f"got {speaker.locked_speaker()}")
+    check("locking a scalar field works",
+          speaker.set_speaker_lock(field="name", locked=True) is True
+          and speaker.get_speaker_locks()["name"] is True)
+    blank = new_controller()
+    blank.load_state([], {"name": ""})
+    check("locking an empty scalar is refused",
+          blank.set_speaker_lock(field="name", locked=True) is False)
+    check("locking a list item by text works",
+          speaker.set_speaker_lock(field="interests", item="coffee", locked=True) is True
+          and speaker.get_speaker_locks()["interests"] == [True, False],
+          f"got {speaker.get_speaker_locks()['interests']}")
+    check("locking the same value again is a no-op",
+          speaker.set_speaker_lock(field="interests", item="coffee", locked=True) is False)
+    check("an unknown field is refused",
+          speaker.set_speaker_lock(field="nickname", locked=True) is False)
+    check("a missing list item is refused",
+          speaker.set_speaker_lock(field="goals", item="nope", locked=True) is False)
+    check("locked_speaker names only the locked parts",
+          speaker.locked_speaker() == {"name": "Maya", "interests": ["coffee"]},
+          f"got {speaker.locked_speaker()}")
+
+    # A locked scalar survives an AI answer that changes it.
+    speaker._on_result({"items": [], "mode": "append", "speaker": {
+        "name": "Not Maya", "location": "Bandung", "occupation": "CTO",
+        "interests": ["rowing"], "goals": [], "pain_points": [], "facts": [],
+    }})
+    check("a locked scalar keeps its value through an AI update",
+          speaker._speaker["name"] == "Maya", f"got {speaker._speaker['name']}")
+    check("an unlocked scalar takes the AI's value",
+          speaker._speaker["location"] == "Bandung", f"got {speaker._speaker['location']}")
+    check("a locked list item is kept and the AI's new one is added",
+          speaker._speaker["interests"] == ["coffee", "rowing"],
+          f"got {speaker._speaker['interests']}")
+    check("the merged list keeps the lock flags aligned",
+          speaker.get_speaker_locks()["interests"] == [True, False],
+          f"got {speaker.get_speaker_locks()['interests']}")
+
+    # A locked value cannot be dropped by an empty AI answer either.
+    speaker._on_result({"items": [], "mode": "append", "speaker": {}})
+    check("a locked scalar survives an empty AI profile",
+          speaker._speaker["name"] == "Maya", f"got {speaker._speaker}")
+    check("a locked list item survives an empty AI profile",
+          speaker._speaker["interests"] == ["coffee"],
+          f"got {speaker._speaker['interests']}")
+
+    # A rebuild hands the locked profile to the worker and keeps it verbatim.
+    speaker.load_state([], PROFILE, speaker_locks=None)
+    speaker.set_speaker_lock(field="name", locked=True)
+    speaker.set_speaker_lock(field="pain_points", item="briefs get lost", locked=True)
+    speaker.hard_regenerate([("speaker", "hi", "t1")])
+    check("a rebuild passes the locked profile to the worker",
+          speaker._fake_calls[-1]["locked_speaker"] == {
+              "name": "Maya", "pain_points": ["briefs get lost"]},
+          f"got {speaker._fake_calls[-1]['locked_speaker']}")
+    speaker._on_result({"items": [], "mode": "replace", "speaker": {
+        "name": "Someone else", "occupation": "Head of Ops",
+        "pain_points": ["something new"], "interests": [], "goals": [], "facts": [],
+        "location": "Jakarta",
+    }})
+    check("a rebuild cannot reword a locked scalar",
+          speaker._speaker["name"] == "Maya", f"got {speaker._speaker['name']}")
+    check("a rebuild cannot drop a locked list item",
+          speaker._speaker["pain_points"] == ["briefs get lost", "something new"],
+          f"got {speaker._speaker['pain_points']}")
+
+    # A locked item outranks the per-list cap (never dropped to make room).
+    capped = new_controller()
+    capped.load_state([], {"goals": ["g0", "g1", "g2"]},
+                      speaker_locks={"goals": [True, True, True]})
+    capped._on_result({"items": [], "mode": "append", "speaker": {
+        "goals": [f"new {i}" for i in range(12)], "name": "", "location": "",
+        "occupation": "", "interests": [], "pain_points": [], "facts": [],
+    }})
+    check("a locked list item is never dropped by the list cap",
+          capped._speaker["goals"][:3] == ["g0", "g1", "g2"]
+          and len(capped._speaker["goals"]) == SPEAKER_MAX_LIST_ITEMS,
+          f"got {capped._speaker['goals']}")
+    check("the cap keeps the lock flags aligned",
+          capped.get_speaker_locks()["goals"][:3] == [True, True, True]
+          and len(capped.get_speaker_locks()["goals"]) == SPEAKER_MAX_LIST_ITEMS,
+          f"got {capped.get_speaker_locks()['goals']}")
+
+    # The worker message names the locked profile (rebuild and incremental).
+    rebuild_worker = BulletPointsWorker([], {}, [("speaker", "hi", "t1")], rebuild=True,
+                                        locked_speaker={"name": "Maya"})
+    check("the rebuild prompt carries the locked-profile block",
+          "Locked speaker profile" in rebuild_worker._build_user_message()
+          and "Maya" in rebuild_worker._build_user_message())
+    append_worker = BulletPointsWorker([], {}, [("speaker", "hi", "t1")],
+                                       locked_speaker={"interests": ["coffee"]})
+    check("the incremental prompt carries the locked-profile block",
+          "Locked speaker profile" in append_worker._build_user_message()
+          and "coffee" in append_worker._build_user_message())
+    plain_worker = BulletPointsWorker([], {}, [("speaker", "hi", "t1")])
+    check("no locks leaves the prompt untouched",
+          "Locked speaker profile" not in plain_worker._build_user_message())
+
+    speaker.reset()
+    check("reset clears the speaker locks",
+          speaker.get_speaker_locks() == {} and speaker.locked_speaker() == {},
+          f"got {speaker.get_speaker_locks()}")
 
     print(f"\n{len(PASSED)} passed, {len(FAILED)} failed")
     for label in FAILED:

@@ -51,7 +51,10 @@ SESSION_TEXT_FIELDS = ("last_pickup", "summary", "brief", "gaps", "roadmap")
 # ``objective_meta`` carries the objective tracker's state
 # (``{"active": int|None, "confidence": float, "source": "jev"|"llm",
 # "updated_at": iso}`` plus the hysteresis state ``pending``/``streak``).
-SESSION_OBJECT_FIELDS = ("speaker", "brief_meta", "objective_meta")
+# ``speaker_locks`` pins parts of the extracted speaker (KYC) profile:
+# ``{field: bool}`` for the scalar fields and ``{field: [bool, ...]}`` for the
+# list fields, parallel to ``speaker``.
+SESSION_OBJECT_FIELDS = ("speaker", "brief_meta", "objective_meta", "speaker_locks")
 
 # Every persisted field, in the order they are created / normalized.
 ALL_SESSION_FIELDS = SESSION_FIELDS + SESSION_TEXT_FIELDS + SESSION_OBJECT_FIELDS
@@ -65,6 +68,13 @@ SESSION_CAPS = {
     "objectives": OBJECTIVE_MAX_ITEMS,
     "objective_history": OBJECTIVE_MAX_HISTORY,
 }
+
+# The extracted speaker (KYC) profile's fields, mirrored from
+# ``src/bullet_points_worker.py``. Duplicated deliberately: the session store is
+# loaded by tools that must not pull Qt in (`bullet_points_worker` is a QThread),
+# and this is the persisted shape of ``speaker_locks``.
+_SPEAKER_SCALAR_FIELDS = ("name", "location", "occupation")
+_SPEAKER_LIST_FIELDS = ("interests", "goals", "pain_points", "facts")
 
 
 def _new_session_data():
@@ -152,6 +162,28 @@ class SessionStore:
 
     def set_speaker(self, profile):
         self.update("speaker", dict(profile or {}))
+
+    def set_speaker_locks(self, locks):
+        """Replace the speaker-profile lock flags (parallel to ``speaker``).
+
+        Aligned to the profile's *current* shape, so a stale or short list from a
+        caller cannot pin the wrong item (`speaker` is written first by the app).
+        """
+        locks = locks if isinstance(locks, dict) else {}
+        with self._lock:
+            speaker = self._data.get("speaker")
+        speaker = speaker if isinstance(speaker, dict) else {}
+        aligned = {}
+        for field in _SPEAKER_SCALAR_FIELDS:
+            aligned[field] = bool(locks.get(field))
+        for field in _SPEAKER_LIST_FIELDS:
+            values = speaker.get(field)
+            values = values if isinstance(values, list) else []
+            flags = locks.get(field)
+            flags = list(flags) if isinstance(flags, list) else []
+            aligned[field] = [bool(flags[i]) if i < len(flags) else False
+                              for i in range(len(values))]
+        self.update("speaker_locks", aligned)
 
     def set_objectives(self, objectives):
         """Replace the session objectives, keeping at most ``OBJECTIVE_MAX_ITEMS``.
@@ -288,4 +320,20 @@ class SessionStore:
         count = len(base["objectives"])
         locks = [bool(x) for x in base["objective_locks"]]
         base["objective_locks"] = (locks + [False] * count)[:count]
+        # ``speaker_locks`` is parallel to the extracted speaker profile: align the
+        # list-field flags to the profile's shape (an older session file, or a
+        # hand-edited one, may be short/absent/long) and coerce the scalars.
+        speaker = base.get("speaker") if isinstance(base.get("speaker"), dict) else {}
+        raw_locks = base.get("speaker_locks") if isinstance(base.get("speaker_locks"), dict) else {}
+        aligned = {}
+        for field in _SPEAKER_SCALAR_FIELDS:
+            aligned[field] = bool(raw_locks.get(field))
+        for field in _SPEAKER_LIST_FIELDS:
+            values = speaker.get(field)
+            values = values if isinstance(values, list) else []
+            flags = raw_locks.get(field)
+            flags = list(flags) if isinstance(flags, list) else []
+            aligned[field] = [bool(flags[i]) if i < len(flags) else False
+                              for i in range(len(values))]
+        base["speaker_locks"] = aligned
         return base

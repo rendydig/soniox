@@ -279,6 +279,118 @@ async def main():
         )
         check("speaker saved", state and state["contents"]["speaker"] == "the speaker")
 
+        # --- compacted variant ------------------------------------------------
+        print("\n[14] the AI-compacted variant")
+        real = os.path.join(workdir, "compact-real.md")
+        created.append(real)
+        real_body = "you are a Go engineer\n\n## notes\n- reviews every line"
+        state = await editor.request({"type": "context_new", "role": "host", "path": real})
+        state = await editor.request(
+            {"type": "context_save", "role": "host", "path": real, "text": real_body}
+        )
+        check("real file saved", state and state["contents"]["host"] == real_body)
+        for key in ("compacted_path", "compacted_contents", "compacted_problem",
+                    "compacted_revision", "compacted_available", "compacted_stale",
+                    "variant", "active", "effective"):
+            check(f"payload has {key}", key in state)
+        check("derived path is <file>.compacted",
+              state and state["compacted_path"]["host"] == real + ".compacted",
+              state and state["compacted_path"]["host"])
+        check("no compacted copy yet", state and state["compacted_available"]["host"] is False)
+        check("defaults to the full variant",
+              state and state["variant"]["host"] == "full" and state["active"]["host"] == "full")
+        check("effective is the real text", state and state["effective"]["host"] == real_body)
+
+        print("\n[15] selecting the compacted variant needs a compacted file")
+        status = await editor.request(
+            {"type": "context_set_variant", "role": "host", "variant": "compacted"},
+            expect="context_status",
+        )
+        check("refused as missing", status and status["status"] == "missing",
+              status and status["message"])
+        status = await editor.request(
+            {"type": "context_set_variant", "role": "host", "variant": "sideways"},
+            expect="context_status",
+        )
+        check("unknown variant refused", status and status["status"] == "invalid")
+
+        print("\n[16] context_compacted writes <file>.compacted and switches to it")
+        compacted_body = "Go engineer; reviews every line."
+        await app_peer.drain()
+        state = await editor.request({
+            "type": "context_compacted",
+            "role": "host",
+            "base": real,
+            "text": compacted_body,
+        })
+        check("compacted file on disk", read_file(real + ".compacted") == compacted_body)
+        check("available", state and state["compacted_available"]["host"] is True)
+        check("harmless to be stale-free", state and state["compacted_stale"]["host"] is False)
+        check("it becomes the active variant",
+              state and state["variant"]["host"] == "compacted"
+              and state["active"]["host"] == "compacted")
+        check("effective is the compacted text",
+              state and state["effective"]["host"] == compacted_body)
+        seen = await app_peer.wait_for_content("host", real_body)
+        check("app peer saw the state", seen is not None)
+        check("app peer got the effective text",
+              seen and seen["effective"]["host"] == compacted_body)
+
+        print("\n[17] the derived path is validated, never an arbitrary extension")
+        status = await editor.request(
+            {"type": "context_save", "role": "host",
+             "path": os.path.join(workdir, "evil.compacted"), "text": "nope"},
+            expect="context_status",
+        )
+        check("a foreign .compacted path is refused",
+              status and status["status"] == "invalid", status and status["message"])
+        check("nothing was created", not os.path.exists(os.path.join(workdir, "evil.compacted")))
+        status = await editor.request(
+            {"type": "context_compacted", "role": "host", "base": os.path.join(workdir, "other.md"),
+             "text": "nope"},
+            expect="context_status",
+        )
+        check("a compaction for a stale base is refused",
+              status and status["status"] == "invalid", status and status["message"])
+
+        print("\n[18] the compacted file is itself editable (autosave target)")
+        edited = compacted_body + " Also: pairing."
+        state = await editor.request(
+            {"type": "context_save", "role": "host", "path": real + ".compacted", "text": edited}
+        )
+        check("derived-path save accepted",
+              state and state["compacted_contents"]["host"] == edited)
+        check("disk updated", read_file(real + ".compacted") == edited)
+        check("effective follows the edit", state and state["effective"]["host"] == edited)
+
+        print("\n[19] editing the real file only BADGES the compacted copy as stale")
+        changed = real_body + "\n- one more"
+        state = await editor.request(
+            {"type": "context_save", "role": "host", "path": real, "text": changed}
+        )
+        check("stale flagged", state and state["compacted_stale"]["host"] is True)
+        check("still available", state and state["compacted_available"]["host"] is True)
+        check("still the active variant (never blocked)",
+              state and state["active"]["host"] == "compacted")
+        check("effective still the compacted text",
+              state and state["effective"]["host"] == edited)
+
+        print("\n[20] the variant can be switched back and forth")
+        state = await editor.request({"type": "context_set_variant", "role": "host", "variant": "full"})
+        check("full active", state and state["active"]["host"] == "full")
+        check("effective is the real text", state and state["effective"]["host"] == changed)
+        state = await editor.request(
+            {"type": "context_set_variant", "role": "host", "variant": "compacted"}
+        )
+        check("compacted active again (stale is not a blocker)",
+              state and state["active"]["host"] == "compacted")
+
+        print("\n[21] clearing the selection resets the variant")
+        state = await editor.request({"type": "context_clear_selection", "role": "host"})
+        check("variant back to full", state and state["variant"]["host"] == "full")
+        check("no derived path", state and state["compacted_path"]["host"] is None)
+        check("no effective text", state and not state["effective"]["host"])
+
         # --- cleanup ---------------------------------------------------------
         print("\n[cleanup] restoring the original selection")
         if seed_path:

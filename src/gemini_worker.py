@@ -4,6 +4,7 @@ import re
 import time
 import logging
 from PySide6.QtCore import QThread, Signal
+from src import ai_debug
 from src.ai_client import get_ai_client, IMAGE_CONTEXT_PROMPT
 from src.config import (
     AI_STREAM_CHUNK_INTERVAL_MS,
@@ -368,10 +369,13 @@ Sample {self._target_language} text format: {_get_sample_text(self._target_langu
             if not self._is_running:
                 return
 
-            response = client.generate(
-                system_instruction,
-                [{"role": "user", "text": f"Text to translate: {self._text}"}]
+            messages = [{"role": "user", "text": f"Text to translate: {self._text}"}]
+            call_id = ai_debug.log_request(
+                "translation", system_instruction, messages,
+                meta={"target_language": self._target_language},
             )
+            response = client.generate(system_instruction, messages)
+            ai_debug.log_reply(call_id, response)
 
             if self._is_running and response:
                 self.result.emit(response)
@@ -726,7 +730,7 @@ Format your response exactly as follows:
             parts.append(reply_language)
         self.status.emit(" · ".join(parts))
 
-    def _stream_reply(self, client, system_instruction):
+    def _stream_reply(self, client, system_instruction, meta=None):
         """Stream the reply, emitting coalesced partials then the final result."""
         messages = _build_messages(
             self._conversation_history, self._transcription_text, self._images
@@ -735,15 +739,28 @@ Format your response exactly as follows:
             return
         # Which optional prompt sections made it in, so the digest / objective
         # focus can be confirmed from the log without dumping the prompt itself.
+        digest_on = "Context digest:" in (system_instruction or "")
+        objective_on = "Objective focus:" in (system_instruction or "")
         logger.debug(
             "System instruction: %d chars (digest=%s, objective_focus=%s)",
             len(system_instruction or ""),
-            "on" if "Context digest:" in (system_instruction or "") else "off",
-            "on" if "Objective focus:" in (system_instruction or "") else "off",
+            "on" if digest_on else "off",
+            "on" if objective_on else "off",
         )
         logger.debug("Messages (%d turns):", len(messages))
         for i, m in enumerate(messages):
             logger.debug("  [%d] role=%s | images=%d | %r", i, m['role'], len(m.get('images') or []), m.get('text', '')[:200])
+
+        dump_meta = dict(meta or {})
+        # The flag the user reads in the dump, and the section it actually
+        # rendered (the latter can be "off" even with the flag on, an empty digest).
+        dump_meta.setdefault("digest_flag", AUTO_REPLY_CONTEXT_DIGEST)
+        dump_meta.setdefault("digest_block", "on" if digest_on else "off")
+        dump_meta.setdefault("objective_focus", "on" if objective_on else "off")
+        dump_meta.setdefault("images", len(self._images))
+        call_id = ai_debug.log_request(
+            "auto_reply", system_instruction, messages, meta=dump_meta
+        )
 
         parts = []
         last_emit = 0.0
@@ -760,6 +777,7 @@ Format your response exactly as follows:
                 self.chunk.emit("".join(parts))
 
         response = "".join(parts)
+        ai_debug.log_reply(call_id, response)
         if self._is_running and response:
             self.result.emit(response)
         elif self._is_running:
@@ -778,6 +796,14 @@ Format your response exactly as follows:
             f"Recent conversation:\n{recent}"
         )
         try:
+            call_id = ai_debug.log_request(
+                "other_flow", OTHER_SYNTHESIS_INSTRUCTION,
+                [{"role": "user", "text": user}],
+                meta={
+                    "purpose": purpose.get("label", ""),
+                    "role": role.get("label", ""),
+                },
+            )
             response = client.generate(
                 OTHER_SYNTHESIS_INSTRUCTION,
                 [{"role": "user", "text": user}],
@@ -785,7 +811,9 @@ Format your response exactly as follows:
             )
         except Exception as e:
             logger.warning("Persona synthesis failed: %s", e)
+            ai_debug.log_reply(call_id, f"(error: {e})")
             return None, None, None
+        ai_debug.log_reply(call_id, response)
 
         data = _parse_json_object(response)
         if not isinstance(data, dict):
@@ -863,7 +891,14 @@ Format your response exactly as follows:
         system_instruction = self._build_system_instruction(
             purpose, role, act_key, None, speaker_act
         )
-        self._stream_reply(client, system_instruction)
+        self._stream_reply(client, system_instruction, meta={
+            "purpose": purpose.get("label", "") or self._purpose,
+            "role": role.get("label", ""),
+            "host_role": self._host_role,
+            "jev": self._jev_enabled and not self._images,
+            "reply_language": "",
+            "act": act_key or "",
+        })
 
     def run(self):
         try:
@@ -947,7 +982,14 @@ Format your response exactly as follows:
             system_instruction = self._build_system_instruction(
                 purpose, role, act_key, reply_language, speaker_act
             )
-            self._stream_reply(client, system_instruction)
+            self._stream_reply(client, system_instruction, meta={
+                "purpose": purpose.get("label", "") or self._purpose,
+                "role": role.get("label", ""),
+                "host_role": self._host_role,
+                "jev": self._jev_enabled and not self._images,
+                "reply_language": reply_language or "",
+                "act": act_key or "",
+            })
         except Exception as e:
             if self._is_running:
                 self.error.emit(f"AI auto-reply error: {str(e)}")

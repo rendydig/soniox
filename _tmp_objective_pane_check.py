@@ -109,7 +109,8 @@ PROBE1 = """
                         items: ['Ship the pilot', 'Agree on pricing'],
                         locks: [false, true],
                         active: { index: 1, text: 'Agree on pricing', locked: true,
-                                  confidence: 1.0, source: 'lock' } }));
+                                  confidence: 1.0, source: 'lock' },
+                        pending: { index: 0, text: 'Ship the pilot', streak: 1 } }));
                     peer.send(JSON.stringify({ type: 'objectives_history',
                         entry: { ts: '2026-10-17T01:00:00Z', index: 1,
                                  text: 'Agree on pricing', confidence: 0.8, source: 'jev' } }));
@@ -141,6 +142,10 @@ PROBE2 = """
     c.statusVisible = !!statusEl && !statusEl.classList.contains('empty');
     var hint = document.querySelector('.objectives-view .bullet-empty');
     c.hintHidden = !!hint && hint.classList.contains('empty');
+    var cand = document.querySelector('.objectives-view .objectives-candidate');
+    c.candidateVisible = !!cand && !cand.classList.contains('empty');
+    c.candidateText = (document.querySelector('.objectives-candidate-text') || {}).textContent;
+    c.candidateItemCount = document.querySelectorAll('.objective-item.candidate').length;
 
     var sent = [];
     var orig = WebSocket.prototype.send;
@@ -217,6 +222,14 @@ def report():
           and p2.get("statusVisible") is True, str(p2.get("status")))
     check("the empty-state hint hides once there are items",
           p2.get("hintHidden") is True)
+
+    print("\n[3b] an unconfirmed candidate is shown as a candidate")
+    check("the candidate block is visible", p2.get("candidateVisible") is True,
+          str(p2.get("candidateVisible")))
+    check("it names the candidate", p2.get("candidateText") == "Ship the pilot",
+          str(p2.get("candidateText")))
+    check("the candidate item is tinted", p2.get("candidateItemCount") == 1,
+          str(p2.get("candidateItemCount")))
 
     print("\n[4] an incoming history frame appends to the timeline")
     check("one timeline entry rendered", p2.get("timelineCount") == 1,

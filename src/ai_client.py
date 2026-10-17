@@ -1,5 +1,6 @@
 import base64
 
+from src import ai_debug
 from src.config import (
     AI_API_KEY,
     AI_BASE_URL,
@@ -104,7 +105,40 @@ class GeminiClient(AIClient):
             )
         return types.GenerateContentConfig(system_instruction=system_instruction)
 
+    def _payload(self, system_instruction: str, messages: list,
+                 disable_reasoning=None, stream: bool = False) -> dict:
+        """The exact request the SDK is handed, for the debug dump.
+
+        Mirrors :meth:`_to_contents` / :meth:`_config`; images stay as their
+        (huge) data URL so the dump's redactor can elide them.
+        """
+        no_thinking = DISABLE_MODEL_REASONING if disable_reasoning is None else disable_reasoning
+        config = {"system_instruction": system_instruction}
+        if no_thinking:
+            config["thinking_config"] = {"thinking_budget": 0}
+        contents = []
+        for msg in messages:
+            parts = []
+            text = (msg.get("text") or "").strip()
+            if text:
+                parts.append({"text": text})
+            for data_url in msg.get("images") or []:
+                _, mime_type = _decode_data_url(data_url)
+                parts.append({"inline_data": {"mime_type": mime_type, "data": data_url}})
+            if parts:
+                contents.append({
+                    "role": "user" if msg.get("role") == "user" else "model",
+                    "parts": parts,
+                })
+        payload = {"model": self._model, "contents": contents, "config": config}
+        if stream:
+            payload["stream"] = True
+        return payload
+
     def generate(self, system_instruction: str, messages: list, disable_reasoning=None) -> str:
+        ai_debug.log_payload(
+            self._payload(system_instruction, messages, disable_reasoning)
+        )
         response = self._client.models.generate_content(
             model=self._model,
             contents=self._to_contents(messages),
@@ -113,6 +147,9 @@ class GeminiClient(AIClient):
         return response.text
 
     def generate_stream(self, system_instruction: str, messages: list, disable_reasoning=None):
+        ai_debug.log_payload(
+            self._payload(system_instruction, messages, disable_reasoning, stream=True)
+        )
         stream = self._client.models.generate_content_stream(
             model=self._model,
             contents=self._to_contents(messages),
@@ -166,7 +203,24 @@ class OpenAICompatibleClient(AIClient):
             return {"reasoning": {"effort": "none"}}
         return None
 
+    def _payload(self, system_instruction: str, messages: list,
+                 disable_reasoning=None, stream: bool = False) -> dict:
+        """The exact request body the SDK is handed, for the debug dump."""
+        payload = {
+            "model": self._model,
+            "messages": self._to_messages(system_instruction, messages),
+        }
+        extra = self._extra_body(disable_reasoning)
+        if extra is not None:
+            payload["extra_body"] = extra
+        if stream:
+            payload["stream"] = True
+        return payload
+
     def generate(self, system_instruction: str, messages: list, disable_reasoning=None) -> str:
+        ai_debug.log_payload(
+            self._payload(system_instruction, messages, disable_reasoning)
+        )
         response = self._client.chat.completions.create(
             model=self._model,
             messages=self._to_messages(system_instruction, messages),
@@ -175,6 +229,9 @@ class OpenAICompatibleClient(AIClient):
         return response.choices[0].message.content
 
     def generate_stream(self, system_instruction: str, messages: list, disable_reasoning=None):
+        ai_debug.log_payload(
+            self._payload(system_instruction, messages, disable_reasoning, stream=True)
+        )
         stream = self._client.chat.completions.create(
             model=self._model,
             messages=self._to_messages(system_instruction, messages),

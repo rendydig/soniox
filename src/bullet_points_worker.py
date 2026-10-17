@@ -3,11 +3,13 @@ import logging
 
 from PySide6.QtCore import QThread, Signal
 
+from src import ai_debug
 from src.ai_client import get_ai_client
 from src.config import (
     BULLET_MAX_LINE_CHARS,
     SPEAKER_MAX_LIST_ITEMS,
 )
+from src.reference_context import render_reference_context
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,11 @@ Rules:
   list to one bullet per line. For pure small talk an empty or very short list is correct.
 - Each bullet is a short standalone phrase (max ~12 words). No numbering, no sub-bullets.
 - Write each bullet in the same language as the conversation it summarises. Keep proper nouns as-is.
+- REFERENCE CONTEXT: when the user message carries a "Reference context" block it is
+  background the user supplied about the two participants. Use it ONLY to interpret the
+  conversation (jargon, acronyms, what a mentioned project or product is). It is NOT part
+  of the transcript: never copy or restate anything from it into the bullet list, and never
+  use it to fill the speaker profile. A value that appears only there was not said.
 
 The user message names the mode; follow it exactly:
 - INCREMENTAL: you receive the CURRENT bullet list, the CURRENT speaker profile, and NEW
@@ -53,10 +60,19 @@ Speaker profile (JSON object):
   mentions mid-conversation.
 - Update a field ONLY when the speaker actually reveals it. NEVER guess or infer a
   value that was not said. Keep an unknown field as "" / [].
+- Traceability: every value you return MUST be traceable to a [speaker] line. If the
+  [speaker] never states their name, location or occupation, leave those fields "" — even
+  when the Reference context block names the speaker or their employer (that block is
+  background the user supplied, not something the speaker said). The same holds for every
+  list entry: no entry may come from the Reference context.
 - For lists: merge with what you already have, drop duplicates, keep each entry a short
   standalone phrase (max ~10 words), at most {SPEAKER_MAX_LIST_ITEMS} entries per list
   (keep the most important), and write them in the conversation's language.
 - When nothing new is revealed, return the profile unchanged.
+- LOCKED PROFILE: when the user message carries a "Locked speaker profile" block, those
+  values are ALREADY CAPTURED by the user. Never reword, drop, or contradict them. Return
+  them unchanged, and for a list field you may only ADD genuinely new entries — the app
+  keeps the locked ones verbatim and merges your new ones after them.
 
 Return ONLY a JSON object with this exact shape and no prose, explanations, or code fences:
 {{"bullets": ["First point", "Second point"],
@@ -152,13 +168,33 @@ class BulletPointsWorker(QThread):
     error = Signal(str)
 
     def __init__(self, current_bullets: list, current_speaker: dict, new_lines: list,
-                 parent=None, rebuild: bool = False):
+                 parent=None, rebuild: bool = False, locked_speaker: dict = None,
+                 context: dict = None):
         super().__init__(parent)
         self._current_bullets = list(current_bullets or [])
         self._current_speaker = dict(current_speaker or {})
+        self._locked_speaker = {
+            key: value for key, value in (locked_speaker or {}).items() if value
+        }
         self._new_lines = list(new_lines or [])
         self._rebuild = rebuild
+        # The Host/Speaker reference context (the Context pane's file, or its
+        # compacted variant). Interpretation only — the system instruction says
+        # so, because a profile copied into the output would be a false finding.
+        self._context = context if isinstance(context, dict) else {}
         self._is_running = True
+
+    def _locked_profile_block(self) -> str:
+        """The "already captured" profile block, or ``""`` when nothing is locked."""
+        if not self._locked_speaker:
+            return ""
+        locked_json = json.dumps(self._locked_speaker, ensure_ascii=False)
+        return (
+            "Locked speaker profile (already captured by the user — keep each value "
+            "verbatim; never reword, drop or contradict it; for a list field you may only "
+            "ADD new entries):\n"
+            f"{locked_json}\n\n"
+        )
 
     def _build_user_message(self) -> str:
         # Lines are ``(source, text)`` or ``(source, text, timestamp)`` depending
@@ -171,6 +207,17 @@ class BulletPointsWorker(QThread):
                 continue
             rendered.append(f"[{source}] {str(text)[:BULLET_MAX_LINE_CHARS]}")
         lines = "\n".join(rendered)
+        locked_profile = self._locked_profile_block()
+        # The reference block carries the HOST role only. This worker's job is to
+        # *extract* the speaker profile, so handing it a pre-identified speaker
+        # profile invites it straight into "name"/"location"/"occupation" and the
+        # "facts" list — measured: the prompt rule alone does not stop it. The host
+        # half (what we offer, jargon, project names) is the part that actually
+        # helps interpret the conversation.
+        reference = render_reference_context({
+            "host": (self._context or {}).get("host", ""),
+            "speaker": "",
+        })
         if self._rebuild:
             # Whole-transcript rebuild. When the user has locked points, hand them
             # over as "already captured" and ask for only the uncovered remainder.
@@ -182,17 +229,25 @@ class BulletPointsWorker(QThread):
                 return (
                     "Locked bullet points (already captured — do NOT repeat or reword):\n"
                     f"{locked_lines}\n\n"
+                    f"{locked_profile}"
+                    f"{reference}"
                     f"Full conversation transcript:\n{lines}\n\n"
                     "REBUILD mode: return ONLY the bullet points NOT already covered by the "
-                    "locked list above (empty array if none)."
+                    "locked list above (empty array if none). Rebuild the speaker profile "
+                    "from the transcript, but keep every locked profile value as it is."
                 )
             return (
+                f"{locked_profile}"
+                f"{reference}"
                 f"Full conversation transcript:\n{lines}\n\n"
-                "REBUILD mode: return the COMPLETE bullet list."
+                "REBUILD mode: return the COMPLETE bullet list. Rebuild the speaker profile "
+                "from the transcript, but keep every locked profile value as it is."
             )
         bullets_json = json.dumps(self._current_bullets, ensure_ascii=False)
         speaker_json = json.dumps(self._current_speaker, ensure_ascii=False)
         return (
+            f"{locked_profile}"
+            f"{reference}"
             f"Current bullet list (JSON): {bullets_json}\n\n"
             f"Current speaker profile (JSON): {speaker_json}\n\n"
             f"New conversation lines:\n{lines}\n\n"
@@ -206,11 +261,18 @@ class BulletPointsWorker(QThread):
                 return
 
             client = get_ai_client()
+            user_message = self._build_user_message()
+            call_id = ai_debug.log_request(
+                "bullet_points", SYSTEM_INSTRUCTION,
+                [{"role": "user", "text": user_message}],
+                meta={"mode": "rebuild" if self._rebuild else "incremental"},
+            )
             response = client.generate(
                 SYSTEM_INSTRUCTION,
-                [{"role": "user", "text": self._build_user_message()}],
+                [{"role": "user", "text": user_message}],
                 disable_reasoning=True,
             )
+            ai_debug.log_reply(call_id, response)
 
             if not self._is_running:
                 return

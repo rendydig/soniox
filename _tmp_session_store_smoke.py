@@ -30,6 +30,28 @@ with open(path, encoding="utf-8") as f:
 assert data["bullet_locks"] == [True, False, False, True], data["bullet_locks"]
 assert s.snapshot()["bullet_locks"] == [True, False, False, True]
 
+# speaker_locks round-trips (coerced) and rides in current.json, aligned to the
+# speaker profile's shape so a stale/short list cannot mis-pin an item.
+s.set_speaker({"name": "Maya", "interests": ["coffee", "running"],
+               "goals": [], "pain_points": [], "facts": [], "location": "", "occupation": ""})
+s.set_speaker_locks({"name": True, "interests": [True, 0], "goals": []})
+s.flush()
+with open(path, encoding="utf-8") as f:
+    data = json.load(f)
+assert data["speaker_locks"]["name"] is True, data["speaker_locks"]
+assert data["speaker_locks"]["interests"] == [True, False], data["speaker_locks"]
+assert data["speaker_locks"]["occupation"] is False, data["speaker_locks"]
+
+# A short/absent lock list pads to the profile (the older-session case).
+with open(path, "w", encoding="utf-8") as f:
+    json.dump({"id": "legacy-locks", "speaker": {"interests": ["a", "b", "c"]},
+               "speaker_locks": {"interests": [True]}}, f)
+s_locks = SessionStore(d)
+assert s_locks.snapshot()["speaker_locks"]["interests"] == [True, False, False], \
+    s_locks.snapshot()["speaker_locks"]
+assert s_locks.snapshot()["speaker_locks"]["name"] is False
+s_locks.close()
+
 # async debounced write
 s.append("gemini_results", {"text": "g", "mode": "manual"})
 time.sleep(3)

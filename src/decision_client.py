@@ -15,6 +15,7 @@ import logging
 import urllib.error
 import urllib.request
 
+from src import ai_debug
 from src.config import (
     JEV_API_KEY,
     JEV_BASE_URL,
@@ -53,6 +54,16 @@ class DecisionClient:
         except (TypeError, ValueError) as e:
             logger.warning("JEV payload not serializable: %s", e)
             return None
+        # The decision call has a different shape from the chat calls (no
+        # system instruction / messages), so the whole payload rides as the
+        # request block's exact body and the answers as its reply.
+        call_id = ai_debug.log_request(
+            "jev_decision",
+            "",
+            [],
+            meta={"model": self._model},
+            payload=payload,
+        )
         request = urllib.request.Request(
             self._base + "/alpha/decisions",
             data=body,
@@ -68,11 +79,14 @@ class DecisionClient:
             parsed = json.loads(raw)
         except (urllib.error.URLError, OSError, ValueError, TimeoutError) as e:
             logger.warning("JEV decision call failed: %s", e)
+            ai_debug.log_reply(call_id, f"(error: {e})")
             return None
         answers = parsed.get("answers") if isinstance(parsed, dict) else None
         if not isinstance(answers, dict):
             logger.warning("JEV response missing 'answers'")
+            ai_debug.log_reply(call_id, "(no answers)")
             return None
+        ai_debug.log_reply(call_id, json.dumps(answers, ensure_ascii=False, indent=2))
         return answers
 
 

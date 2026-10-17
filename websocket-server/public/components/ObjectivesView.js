@@ -43,6 +43,9 @@ const formatTime = (ts) => {
  * cannot move the focus away from it, and the reply prompt is told to serve it.
  * `satisfied` is the list of indexes the tracker's JEV call judged already met;
  * those items are struck through (the reply prompt also stops re-opening them).
+ * `pending` is the unconfirmed prediction (``observe`` waits for
+ * OBJECTIVE_MIN_STREAK agreeing answers): shown as an amber "Candidate" row and
+ * badge so an automatic prediction is visible before it commits.
  *
  * Every block is rendered **unconditionally** and hidden with an `empty` class
  * instead of a conditional child. Each of these sections appears and disappears
@@ -55,6 +58,7 @@ export const ObjectivesView = ({
     items,
     locks,
     active,
+    pending,
     satisfied,
     history,
     status,
@@ -72,6 +76,12 @@ export const ObjectivesView = ({
     const timeline = Array.isArray(history) ? history : [];
     const focus = active && typeof active === 'object' ? active : {};
     const hasFocus = typeof focus.text === 'string' && focus.text.length > 0;
+    // The unconfirmed prediction: ``observe`` waits for OBJECTIVE_MIN_STREAK
+    // agreeing answers before it commits, so an automatic prediction is shown
+    // here in the meantime instead of looking like nothing happened.
+    const candidate = pending && typeof pending === 'object' ? pending : {};
+    const hasCandidate = typeof candidate.text === 'string' && candidate.text.length > 0
+        && candidate.index !== focus.index;
     const statusText = typeof status === 'string' ? status : '';
     const [draft, setDraft] = useState('');
 
@@ -105,6 +115,12 @@ export const ObjectivesView = ({
                 </span>
             </div>
 
+            <div class=${'objectives-candidate' + (hasCandidate ? '' : ' empty')}>
+                <span class="objectives-active-label">Candidate</span>
+                <strong class="objectives-candidate-text">${candidate.text || ''}</strong>
+                <span class="consulting-badge candidate">Pending</span>
+            </div>
+
             <form class="objectives-add" onSubmit=${submit}>
                 <input
                     class="objectives-input"
@@ -128,10 +144,13 @@ export const ObjectivesView = ({
             <ul class="bullet-list objectives-list">
                 ${list.map((text, index) => html`
                     <li
-                        class="bullet-item objective-item ${lockAt(index) ? 'locked' : ''} ${index === focus.index ? 'active' : ''} ${doneAt(index) ? 'satisfied' : ''}"
+                        class="bullet-item objective-item ${lockAt(index) ? 'locked' : ''} ${index === focus.index ? 'active' : ''} ${hasCandidate && index === candidate.index ? 'candidate' : ''} ${doneAt(index) ? 'satisfied' : ''}"
                     >
                         <span class="bullet-number" aria-hidden="true">${index + 1}.</span>
                         <span class="bullet-text">${text}</span>
+                        <span class=${'consulting-badge candidate objective-candidate' + (hasCandidate && index === candidate.index ? '' : ' empty')}>
+                            Candidate
+                        </span>
                         <span class=${'consulting-badge confirmed objective-done' + (doneAt(index) ? '' : ' empty')}>
                             Met
                         </span>

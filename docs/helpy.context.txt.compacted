@@ -1,0 +1,172 @@
+HELPY - THE AI ASSISTANT NOTE-TAKER (AND SOON MORE)
+====================================================
+
+Helpy is a desktop, always-on-top AI assistant for live two-person conversations - sales calls, client consultations, interviews, stand-ups, language practice. It listens to both sides at once, writes the notes you can't write while you talk, suggests what to say next, and turns the conversation into something actionable afterwards.
+
+Four needs, in order:
+  1. UNDERSTAND the conversation as it happens.
+  2. KEEP UP in the moment, in your own voice and language.
+  3. REMEMBER everything, so nothing is lost.
+  4. FOLLOW UP with a brief, a gap list and a plan instead of a raw transcript.
+
+Every feature serves one of those needs.
+
+
+1. UNDERSTAND THE CONVERSATION AS IT HAPPENS
+--------------------------------------------
+
+Dual-stream live transcription
+- Transcribes two audio sources at once - your microphone (Host) and system audio from speakers/headphones (Speaker, the person on the other end) - and labels every line by speaker.
+- Benefit: you see both halves of the call.
+- Need: you cannot listen carefully and type notes at the same time.
+
+Live translation
+- Switch between Live Transcription and Live Translation; type a line to translate on demand; choose the assistant's answer language.
+- Benefit: follow and take part in a conversation in a language you don't speak.
+- Need: the interviews and consultations that matter most are increasingly cross-language.
+
+AI suggestion window (auto-reply)
+- Streams the next thing to say, word by word, in the Speaker's language, using the conversation so far as context.
+- Benefit: real-time answer to "what do I say now?" without a revealing pause.
+- Need: dead air loses conversations.
+
+Speaker's-move analysis
+- Prefixes every suggestion with one plain English line naming what the Speaker just did - Assertive, Directive, Commissive, Expressive or Declarative - and what they asked, confirmed or stated.
+- Benefit: see the intent behind the last sentence.
+- Need: the right reply depends on what the other person was trying to do.
+
+Purposes and roles
+- Swaps the assistant's persona and objective to fit the situation - Language Learning, Casual Networking, Coding Interview, General Interview, Consultation - each with roles you might play (e.g. Candidate or Interviewer), plus purposes you write yourself or the assistant learns over time.
+- Benefit: the suggestion sounds like you in that situation.
+- Need: a generic chatbot gives generic answers, which lose deals and interviews.
+
+Optional decision layer
+- Before writing a reply, a fast "System One" step decides whether a reply is wanted, as whom to speak, which speech act to use and in which language.
+- Benefit: fewer interruptions, better-timed, in-character suggestions.
+- Need: an assistant that answers everything is worse than one that knows when to stay quiet.
+
+Pronunciation guide and sample text
+- For language practice: adds a romanized pronunciation hint and a sample sentence for the suggested line.
+- Benefit: you can say the sentence out loud.
+- Need: a translation you cannot pronounce is useless mid-call.
+
+
+2. REMEMBER EVERYTHING (THE NOTE-TAKER CORE)
+--------------------------------------------
+
+Rolling bullet points
+- Live, AI-maintained list of important points as the conversation moves; only new lines are sent per update; exact and near-duplicates merged; the list grows for the whole session; any point can be pinned (locked) so a full rebuild can never drop or reword it. Runs on a timer, on a hotkey, or on demand; shows a countdown to the next automatic update.
+- Benefit: a running list of what matters, written while you talk.
+- Need: nobody can take good notes and hold a good conversation at once.
+
+Speaker profile
+- Builds a profile of the other person - name, location, occupation, plus interests, goals, pain points and standalone facts - using only what the Speaker actually says, never guessed.
+- Benefit: you and the assistant know who you are talking to.
+- Need: it is the reference the rest of the product reasons against; a reply without it is just a plausible sentence.
+
+Last Picked Up
+- After the speaker pauses, gives the latest intent in one or two short paragraphs - first in Bahasa Indonesia, then the same content in the speaker's own language; triggerable on demand any time.
+- Benefit: one glance shows where the conversation got to.
+- Need: attention lapses (slide, ticket, message) lose you.
+
+Summary
+- One click produces a whole-session summary in fixed sections - Overview, Key Points, Decisions, Open Questions, Next Steps, Speaker Highlights - in the conversation's language; editable in place and saved with the session.
+- Benefit: a shareable recap the moment the call ends.
+- Need: the value of a meeting is what you carry out of it; a raw transcript carries nothing.
+
+Consulting pipeline
+- Three manual steps on one tab: draft a client brief from the conversation; edit and confirm it; run a gap analysis against the confirmed brief; then generate a prioritised execution roadmap with every gap folded into a step.
+- Benefit: turns a client conversation into a signed-off brief and a plan.
+- Need: consulting and business-development calls otherwise evaporate into goodwill and no follow-up.
+
+Screenshots to the AI
+- One hotkey captures your screen into a gallery (with zoom/pan viewer); another clears it; another sends everything captured to the assistant with the same persona and conversation history.
+- Benefit: ask about a slide, ticket or design without typing it out.
+- Need: most real-call context lives on the screen, not in the words.
+
+Sessions
+- Continuously saves the whole conversation - transcript, translations, AI results, bullet points, locks, speaker profile, screenshots, summary, brief, gaps, roadmap - resumes it on restart, archives it when a new one starts, shows elapsed time on the Start/Stop button.
+- Benefit: nothing is lost to a crash, stop-and-start or lunch break.
+- Need: a note-taker that loses notes is not a note-taker.
+
+
+3. STAY OUT OF THE WAY (EXPERIENCE, PRIVACY, CONTROL)
+-----------------------------------------------------
+
+Four free-floating panes
+- Live view, AI suggestions, Bullet Points (five tabs: Bullet Points, Speaker, Last Picked Up, Summary, Consulting) and Context - each frameless, always-on-top, movable, resizable from any edge, dockable to either side, layout remembered.
+- Benefit: put the right information where you can see it.
+- Need: every call, screen and user is a different layout.
+
+Pane opacity
+- Makes panes translucent (70% by default, adjustable from menu or slider) while fully readable and clickable.
+- Benefit: the app you are presenting or working in stays visible behind them.
+- Need: an opaque panel on your slide deck is worse than no panel.
+
+Context pane
+- Edits Host and Speaker profile files inside the app, with live reload from an external editor and atomic autosave while you type.
+- Benefit: the assistant knows who is in the room, by name and role.
+- Need: a name and job title change the right answer.
+
+Screen Protection
+- Hides the app's windows from screen capture and screen sharing while keeping them visible to you.
+- Benefit: the assistant stays invisible to the other party.
+- Need: the tool is only useful if it is discreet.
+
+Soft microphone mute
+- Mutes only your microphone, keeps the other stream running with keepalives, resumes instantly with no reconnect.
+- Benefit: go off-record for a moment without ending the session.
+- Need: private asides happen in every real call.
+
+Configurable global hotkeys
+- System-wide shortcuts for capture, clear and send screenshots, manual bullet points, manual Last Picked Up, hiding every pane at once, and the Context pane - all rebindable in Settings.
+- Benefit: full control without leaving the window you are working in.
+- Need: you are never inside the app while talking.
+
+Web monitor
+- Serves the same live view to any browser on the machine, plus a dedicated suggestions-only page.
+- Benefit: a second screen or a teammate can watch the same live feed.
+- Need: one screen is not always enough.
+
+
+4. WHY IT DOESN'T FALL OVER
+---------------------------
+
+Crash-isolated audio capture
+- All audio capture runs in a separate child process, restarted automatically if it dies, with a bounded retry limit.
+- Benefit: a long call never takes the whole app down.
+- Need: the audio stack can fault natively in real hardware setups, and that crash cannot be caught inside the app.
+
+Central hub
+- A small companion process owns live session state and the message bus - ordered events per topic, append-only event log, atomic snapshots, small debug endpoint.
+- Benefit: every pane, and soon every separate agent, reads one ordered, subscribable source of truth.
+- Need: it is the foundation the next set of features is built on.
+
+Diagnostics
+- Logs crashes and native faults to disk; samples health every 30 seconds (memory, threads, note volume, per-pane browser memory); ships a stress harness that drives the real app with real audio for long runs.
+- Benefit: multi-hour sessions stay flat instead of degrading.
+- Need: the app is meant to be left running all day.
+
+Windows and macOS, properly
+- Handles each platform's realities - output loopback capture on Windows, virtual-device system audio on macOS, native always-on-top, and a screen-recording permission check before the first screenshot.
+- Benefit: the same product, working, on either machine.
+- Need: the people who need this most work across both.
+
+
+5. AND SOON
+-----------
+
+Helpy is a note-taker today. Next steps build on the central hub:
+  - Panes read their state from the hub instead of each holding a copy.
+  - The assistant's helpers (notes, summary, consulting) run as separate, supervised processes rather than inside the app.
+  - All timing - debounce, cadence, retries - is owned by the hub, so the assistant behaves the same no matter which part is running.
+  - The hub becomes the single source of truth for saved sessions.
+  - The web server is folded in, so there is one process to run, not three.
+
+Direction: from a note-taker that helps during a call, to an assistant that runs the whole loop around it - before, during and after.
+
+
+SOURCES
+-------
+
+This file is the product-level, benefit-first view. The engineering source of truth - every feature, its implementation and its verification - lives in AGENTS.md at the repository root. When the two disagree, AGENTS.md wins.

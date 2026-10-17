@@ -33,7 +33,8 @@ from src.controllers import (
     LastPickupController,
     SummarizeController,
     ConsultingController,
-    ObjectiveController
+    ObjectiveController,
+    ContextCompactController
 )
 from src.websocket_client import WebSocketClient
 from src.websocket_server_manager import WebSocketServerManager
@@ -142,6 +143,9 @@ class MainWindow(QMainWindow):
         # Session objectives: the tracked focus of the conversation (JEV first,
         # LLM fallback) with lock/pin semantics and a history timeline.
         self.objective_controller = ObjectiveController()
+        # Context pane "Compact": one-shot AI rewrite of a long Host/Speaker
+        # context file, written by the Node service as `<file>.compacted`.
+        self.context_compact_controller = ContextCompactController(self)
         # Session state (restored below, persisted asynchronously to disk).
         self.session_store = SessionStore()
         
@@ -880,6 +884,10 @@ class MainWindow(QMainWindow):
         self.objective_controller.history_appended.connect(self._on_objective_history)
         self.objective_controller.status_changed.connect(self._send_objective_status)
         self.objective_controller.error_occurred.connect(self._on_objective_error)
+
+        self.context_compact_controller.compacted.connect(self._on_context_compacted)
+        self.context_compact_controller.status_changed.connect(self._send_context_compact_status)
+        self.context_compact_controller.error_occurred.connect(self._on_context_compact_error)
         # The auto-reply's JEV decision call also answers ``current_objective``,
         # so its prediction is folded into the tracker for free.
         self.translation_controller.objective_observed.connect(
@@ -949,6 +957,7 @@ class MainWindow(QMainWindow):
             data.get("speaker") or {},
             data.get("bullet_windows") or [],
             data.get("bullet_locks") or [],
+            data.get("speaker_locks") or {},
         )
         self.last_pickup_controller.load_last_pickup(data.get("last_pickup") or "")
         self.summarize_controller.load_summary(data.get("summary") or "")
@@ -1271,23 +1280,27 @@ class MainWindow(QMainWindow):
         ]
         self.bullet_points_controller.hard_regenerate(lines)
 
-    def _on_bullet_points_updated(self, items: list, speaker: dict, windows: list, locks: list):
+    def _on_bullet_points_updated(self, items: list, speaker: dict, windows: list, locks: list,
+                                  speaker_locks: dict = None):
         """Broadcast the updated bullet list + profile + windows + locks and persist them.
 
         Mirrored to the Go hub on the same topic (``bullets``) alongside the
         WebSocket frame, so the hub owns the same state the panes render.
         """
+        speaker_locks = dict(speaker_locks or {})
         self.websocket_client.send_message({
             "type": "bullet_points",
             "items": list(items or []),
             "speaker": dict(speaker or {}),
             "windows": list(windows or []),
             "locks": list(locks or []),
+            "speaker_locks": speaker_locks,
         })
         self.session_store.set_bullets(items)
         self.session_store.set_speaker(speaker)
         self.session_store.set_bullet_windows(windows)
         self.session_store.set_bullet_locks(locks)
+        self.session_store.set_speaker_locks(speaker_locks)
         self.hub.bullets(items, speaker, windows, locks)
         # The digest carries the same state, so keep it in step here (pure call).
         self._rebuild_reply_digest(items, speaker, locks)
@@ -1397,6 +1410,19 @@ class MainWindow(QMainWindow):
         """Handle summarize worker errors (logged, not popped up)."""
         logger.warning("Summarize error: %s", msg)
 
+    def _transcript_pairs(self) -> list:
+        """The persisted conversation as ``(source, text)`` pairs (newest last).
+
+        Used to seed the objective predictor from the full transcript, which —
+        unlike the tracker's rolling window — survives a restart.
+        """
+        snapshot = self.session_store.snapshot()
+        return [
+            (entry.get("source"), entry.get("text"))
+            for entry in (snapshot.get("transcriptions") or [])
+            if entry.get("text")
+        ]
+
     def _consulting_lines(self, snapshot):
         """Map the session transcript to ``(source, text, timestamp)`` triples."""
         return [
@@ -1502,6 +1528,9 @@ class MainWindow(QMainWindow):
         # derived state, so send it too rather than duplicating lock precedence
         # in JavaScript.
         payload["objective_active"] = self.objective_controller.get_active()
+        # The unconfirmed candidate is derived state as well, so a reload keeps
+        # showing the pending prediction instead of dropping it.
+        payload["objective_pending"] = self.objective_controller.get_pending()
         # Which objectives are already met is index-based derived state too, so it
         # is sent alongside the focus rather than recomputed in JavaScript.
         payload["objective_satisfied"] = list(
@@ -1548,6 +1577,7 @@ class MainWindow(QMainWindow):
             "items": self.objective_controller.get_objectives(),
             "locks": self.objective_controller.get_locks(),
             "active": self.objective_controller.get_active(),
+            "pending": self.objective_controller.get_pending(),
             "satisfied": list(self.objective_controller.get_meta().get("satisfied") or []),
         })
 
@@ -1567,9 +1597,12 @@ class MainWindow(QMainWindow):
         self._mirror_objectives()
         self.websocket_client.send_message({"type": "objectives_history", "entry": entry})
 
-    def _send_objective_status(self, status: str):
+    def _send_objective_status(self, status: str, message: str = ""):
         """Broadcast an objective-tracker progress/failure/notice status."""
-        self.websocket_client.send_message({"type": "objectives_status", "status": status})
+        payload = {"type": "objectives_status", "status": status}
+        if message:
+            payload["message"] = message
+        self.websocket_client.send_message(payload)
 
     def _on_objective_error(self, msg: str):
         """Handle objective-prediction errors (logged, not popped up)."""
@@ -1662,6 +1695,12 @@ class MainWindow(QMainWindow):
             self.bullet_points_controller.set_lock(
                 data.get("index"), data.get("text"), data.get("locked")
             )
+        elif msg_type == "set_speaker_lock":
+            logger.info("Speaker profile lock toggle from webview: %s[%s]",
+                        data.get("field"), data.get("index"))
+            self.bullet_points_controller.set_speaker_lock(
+                data.get("field"), data.get("index"), data.get("item"), data.get("locked")
+            )
         elif msg_type == "set_objective_lock":
             logger.info("Objective lock toggle from webview: %s", data.get("index"))
             self.objective_controller.set_lock(
@@ -1672,13 +1711,16 @@ class MainWindow(QMainWindow):
             logger.info("Objective add from webview: %r", text[:60])
             if not self.objective_controller.add_objective(text):
                 # Empty or already present: tell the pane instead of doing nothing.
-                self._send_objective_status("no_input")
+                self._send_objective_status("no_input", "Objective is empty or already in the list")
         elif msg_type == "remove_objective":
             logger.info("Objective remove from webview: %s", data.get("index"))
             self.objective_controller.remove_objective(data.get("index"))
         elif msg_type == "trigger_objective_prediction":
             logger.info("Objective prediction requested from webview")
-            self.objective_controller.predict_now()
+            # Seed from the persisted conversation: the tracker's own window only
+            # holds the current launch, so a predict asked for right after a
+            # restart would otherwise run against nothing at all.
+            self.objective_controller.predict_now(self._transcript_pairs())
         elif msg_type == "trigger_last_pickup":
             logger.info("Last pickup update requested from webview")
             self._trigger_last_pickup_now()
@@ -1716,7 +1758,9 @@ class MainWindow(QMainWindow):
             # Host/Speaker context (the reply path mirrors it in memory).
             self.websocket_client.send_message({"type": "context_get"})
         elif msg_type == "context_state":
-            self.translation_controller.set_context(data.get("contents"))
+            self._apply_context_state(data)
+        elif msg_type == "compact_context":
+            self._compact_context(data.get("role"), data.get("path"), data.get("text"))
         elif msg_type == "context_browse":
             self._browse_context_file(data.get("role"))
         elif msg_type == "context_new_request":
@@ -1986,6 +2030,72 @@ class MainWindow(QMainWindow):
                 {"type": "context_new", "role": role, "path": path}
             )
 
+    # --- Context compaction (the Context pane's Compact button) -----------
+
+    def _apply_context_state(self, data):
+        """Mirror the Context pane's Host/Speaker text into every worker.
+
+        The Node service resolves ``effective`` — whichever variant the user
+        picked (the real file or its compacted sibling). ``contents`` is the
+        *real* file, kept for the Compact button (which must compact the
+        untruncated source) and used as the fallback for an older payload that
+        predates the variant feature.
+        """
+        contents = data.get("contents")
+        effective = data.get("effective")
+        chosen = effective if isinstance(effective, dict) else contents
+        self.translation_controller.set_context(chosen, full=contents)
+        for controller in (
+            self.bullet_points_controller,
+            self.last_pickup_controller,
+            self.objective_controller,
+            self.summarize_controller,
+        ):
+            controller.set_context(chosen)
+
+    def _compact_context(self, role, path="", text=None):
+        """The Compact button: rewrite the real context file as a shorter version.
+
+        The pane sends the *real* file's text with the request, so the call never
+        races the save-then-broadcast of a keystroke still in flight; the mirror
+        is the fallback for a caller that sends only a role. The finished text
+        goes back to Node, which owns the write to ``<file>.compacted``.
+        """
+        role = self._context_role(role)
+        body = text if isinstance(text, str) else ""
+        if not body.strip():
+            full = self.translation_controller.get_context_full()
+            effective = self.translation_controller.get_context()
+            if isinstance(full, dict):
+                body = full.get(role) or ""
+            if not body.strip() and isinstance(effective, dict):
+                body = effective.get(role) or ""
+        if not body.strip():
+            self._send_context_compact_status(role, "no_input")
+            return
+        self.context_compact_controller.trigger_now(role, body, str(path or ""))
+
+    def _on_context_compacted(self, role, base, text):
+        """Hand the compacted text to the Node service, which validates + writes."""
+        self.websocket_client.send_message({
+            "type": "context_compacted",
+            "role": role,
+            "base": base,
+            "text": text,
+        })
+        logger.info("Context compaction sent back: role=%s %d chars", role, len(text or ""))
+
+    def _send_context_compact_status(self, role, status, message=""):
+        """Broadcast the compaction state to the panes."""
+        payload = {"type": "context_compact_status", "role": role, "status": status}
+        if message:
+            payload["message"] = message
+        self.websocket_client.send_message(payload)
+
+    def _on_context_compact_error(self, msg):
+        logger.warning("Context compaction failed: %s", msg)
+        self._send_context_compact_status("", "error", message=str(msg or ""))
+
     def _toggle_all_panes(self):
         """CTRL+SHIFT+M (Cmd+Shift+M on macOS): hide all open panes, or restore
         exactly the set that was open before they were hidden.
@@ -2178,6 +2288,9 @@ class MainWindow(QMainWindow):
 
             # Stop the objective-tracker worker/timer
             self.objective_controller.cleanup()
+
+            # Stop the context-compaction worker
+            self.context_compact_controller.cleanup()
             
             # Stop websocket
             self.websocket_client.stop()

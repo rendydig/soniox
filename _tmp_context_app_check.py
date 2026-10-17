@@ -119,6 +119,27 @@ try:
         {"type": "context_state", "contents": {"host": "HOSTCTX", "speaker": "SPEAKERCTX"}}
     )
     check("mirrored", window.translation_controller._context == {"host": "HOSTCTX", "speaker": "SPEAKERCTX"})
+    check("full text mirrored too",
+          window.translation_controller.get_context_full()
+          == {"host": "HOSTCTX", "speaker": "SPEAKERCTX"})
+    check("interpretation workers got it too",
+          window.bullet_points_controller._context == {"host": "HOSTCTX", "speaker": "SPEAKERCTX"}
+          and window.last_pickup_controller._context == {"host": "HOSTCTX", "speaker": "SPEAKERCTX"}
+          and window.objective_controller._context == {"host": "HOSTCTX", "speaker": "SPEAKERCTX"}
+          and window.summarize_controller._context == {"host": "HOSTCTX", "speaker": "SPEAKERCTX"})
+    window._handle_webview_message({
+        "type": "context_state",
+        "contents": {"host": "FULLHOST", "speaker": "FULLSPEAKER"},
+        "effective": {"host": "COMPACTED", "speaker": "FULLSPEAKER"},
+    })
+    check("effective wins for the workers",
+          window.translation_controller.get_context() == {"host": "COMPACTED", "speaker": "FULLSPEAKER"})
+    check("the real file is kept for Compact",
+          window.translation_controller.get_context_full()
+          == {"host": "FULLHOST", "speaker": "FULLSPEAKER"})
+    check("the four workers follow the effective variant",
+          window.bullet_points_controller._context["host"] == "COMPACTED"
+          and window.summarize_controller._context["host"] == "COMPACTED")
     window._handle_webview_message({"type": "context_state", "contents": {"host": "", "speaker": ""}})
     check("empty means 'no context'", window.translation_controller._context == {"host": "", "speaker": ""})
     window._handle_webview_message({"type": "context_state"})
@@ -127,6 +148,65 @@ try:
     check("pane hide message honoured", not window.context_window_action.isChecked())
     window._handle_webview_message({"type": "set_context_window_edge", "edge": "left"})
     check("edge message honoured", pane.get_edge() == "left" and pane.is_docked())
+
+    print("\n[7c] the Compact button reaches the compaction worker")
+    compactions = []
+    statuses = []
+    sent_messages = []
+    window.context_compact_controller.trigger_now = (
+        lambda role, text, path="": compactions.append((role, text, path)) or True
+    )
+    window.context_compact_controller.status_changed.connect(
+        lambda role, status: statuses.append((role, status)))
+    window.websocket_client.send_message = sent_messages.append
+
+    long_text = "x" * 900
+    window._handle_webview_message({
+        "type": "compact_context", "role": "host", "path": "ctx.md", "text": long_text,
+    })
+    check("worker asked to compact the real file",
+          compactions and compactions[-1] == ("host", long_text, "ctx.md"), str(compactions[-1:]))
+    check("nothing sent to the web service yet", not sent_messages)
+
+    # The controller's own result path hands the text to the Node service.
+    window._on_context_compacted("host", "ctx.md", "SHORT")
+    check("context_compacted sent back",
+          sent_messages[-1] == {
+              "type": "context_compacted", "role": "host", "base": "ctx.md", "text": "SHORT"},
+          str(sent_messages[-1]))
+    window.context_compact_controller.status_changed.emit("host", "started")
+    check("status broadcast (via the real wiring)",
+          statuses and statuses[-1] == ("host", "started")
+          and sent_messages[-1] == {
+              "type": "context_compact_status", "role": "host", "status": "started"},
+          str(sent_messages[-1]))
+    window._send_context_compact_status("host", "error", message="boom")
+    check("status carries a message", sent_messages[-1].get("message") == "boom")
+    window._on_context_compact_error("boom")
+    check("error path broadcasts", sent_messages[-1]["status"] == "error")
+
+    # An empty request (nothing to compact) reports a notice instead of calling.
+    compactions.clear()
+    window._handle_webview_message({
+        "type": "compact_context", "role": "host", "path": "ctx.md", "text": "   ",
+    })
+    check("empty text does not call the model", not compactions)
+    check("empty text reported", sent_messages[-1] == {
+        "type": "context_compact_status", "role": "host", "status": "no_input"},
+        str(sent_messages[-1]))
+
+    print("\n[7d] the compaction falls back to the mirrored real file")
+    # No text in the message: the untruncated mirror is the source.
+    window._handle_webview_message({
+        "type": "context_state",
+        "contents": {"host": "REALHOST", "speaker": ""},
+        "effective": {"host": "COMPACTED", "speaker": ""},
+    })
+    compactions.clear()
+    window._handle_webview_message({"type": "compact_context", "role": "host", "path": "ctx.md"})
+    check("the real file text is used, not the compacted one",
+          compactions and compactions[-1] == ("host", "REALHOST", "ctx.md"), str(compactions[-1:]))
+
     print("\n[7b] Browse…/New… open a native dialog and report the picked path")
     # The dialogs are modal, so stub them out (there is no user here) and
     # capture what the app would send back to the web service.

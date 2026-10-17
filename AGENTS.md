@@ -136,6 +136,11 @@ Auto-reply latency (constants in `src/config.py`):
   tracker from flip-flopping), `OBJECTIVE_MAX_ITEMS` (20), `OBJECTIVE_MAX_HISTORY` (200),
   `OBJECTIVE_MAX_LINE_CHARS` (300) and `OBJECTIVE_WINDOW_LINES` (20).
 
+Reference context (the four interpreting workers, see the Context pane section):
+`REFERENCE_CONTEXT_MAX_CHARS` (6000) clips each role when the shared block is rendered, and
+`CONTEXT_COMPACT_MIN_CHARS` (400) is the floor below which the Compact button refuses locally
+(`too_short`) instead of spending a call.
+
 "Last Picked Up" (the Bullet Points pane's third tab) uses its **own** pair of debounce
 constants, separate from auto-reply: `LAST_PICKUP_DEBOUNCE_MS` (2000) and
 `LAST_PICKUP_ENDPOINT_DEBOUNCE_MS` (2000). Every finalized **speaker** line re-arms the timer
@@ -228,7 +233,10 @@ pauses; one prediction at a time with a single queued rerun) and adds the bullet
 semantics. Predictions come from `ObjectiveWorker` (`src/objective_worker.py`): **JEV first** —
 its `current_objective` choice question is asked against the session objectives — and the **LLM
 fallback** (one small `{"objective","confidence"}` classification call, reasoning off) when JEV is
-disabled/unavailable/unconfident, so the default (`JEV_ENABLED=false`) user is tracked too. The
+disabled/unavailable/unconfident, so the default (`JEV_ENABLED=false`) user is tracked too. Both
+paths carry the Host/Speaker **reference context** (the JEV path through `build_state`, the LLM
+fallback through `render_reference_context`), with an instruction that it is interpretation only
+and never an objective. The
 reply worker's own JEV decision call answers the same question for free when a voice reply
 happens (`GeminiAutoReplyWorker._run_objective_decision` → the `objective_observed` signal →
 `MainWindow._on_objective_observed`).
@@ -252,10 +260,29 @@ happens (`GeminiAutoReplyWorker._run_objective_decision` → the `objective_obse
 - Messages: the pane sends `add_objective` (empty/duplicate → an `objectives_status` `no_input`
   notice), `remove_objective`, `set_objective_lock` (`{index, text, locked}` — resolved by text
   first, mirroring the bullet locks) and `trigger_objective_prediction`; the app broadcasts
-  `{"type":"objectives", items, locks, active}`, `{"type":"objectives_history", entry}` per
-  committed transition and `{"type":"objectives_status", status}` (`started` / `error` /
-  `no_input`). `_send_session_state` also carries `objective_active`, so a reloaded pane never
-  re-implements the lock precedence in JavaScript.
+  `{"type":"objectives", items, locks, active, pending, satisfied}`,
+  `{"type":"objectives_history", entry}` per committed transition and
+  `{"type":"objectives_status", status, message?}` (`started` / `predicted` / `error` /
+  `no_input` / `complete`). `_send_session_state` also carries `objective_active` and
+  `objective_pending`, so a reloaded pane never re-implements the lock precedence in JavaScript.
+- **"Predict now" is a manual, immediate prediction** (`ObjectiveController.predict_now`):
+  - it commits the **first** answer (`observe(..., min_streak=1)`) instead of waiting for
+    `OBJECTIVE_MIN_STREAK` agreeing ones — the hysteresis exists to stop the *automatic* tracker
+    flip-flopping, not the user. The automatic path (debounce/`schedule`) still needs 2.
+  - it **seeds the window from the persisted transcript** (`MainWindow._transcript_pairs()` →
+    `predict_now(lines=…)`), because the tracker's rolling window only holds the current launch;
+    after a restart a predict would otherwise run against nothing.
+  - it **reports what it decided** via an `objectives_status` `predicted` frame with a message
+    (`Predicted: <text> (p=0.62 · llm)` / `No objective fits the conversation yet` /
+    `Still working on: <text>`), which the pane shows for 5 s. Before, the outcome was silent.
+  - a manual result is committed even when the window moved on (an automatic one is still
+    discarded as stale).
+  - an empty objective list / an empty window answers with a `no_input` notice carrying a message
+    ("Add an objective first" / "Nothing to predict from yet") instead of a raw status.
+  - The **unconfirmed candidate** is broadcast as `objectives.pending` (`{index, text, streak}`,
+    `{}` when none) and rendered as an amber "Candidate" row plus an item badge, so an *automatic*
+    prediction that has not reached its streak yet is visible instead of looking like nothing
+    happened.
 - Persisted as the session lists `objectives` / `objective_locks` / `objective_history` and the
   object field `objective_meta` (`src/session_store.py`, capped via `SESSION_CAPS`); the pane
   restores them through `session_state`, `_restore_session` seeds the controller and mirrors it to
@@ -641,7 +668,11 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   (`mode: "replace"`) returns the complete list and replaces it. `_parse_result_json` tolerates code
   fences/prose (and a bare JSON **array**, which falls back to bullets + empty profile); malformed
   output keeps the previous state and retries. **There is no cap** — the list grows monotonically
-  (the old `BULLET_MAX_ITEMS` was removed, in `src/config.py` too).
+  (the old `BULLET_MAX_ITEMS` was removed, in `src/config.py` too). Every call also carries the
+  shared **reference context** (`src/reference_context.py`) — for this worker the **Host half
+  only**, because its output *is* the extracted speaker profile (see "The reference block" in
+  the Context pane section); the KYC extractor will otherwise copy a pre-identified speaker
+  profile into `name`/`occupation`/`location` and `facts`.
 - **Windows / checkpoints**: every update also records one entry under `bullet_windows` (a separate
   session list, parallel to `bullets`, so bullets stay strings) —
   `{"mode": "auto"|"rebuild", "start", "end", "lines", "from_index", "to_index"}`. The time range
@@ -671,9 +702,36 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   enforced in the prompt **and** by trimming the parsed result). Facts/pain points are only
   extracted from `[speaker]` lines (the host is "us", the speaker is the customer); profile
   fields update **only when the speaker reveals them** (never guessed), unknown = `""`/`[]`.
-  `BulletPointsController` holds `_bullets` + `_locked` + `_speaker` + `_bullet_windows`, its `updated` signal is
-  `Signal(list, dict, list, list)` (items, profile, windows, locks), and `load_state(items, speaker, windows, locks)` seeds
-  all four from a restored session.
+  `BulletPointsController` holds `_bullets` + `_locked` + `_speaker` + `_speaker_locks` +
+  `_bullet_windows`, its `updated` signal is `Signal(list, dict, list, list, dict)` (items,
+  profile, windows, locks, **speaker locks**), and
+  `load_state(items, speaker, windows, locks, speaker_locks)` seeds all five from a restored
+  session.
+- **Speaker-profile locks** (pin a KYC value so the AI can never rewrite it): the flags live in
+  a **parallel** structure `speaker_locks` — `{field: bool}` for the scalars (`name`, `location`,
+  `occupation`) and `{field: [bool, …]}` for the list fields (`interests`, `goals`,
+  `pain_points`, `facts`), index-aligned with the profile's items — so the worker prompt, the
+  `speaker` dict and the session shape stay untouched.
+  - `BulletPointsController.set_speaker_lock(field, index=None, item=None, locked=None)` resolves a
+    list entry by exact `item` text first, then by the bounds-checked `index` (a scalar has no
+    index and must already hold a value — locking an empty field would only freeze it empty, so it
+    is refused); no-ops when nothing changed. `locked_speaker()` returns the locked part of the
+    profile in the profile's own shape and is handed to the worker so the prompt can carry a
+    `Locked speaker profile (already captured by the user …)` block (both modes).
+  - **Enforcement is in `_merge_speaker(incoming)`**, which every AI answer is folded through
+    (append *and* rebuild): a locked scalar keeps its current value, a locked list item is kept
+    (before the AI's new items) so an update can neither overwrite, reword, reorder nor drop it —
+    a locked item also outranks `SPEAKER_MAX_LIST_ITEMS`, since truncating must never discard a
+    pinned item to make room for the model's. The flags are rebuilt alongside (the list shape
+    changes), so they stay aligned; unlocked values are the AI's answer, as before.
+  - Pane: `components/SpeakerProfile.js` renders a padlock on every identity row and every list
+    item (reusing the `.bullet-lock` / `.bullet-item.locked` styling, so bullet, objective and
+    profile locks read alike) and sends `set_speaker_lock {field, index?, item?, locked}`;
+    `SpeakerProfile.js` addresses items by their **original** index, so a padlock click survives
+    the empty-slot filtering. The app echoes the whole `bullet_points` frame (now including
+    `speaker_locks`), persists it as the session object field `speaker_locks` (aligned to the
+    profile's shape on every write and on load, so a stale/absent list cannot pin the wrong item)
+    and restores it through `session_state`.
 - **Auto / manual / checkpoint:** auto updates run only when the checkbox is on **and** the
   pane is visible; hiding the pane (Tool ▾ or its `−`) pauses the timer but keeps the current
   list as a checkpoint and keeps buffering. Re-showing broadcasts the checkpoint immediately
@@ -688,14 +746,16 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
 - `MainWindow` wires it: `_on_transcription_update` buffers final lines via `add_line`
   (unconditional); `_trigger_bullet_points_now` is the `CTRL+ALT+P` callback (the webview
   `trigger_bullet_points` message routes to the same `flush_now(force=True)`);
-  `_on_bullet_points_updated(items, speaker, windows, locks)` broadcasts
-  `{"type":"bullet_points","items":[...],"speaker":{...},"windows":[...],"locks":[...]}` (persisted via
-  `set_bullets` + `set_speaker` + `set_bullet_windows` + `set_bullet_locks`, and mirrored to the hub via
+  `_on_bullet_points_updated(items, speaker, windows, locks, speaker_locks)` broadcasts
+  `{"type":"bullet_points","items":[...],"speaker":{...},"windows":[...],"locks":[...],
+  "speaker_locks":{...}}` (persisted via
+  `set_bullets` + `set_speaker` + `set_bullet_windows` + `set_bullet_locks` +
+  `set_speaker_locks`, and mirrored to the hub via
   `self.hub.bullets`) and
   `_send_bullet_status(status, message="")` broadcasts
   `{"type":"bullet_points_status","status":...}` over the WebSocket (`send_message`, rebroadcast by
   the server). Pane control messages: `hide_bullet_points_window`, `set_bullet_points_window_edge`,
-  `regenerate_bullet_points`, `trigger_bullet_points`, `set_bullet_lock`.
+  `regenerate_bullet_points`, `trigger_bullet_points`, `set_bullet_lock`, `set_speaker_lock`.
 - **Auto-flush countdown**: `BulletPointsController.countdown_changed = Signal(bool, float)`
   carries `(auto, next_flush_at)` where `next_flush_at` is the epoch deadline of the
   controller's own `QTimer` (`BULLET_FLUSH_INTERVAL_MS`, 5 min). It is re-armed only in
@@ -736,10 +796,12 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
 ## Sessions (persistence, resume, new session)
 - A **session** is the conversation state persisted to `sessions/current.json` (gitignored):  `bullets`, `bullet_windows`, `bullet_locks`, `objectives`, `objective_locks`, `objective_history`, `conversation`, `transcriptions`, `translations`, `gemini_results`, `screenshots`
   (each capped in `src/config.py` except `bullets`/`bullet_windows`/`bullet_locks`, which are uncapped) plus the
-  dict-typed `speaker` profile, `brief_meta` and `objective_meta` and the strings `last_pickup`, `summary`, `brief`, `gaps` and `roadmap`.
+  dict-typed `speaker` profile, `speaker_locks` (its lock flags), `brief_meta` and `objective_meta`
+  and the strings `last_pickup`, `summary`, `brief`, `gaps` and `roadmap`.
   `_normalize` keeps only the keys of `_new_session_data()`, so a field missing from
   `SESSION_FIELDS` / `SESSION_OBJECT_FIELDS` is silently dropped on load — and `objective_locks`
-  is re-aligned (padded/trimmed) to `objectives` there so an older session file still loads.
+  is re-aligned (padded/trimmed) to `objectives` there, and `speaker_locks` to the `speaker`
+  profile's shape, so an older session file still loads.
  `SessionStore` (`src/session_store.py`) holds it in memory and
   a **background daemon thread** JSON-dumps snapshots on a debounce
   (`SESSION_WRITE_DEBOUNCE_MS`, 2 s) via a temp file + `os.replace`, so file I/O never blocks the
@@ -784,43 +846,118 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
 ## Context pane (Host / Speaker context)
 The **Context** pane (Tool ▾, hotkey `Ctrl+Alt+C`; macOS `Meta+Alt+C`) edits the two
 "pre-identifier" profiles the reply prompt uses: **Host** (`- Host profile (pre-identified): …`)
-and **Speaker** (`- Speaker profile: …`). It applies to the auto-reply pipeline only — voice
-auto-reply, image reply and the JEV decision call; bullet points, "Last Picked Up" and manual
-translate are untouched.
+and **Speaker** (`- Speaker profile: …`). The text it resolves is used by **every AI call that
+interprets the conversation or writes a reply** — voice auto-reply, image reply and the JEV
+decision call (which always did), the consulting pipeline's Speaker context, and the four
+workers that had no context before: **bullet points / KYC profile**, **Last Picked Up**,
+**objectives** and **Summary** (see "The reference block" below). Manual translate
+(`GeminiWorker`) is deliberately untouched.
 
 - **Ownership**: the Node web service owns the context files
   (`websocket-server/context-store.js`), not Python. It keeps the selection, a 10-entry
-  re-select history, and a `context_state.json` (repo root, gitignored) at the repo root; each
-  role's file may live **anywhere** (inside or outside the repo) and is stored repo-relative
-  when it is inside. Nothing here touches the Go hub.
+  re-select history, the chosen **variant** per role, and a `context_state.json` (repo root,
+  gitignored); each role's file may live **anywhere** (inside or outside the repo) and is stored
+  repo-relative when it is inside. Nothing here touches the Go hub.
 - **Python only mirrors**: every `context_state` broadcast lands in
-  `MainWindow._handle_webview_message` → `TranslationController.set_context()`, which passes the
-  two strings to `GeminiAutoReplyWorker(context=…)`. No thread, no file read on the reply path.
-  `context_get` is requested on the `connection` frame, so a reconnect re-syncs the mirror.
+  `MainWindow._handle_webview_message` → `_apply_context_state`, which mirrors the resolved text
+  into `TranslationController.set_context(effective, full=contents)` and fans the same value out
+  to `BulletPointsController` / `LastPickupController` / `ObjectiveController` /
+  `SummarizeController` (`set_context`), each of which hands it to its worker. No thread, no file
+  read on any of those paths. `context_get` is requested on the `connection` frame, so a
+  reconnect re-syncs the mirror.
 - **Three states, deliberately distinct**: `context is None` = nothing has arrived yet → the
-  worker falls back to `_load_self_context()` / `_load_speaker_context()` (`.env`, today's
-  behaviour); `""` = the user picked **no context** for that role → the prompt line is omitted;
-  a path = the file's text. Do not collapse these.
+  reply worker falls back to `_load_self_context()` / `_load_speaker_context()` (`.env`, the
+  original behaviour); `""` = the user picked **no context** for that role → the prompt line (and
+  the reference block) is omitted; a string = the text. Do not collapse these.
 - **Missing file is not an error**: `problems[role] = "missing"` (or `"too_large"` for >64 KB),
   `contents[role] = ""` (no context) and the pane shows a red **file not found** badge — the
   selection is kept so the user can see which path to fix. A save to a missing/oversized file is
   rejected with a `context_status` message instead of failing silently.
 - **Saving is debounce-on-typing**: 800 ms after the last keystroke the pane sends one
-  `context_save`, which **only overwrites the role's currently selected file** — it never
-  creates one (that is `context_new`, driven by a native Save dialog) and never deletes
-  anything. The draft is flushed early on tab switch, selection change, **Save** now, hiding the
-  pane and app close (the app sends `context_flush`; `beforeunload` is unreliable in Qt
-  WebEngine). Writes are atomic (`tmp` + `rename`), so a reader never sees a half-written file.
+  `context_save`, which **only overwrites the role's currently selected file** (or that file's
+  derived `.compacted` sibling — see below) — it never creates one (that is `context_new`,
+  driven by a native Save dialog) and never deletes anything. The draft is flushed early on tab
+  switch, selection change, variant change, **Compact**, **Save** now, hiding the pane and app
+  close (the app sends `context_flush`; `beforeunload` is unreliable in Qt WebEngine). Writes are
+  atomic (`tmp` + `rename`), so a reader never sees a half-written file.
 - **Live reload**: the store watches the folders of the selected + recent files (`fs.watch`,
   250 ms debounce) and rebroadcasts on an external edit (VS Code); a content signature keeps our
   own writes from bouncing back as a loop.
+
+### The compacted variant ("Compact")
+A long context file can be rewritten as a shorter, fact-complete copy with one AI call; the copy
+lives **beside** the real file as `<selected>.compacted` and the user chooses which one the AI
+receives.
+
+- **Path safety, not a loosened allow-list**: the `.compacted` extension is outside
+  `ALLOWED_EXTENSIONS` on purpose. `context-store.js` has a dedicated **derived-path validator**
+  (`validateCompactedTarget`) whose only accepted target is exactly
+  `resolvePath(selection[role]) + '.compacted'` (with the real file still present); `save()`
+  accepts either the selection or that derived path, and rejects anything else with
+  `context_status: invalid`. `context_compacted` additionally rejects a `base` that is no longer
+  the current selection (`The context changed while compacting`), so a compaction that finishes
+  after the user switched files cannot be written to the wrong sibling.
+- **The AI call is Python's** (`src/context_compact_worker.py`, one call per press, reasoning
+  off, `ai_debug` site `context_compact`); the Node service owns the **writing**. The pane sends
+  `compact_context {role, path, text}` (the *real* file's text, so the call never races the
+  save-then-broadcast of a keystroke still in flight), `MainWindow._compact_context` runs the
+  worker, and the finished text goes back as `context_compacted {role, base, text}`.
+  `src/controllers/context_compact_controller.py` mirrors `SummarizeController` (busy guard,
+  `started`/`complete`/`error` statuses, `cleanup`).
+- **Two variants, one active**: the pane shows an **Original / Compacted** radio pair — mutually
+  exclusive — and the editor follows whichever one is active (so each is editable, and the
+  autosave target is the active one's path). `context_set_variant {role, variant}` is rejected
+  with `missing` while no compacted copy exists. The store reports both the user's `variant` and
+  the **`active`** one actually used (a `compacted` choice with no file falls back to `full`),
+  plus `effective` — the text the AI calls receive (the reply mirror and the four workers all use
+  `effective`), `compacted_path`, `compacted_contents`, `compacted_problem`,
+  `compacted_revision`, `compacted_available` and `compacted_stale`.
+- **Stale is only badged, never blocked**: `compacted_source_revision[role]` records the real
+  file's mtime when the copy was built; a later edit to the real file sets `compacted_stale` and
+  the pane shows an amber **out of date** badge — the copy stays selectable and is still used.
+  `context_new`/`context_select`/`context_clear_selection` reset the variant to `full`.
+- **Empty/short files cost nothing**: `CONTEXT_COMPACT_MIN_CHARS` (400) and an empty request are
+  refused locally with a `context_compact_status` notice (`no_input` / `too_short`) instead of
+  spending a call, and a compacted result larger than 64 KB is rejected (`too_large`).
+
+### The reference block (the interpreting workers)
+`src/reference_context.py` renders the same `Reference context (use it to interpret the
+conversation; do NOT copy or restate anything from it as a finding):` block — `Host (us): …` /
+`Speaker: …` — into the user message of `LastPickupWorker`, `ObjectiveWorker` (the LLM
+fallback; the JEV path got it through `build_state` all along) and `SummarizeWorker`, and into
+`BulletPointsWorker` (append **and** rebuild). Each of those system instructions gained a rule
+that the block is interpretation only, so a pre-identified profile cannot leak back out as an
+"extracted" finding. With **no** context every one of those prompts is **byte-identical** to
+the pre-feature one (asserted in `_tmp_context_compact_check.py`). Each role's text is clipped
+to `REFERENCE_CONTEXT_MAX_CHARS` (6000, with an explicit `…[truncated at N chars]` marker)
+because the objective tracker re-arms on a couple of seconds' debounce — the Compact button is
+the intended way to bring a long file under that bound.
+
+**`BulletPointsWorker` gets the Host half only.** Its output *is* the extracted speaker
+profile, so handing it a pre-identified speaker profile invites it straight into
+`name`/`location`/`occupation` and the `facts` list. Measured with
+`_tmp_bullet_kyc_live_check.py` (a synthetic conversation whose speaker identity appears only
+in the context): with the full block the profile came back as `name: "Zorblax Quintenhall"`,
+`occupation: "CTO of Northwind Turbines"`, `location: "Reykjavik"` — and a stronger prompt rule
+(an explicit traceability clause: "a value that appears only in the Reference context was not
+said") **reduced but did not remove** it (it recurred in 3 of 3 runs of one batch). The worker
+therefore renders the block from `{"host": …, "speaker": ""}`, which is dead reliable and costs
+nothing: the host half (what we offer, jargon, project names) is the part that actually helps
+interpret the conversation. The other three workers carry both roles (asserted in the same
+offline suite).
+
 - **Protocol** (all over the existing :8765 WebSocket, like every other pane):
   Node-handled `context_get` · `context_select {role, path}` · `context_clear_selection {role}` ·
-  `context_new {role, path}` · `context_save {role, path, text}` · `context_forget {role, path}`;
+  `context_new {role, path}` · `context_save {role, path, text}` · `context_forget {role, path}` ·
+  `context_compacted {role, base, text}` · `context_set_variant {role, variant}`;
   Qt-handled `context_browse {role}` (opens `QFileDialog.getOpenFileName`) ·
-  `context_new_request {role}` (opens `getSaveFileName`) · `context_flush`;
-  Node → all `context_state` (selection · problems · history · contents · revision) and
-  `context_status` (`saved` / `missing` / `invalid` / `too_large` / `no_target`).
+  `context_new_request {role}` (opens `getSaveFileName`) · `context_flush` ·
+  `compact_context {role, path, text}`;
+  Node → all `context_state` (selection · problems · history · contents · revision · the
+  compacted block · `variant`/`active`/`effective`) · `context_status`
+  (`saved` / `missing` / `invalid` / `too_large` / `no_target`, now carrying `role`) and, from
+  the app, `context_compact_status {role, status, message?}` (`started` / `complete` / `error` /
+  `no_input` / `too_short`).
   `server.js` serializes the Node-handled ops through a promise queue, so a `context_save`
   followed by a `context_select` cannot interleave.
 - **Pane parity**: `ContextWindow` (`src/ui_components/context_window.py`) is a copy of the
@@ -830,7 +967,8 @@ translate are untouched.
   Protection toggles, the webview heap health line (`webview_context_heap_mb`) and the
   edge-collision swap in `_set_pane_edge`. The HTML editor is
   `websocket-server/public/context.html` + `context-app.js`, with a Write/**Preview** toggle
-  (Markdown, reusing `components/Markdown.js`).
+  (Markdown, reusing `components/Markdown.js`), the Original/Compacted radio row (**Compact**
+  button + `out of date` badge), and the footer naming which variant is in use.
 
 ## Pane layout (free-floating geometry, persisted)
 - Every pane (Gemini, Live, Bullet Points, Context) is **free-floating**: a top `PaneDragHandle`
@@ -965,6 +1103,31 @@ translate are untouched.
   `logs/health.log` — RSS, thread count, editor block count, session-file size, and each
   pane's webview JS heap (`performance.memory.usedJSHeapSize`) — so growth over a
   multi-hour session is measurable. `QWebEnginePage.renderProcessTerminated` is logged too.
+- **Debug prompt dump** (`src/ai_debug.py`): while the root logger runs at `DEBUG`
+  (i.e. `LOG_LEVEL` unset or `DEBUG`, the default), every AI call appends one
+  human-readable block to `logs/ai-prompt.log` — the full system instruction, the
+  messages, the call metadata (including the `AUTO_REPLY_CONTEXT_DIGEST` flag, rendered
+  `digest_flag=true|false`), **the exact request payload the provider client is about to
+  send** (`--- payload (exact request) ---`: model, `contents`/`messages`, the generation
+  config / `extra_body` and `stream`), and the reply. The payload is reported by the
+  clients themselves (`src/ai_client.py` calls `ai_debug.log_payload(...)` right before the
+  SDK request, so it is what was really sent, not a paraphrase); the request block is
+  buffered per thread between `log_request` and `log_payload`/`log_reply` so the payload
+  always lands inside its own request, and a request that never reports a payload is still
+  flushed by `log_reply`. `LOG_LEVEL=INFO` turns it off; there is no
+  separate env var. Images are base64 data URLs, so only their **count** is dumped and any
+  data URL embedded in the payload is replaced by `<image data URL: N chars elided>`.
+  The module is pure file I/O (`enabled()` = `isEnabledFor(DEBUG)`; `log_request`
+  returns a `call_id` used by `log_reply`, all writes swallow `OSError`), so it never
+  changes what is sent to the model. Wired at each worker call site, not in
+  `src/ai_client.py`, because the metadata lives in the workers: `auto_reply` (the
+  stream in `GeminiAutoReplyWorker._stream_reply`), `other_flow` (`_synthesize`),
+  `translation` (`GeminiWorker.run`), `bullet_points`, `last_pickup`, `objective`,
+  `summary`/`consulting` and `context_compact` (`ContextCompactWorker`), plus `jev_decision`
+  (`DecisionClient.decide`, whose exact
+  `{model, state, questions}` POST body rides as the payload). Concurrent workers each write a
+  single block per call and request/reply are correlated by `call_id`, so interleaving
+  stays readable.
 
 ## Notes / gotchas
 - `sounddevice` has **no** WASAPI loopback API; `soundcard` crashes (heap corruption) —
@@ -1050,23 +1213,51 @@ Start a server first for the ones that talk to it (any port works, e.g.
 few seconds, because Qt WebEngine cannot render on the offscreen platform here.
 - `_tmp_context_prompt_check.py` — the three context states in the reply prompt (`None` →
   `.env` fallback, `""` → line omitted, text → used) plus the JEV `host_profile`/
-  `speaker_profile` and the image-reply path. No server needed. 17 checks.
+  `speaker_profile` and the image-reply path. No server needed. 16 checks.
+- `_tmp_context_compact_check.py` — Context compaction + the shared reference block, all
+  offline (the AI client is stubbed): `src/reference_context.py` (`normalize`, `has_context`,
+  the labelled block, the per-role clip at `REFERENCE_CONTEXT_MAX_CHARS` with its marker, the
+  reference-only wording); the **four** interpreting workers really carry the block *and*, with
+  no context, each prompt is **byte-identical** to the pre-feature one (`BulletPointsWorker`
+  append **and** rebuild — which renders the **Host half only**, its Speaker half deliberately
+  blanked so a pre-identified speaker profile cannot land in the extracted KYC fields;
+  `LastPickupWorker`, `ObjectiveWorker`, `SummarizeWorker` — which carry **both** halves);
+  `ContextCompactWorker` (one call, the document in the user message, reasoning off, the
+  fact-completeness rule, an empty reply is an error) and `ContextCompactController`
+  (`no_input` / `too_short` / `invalid` guards, `started` → `compacted` → `complete`, the busy
+  guard, the error path, `reset`/`cleanup`). No server needed. 54 checks.
 - `_tmp_context_smoke.py` — the protocol end-to-end with two peers (an "editor" that
   mutates and an "app" that only listens, i.e. the path the reply pipeline uses):
   `context_get` shape, the `.env` seed, `context_new`/`context_save` reaching disk,
   save-only-to-the-selected-file, missing/oversized degradation, the 10-entry MRU history,
-  external-edit rebroadcast, `clear_selection`/`forget`, host/speaker independence.
-  It restores the previous selection and deletes everything it created. 51 checks;
-  `CONTEXT_WS_URL` points it at another port.
+  external-edit rebroadcast, `clear_selection`/`forget`, host/speaker independence, and the
+  **compacted variant**: the new payload keys (`compacted_path` is exactly
+  `<selection>.compacted`, `compacted_available`, `compacted_stale`, `variant`/`active`/
+  `effective`), `context_set_variant` refused as `missing`/`invalid`, `context_compacted`
+  writing the sibling and becoming active, the foreign-`.compacted`/stale-base rejections, the
+  derived path being editable in place, an edit to the real file only badging the copy
+  (`stale` yet still `active` and still `effective` — never blocked), switching back and forth,
+  and the reset on clear. It restores the previous selection and deletes everything it created.
+  86 checks; `CONTEXT_WS_URL` points it at another port.
 - `_tmp_context_app_check.py` — the app-side pane parity: builds a real `MainWindow` and
   exercises all twelve `ui.py` places that enumerate the panes (Tool ▾ action, hotkey
   callback, visibility toggle + persistence, dock/edge-swap, always-on-top, screen
   protection, hide-all, `_save_state`, the message handlers, and the Browse/New dialogs with
-  `QFileDialog` stubbed). `ui_state.json`, the session store and the purpose store are
-  redirected to a temp dir, and the hub is disabled. 34 checks.
+  `QFileDialog` stubbed) plus the context fan-out: a `context_state` mirrors `effective` into
+  the reply path *and* all four interpreting controllers while `contents` (the real file) stays
+  reachable for Compact, an empty payload is "no context" (distinct from a malformed one),
+  `compact_context` reaches the controller with the pane's text, the mirrored real file is the
+  fallback when the message carries none, `_on_context_compacted` sends `context_compacted`, and
+  the status/error broadcasts ride the real signal wiring. `ui_state.json`, the session store
+  and the purpose store are redirected to a temp dir, and the hub is disabled. 48 checks.
 - `_tmp_context_pane_check.py` — the pane really renders: loads `/context` in a
-  QWebEngineView and asserts the Preact DOM, the WS connection, the selected path and that
-  the editor's text equals `context_sample.txt` on disk. 15 checks.
+  QWebEngineView and asserts the Preact DOM, the WS connection, the selected path and that the
+  editor's text equals the selected file on disk. It first points the Host context at a managed
+  temp file, so it no longer depends on which file the machine happens to have selected, and it
+  covers the compacted *variant* UI: the Original/Compacted radio pair (the editor follows the
+  active one), the Compact button sending `compact_context` with the real file's text, and an
+  injected compacted + stale `context_state` frame painting the `out of date` badge, switching
+  the radio and sending `context_set_variant` when the other radio is clicked. 27 checks.
 - `_tmp_context_autosave_check.py` — the debounce-on-typing loop: selects a temp file, types
   into the textarea, asserts nothing is written during the debounce window, then that the
   file holds exactly the typed text and the pane shows `Saved`. 8 checks.
@@ -1081,25 +1272,50 @@ few seconds, because Qt WebEngine cannot render on the offscreen platform here.
   `mode` defaults to `replace`. Locks: `set_lock` toggles by index/text and no-ops on the same
   value, a rebuild with two locked items composes `[locked…] + ai` with `_locked ==
   [True,True,False…]`, an append pads `_locked` with `False`, and `load_state`/`reset` keep it
-  aligned. No server needed. 42 checks.
+  aligned. Speaker-profile locks: `load_state` pads the flags to the profile's shape, locking a
+  scalar / a list item (by text or index) toggles and refuses an empty scalar or an unknown field,
+  a locked value survives an AI update and an empty answer (append *and* rebuild) while an unlocked
+  one takes the AI's value, a locked item is never dropped by `SPEAKER_MAX_LIST_ITEMS`, the flags
+  stay aligned after a merge, and the worker prompt carries the `Locked speaker profile` block in
+  both modes (and none when nothing is locked). No server needed. 66 checks.
+- `_tmp_bullet_kyc_live_check.py` — the **live re-baseline** of the KYC extraction after the
+  worker gained the reference context (opt-in, real provider: `BULLET_KYC_LIVE_TESTS=1`,
+  `--repeat N`; exits 0 with a notice when the flag is unset or the provider cannot be built).
+  It runs the real worker on a synthetic conversation that says plenty about pain/goals and
+  **nothing** about who the speaker is, twice: the no-context baseline and a run whose context
+  names a speaker identity it never states (`Zorblax Quintenhall, CTO of Northwind Turbines,
+  Reykjavik`) alongside the real `docs/helpy.context.txt` as the Host role. It asserts the trap
+  tokens and the Host product terms never appear in the profile or the bullets, that no >=6-word
+  run of the context is copied verbatim into a finding, and that the spoken pain points are
+  still captured (no degradation). **This is the check that caught the regression**: with the
+  full block the model filled `name`/`occupation`/`location` straight from the context, and a
+  stronger prompt rule did not fix it reliably — which is why the worker now blanks the Speaker
+  half. Verified 2026-10-17 (deepseek-v4.1-flash via OpenRouter): the full-block prompt leaked
+  in 3/3 runs, the Host-only prompt in **0/7**.
 - `_tmp_bullet_manual_check.py` — the pane's **Fetch new** button, app-side: builds a real
   `MainWindow` (worker start stubbed, no network) and drives `{"type":"trigger_bullet_points"}`.
   An empty buffer replies with a `bullet_points_status` `no_new` notice (with a message) instead
   of a silent no-op; buffered lines start an **incremental** update (`rebuild=False`) carrying the
   existing list + the whole buffered window; `_send_bullet_status` forwards an optional message;
   Rebuild still routes to a `rebuild=True` call from an empty list; a `set_bullet_lock` webview
-  message echoes a `bullet_points` frame carrying `locks` and persists it, and a rebuild with a
-  locked item receives it as `current_bullets`. No server needed. 21 checks.
+  message echoes a `bullet_points` frame carrying `locks` and persists it, a `set_speaker_lock`
+  message echoes `speaker_locks` and persists them (an unknown field broadcasts nothing), and a
+  rebuild with a locked item receives it as `current_bullets`. No server needed. 28 checks.
 - `_tmp_bullet_pane_check.py` — the pane really renders (needs a server: `PORT=8793 node
   server.js`): loads `/bullets` in a QWebEngineView, asserts the bullets tab shows Fetch new +
   Rebuild inside `.bullet-header-actions` (pane controls still present), stubs `WebSocket.send`,
   clicks both, and checks the app sent `trigger_bullet_points` and `regenerate_bullet_points`.
   It then pushes a `bullet_points` frame (one item locked) from a second WS client and asserts one
   padlock per bullet, the `.bullet-item.locked` tint + `aria-pressed`, and that clicking a padlock
-  sends `set_bullet_lock`. Covers the htm template, which `node --check` cannot. 16 checks.
+  sends `set_bullet_lock`. It opens the Speaker Profile tab on a frame with a profile + flags and
+  asserts one padlock per identity row and per list item, the `.locked` tint and the scalar
+  `aria-pressed`, that clicking a row padlock sends `set_speaker_lock {field, item, locked:true}` and
+  clicking a locked list item sends `{field, index, item, locked:false}` (the index is the item's own,
+  not the filtered one). Covers the htm template, which `node --check` cannot. 24 checks.
 - `_tmp_session_store_smoke.py` — `bullet_locks` round-trips through `current.json` (normalized to
   booleans), is cleared by `new_session`, and an older session file without the field normalizes to
-  `[]`.
+  `[]`; `speaker_locks` round-trips aligned to the `speaker` profile's shape (a short/absent list
+  pads with `False`, an absent scalar coerces to `False`).
 
 ### Summary tab (throwaway)
 - `_tmp_summary_check.py` — `SummarizeWorker` + `SummarizeController` with the AI client stubbed
@@ -1152,29 +1368,35 @@ few seconds, because Qt WebEngine cannot render on the offscreen platform here.
   `observe` hysteresis — one prediction does not commit, the second agreeing one does, a different
   index starts a new streak, returning to the active index or an out-of-range/`-1` prediction
   resets it, a lock pins immediately), the controller (list editing, `set_lock` by text/index,
-  meta pruning and index shifting on removal, the cap, the debounce interval, a prediction commit
-  and its history entry, the stale-window discard, the busy guard's queued rerun, the JEV
-  observation path, the history cap), the JEV plumbing (`current_objective` + the repurposed
-  `objective_N` questions, the `objectives` / `active_objective` state fields) and the session
-  round-trip (all four fields survive `_normalize`, a short lock list is padded, a missing
-  `objective_meta` degrades to `{}`, `new_session` clears and archives). No server needed. 79 checks.
+  meta pruning and index shifting on removal, the cap, the debounce interval, **a manual
+  `predict_now` that commits the first answer and reports `predicted` with a message**, the
+  *automatic* path still needing two agreeing answers, the **seeded** window
+  (`predict_now(lines=…)`) with its guards, the stale-window discard (automatic only), the busy
+  guard's queued rerun, the JEV observation path, the history cap), the JEV plumbing
+  (`current_objective` + the repurposed `objective_N` questions, the `objectives` /
+  `active_objective` state fields) and the session round-trip (the fields survive `_normalize`, a
+  short lock list is padded, a missing `objective_meta` degrades to `{}`, `new_session` clears and
+  archives). No server needed. 97 checks.
 - `_tmp_objective_app_check.py` — the app-side wiring in a real `MainWindow` (the prediction worker
   stubbed): `add_objective` broadcasts / persists / mirrors to the reply prompt (a duplicate is
   refused with a `no_input` notice), locking pins the focus in the frame + meta + history + prompt,
-  `remove_objective` updates all three, `trigger_objective_prediction` reaches the tracker, the
-  mirrored objectives/locks/meta reach the **voice** worker and are kept out of the image path, a
-  finalized speaker line fills the window and arms the debounce (a host line does neither),
-  `session_state` carries the list/locks/history and the derived `objective_active`, and restore /
-  New Session / archive / the reply worker's JEV observation all behave. No server needed. 44 checks.
+  `remove_objective` updates all three, `trigger_objective_prediction` reaches the tracker and
+  **seeds it from the persisted transcript** (`_transcript_pairs()`), the mirrored
+  objectives/locks/meta reach the **voice** worker and are kept out of the image path, a finalized
+  speaker line fills the window and arms the debounce (a host line does neither), `session_state`
+  carries the list/locks/history plus the derived `objective_active` and `objective_pending`, and
+  restore / New Session / archive / the reply worker's JEV observation all behave. No server
+  needed. 44 checks.
 - `_tmp_objective_pane_check.py` — the pane really renders (needs a server: `PORT=8796 node
   server.js`): loads `/bullets`, opens the Objectives tab, asserts the add form + Predict now, that
   clicking sends `trigger_objective_prediction` and the submitted text sends `add_objective`, that an
   incoming `objectives` frame renders both items with the tracked one highlighted, the amber lock
-  tint and the Locked badge, that an `objectives_history` frame appends to the timeline, that a
-  padlock sends `set_objective_lock` and the × sends `remove_objective`, and that the console stays
-  clean. It caught exactly the kind of bug `node --check` cannot: a conditional block in the middle
-  of the render tree made Preact throw `insertBefore` and drop the timeline (the component now keeps
-  every block in the DOM and hides the empty ones with an `empty` class). 21 checks.
+  tint and the Locked badge, that a `pending` candidate shows the amber "Candidate" row + item tint,
+  that an `objectives_history` frame appends to the timeline, that a padlock sends
+  `set_objective_lock` and the × sends `remove_objective`, and that the console stays clean. It
+  caught exactly the kind of bug `node --check` cannot: a conditional block in the middle of the
+  render tree made Preact throw `insertBefore` and drop the timeline (the component now keeps every
+  block in the DOM and hides the empty ones with an `empty` class). 24 checks.
 
 ### Microphone mute (throwaway)
 - `_tmp_mute_check.py` — the soft-mute sender loop against a **fake `websockets` connection**

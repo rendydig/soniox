@@ -6,6 +6,7 @@ from .last_pickup_controller import LastPickupController
 from .summarize_controller import SummarizeController
 from .consulting_controller import ConsultingController
 from .objective_controller import ObjectiveController
+from .context_compact_controller import ContextCompactController
 
 __all__ = [
     'DeviceController',
@@ -16,4 +17,5 @@ __all__ = [
     'SummarizeController',
     'ConsultingController',
     'ObjectiveController',
+    'ContextCompactController',
 ]

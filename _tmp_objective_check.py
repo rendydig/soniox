@@ -304,35 +304,81 @@ check("predict_now starts a worker carrying the window and the list",
       and worker.lines and worker.lines[0][0] == "speaker",
       str(worker.lines if worker else None))
 _status = []
-ctrl.status_changed.connect(_status.append)
+ctrl.status_changed.connect(lambda status, message="": _status.append((status, message)))
 worker.result.emit(0, 0.8, "llm")
-check("the first prediction does not commit", _seen_history == [])
-worker = last_worker()
-worker.result.emit(0, 0.85, "llm")
-check("the second agreeing prediction commits", len(_seen_history) == 1)
+check("a manual 'Predict now' commits the first answer", len(_seen_history) == 1,
+      str(_seen_history))
 check("the history entry names the objective",
       _seen_history[0]["text"] == "ship the pilot"
-      and _seen_history[0]["confidence"] == 0.85 and _seen_history[0]["source"] == "llm")
+      and _seen_history[0]["confidence"] == 0.8 and _seen_history[0]["source"] == "llm")
 check("the resolved focus follows the commit", ctrl.get_active()["index"] == 0)
-check("a completed prediction reports 'complete'", _status[-1] == "complete", str(_status))
+check("a manual prediction reports what it decided",
+      _status[-1][0] == "predicted" and "ship the pilot" in _status[-1][1],
+      str(_status))
+
+# An *automatic* prediction keeps the hysteresis: one answer is not enough.
+auto_seen = []
+auto = new_controller(["ship the pilot", "agree on pricing"])
+auto.history_appended.connect(lambda entry: auto_seen.append(dict(entry)))
+auto.add_line("speaker", "so what do we do about the pilot?")
+auto.schedule()
+auto._maybe_run()
+auto_worker = last_worker()
+check("an automatic prediction starts from the buffered window",
+      auto_worker is not None and auto_worker.lines
+      and auto_worker.lines[0][0] == "speaker")
+auto_worker.result.emit(0, 0.8, "llm")
+check("the first automatic prediction does not commit", auto_seen == [])
+auto_worker.result.emit(0, 0.85, "llm")
+check("the second agreeing automatic prediction commits", len(auto_seen) == 1)
+check("the automatic commit names the objective",
+      auto_seen[0]["text"] == "ship the pilot" and auto_seen[0]["confidence"] == 0.85)
 
 # A prediction that is still in flight when the conversation moves on is stale.
-ctrl.predict_now()
+auto._maybe_run()
 stale = last_worker()
-ctrl.add_line("speaker", "actually let's talk pricing")
+auto.add_line("speaker", "actually let's talk pricing")
 stale.result.emit(1, 0.99, "llm")
 stale.result.emit(1, 0.99, "llm")
-check("a stale-window prediction is discarded", ctrl.get_active()["index"] == 0)
+check("a stale-window prediction is discarded", auto.get_active()["index"] == 0)
 
 # The busy guard queues exactly one rerun instead of dropping the window.
 _FakeWorker.running = True
-ctrl._worker = last_worker()          # pretend that prediction is still in flight
-ctrl.predict_now()
+auto._worker = last_worker()          # pretend that prediction is still in flight
+auto.predict_now()
 check("a prediction while one is running is queued, not started",
-      ctrl._rerun_pending is True and ctrl._worker is last_worker())
-ctrl._rerun_pending = False
-ctrl._worker = None
+      auto._rerun_pending is True and auto._worker is last_worker())
+auto._rerun_pending = False
+auto._worker = None
+auto._manual = False
 _FakeWorker.running = False
+
+# A manual prediction can be seeded from the persisted conversation, so a press
+# right after a launch (the tracker's window is empty) still predicts.
+seeded = new_controller(["ship the pilot", "agree on pricing"])
+seeded.predict_now([("speaker", "we should ship the pilot first"),
+                    ("host", "agreed")])
+seeded_worker = last_worker()
+check("predict_now can seed the window from the transcript",
+      seeded_worker is not None and seeded_worker.lines
+      == [("speaker", "we should ship the pilot first"), ("host", "agreed")],
+      str(seeded_worker.lines if seeded_worker else None))
+_seeded_status = []
+seeded.status_changed.connect(lambda status, message="": _seeded_status.append(status))
+seeded_worker.result.emit(0, 0.7, "llm")
+check("the seeded manual prediction still commits", seeded.get_active()["index"] == 0)
+
+# With an empty window and nothing to seed from, the pane is told why.
+empty_win = new_controller(["ship the pilot"])
+_no_input = []
+empty_win.status_changed.connect(lambda status, message="": _no_input.append((status, message)))
+check("predict_now with an empty window reports no_input",
+      empty_win.predict_now([]) is False)
+check("the empty-window notice carries a message",
+      _no_input and _no_input[-1][0] == "no_input" and _no_input[-1][1],
+      str(_no_input))
+check("a manual prediction that finds no fit says so",
+      "No objective fits" in empty_win._prediction_message(-1, 0.0, "llm", False, None))
 
 # Manual JEV observation (from the reply worker) is folded in the same way.
 ctrl2 = new_controller(["first", "second"])

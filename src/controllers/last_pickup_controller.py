@@ -34,6 +34,9 @@ class LastPickupController(QObject):
         super().__init__(parent)
         self._auto = False
         self._lines = []
+        # Host/Speaker reference context mirrored by MainWindow; interpretation
+        # only, never read back out as the pickup.
+        self._context = {}
         self._worker = None
         self._old_workers = []
         self._rerun_pending = False
@@ -45,6 +48,10 @@ class LastPickupController(QObject):
 
     def is_auto(self):
         return self._auto
+
+    def set_context(self, contents):
+        """Mirror the Host/Speaker reference context pushed by the web service."""
+        self._context = contents if isinstance(contents, dict) else {}
 
     def set_auto(self, auto: bool):
         """Turn automatic pickup on/off; catch up once when enabling."""
@@ -107,7 +114,7 @@ class LastPickupController(QObject):
 
     def _start_worker(self, lines: list):
         try:
-            self._worker = LastPickupWorker(lines)
+            self._worker = LastPickupWorker(lines, context=self._context)
             self._worker.result.connect(self._on_result, Qt.ConnectionType.QueuedConnection)
             self._worker.error.connect(self._on_error, Qt.ConnectionType.QueuedConnection)
             self.status_changed.emit("started")

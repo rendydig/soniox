@@ -27,6 +27,11 @@ const CONTEXT_OPS = {
   context_new: (m) => contextStore.newFile(m.role, m.path),
   context_save: (m) => contextStore.save(m.role, m.path, m.text),
   context_forget: (m) => contextStore.forget(m.role, m.path),
+  // `context_compacted` carries the AI's compacted text back from the desktop
+  // app (which owns the model call); the store validates the derived path and
+  // writes `<selected>.compacted`.
+  context_compacted: (m) => contextStore.applyCompacted(m.role, m.base, m.text),
+  context_set_variant: (m) => contextStore.setVariant(m.role, m.variant),
 };
 
 // Context operations are serialized: a pane may send `context_save` and
@@ -60,11 +65,12 @@ function broadcastJson(payload, except) {
   return count;
 }
 
-function contextStatus(ws, status, message) {
+function contextStatus(ws, status, message, role) {
   sendJson(ws, {
     type: 'context_status',
     status,
     message,
+    role: role || null,
     timestamp: new Date().toISOString(),
   });
 }
@@ -271,7 +277,7 @@ wss.on('connection', (ws, req) => {
           const status = (result && result.status) || 'invalid';
           const text = (result && result.message) || 'Context request failed';
           console.log(`[Context] ${message.type} rejected: ${status} - ${text}`);
-          contextStatus(ws, status, text);
+          contextStatus(ws, status, text, message.role);
           return;
         }
         const payload = {

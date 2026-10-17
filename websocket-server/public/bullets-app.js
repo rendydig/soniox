@@ -18,6 +18,7 @@ const BulletPointsApp = () => {
     const [, setConnected] = useState(false);
     const [items, setItems] = useState([]);
     const [speaker, setSpeaker] = useState({});
+    const [speakerLocks, setSpeakerLocks] = useState({});
     const [locks, setLocks] = useState([]);
     const [countdown, setCountdown] = useState(null);
     const [now, setNow] = useState(() => Date.now());
@@ -36,6 +37,7 @@ const BulletPointsApp = () => {
     const [objectives, setObjectives] = useState([]);
     const [objectiveLocks, setObjectiveLocks] = useState([]);
     const [objectiveActive, setObjectiveActive] = useState({});
+    const [objectivePending, setObjectivePending] = useState({});
     const [objectiveSatisfied, setObjectiveSatisfied] = useState([]);
     const [objectiveHistory, setObjectiveHistory] = useState([]);
     const [objectiveStatus, setObjectiveStatus] = useState('');
@@ -71,6 +73,7 @@ const BulletPointsApp = () => {
         setBulletCountdown: setCountdown,
         setBulletLocks: setLocks,
         setSpeakerProfile: setSpeaker,
+        setSpeakerLocks,
         setLastPickup,
         setLastPickupStatus,
         setLastPickupAuto: setAutoPickup,
@@ -84,6 +87,7 @@ const BulletPointsApp = () => {
         setObjectives,
         setObjectiveLocks,
         setObjectiveActive,
+        setObjectivePending,
         setObjectiveSatisfied,
         setObjectiveHistory,
         setObjectiveStatus,
@@ -193,7 +197,18 @@ const BulletPointsApp = () => {
     `;
 
     const speakerView = html`
-        <${SpeakerProfile} profile=${speaker} status=${status} />
+        <${SpeakerProfile}
+            profile=${speaker}
+            locks=${speakerLocks}
+            status=${status}
+            onToggleLock=${(field, index, item, locked) => sendControl({
+                type: 'set_speaker_lock',
+                field,
+                index,
+                item,
+                locked
+            })}
+        />
     `;
 
     const summaryView = html`
@@ -225,6 +240,7 @@ const BulletPointsApp = () => {
             items=${objectives}
             locks=${objectiveLocks}
             active=${objectiveActive}
+            pending=${objectivePending}
             satisfied=${objectiveSatisfied}
             history=${objectiveHistory}
             status=${objectiveStatus}

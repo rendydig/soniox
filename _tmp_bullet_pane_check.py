@@ -130,6 +130,62 @@ LOCK_SCRIPT = """
 })()
 """.replace("%PORT%", PORT)
 
+# Push a profile frame, open the Speaker tab, then click one padlock per shape
+# (an identity row and a list item) and capture what each sends.
+SPEAKER_SCRIPT = """
+(function () {
+    window.__spk = { ok: true };
+    var peer = new WebSocket('ws://localhost:%PORT%');
+    peer.onopen = function () {
+        peer.send(JSON.stringify({
+            type: 'bullet_points',
+            items: [],
+            speaker: { name: 'Maya', location: 'Jakarta', occupation: 'Head of Ops',
+                       interests: ['coffee', 'running'], goals: ['cut onboarding time'],
+                       pain_points: ['briefs get lost'], facts: ['12-person team'] },
+            windows: [],
+            locks: [],
+            speaker_locks: { name: true, location: false, occupation: false,
+                             interests: [false, true], goals: [], pain_points: [],
+                             facts: [] }
+        }));
+    };
+    setTimeout(function () {
+        try {
+            var tabs = Array.prototype.slice.call(document.querySelectorAll('.bullet-tab'));
+            var speakerTab = tabs.filter(function (t) {
+                return t.textContent.trim() === 'Speaker Profile';
+            })[0];
+            if (speakerTab) { speakerTab.click(); }
+            setTimeout(function () {
+                window.__spk.rows = document.querySelectorAll('.kyc-row').length;
+                window.__spk.rowLocks = document.querySelectorAll('.kyc-row .bullet-lock').length;
+                window.__spk.itemLocks = document.querySelectorAll('.kyc-item .bullet-lock').length;
+                window.__spk.lockedItems = document.querySelectorAll('.kyc-item.locked').length;
+                window.__spk.aria = Array.prototype.slice.call(
+                    document.querySelectorAll('.kyc-row .bullet-lock'))
+                    .map(function (b) { return b.getAttribute('aria-pressed'); });
+                var sent = [];
+                var orig = WebSocket.prototype.send;
+                WebSocket.prototype.send = function (d) { sent.push(String(d)); return orig.apply(this, arguments); };
+                var rowLock = document.querySelectorAll('.kyc-row .bullet-lock')[1];
+                if (rowLock) { rowLock.click(); }
+                var itemLock = document.querySelectorAll('.kyc-item .bullet-lock')[1];
+                if (itemLock) { itemLock.click(); }
+                WebSocket.prototype.send = orig;
+                window.__spk.sent = sent.map(function (s) {
+                    try { return JSON.parse(s); } catch (e) { return s; }
+                });
+            }, 500);
+        } catch (e) {
+            window.__spk.ok = false;
+            window.__spk.error = String(e);
+        }
+    }, 300);
+    return 'started';
+})()
+""".replace("%PORT%", PORT)
+
 
 def collect(key):
     def _cb(value):
@@ -159,6 +215,19 @@ def probe_read_lock():
     page.runJavaScript(
         "(function () { return JSON.stringify(window.__lock || {}); })()",
         collect("lock"),
+    )
+    QTimer.singleShot(400, probe_speaker)
+
+
+def probe_speaker():
+    page.runJavaScript(SPEAKER_SCRIPT, collect("speaker_started"))
+    QTimer.singleShot(2400, probe_read_speaker)
+
+
+def probe_read_speaker():
+    page.runJavaScript(
+        "(function () { return JSON.stringify(window.__spk || {}); })()",
+        collect("speaker"),
     )
     QTimer.singleShot(400, report)
 
@@ -207,7 +276,33 @@ def report():
           and toggle[0].get("locked") is True,
           str(toggle))
 
-    print("\n[6] no JavaScript errors")
+    print("\n[6] the Speaker tab renders a padlock per profile value")
+    spk = _parse("speaker")
+    check("the speaker probe ran", spk.get("ok") is True, str(spk.get("error")))
+    check("identity rows rendered", spk.get("rows") == 3, str(spk.get("rows")))
+    check("one padlock per identity row", spk.get("rowLocks") == 3, str(spk.get("rowLocks")))
+    check("one padlock per list item", spk.get("itemLocks") == 5, str(spk.get("itemLocks")))
+    check("a locked list item carries the .locked tint",
+          spk.get("lockedItems") == 1, str(spk.get("lockedItems")))
+    check("aria-pressed reflects the scalar flags",
+          spk.get("aria") == ["true", "false", "false"], str(spk.get("aria")))
+
+    print("\n[7] clicking a speaker padlock sends set_speaker_lock")
+    spk_sent = [m for m in (spk.get("sent") or []) if isinstance(m, dict)]
+    spk_toggle = [m for m in spk_sent if m.get("type") == "set_speaker_lock"]
+    check("two set_speaker_lock frames were sent", len(spk_toggle) == 2, str(spk.get("sent")))
+    check("the scalar one carries the field and the new value",
+          bool(spk_toggle) and spk_toggle[0].get("field") == "location"
+          and spk_toggle[0].get("locked") is True,
+          str(spk_toggle[0] if spk_toggle else None))
+    check("the list one carries the field, index, item and the unlocked value",
+          len(spk_toggle) > 1 and spk_toggle[1].get("field") == "interests"
+          and spk_toggle[1].get("index") == 1
+          and spk_toggle[1].get("item") == "running"
+          and spk_toggle[1].get("locked") is False,
+          str(spk_toggle[1] if len(spk_toggle) > 1 else None))
+
+    print("\n[8] no JavaScript errors")
     errors = [line for line in console if "Error" in line]
     check("console clean", not errors, "; ".join(errors[:3]))
     for line in console[:10]:

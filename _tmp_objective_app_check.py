@@ -156,9 +156,26 @@ try:
     print("\n[4] a prediction request routes to the tracker")
     empty = ui.ObjectiveController()
     empty_status = []
-    empty.status_changed.connect(empty_status.append)
+    empty.status_changed.connect(lambda status, message="": empty_status.append((status, message)))
     check("predict_now with no objectives reports no_input",
-          empty.predict_now() is False and empty_status == ["no_input"], str(empty_status))
+          empty.predict_now() is False and empty_status[-1][0] == "no_input"
+          and empty_status[-1][1], str(empty_status))
+
+    # A manual press seeds the window from the persisted conversation, so it can
+    # predict right after a launch without waiting for new speech.
+    observed = []
+    window.objective_controller._start_worker = lambda: observed.append(
+        list(window.objective_controller._lines))
+    window.session_store.append("transcriptions",
+                                {"source": "speaker", "text": "we should ship the pilot",
+                                 "timestamp": "t1"})
+    window.session_store.append("transcriptions",
+                                {"source": "host", "text": "agreed", "timestamp": "t2"})
+    window.objective_controller.set_objectives(["Ship the pilot"], [False])
+    window.objective_controller.predict_now(window._transcript_pairs())
+    check("Predict now seeds the tracker window from the session transcript",
+          observed and observed[-1] == [("speaker", "we should ship the pilot"), ("host", "agreed")],
+          str(observed))
 
     started = []
     real_worker = tc.GeminiAutoReplyWorker

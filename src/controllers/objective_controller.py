@@ -51,8 +51,10 @@ class ObjectiveController(QObject):
     active_changed = Signal(dict)
     # One committed transition (an entry of the history timeline).
     history_appended = Signal(dict)
-    # "started" / "complete" / "error" / "no_input" — mirrors the other panes.
-    status_changed = Signal(str)
+    # ("started" / "complete" / "error" / "no_input" / "predicted", message).
+    # The message is rendered by the pane; "predicted" is the outcome of a manual
+    # "Predict now" press, so the button never looks dead.
+    status_changed = Signal(str, str)
     error_occurred = Signal(str)
 
     def __init__(self, parent=None):
@@ -62,9 +64,16 @@ class ObjectiveController(QObject):
         self._history = []
         self._meta = {}
         self._lines = []
+        # Host/Speaker reference context mirrored by MainWindow; interpretation
+        # only — never treated as an objective.
+        self._context = {}
         self._worker = None
         self._old_workers = []
         self._rerun_pending = False
+        # A manual "Predict now" press commits on the first answer instead of
+        # waiting for ``OBJECTIVE_MIN_STREAK`` agreeing predictions (hysteresis is
+        # there to stop the *automatic* tracker flip-flopping, not the user).
+        self._manual = False
         # Window counter: a prediction for a window the user has moved past is
         # discarded instead of committing a stale focus.
         self._window_id = 0
@@ -74,6 +83,10 @@ class ObjectiveController(QObject):
         self._timer.timeout.connect(self._maybe_run)
 
     # --- state accessors ----------------------------------------------
+    def set_context(self, contents):
+        """Mirror the Host/Speaker reference context pushed by the web service."""
+        self._context = contents if isinstance(contents, dict) else {}
+
     def get_objectives(self) -> list:
         return list(self._objectives)
 
@@ -89,6 +102,23 @@ class ObjectiveController(QObject):
     def get_active(self) -> dict:
         """The resolved active objective (``{}`` when nothing is tracked)."""
         return resolve_active(self._objectives, self._locks, self._meta)
+
+    def get_pending(self) -> dict:
+        """The unconfirmed candidate (``{}`` when there is none).
+
+        ``observe`` records ``pending`` / ``streak`` while a transition waits for
+        ``OBJECTIVE_MIN_STREAK`` agreeing predictions. The pane shows it as a
+        *candidate*, so an automatic prediction that has not committed yet is
+        still visible instead of looking like nothing happened.
+        """
+        index = self._resolve_index(self._meta.get("pending"))
+        if index is None:
+            return {}
+        return {
+            "index": index,
+            "text": self._objectives[index],
+            "streak": int(self._meta.get("streak") or 0),
+        }
 
     def is_busy(self) -> bool:
         """True while a prediction is in flight."""
@@ -226,6 +256,31 @@ class ObjectiveController(QObject):
             self._lines = self._lines[-OBJECTIVE_WINDOW_LINES:]
         self._window_id += 1
 
+    def seed_lines(self, lines):
+        """Replace the rolling window from a transcript (``(source, text)`` pairs).
+
+        Used by a manual prediction so it can run off the *conversation* even
+        when this launch has not buffered anything yet (a fresh start, or a
+        restored session): the transcript is persisted, the window is not.
+        Returns True when at least one usable line was seeded.
+        """
+        seeded = []
+        for entry in lines or []:
+            try:
+                source, text = entry[0], entry[1]
+            except (TypeError, IndexError):
+                continue
+            text = str(text or "").strip()
+            if text:
+                seeded.append((str(source or ""), text))
+        if not seeded:
+            return False
+        self._lines = seeded[-OBJECTIVE_WINDOW_LINES:]
+        self._window_id += 1
+        logger.debug("Objective window seeded from the transcript (%d line(s))",
+                     len(self._lines))
+        return True
+
     def schedule(self, delay_ms: int = None):
         """(Re)arm the debounce; the UI calls this at the end of an utterance."""
         if not self._objectives:
@@ -233,12 +288,25 @@ class ObjectiveController(QObject):
         self._timer.stop()
         self._timer.start(max(0, int(OBJECTIVE_DEBOUNCE_MS if delay_ms is None else delay_ms)))
 
-    def predict_now(self):
-        """Predict on demand (the pane's "Predict now" button), regardless of timing."""
+    def predict_now(self, lines=None):
+        """Predict on demand (the pane's "Predict now" button).
+
+        A manual press commits the first answer (``min_streak=1``) — the user
+        asked, so waiting for a second agreeing prediction would just look like
+        the button is broken. ``lines`` optionally seeds the window from the
+        persisted conversation before predicting. Returns False when there is
+        nothing to predict from, after telling the pane why.
+        """
         if not self._objectives:
-            self.status_changed.emit("no_input")
+            self.status_changed.emit("no_input", "Add an objective first")
+            return False
+        if lines:
+            self.seed_lines(lines)
+        if not self._lines:
+            self.status_changed.emit("no_input", "Nothing to predict from yet")
             return False
         self._timer.stop()
+        self._manual = True
         self._maybe_run(force=True)
         return True
 
@@ -249,7 +317,8 @@ class ObjectiveController(QObject):
         history entry. ``index`` of -1 (or anything out of range) resets the
         hysteresis streak instead of counting as agreement.
         """
-        return self._apply(index, confidence, source)
+        committed, _ = self._apply(index, confidence, source)
+        return committed
 
     def load_state(self, objectives, locks=None, history=None, meta=None):
         """Seed the tracker from a restored session (no AI call, no broadcast)."""
@@ -266,6 +335,7 @@ class ObjectiveController(QObject):
     def reset(self):
         """Clear the list, locks, history and buffer (New Session)."""
         self._timer.stop()
+        self._manual = False
         self._objectives = []
         self._locks = []
         self._history = []
@@ -307,18 +377,18 @@ class ObjectiveController(QObject):
             else:
                 self._meta.pop("satisfied", None)
 
-    def _apply(self, index, confidence, source):
-        """Fold one prediction in; True when the active objective changed."""
+    def _apply(self, index, confidence, source, min_streak=None):
+        """Fold one prediction in; returns ``(committed, pending)``."""
         before = self._meta.get("active")
         meta, committed = observe(
             self._objectives, self._locks, self._meta, index, confidence, source,
-            OBJECTIVE_MIN_STREAK,
+            OBJECTIVE_MIN_STREAK if min_streak is None else min_streak,
         )
         self._meta = meta
         if not committed:
             logger.debug("Objective observation ignored (pending=%s streak=%s)",
                          meta.get("pending"), meta.get("streak"))
-            return False
+            return False, meta.get("pending")
 
         logger.info("Active objective -> %r (%s, p=%.2f)",
                     (self.get_active() or {}).get("text"), meta.get("source"),
@@ -332,7 +402,7 @@ class ObjectiveController(QObject):
         self.history_appended.emit(dict(entry))
         if meta.get("active") != before:
             self._emit_active()
-        return True
+        return True, None
 
     def _emit_active(self):
         self.active_changed.emit(self.get_active())
@@ -357,13 +427,14 @@ class ObjectiveController(QObject):
                 self.get_objectives(),
                 self.get_locks(),
                 self.get_meta(),
+                context=self._context,
             )
             self._worker.result.connect(
                 lambda index, confidence, source: self._on_result(index, confidence, source, window),
                 Qt.ConnectionType.QueuedConnection,
             )
             self._worker.error.connect(self._on_error, Qt.ConnectionType.QueuedConnection)
-            self.status_changed.emit("started")
+            self.status_changed.emit("started", "")
             self._worker.start()
         except Exception as e:
             logger.error("Failed to start objective worker: %s", e)
@@ -371,20 +442,48 @@ class ObjectiveController(QObject):
             self.error_occurred.emit(f"Failed to start objective prediction: {e}")
 
     def _on_result(self, index, confidence, source, window):
+        manual = self._manual
+        self._manual = False
         self._recycle_worker()
-        if window != self._window_id:
+        if manual:
+            # The user asked: commit the first answer and say what it was.
+            committed, pending = self._apply(index, confidence, source, min_streak=1)
+            self._emit_active()
+            resolved = self._resolve_index(index)
+            logger.info("Manual objective prediction: %s (committed=%s, p=%.2f, %s)",
+                        self._objectives[resolved] if resolved is not None else "(no fit)",
+                        committed, float(confidence or 0.0), source)
+            self.status_changed.emit(
+                "predicted",
+                self._prediction_message(index, confidence, source, committed, pending),
+            )
+        elif window != self._window_id:
             # The conversation moved on while the call was in flight; committing
             # it now would record a focus the user has already left behind.
             logger.debug("Discarding a stale objective prediction (window %s)", window)
+            self.status_changed.emit("complete", "")
         else:
             self._apply(index, confidence, source)
-        self.status_changed.emit("complete")
+            self.status_changed.emit("complete", "")
         self._run_pending()
 
+    def _prediction_message(self, index, confidence, source, committed, pending) -> str:
+        """A one-line, human-readable result for the pane's status line."""
+        resolved = self._resolve_index(index)
+        if resolved is None:
+            return "No objective fits the conversation yet"
+        text = self._objectives[resolved]
+        if committed:
+            return f"Predicted: {text} (p={float(confidence or 0.0):.2f} · {source})"
+        if pending is not None:
+            return f"Candidate: {text} (waiting for confirmation)"
+        return f"Still working on: {text}"
+
     def _on_error(self, msg: str):
+        self._manual = False
         self._recycle_worker()
         self.error_occurred.emit(msg)
-        self.status_changed.emit("error")
+        self.status_changed.emit("error", msg)
         self._run_pending()
 
     def _run_pending(self):

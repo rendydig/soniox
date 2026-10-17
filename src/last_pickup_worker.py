@@ -2,8 +2,10 @@ import logging
 
 from PySide6.QtCore import QThread, Signal
 
+from src import ai_debug
 from src.ai_client import get_ai_client
 from src.config import BULLET_MAX_LINE_CHARS
+from src.reference_context import render_reference_context
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +25,10 @@ Rules:
      Indonesian, output only the first paragraph.
 - No preamble, no quotes, no reasoning. The only label allowed is the language name on the
   second paragraph.
-- If there is nothing meaningful to pick up, return an empty string."""
+- If there is nothing meaningful to pick up, return an empty string.
+- REFERENCE CONTEXT: when the user message carries a "Reference context" block it is
+  background about the two participants (jargon, acronyms, what a product or project is).
+  Use it to interpret what the speaker means; never read the block back out as the pickup."""
 
 
 class LastPickupWorker(QThread):
@@ -32,9 +37,12 @@ class LastPickupWorker(QThread):
     result = Signal(str)
     error = Signal(str)
 
-    def __init__(self, lines: list, parent=None):
+    def __init__(self, lines: list, parent=None, context: dict = None):
         super().__init__(parent)
         self._lines = list(lines or [])
+        # Host/Speaker reference context (the Context pane's file, or its
+        # compacted variant): interpretation only, per the system instruction.
+        self._context = context if isinstance(context, dict) else {}
         self._is_running = True
 
     def _build_user_message(self) -> str:
@@ -42,7 +50,8 @@ class LastPickupWorker(QThread):
             f"[{source}] {text[:BULLET_MAX_LINE_CHARS]}"
             for source, text in self._lines
         )
-        return f"Latest conversation lines:\n{lines}"
+        reference = render_reference_context(self._context)
+        return f"{reference}Latest conversation lines:\n{lines}"
 
     def run(self):
         try:
@@ -50,11 +59,18 @@ class LastPickupWorker(QThread):
                 return
 
             client = get_ai_client()
+            user_message = self._build_user_message()
+            call_id = ai_debug.log_request(
+                "last_pickup", SYSTEM_INSTRUCTION,
+                [{"role": "user", "text": user_message}],
+                meta={"lines": len(self._lines)},
+            )
             response = client.generate(
                 SYSTEM_INSTRUCTION,
-                [{"role": "user", "text": self._build_user_message()}],
+                [{"role": "user", "text": user_message}],
                 disable_reasoning=True,
             )
+            ai_debug.log_reply(call_id, response)
 
             if not self._is_running:
                 return

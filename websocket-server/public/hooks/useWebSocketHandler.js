@@ -27,6 +27,7 @@ export const useWebSocketHandler = ({
     handleSessionState,
     handleContextState,
     handleContextStatus,
+    handleContextCompactStatus,
     handleConnection
 }) => {
     const processMessage = useCallback((data, type, finalHandler, liveHandler) => {
@@ -80,7 +81,8 @@ export const useWebSocketHandler = ({
             }
         } else if (data.type === 'bullet_points') {
             if (typeof handleBulletPoints === 'function') {
-                handleBulletPoints(data.items || [], data.speaker, data.locks);
+                handleBulletPoints(data.items || [], data.speaker, data.locks,
+                    data.speaker_locks);
             }
         } else if (data.type === 'bullet_points_status') {
             if (typeof handleBulletPointsStatus === 'function') {
@@ -116,7 +118,8 @@ export const useWebSocketHandler = ({
             }
         } else if (data.type === 'objectives') {
             if (typeof handleObjectives === 'function') {
-                handleObjectives(data.items || [], data.locks, data.active, data.satisfied);
+                handleObjectives(data.items || [], data.locks, data.active,
+                    data.satisfied, data.pending);
             }
         } else if (data.type === 'objectives_history') {
             if (typeof handleObjectivesHistory === 'function') {
@@ -136,7 +139,11 @@ export const useWebSocketHandler = ({
             }
         } else if (data.type === 'context_status') {
             if (typeof handleContextStatus === 'function') {
-                handleContextStatus(data.status, data.message);
+                handleContextStatus(data.status, data.message, data.role);
+            }
+        } else if (data.type === 'context_compact_status') {
+            if (typeof handleContextCompactStatus === 'function') {
+                handleContextCompactStatus(data.role, data.status, data.message);
             }
         } else if (data.type === 'correction_response') {
             console.log('[WebSocket] Correction response:', data);
@@ -172,6 +179,7 @@ export const useWebSocketHandler = ({
         handleSessionState,
         handleContextState,
         handleContextStatus,
+        handleContextCompactStatus,
         handleConnection
     ]);
 

@@ -634,6 +634,41 @@
         gap: 6px;
     }
 
+    /* The unconfirmed prediction ("Candidate", waiting for a second agreeing
+       answer before it commits), and an item the tracker picked but has not
+       committed to yet. Amber, so it never reads as the focus. */
+    .objectives-candidate {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        background: rgba(245, 158, 11, 0.12);
+        color: #92400e;
+        font-size: 13px;
+    }
+
+    .objectives-candidate .objectives-active-label {
+        color: #b45309;
+    }
+
+    .objectives-candidate-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .objective-item.candidate {
+        background: rgba(245, 158, 11, 0.1);
+        border-radius: 6px;
+    }
+
+    .objectives-view .objective-candidate {
+        margin-left: 6px;
+        font-size: 0.72em;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
     .objectives-input {
         flex: 1;
         min-width: 0;
@@ -720,6 +755,8 @@
        becomes an element while a following slot changes shape. */
     .objectives-view .objectives-active.empty,
     .objectives-view .objectives-active .consulting-badge.empty,
+    .objectives-view .objectives-candidate.empty,
+    .objectives-view .objective-candidate.empty,
     .objectives-view .bullet-status.empty,
     .objectives-view .bullet-empty.empty,
     .objectives-view .objectives-history.empty {
@@ -849,6 +886,19 @@
         min-width: 0;
         color: #1f2937;
         overflow-wrap: anywhere;
+    }
+
+    /* The padlock sits at the end of the row (identity rows and list items
+       alike), and a locked list item gets the same amber tint as a locked
+       bullet — the two locks read alike on purpose. */
+    .kyc-row .bullet-lock,
+    .kyc-item .bullet-lock {
+        flex: 0 0 auto;
+    }
+
+    .kyc-item.locked {
+        background: rgba(245, 158, 11, 0.1);
+        border-radius: 6px;
     }
 
     /* List entries reuse the .bullet-item row with a small marker. */
@@ -1107,6 +1157,11 @@
     .consulting-badge.confirmed {
         background: rgba(5, 150, 105, 0.15);
         color: #047857;
+    }
+
+    .consulting-badge.candidate {
+        background: rgba(245, 158, 11, 0.2);
+        color: #b45309;
     }
 
     .consulting-actions .bullet-action-btn:disabled {

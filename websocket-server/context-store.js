@@ -7,9 +7,16 @@
  * 10-entry re-select history, and the file contents the panes render and the
  * Python AI worker mirrors in memory.
  *
+ * Each role also has an optional **compacted** variant: an AI-summarised copy of
+ * the real file, stored beside it as `<realselection>.compacted`. The user picks
+ * which variant the AI calls receive (`variant`), the pane edits whichever one
+ * is selected, and a compacted copy whose source has changed since it was built
+ * is only *badged* (never blocked).
+ *
  * Guarantees:
  *   - Files are never created by a save: `save()` only overwrites a file that
- *     already exists and is the current selection for that role.
+ *     already exists and is the current selection for that role (or that
+ *     role's derived `.compacted` sibling).
  *   - A missing or oversized file is not an error: its contents become `""`
  *     (no context) and `problems[role]` says why, so the pane can tell the user
  *     which path to fix without anything crashing.
@@ -18,6 +25,9 @@
  *   - `onExternalChange` fires only for changes this module did not make
  *     (e.g. the file edited in VS Code), deduplicated by a content signature —
  *     so a save cannot bounce back as a broadcast loop.
+ *   - The `.compacted` path is validated on its own (`validateCompactedTarget`)
+ *     rather than by loosening the extension allow-list: it must be exactly
+ *     `<selected>.compacted`.
  */
 
 const fs = require('fs');
@@ -32,6 +42,11 @@ const HISTORY_MAX = 10;
 const MAX_CONTEXT_BYTES = 64 * 1024;
 const ALLOWED_EXTENSIONS = new Set(['.txt', '.md']);
 const WATCH_DEBOUNCE_MS = 250;
+// Suffix of the AI-compacted variant, stored beside the real file. Deliberately
+// outside the extension allow-list — it is a *derived* path, validated by
+// `validateCompactedTarget` rather than by `extensionOk`.
+const COMPACTED_SUFFIX = '.compacted';
+const VARIANTS = ['full', 'compacted'];
 
 let state = emptyState();
 // Signature of the last state broadcast, so the watcher can tell "someone else
@@ -47,6 +62,11 @@ function emptyState() {
     selection: { host: null, speaker: null },
     history: { host: [], speaker: [] },
     last_dir: { host: null, speaker: null },
+    // Which variant the AI calls receive ('full' | 'compacted'), and the real
+    // file's mtime at the moment its compacted copy was built (the staleness
+    // watermark).
+    variant: { host: 'full', speaker: 'full' },
+    compacted_source_revision: { host: 0, speaker: 0 },
   };
 }
 
@@ -67,6 +87,37 @@ function storePath(absolute) {
 
 function extensionOk(target) {
   return ALLOWED_EXTENSIONS.has(path.extname(target).toLowerCase());
+}
+
+/**
+ * The compacted variant's **stored** path: `<selected>.compacted`. Kept in the
+ * same form as the selection (repo-relative when the selection is), so the pane
+ * can echo it back as `path` on a save.
+ */
+function compactedStored(role) {
+  const selected = state.selection[role];
+  return selected ? selected + COMPACTED_SUFFIX : null;
+}
+
+/** The compacted variant's absolute path, or `null` with no selection. */
+function compactedPath(role) {
+  const selected = state.selection[role];
+  return selected ? resolvePath(selected) + COMPACTED_SUFFIX : null;
+}
+
+/**
+ * Validate a derived `.compacted` target **without** loosening the extension
+ * allow-list: the only accepted value is exactly `<selection>.compacted`.
+ */
+function validateCompactedTarget(role, stored) {
+  const selected = state.selection[role];
+  if (!selected) return { ok: false, status: 'no_target', message: 'No context file selected' };
+  if (stored != null && stored !== compactedStored(role)) {
+    return { ok: false, status: 'invalid', message: 'Not the derived path for the selected context' };
+  }
+  const real = validateTarget(resolvePath(selected), { mustExist: true });
+  if (!real.ok) return real;
+  return { ok: true, target: compactedPath(role) };
 }
 
 // --- state file -----------------------------------------------------------
@@ -97,6 +148,12 @@ function loadState() {
       const lastDir = disk.last_dir && disk.last_dir[role];
       if (typeof lastDir === 'string' && lastDir.trim() && fs.existsSync(lastDir.trim())) {
         state.last_dir[role] = lastDir.trim();
+      }
+      const variant = disk.variant && disk.variant[role];
+      if (VARIANTS.includes(variant)) state.variant[role] = variant;
+      const watermark = disk.compacted_source_revision && disk.compacted_source_revision[role];
+      if (typeof watermark === 'number' && isFinite(watermark) && watermark > 0) {
+        state.compacted_source_revision[role] = Math.round(watermark);
       }
     }
   }
@@ -188,6 +245,29 @@ async function readTarget(target) {
   }
 }
 
+/**
+ * Read a role's derived `.compacted` file. Unlike `readTarget`, an absent file
+ * is not a "problem" — it just has not been built yet (`available: false`), so
+ * the pane shows the Compact button instead of a red badge.
+ */
+async function readCompacted(role) {
+  const target = compactedPath(role);
+  if (!target) return { text: '', problem: null, mtimeMs: 0, available: false };
+  try {
+    const stats = await fsp.stat(target);
+    if (!stats.isFile()) {
+      return { text: '', problem: 'invalid', mtimeMs: 0, available: false };
+    }
+    if (stats.size > MAX_CONTEXT_BYTES) {
+      return { text: '', problem: 'too_large', mtimeMs: stats.mtimeMs, available: false };
+    }
+    const text = await fsp.readFile(target, 'utf-8');
+    return { text, problem: null, mtimeMs: stats.mtimeMs, available: true };
+  } catch (error) {
+    return { text: '', problem: null, mtimeMs: 0, available: false };
+  }
+}
+
 // --- snapshot -------------------------------------------------------------
 
 async function buildPayload() {
@@ -197,21 +277,52 @@ async function buildPayload() {
     history: {},
     contents: {},
     revision: {},
+    compacted_path: {},
+    compacted_contents: {},
+    compacted_problem: {},
+    compacted_revision: {},
+    compacted_available: {},
+    compacted_stale: {},
+    variant: {},
+    // Which variant is actually used (a 'compacted' choice with no compacted
+    // file falls back to 'full'), and the text the AI calls receive for the role.
+    active: {},
+    effective: {},
   };
   for (const role of ROLES) {
     const stored = state.selection[role] || null;
     payload.selection[role] = stored;
     payload.history[role] = (state.history[role] || []).slice(0, HISTORY_MAX);
-    if (!stored) {
+    payload.compacted_path[role] = compactedStored(role);
+    let full = { text: '', problem: null, mtimeMs: 0 };
+    let compacted = { text: '', problem: null, mtimeMs: 0, available: false };
+    if (stored) {
+      const read = await readTarget(resolvePath(stored));
+      payload.problems[role] = read.problem;
+      payload.contents[role] = read.problem ? '' : read.text;
+      payload.revision[role] = Math.round(read.mtimeMs);
+      full = read;
+      compacted = await readCompacted(role);
+    } else {
       payload.problems[role] = null;
       payload.contents[role] = '';
       payload.revision[role] = 0;
-      continue;
     }
-    const read = await readTarget(resolvePath(stored));
-    payload.problems[role] = read.problem;
-    payload.contents[role] = read.problem ? '' : read.text;
-    payload.revision[role] = Math.round(read.mtimeMs);
+    payload.compacted_contents[role] = compacted.text;
+    payload.compacted_problem[role] = compacted.problem;
+    payload.compacted_revision[role] = Math.round(compacted.mtimeMs);
+    payload.compacted_available[role] = compacted.available;
+    // Only *badged*: a compacted copy built from an older revision is still
+    // usable, the pane just says so.
+    const watermark = state.compacted_source_revision[role] || 0;
+    payload.compacted_stale[role] = Boolean(
+      compacted.available && watermark > 0 && Math.round(full.mtimeMs) > watermark
+    );
+    const requested = state.variant[role] || 'full';
+    const useCompacted = requested === 'compacted' && compacted.available;
+    payload.variant[role] = requested;
+    payload.active[role] = useCompacted ? 'compacted' : 'full';
+    payload.effective[role] = useCompacted ? compacted.text : full.text;
   }
   return payload;
 }
@@ -223,6 +334,15 @@ function signature(payload) {
     payload.history,
     payload.contents,
     payload.revision,
+    payload.compacted_path,
+    payload.compacted_contents,
+    payload.compacted_problem,
+    payload.compacted_revision,
+    payload.compacted_available,
+    payload.compacted_stale,
+    payload.variant,
+    payload.active,
+    payload.effective,
   ]);
 }
 
@@ -247,6 +367,12 @@ async function select(role, stored) {
   const check = validateTarget(target, { mustExist: true });
   if (!check.ok) return check;
   const value = storePath(target);
+  // A different real file has a different (usually absent) `.compacted` sibling,
+  // and its watermark is meaningless — start from the full variant.
+  if (state.selection[role] !== value) {
+    state.variant[role] = 'full';
+    state.compacted_source_revision[role] = 0;
+  }
   state.selection[role] = value;
   state.last_dir[role] = path.dirname(target);
   state.history[role] = [value, ...(state.history[role] || []).filter((p) => p !== value)].slice(
@@ -260,6 +386,8 @@ async function select(role, stored) {
 async function clearSelection(role) {
   if (!ROLES.includes(role)) return { ok: false, status: 'invalid', message: 'Unknown role' };
   state.selection[role] = null;
+  state.variant[role] = 'full';
+  state.compacted_source_revision[role] = 0;
   await saveState();
   return afterMutation();
 }
@@ -296,13 +424,21 @@ async function save(role, stored, text) {
   if (!selected) {
     return { ok: false, status: 'no_target', message: 'No context file selected' };
   }
-  const target = resolvePath(stored);
-  // A save may only overwrite the role's current selection.
-  if (target !== resolvePath(selected)) {
+  // A save may only overwrite the role's current selection, or that selection's
+  // derived `.compacted` sibling (the only path the allow-list is not consulted
+  // for — see `validateCompactedTarget`).
+  let target;
+  if (stored === selected) {
+    const check = validateTarget(resolvePath(selected), { mustExist: true });
+    if (!check.ok) return check;
+    target = resolvePath(selected);
+  } else if (stored === compactedStored(role)) {
+    const check = validateCompactedTarget(role, stored);
+    if (!check.ok) return check;
+    target = check.target;
+  } else {
     return { ok: false, status: 'invalid', message: 'That file is not the selected context' };
   }
-  const check = validateTarget(target, { mustExist: true });
-  if (!check.ok) return check;
   const body = typeof text === 'string' ? text : '';
   if (Buffer.byteLength(body, 'utf-8') > MAX_CONTEXT_BYTES) {
     return { ok: false, status: 'too_large', message: 'Content is larger than 64 KB' };
@@ -314,6 +450,68 @@ async function save(role, stored, text) {
   } catch (error) {
     return { ok: false, status: 'invalid', message: 'Could not write the file' };
   }
+  return afterMutation();
+}
+
+/**
+ * Write the AI-compacted variant of a role's context.
+ *
+ * `base` must still be the role's current selection (a compaction that finishes
+ * after the user picked another file is rejected rather than written to the
+ * wrong sibling). The watermark — the real file's mtime *now* — is what makes a
+ * later edit to the real file mark the compacted copy stale.
+ */
+async function applyCompacted(role, base, text) {
+  if (!ROLES.includes(role)) return { ok: false, status: 'invalid', message: 'Unknown role' };
+  const selected = state.selection[role];
+  if (!selected) {
+    return { ok: false, status: 'no_target', message: 'No context file selected' };
+  }
+  if (base != null && base !== selected) {
+    return { ok: false, status: 'invalid', message: 'The context changed while compacting' };
+  }
+  const check = validateCompactedTarget(role, compactedStored(role));
+  if (!check.ok) return check;
+  const body = typeof text === 'string' ? text : '';
+  if (!body.trim()) {
+    return { ok: false, status: 'invalid', message: 'The compacted text is empty' };
+  }
+  if (Buffer.byteLength(body, 'utf-8') > MAX_CONTEXT_BYTES) {
+    return { ok: false, status: 'too_large', message: 'Content is larger than 64 KB' };
+  }
+  const tmp = check.target + '.tmp';
+  try {
+    await fsp.writeFile(tmp, body, 'utf-8');
+    await fsp.rename(tmp, check.target);
+  } catch (error) {
+    return { ok: false, status: 'invalid', message: 'Could not write the compacted file' };
+  }
+  try {
+    const stats = await fsp.stat(resolvePath(selected));
+    state.compacted_source_revision[role] = Math.round(stats.mtimeMs);
+  } catch (error) {
+    state.compacted_source_revision[role] = 0;
+  }
+  // Compacting is a statement of intent: use the result from now on.
+  state.variant[role] = 'compacted';
+  await saveState();
+  return afterMutation();
+}
+
+/** Pick which variant the AI calls receive for a role. */
+async function setVariant(role, variant) {
+  if (!ROLES.includes(role)) return { ok: false, status: 'invalid', message: 'Unknown role' };
+  if (!VARIANTS.includes(variant)) {
+    return { ok: false, status: 'invalid', message: 'Unknown variant' };
+  }
+  if (variant === 'compacted') {
+    const compacted = await readCompacted(role);
+    if (!compacted.available) {
+      return { ok: false, status: 'missing', message: 'No compacted version yet' };
+    }
+  }
+  state.variant[role] = variant;
+  await saveState();
   return afterMutation();
 }
 
@@ -424,6 +622,8 @@ module.exports = {
   ROLES,
   HISTORY_MAX,
   MAX_CONTEXT_BYTES,
+  COMPACTED_SUFFIX,
+  VARIANTS,
   init,
   getState,
   select,
@@ -431,7 +631,12 @@ module.exports = {
   newFile,
   save,
   forget,
+  applyCompacted,
+  setVariant,
   onExternalChange,
   resolvePath,
   storePath,
+  compactedPath,
+  compactedStored,
+  validateCompactedTarget,
 };

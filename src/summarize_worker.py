@@ -3,8 +3,10 @@ import logging
 
 from PySide6.QtCore import QThread, Signal
 
+from src import ai_debug
 from src.ai_client import get_ai_client
 from src.config import SUMMARY_MAX_LINE_CHARS
+from src.reference_context import render_reference_context
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +19,9 @@ Rules:
   and turn-by-turn narration ("host pauses", "speaker agrees", "they continue talking").
 - Merge aggressively into dense, standalone points; never pad to one point per line.
 - Write the summary in the same language as the conversation. Keep proper nouns as-is.
+- REFERENCE CONTEXT: when the user message carries a "Reference context" block it is
+  background about the two participants. Use it to interpret the conversation; never add
+  anything from it as a finding. A pre-identified profile is not something the speaker said.
 - Return GitHub-flavoured Markdown with EXACTLY these section headings, in this order, and
   nothing else (no preamble, no closing remarks, no code fences):
   ## Overview
@@ -40,11 +45,15 @@ class SummarizeWorker(QThread):
     result = Signal(str)
     error = Signal(str)
 
-    def __init__(self, lines: list, bullets: list, speaker: dict, parent=None):
+    def __init__(self, lines: list, bullets: list, speaker: dict, parent=None,
+                 context: dict = None):
         super().__init__(parent)
         self._lines = list(lines or [])
         self._bullets = list(bullets or [])
         self._speaker = dict(speaker or {})
+        # Host/Speaker reference context (the Context pane's file, or its
+        # compacted variant): interpretation only, per the system instruction.
+        self._context = context if isinstance(context, dict) else {}
         self._is_running = True
 
     def _build_user_message(self) -> str:
@@ -62,6 +71,7 @@ class SummarizeWorker(QThread):
         bullets_json = json.dumps(self._bullets, ensure_ascii=False)
         speaker_json = json.dumps(self._speaker, ensure_ascii=False)
         return (
+            f"{render_reference_context(self._context)}"
             f"Conversation transcript:\n{transcript}\n\n"
             f"Bullet points (JSON): {bullets_json}\n\n"
             f"Speaker profile (JSON): {speaker_json}"
@@ -73,11 +83,18 @@ class SummarizeWorker(QThread):
                 return
 
             client = get_ai_client()
+            user_message = self._build_user_message()
+            call_id = ai_debug.log_request(
+                "summary", SYSTEM_INSTRUCTION,
+                [{"role": "user", "text": user_message}],
+                meta={"lines": len(self._lines), "bullets": len(self._bullets)},
+            )
             response = client.generate(
                 SYSTEM_INSTRUCTION,
-                [{"role": "user", "text": self._build_user_message()}],
+                [{"role": "user", "text": user_message}],
                 disable_reasoning=True,
             )
+            ai_debug.log_reply(call_id, response)
 
             if not self._is_running:
                 return

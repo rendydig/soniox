@@ -62,6 +62,9 @@ class TranslationController(QObject):
         # Host/Speaker context mirrored from the web service (the Context pane).
         # None means "not known yet", which keeps the worker on its .env files.
         self._context = None
+        # The real file's text, when it differs from the effective one (the
+        # compacted variant is active). The Compact button compacts this.
+        self._context_full = None
         # Session digest (src/reply_context.py) rebuilt by MainWindow whenever the
         # bullet list, speaker profile or confirmed brief changes. ``{}`` means
         # "nothing to attach"; the worker also gates it on the feature flag.
@@ -148,14 +151,20 @@ class TranslationController(QObject):
         """Enable/disable the JEV decision gate for auto-replies."""
         self._jev_enabled = bool(enabled)
 
-    def set_context(self, contents):
+    def set_context(self, contents, full=None):
         """Mirror the Host/Speaker context pushed by the web service.
 
-        ``contents`` is ``{"host": str, "speaker": str}`` — the text of the file
-        each role selected, already read by the Node service, so the reply path
-        does no disk I/O at all. An empty string means the user picked no
-        context for that role; a non-dict payload is ignored so the last known
+        ``contents`` is the text the AI calls should use — ``{"host": str,
+        "speaker": str}``, already resolved by the Node service to whichever
+        variant the user picked (the real file or its compacted sibling), so the
+        reply path does no disk I/O at all. An empty string means the user picked
+        no context for that role; a non-dict payload is ignored so the last known
         text survives.
+
+        ``full`` is the *real* file's text when it differs from ``contents``
+        (i.e. the compacted variant is active). The Compact button compacts the
+        real file, so it needs the untruncated source; it defaults to
+        ``contents``, which is what every pre-existing caller passes.
         """
         if not isinstance(contents, dict):
             logger.warning("Ignoring malformed context payload: %r", contents)
@@ -166,10 +175,17 @@ class TranslationController(QObject):
             "host": host if isinstance(host, str) else "",
             "speaker": speaker if isinstance(speaker, str) else "",
         }
+        source = full if isinstance(full, dict) else contents
+        self._context_full = {
+            "host": (source.get("host") if isinstance(source.get("host"), str) else ""),
+            "speaker": (source.get("speaker") if isinstance(source.get("speaker"), str) else ""),
+        }
         logger.debug(
-            "Context updated: host=%d chars, speaker=%d chars",
+            "Context updated: host=%d chars, speaker=%d chars (full: %d/%d)",
             len(self._context["host"]),
             len(self._context["speaker"]),
+            len(self._context_full["host"]),
+            len(self._context_full["speaker"]),
         )
 
     def set_session_digest(self, digest):
@@ -216,6 +232,14 @@ class TranslationController(QObject):
         context for that role. Callers must preserve that distinction.
         """
         return dict(self._context) if isinstance(self._context, dict) else None
+
+    def get_context_full(self):
+        """The **real** file's text per role (``None`` before any update).
+
+        Differs from :meth:`get_context` only while the compacted variant is
+        active; the Compact button needs the untruncated source.
+        """
+        return dict(self._context_full) if isinstance(self._context_full, dict) else None
     
     def schedule_auto_reply(self, transcription_text: str, input_source: str = "speaker", delay_ms: int = None):
         """

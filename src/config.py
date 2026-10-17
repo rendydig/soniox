@@ -342,6 +342,24 @@ SUMMARY_MAX_LINE_CHARS = 300
 #     session cap.
 CONSULTING_MAX_LINE_CHARS = 300
 
+# Host/Speaker **reference context** (the Context pane's file, or its compacted
+# variant). It is attached to the workers that interpret the conversation
+# (bullet points / KYC profile, Last Picked Up, objectives, summary) so an
+# interpretation call does not have to be a *clothed* one — but several of them
+# run on a short timer, so an unbounded 64 KB file must not grow every call.
+#   REFERENCE_CONTEXT_MAX_CHARS — each role's reference text is clipped to this
+#     many characters (with an explicit truncation marker) in
+#     ``src/reference_context.py``. The Compact button exists to bring a long
+#     file under this bound deliberately instead of by truncation.
+REFERENCE_CONTEXT_MAX_CHARS = 6000
+
+# "Compact" button (the Context pane): one AI call that rewrites a context file
+# as a shorter version of itself, stored beside it as `<file>.compacted`. Manual
+# only (one button press = one call), so cost is bounded per click.
+#   CONTEXT_COMPACT_MIN_CHARS — a file shorter than this is not worth a call; the
+#     button reports it instead of spending a request on a tiny file.
+CONTEXT_COMPACT_MIN_CHARS = 400
+
 # Optional Speaker profile file (context_speaker.txt). None/absent = unknown,
 # and the prompt then asks the model to infer the Speaker's role from context.
 SPEAKER_CONTEXT_FILE = os.environ.get("SPEAKER_CONTEXT_FILE")

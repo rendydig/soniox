@@ -24,6 +24,7 @@ export const useTranscriptionHandlers = ({
     setBulletCountdown,
     setBulletLocks,
     setSpeakerProfile,
+    setSpeakerLocks,
     setLastPickup,
     setLastPickupStatus,
     setLastPickupAuto,
@@ -37,6 +38,7 @@ export const useTranscriptionHandlers = ({
     setObjectives,
     setObjectiveLocks,
     setObjectiveActive,
+    setObjectivePending,
     setObjectiveHistory,
     setObjectiveSatisfied,
     setObjectiveStatus,
@@ -323,7 +325,7 @@ export const useTranscriptionHandlers = ({
     }, [setScreenshots]);
 
     /** Rolling bullet-point list + speaker (KYC) profile update from the Python app. */
-    const handleBulletPoints = useCallback((items, speaker, locks) => {
+    const handleBulletPoints = useCallback((items, speaker, locks, speakerLocks) => {
         if (typeof setBulletPoints === 'function') {
             setBulletPoints(Array.isArray(items) ? items : []);
         }
@@ -335,8 +337,14 @@ export const useTranscriptionHandlers = ({
         if (typeof setBulletLocks === 'function') {
             setBulletLocks(Array.isArray(locks) ? locks.map((l) => l === true) : []);
         }
+        // Speaker-profile lock flags ({field: bool} / {field: [bool, ...]}).
+        if (typeof setSpeakerLocks === 'function') {
+            setSpeakerLocks(
+                speakerLocks && typeof speakerLocks === 'object' ? speakerLocks : {}
+            );
+        }
         console.log('[DEBUG] Bullet points updated:', Array.isArray(items) ? items.length : 0);
-    }, [setBulletPoints, setSpeakerProfile, setBulletLocks]);
+    }, [setBulletPoints, setSpeakerProfile, setBulletLocks, setSpeakerLocks]);
 
     /** Auto-flush countdown: absolute deadline from the backend timer (0/auto off = hide). */
     const handleBulletPointsCountdown = useCallback((auto, nextFlushAt, intervalMs) => {
@@ -455,7 +463,7 @@ export const useTranscriptionHandlers = ({
     }, [setConsultingStatus]);
 
     /** Session objectives (list, parallel locks and the resolved focus). */
-    const handleObjectives = useCallback((items, locks, active, satisfied) => {
+    const handleObjectives = useCallback((items, locks, active, satisfied, pending) => {
         if (typeof setObjectives === 'function') {
             setObjectives(Array.isArray(items) ? items : []);
         }
@@ -465,11 +473,14 @@ export const useTranscriptionHandlers = ({
         if (typeof setObjectiveActive === 'function') {
             setObjectiveActive(active && typeof active === 'object' ? active : {});
         }
+        if (typeof setObjectivePending === 'function') {
+            setObjectivePending(pending && typeof pending === 'object' ? pending : {});
+        }
         if (typeof setObjectiveSatisfied === 'function') {
             setObjectiveSatisfied(Array.isArray(satisfied) ? satisfied : []);
         }
         console.log('[DEBUG] Objectives updated:', Array.isArray(items) ? items.length : 0);
-    }, [setObjectives, setObjectiveLocks, setObjectiveActive, setObjectiveSatisfied]);
+    }, [setObjectives, setObjectiveLocks, setObjectiveActive, setObjectivePending, setObjectiveSatisfied]);
 
     /** One committed transition appended to the history timeline. */
     const handleObjectivesHistory = useCallback((entry) => {
@@ -493,6 +504,10 @@ export const useTranscriptionHandlers = ({
         }
         if (status === 'started') {
             setObjectiveStatus('Tracking…');
+        } else if (status === 'predicted') {
+            // The outcome of a manual "Predict now": say what it decided, then clear.
+            setObjectiveStatus(message || 'Prediction complete');
+            objectiveNoticeTimer.current = setTimeout(() => setObjectiveStatus(''), 5000);
         } else if (status === 'failed' || status === 'error') {
             setObjectiveStatus(message || 'Objective prediction failed.');
         } else if (status === 'no_input') {
@@ -546,6 +561,13 @@ export const useTranscriptionHandlers = ({
                 typeof data.speaker === 'object' && data.speaker ? data.speaker : {}
             );
         }
+        if (typeof setSpeakerLocks === 'function') {
+            setSpeakerLocks(
+                typeof data.speaker_locks === 'object' && data.speaker_locks
+                    ? data.speaker_locks
+                    : {}
+            );
+        }
         if (typeof setLastPickup === 'function') {
             setLastPickup(typeof data.last_pickup === 'string' ? data.last_pickup : '');
         }
@@ -596,6 +618,14 @@ export const useTranscriptionHandlers = ({
                 Array.isArray(data.objective_satisfied) ? data.objective_satisfied : []
             );
         }
+        if (typeof setObjectivePending === 'function') {
+            // The unconfirmed candidate, derived backend-side like the focus.
+            setObjectivePending(
+                data.objective_pending && typeof data.objective_pending === 'object'
+                    ? data.objective_pending
+                    : {}
+            );
+        }
         if (typeof setObjectiveStatus === 'function') {
             setObjectiveStatus('');
         }
@@ -603,7 +633,7 @@ export const useTranscriptionHandlers = ({
             setLastPickupAuto(data.last_pickup_auto);
         }
         console.log('[DEBUG] Session state applied');
-    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints, setBulletLocks, setSpeakerProfile, setLastPickup, setSummary, setBrief, setGaps, setRoadmap, setBriefConfirmed, setConsultingStatus, setObjectives, setObjectiveLocks, setObjectiveHistory, setObjectiveActive, setObjectiveSatisfied, setObjectiveStatus, setLastPickupAuto]);
+    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints, setBulletLocks, setSpeakerProfile, setSpeakerLocks, setLastPickup, setSummary, setBrief, setGaps, setRoadmap, setBriefConfirmed, setConsultingStatus, setObjectives, setObjectiveLocks, setObjectiveHistory, setObjectiveActive, setObjectivePending, setObjectiveSatisfied, setObjectiveStatus, setLastPickupAuto]);
 
     return {
         handleFinalTranscription,

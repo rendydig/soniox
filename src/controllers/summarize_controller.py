@@ -26,6 +26,13 @@ class SummarizeController(QObject):
         self._worker = None
         self._old_workers = []
         self._summary = ""
+        # Host/Speaker reference context mirrored by MainWindow; interpretation
+        # only, never added to the summary as a finding.
+        self._context = {}
+
+    def set_context(self, contents):
+        """Mirror the Host/Speaker reference context pushed by the web service."""
+        self._context = contents if isinstance(contents, dict) else {}
 
     def is_busy(self) -> bool:
         """True while a summary AI call is in flight."""
@@ -59,7 +66,7 @@ class SummarizeController(QObject):
 
     def _start_worker(self, lines, bullets, speaker):
         try:
-            self._worker = SummarizeWorker(lines, bullets, speaker)
+            self._worker = SummarizeWorker(lines, bullets, speaker, context=self._context)
             self._worker.result.connect(self._on_result, Qt.ConnectionType.QueuedConnection)
             self._worker.error.connect(self._on_error, Qt.ConnectionType.QueuedConnection)
             self.status_changed.emit("started")

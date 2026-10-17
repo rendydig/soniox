@@ -21,6 +21,7 @@ import logging
 
 from PySide6.QtCore import QThread, Signal
 
+from src import ai_debug
 from src.ai_client import get_ai_client
 from src.config import JEV_MIN_CONFIDENCE, OBJECTIVE_MAX_LINE_CHARS
 from src.decision_client import (
@@ -31,6 +32,7 @@ from src.decision_client import (
 )
 from src.gemini_worker import _parse_json_object
 from src.objectives import objective_key, resolve_active
+from src.reference_context import render_reference_context
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +53,10 @@ Rules:
   not the current one, even if it was important earlier.
 - Return ONLY a JSON object — no prose, no code fences — in this shape:
   {"objective": "<exact objective text, or \\"\\">", "confidence": 0.0}
-- "confidence" is your own 0.0-1.0 certainty that this is the current objective."""
+- "confidence" is your own 0.0-1.0 certainty that this is the current objective.
+- REFERENCE CONTEXT: when the user message carries a "Reference context" block it is
+  background about the two participants. Use it to interpret the conversation; never
+  treat it as an objective and never add anything from it to the list."""
 
 
 class ObjectiveWorker(QThread):
@@ -62,7 +67,7 @@ class ObjectiveWorker(QThread):
 
     def __init__(self, lines: list, objectives: list, locks: list = None,
                  meta: dict = None, host_profile: str = "", speaker_profile: str = "",
-                 parent=None):
+                 parent=None, context: dict = None):
         super().__init__(parent)
         self._lines = list(lines or [])
         self._objectives = [str(o) for o in (objectives or []) if str(o).strip()]
@@ -70,6 +75,10 @@ class ObjectiveWorker(QThread):
         self._meta = dict(meta or {})
         self._host_profile = host_profile or ""
         self._speaker_profile = speaker_profile or ""
+        # Host/Speaker reference context (the Context pane's file, or its
+        # compacted variant). The JEV path gets it through ``build_state`` above;
+        # this is the LLM-fallback block.
+        self._context = context if isinstance(context, dict) else {}
         self._is_running = True
 
     # --- helpers ------------------------------------------------------
@@ -156,6 +165,7 @@ class ObjectiveWorker(QThread):
         return (
             f"Objectives (JSON list, in order):\n"
             f"{json.dumps(self._objectives, ensure_ascii=False)}\n\n"
+            f"{render_reference_context(self._context)}"
             f"Conversation window:\n" + "\n".join(rendered) +
             f"\n\nLatest utterance: {self._latest_utterance()}"
         )
@@ -172,11 +182,18 @@ class ObjectiveWorker(QThread):
                 return
 
             client = get_ai_client()
+            user_message = self._build_user_message()
+            call_id = ai_debug.log_request(
+                "objective", SYSTEM_INSTRUCTION,
+                [{"role": "user", "text": user_message}],
+                meta={"count": len(self._objectives)},
+            )
             response = client.generate(
                 SYSTEM_INSTRUCTION,
-                [{"role": "user", "text": self._build_user_message()}],
+                [{"role": "user", "text": user_message}],
                 disable_reasoning=True,
             )
+            ai_debug.log_reply(call_id, response)
             if not self._is_running:
                 return
             if response is None:

@@ -5,7 +5,12 @@ from datetime import datetime
 
 from PySide6.QtCore import QObject, Qt, QTimer, Signal
 
-from src.bullet_points_worker import BulletPointsWorker
+from src.bullet_points_worker import (
+    SPEAKER_LIST_FIELDS,
+    SPEAKER_MAX_LIST_ITEMS,
+    SPEAKER_SCALAR_FIELDS,
+    BulletPointsWorker,
+)
 from src.config import (
     BULLET_FLUSH_INTERVAL_MS,
     BULLET_MAX_BUFFER_LINES,
@@ -35,10 +40,16 @@ class BulletPointsController(QObject):
     (the manual hotkey) regardless of ``auto``. Each update also records a
     *window* — the time range of the lines that produced it, with the index range
     of the bullets it appended — under ``bullet_windows``.
+
+    The extracted **speaker (KYC) profile** is locked the same way, field by
+    field: ``_speaker_locks`` is a parallel structure (``{field: bool}`` for the
+    scalar fields, ``{field: [bool, ...]}`` for the list fields), and
+    ``_merge_speaker`` folds every AI answer through it, so a locked value can be
+    neither overwritten, reworded nor dropped.
     """
 
-    # (items, speaker profile, bullet windows, per-item lock flags)
-    updated = Signal(list, dict, list, list)
+    # (items, speaker profile, bullet windows, per-item lock flags, speaker locks)
+    updated = Signal(list, dict, list, list, dict)
     status_changed = Signal(str)
     error_occurred = Signal(str)
     # (auto active, epoch seconds of the next interval tick; 0 when auto is off).
@@ -54,7 +65,14 @@ class BulletPointsController(QObject):
         # verbatim at the top instead of replacing it with the AI's list.
         self._locked = []
         self._speaker = {}
+        # Parallel to the speaker profile: ``{field: bool}`` for the scalar
+        # fields, ``{field: [bool, ...]}`` for the list fields. A locked value is
+        # kept verbatim through every merge (append and rebuild alike).
+        self._speaker_locks = {}
         self._bullet_windows = []
+        # Host/Speaker reference context (the Context pane's file, or its compacted
+        # variant), mirrored by MainWindow; ``{}`` until the first update.
+        self._context = {}
         self._buffer = []
         self._inflight_lines = []
         self._inflight_window = None
@@ -83,10 +101,30 @@ class BulletPointsController(QObject):
         """Broadcast the list + profile + windows + locks as one ``updated``."""
         self.updated.emit(
             list(self._bullets),
-            dict(self._speaker),
+            self._profile_copy(self._speaker),
             self._windows_copy(),
             list(self._locked),
+            self._speaker_locks_copy(),
         )
+
+    @staticmethod
+    def _profile_copy(profile) -> dict:
+        """A copy of the profile whose nested lists are owned by us as well."""
+        return {
+            key: (list(value) if isinstance(value, list) else value)
+            for key, value in (profile or {}).items()
+        }
+
+    def _speaker_locks_copy(self) -> dict:
+        """A copy of the speaker lock flags (own the nested lists too)."""
+        return {
+            field: (list(flags) if isinstance(flags, list) else bool(flags))
+            for field, flags in (self._speaker_locks or {}).items()
+        }
+
+    def get_speaker_locks(self) -> dict:
+        """The speaker-profile lock flags (``{field: bool|[bool, ...]}``)."""
+        return self._speaker_locks_copy()
 
     def set_auto(self, auto: bool):
         """Turn automatic updates on/off, keeping the current list as a checkpoint."""
@@ -171,29 +209,44 @@ class BulletPointsController(QObject):
             return
         logger.info("Rebuilding bullet points from %d transcript lines", len(lines))
         self._inflight_window = self._make_window("rebuild", lines)
-        self._start_worker(self.locked_items(), {}, lines, rebuild=True)
+        self._start_worker(self.locked_items(), self.locked_speaker(), lines, rebuild=True,
+                           locked_speaker=self.locked_speaker())
+
+    def set_context(self, contents):
+        """Mirror the Host/Speaker reference context pushed by the web service.
+
+        Already resolved by the Node service to whichever variant the user
+        picked (the real file or its compacted sibling). It is interpretation
+        only — the worker never copies it into the list or the profile.
+        """
+        self._context = contents if isinstance(contents, dict) else {}
 
     def reset(self):
         """Clear the list, profile, windows, locks, and buffer (e.g. a new session)."""
         self._bullets = []
         self._locked = []
         self._speaker = {}
+        self._speaker_locks = {}
         self._bullet_windows = []
         self._buffer = []
         self._emit_updated()
 
-    def load_state(self, items, speaker=None, windows=None, locks=None):
+    def load_state(self, items, speaker=None, windows=None, locks=None, speaker_locks=None):
         """Seed the list, speaker profile, windows, and locks from a session."""
         self._bullets = list(items or [])
         self._locked = self._align_locks(self._bullets, locks)
-        self._speaker = dict(speaker or {})
+        self._speaker = self._profile_copy(speaker)
+        self._speaker_locks = self._align_speaker_locks(self._speaker, speaker_locks)
         self._bullet_windows = [dict(w) for w in (windows or []) if isinstance(w, dict)]
         self._buffer = []
         logger.debug(
-            "Bullet points restored: %d items, %d locked, %d profile fields, %d windows",
+            "Bullet points restored: %d items, %d locked, %d profile fields, "
+            "%d speaker locks, %d windows",
             len(self._bullets),
             sum(1 for locked in self._locked if locked),
             len(self._speaker),
+            sum(1 for flags in self._speaker_locks.values()
+                for flag in (flags if isinstance(flags, list) else [flags]) if flag),
             len(self._bullet_windows),
         )
 
@@ -246,6 +299,141 @@ class BulletPointsController(QObject):
         self._emit_updated()
         return True
 
+    # --- speaker profile locks ----------------------------------------
+
+    @staticmethod
+    def _speaker_flags(profile, field):
+        """The profile's value for ``field`` as a list (a list field's items)."""
+        value = (profile or {}).get(field)
+        return list(value) if isinstance(value, list) else []
+
+    @staticmethod
+    def _align_speaker_locks(speaker, locks) -> dict:
+        """Normalize the profile lock flags to the profile's current shape.
+
+        Scalars are a plain ``bool``; list fields are a ``list[bool]`` parallel to
+        the field's items (a short/absent one — an older session file — pads with
+        ``False``; an over-long one is truncated). Every known field is present,
+        so the pane can render a padlock for a field with no lock yet.
+        """
+        speaker = speaker if isinstance(speaker, dict) else {}
+        locks = locks if isinstance(locks, dict) else {}
+        aligned = {}
+        for field in SPEAKER_SCALAR_FIELDS:
+            aligned[field] = bool(locks.get(field))
+        for field in SPEAKER_LIST_FIELDS:
+            values = BulletPointsController._speaker_flags(speaker, field)
+            raw = locks.get(field)
+            raw = list(raw) if isinstance(raw, list) else []
+            aligned[field] = [bool(raw[i]) if i < len(raw) else False
+                              for i in range(len(values))]
+        return aligned
+
+    def locked_speaker(self) -> dict:
+        """The locked part of the profile, in the profile's own shape."""
+        locked = {}
+        for field in SPEAKER_SCALAR_FIELDS:
+            value = str(self._speaker.get(field) or "").strip()
+            if value and self._speaker_locks.get(field):
+                locked[field] = value
+        for field in SPEAKER_LIST_FIELDS:
+            values = self._speaker_flags(self._speaker, field)
+            flags = self._speaker_locks.get(field) or []
+            picked = [v for i, v in enumerate(values) if i < len(flags) and flags[i]]
+            if picked:
+                locked[field] = picked
+        return locked
+
+    def set_speaker_lock(self, field=None, index=None, item=None, locked=None) -> bool:
+        """Pin/unpin one speaker-profile value.
+
+        ``field`` is one of the profile's fields. For a list field the entry is
+        resolved by exact ``item`` text first, then by ``index``; a scalar field
+        has no index and must already hold a value (locking an empty field would
+        just freeze it empty, so it is refused). When ``locked`` is given the flag
+        is set to it, otherwise it is flipped. Returns ``False`` when nothing
+        changed, so the caller can skip a redundant broadcast.
+        """
+        field = str(field or "")
+        if field in SPEAKER_SCALAR_FIELDS:
+            value = str(self._speaker.get(field) or "").strip()
+            if not value:
+                logger.debug("Speaker lock ignored: %r has no value yet", field)
+                return False
+            self._speaker_locks = self._align_speaker_locks(self._speaker, self._speaker_locks)
+            new_value = (not self._speaker_locks[field]) if locked is None else bool(locked)
+            if new_value == self._speaker_locks[field]:
+                return False
+            self._speaker_locks[field] = new_value
+            logger.info("Speaker %s lock=%s: %s", field, new_value, value)
+            self._emit_updated()
+            return True
+
+        if field not in SPEAKER_LIST_FIELDS:
+            logger.debug("Speaker lock ignored: unknown field %r", field)
+            return False
+
+        values = self._speaker_flags(self._speaker, field)
+        self._speaker_locks = self._align_speaker_locks(self._speaker, self._speaker_locks)
+        flags = self._speaker_locks[field]
+        target = None
+        if item is not None:
+            needle = str(item)
+            for i, value in enumerate(values):
+                if value == needle:
+                    target = i
+                    break
+        if target is None and index is not None:
+            try:
+                i = int(index)
+            except (TypeError, ValueError):
+                i = -1
+            if 0 <= i < len(values):
+                target = i
+        if target is None:
+            logger.debug("Speaker lock ignored: item not found (%s=%r index=%r)",
+                         field, item, index)
+            return False
+        new_value = (not flags[target]) if locked is None else bool(locked)
+        if new_value == flags[target]:
+            return False
+        flags[target] = new_value
+        logger.info("Speaker %s[%d] lock=%s: %s", field, target, new_value, values[target])
+        self._emit_updated()
+        return True
+
+    def _merge_speaker(self, incoming):
+        """Fold an AI profile answer in, honouring the user's locks.
+
+        Returns ``(profile, locks)``: a locked scalar keeps its current value; a
+        locked list item is kept (at its position, before the AI's new items) so
+        an append or a rebuild can neither drop, reword nor reorder it. Unlocked
+        fields take the AI's answer. The flags are rebuilt alongside, because the
+        list's shape changes.
+        """
+        incoming = dict(incoming) if isinstance(incoming, dict) else {}
+        profile = {}
+        locks = {}
+        for field in SPEAKER_SCALAR_FIELDS:
+            current = str(self._speaker.get(field) or "").strip()
+            pinned = bool(self._speaker_locks.get(field)) and bool(current)
+            profile[field] = current if pinned else str(incoming.get(field) or "").strip()
+            locks[field] = pinned
+        for field in SPEAKER_LIST_FIELDS:
+            values = self._speaker_flags(self._speaker, field)
+            old_flags = self._speaker_locks.get(field) or []
+            locked_items = [v for i, v in enumerate(values)
+                            if i < len(old_flags) and old_flags[i]]
+            ai_items = [str(x).strip() for x in (incoming.get(field) or []) if str(x).strip()]
+            merged = self._merge_new_items(locked_items, ai_items)
+            # A lock outranks the per-list cap: never drop a pinned item to make
+            # room for the model's.
+            merged = merged[:max(SPEAKER_MAX_LIST_ITEMS, len(locked_items))]
+            profile[field] = merged
+            kept_locked = min(len(locked_items), len(merged))
+            locks[field] = [True] * kept_locked + [False] * (len(merged) - kept_locked)
+        return profile, locks
+
     def _maybe_flush(self, force: bool = False) -> bool:
         """Start a worker when (auto or forced), idle, and there is something new.
 
@@ -260,14 +448,16 @@ class BulletPointsController(QObject):
         self._inflight_lines = self._buffer
         self._buffer = []
         self._inflight_window = self._make_window("auto", self._inflight_lines)
-        self._start_worker(list(self._bullets), dict(self._speaker), self._inflight_lines)
+        self._start_worker(list(self._bullets), dict(self._speaker), self._inflight_lines,
+                           locked_speaker=self.locked_speaker())
         return True
 
     def _start_worker(self, current_bullets: list, current_speaker: dict, lines: list,
-                     rebuild: bool = False):
+                     rebuild: bool = False, locked_speaker: dict = None):
         try:
             self._worker = BulletPointsWorker(
-                current_bullets, current_speaker, lines, rebuild=rebuild
+                current_bullets, current_speaker, lines, rebuild=rebuild,
+                locked_speaker=locked_speaker, context=self._context,
             )
             self._worker.result.connect(self._on_result, Qt.ConnectionType.QueuedConnection)
             self._worker.error.connect(self._on_error, Qt.ConnectionType.QueuedConnection)
@@ -308,7 +498,9 @@ class BulletPointsController(QObject):
             if self._bullets:
                 self._record_window(window, 0, len(self._bullets) - 1)
         if isinstance(speaker, dict):
-            self._speaker = dict(speaker)
+            # Every AI answer is folded through the locks, so a pinned field or
+            # item survives an append and a rebuild alike.
+            self._speaker, self._speaker_locks = self._merge_speaker(speaker)
         self._emit_updated()
         self.status_changed.emit("complete")
 

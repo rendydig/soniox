@@ -3,6 +3,7 @@ import logging
 
 from PySide6.QtCore import QThread, Signal
 
+from src import ai_debug
 from src.ai_client import get_ai_client
 from src.config import CONSULTING_MAX_LINE_CHARS
 
@@ -166,11 +167,18 @@ class ConsultingWorker(QThread):
                 return
 
             client = get_ai_client()
+            user_message = self._build_user_message()
+            call_id = ai_debug.log_request(
+                "consulting", self.system_instruction,
+                [{"role": "user", "text": user_message}],
+                meta={"mode": self._mode},
+            )
             response = client.generate(
                 self.system_instruction,
-                [{"role": "user", "text": self._build_user_message()}],
+                [{"role": "user", "text": user_message}],
                 disable_reasoning=True,
             )
+            ai_debug.log_reply(call_id, response)
 
             if not self._is_running:
                 return

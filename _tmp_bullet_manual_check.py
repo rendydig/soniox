@@ -68,8 +68,10 @@ try:
 
     calls = []
 
-    def fake_start_worker(current_bullets, current_speaker, lines, rebuild=False):
-        calls.append({"bullets": list(current_bullets), "lines": list(lines), "rebuild": rebuild})
+    def fake_start_worker(current_bullets, current_speaker, lines, rebuild=False,
+                          locked_speaker=None):
+        calls.append({"bullets": list(current_bullets), "lines": list(lines), "rebuild": rebuild,
+                      "locked_speaker": dict(locked_speaker or {})})
         # Mirror the real method's progress broadcast (the worker itself is not run).
         controller.status_changed.emit("started")
 
@@ -160,6 +162,34 @@ try:
     check("a rebuild worker was started", calls and calls[0]["rebuild"] is True, str(calls))
     check("the rebuild receives the locked list as current_bullets",
           calls and calls[0]["bullets"] == ["second point"], str(calls))
+
+    print("\n[8] locking a speaker-profile value echoes it and persists")
+    sent.clear()
+    controller.load_state([], {"name": "Maya", "interests": ["coffee", "running"]})
+    window._handle_webview_message({
+        "type": "set_speaker_lock", "field": "name", "locked": True,
+    })
+    window._handle_webview_message({
+        "type": "set_speaker_lock", "field": "interests", "index": 1,
+        "item": "running", "locked": True,
+    })
+    echo = [m for m in sent if m.get("type") == "bullet_points"]
+    check("each speaker lock broadcast a bullet_points echo", len(echo) == 2, str(sent))
+    check("the echo carries the speaker lock flags",
+          bool(echo) and echo[-1].get("speaker_locks", {}).get("name") is True
+          and echo[-1].get("speaker_locks", {}).get("interests") == [False, True],
+          str(echo[-1] if echo else None))
+    check("the speaker locks persisted to the session store",
+          window.session_store.snapshot().get("speaker_locks", {}).get("name") is True
+          and window.session_store.snapshot().get("speaker_locks", {}).get("interests")
+          == [False, True],
+          str(window.session_store.snapshot().get("speaker_locks")))
+    sent.clear()
+    window._handle_webview_message({
+        "type": "set_speaker_lock", "field": "nickname", "locked": True,
+    })
+    check("an unknown speaker field broadcasts nothing",
+          not [m for m in sent if m.get("type") == "bullet_points"], str(sent))
 finally:
     if window is not None:
         window.close()
