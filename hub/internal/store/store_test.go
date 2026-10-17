@@ -216,7 +216,7 @@ func TestRestoreSeedsEveryField(t *testing.T) {
 		"conversation":   []any{map[string]any{"text": "hi", "role": "speaker", "suggestion": ""}},
 		"transcriptions": []any{map[string]any{"source": "host", "text": "hi", "timestamp": "t"}},
 		"translations":   []any{map[string]any{"source": "host", "text": "hai", "timestamp": "t"}},
-		"gemini_results": []any{map[string]any{"text": "reply"}},
+		"aireply_results": []any{map[string]any{"text": "reply"}},
 		"screenshots":    []any{"data:image/jpeg;base64,AAAA"},
 		"last_pickup":    "something",
 		"speaker":        map[string]any{"name": "Ada"},
@@ -278,7 +278,7 @@ func TestSnapshotJSONShape(t *testing.T) {
 	}
 	for _, key := range []string{
 		"id", "created_at", "updated_at", "bullets", "bullet_windows", "bullet_locks",
-		"conversation", "transcriptions", "translations", "gemini_results", "screenshots",
+		"conversation", "transcriptions", "translations", "aireply_results", "screenshots",
 		"last_pickup", "speaker",
 	} {
 		if _, ok := m[key]; !ok {

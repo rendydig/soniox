@@ -419,7 +419,7 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
 - **Store** (`internal/store`): the `SessionStore` discipline ported — writers *replace* values, never
   mutate, and `Snapshot()` hands out deep copies. Every list is a fixed-capacity ring (no realloc), with
   the same caps as the Python side: transcriptions/translations 500, conversation 25 (=`MAX_HISTORY_TURNS`),
-  `gemini_results` 100, screenshots 20. `bullets` + `bullet_windows`/`bullet_locks` are the exception: they are
+  `aireply_results` 100, screenshots 20. `bullets` + `bullet_windows`/`bullet_locks` are the exception: they are
   deliberately **uncapped** (append-only, one point per update), so they grow with the session.
   `session.config` and the purpose
   registry are application-level and survive both `reset` and `restore`. `conversation` is derived from
@@ -816,7 +816,7 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   panes.
 
 ## Sessions (persistence, resume, new session)
-- A **session** is the conversation state persisted to `sessions/current.json` (gitignored):  `bullets`, `bullet_windows`, `bullet_locks`, `objectives`, `objective_locks`, `objective_history`, `conversation`, `transcriptions`, `translations`, `gemini_results`, `screenshots`
+- A **session** is the conversation state persisted to `sessions/current.json` (gitignored):  `bullets`, `bullet_windows`, `bullet_locks`, `objectives`, `objective_locks`, `objective_history`, `conversation`, `transcriptions`, `translations`, `aireply_results`, `screenshots`
   (each capped in `src/config.py` except `bullets`/`bullet_windows`/`bullet_locks`, which are uncapped) plus the
   dict-typed `speaker` profile, `speaker_locks` (its lock flags), `brief_meta` and `objective_meta`
   and the strings `last_pickup`, `summary`, `brief`, `gaps` and `roadmap`.
@@ -846,7 +846,7 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   `handleSessionState` in `useTranscriptionHandlers.js` applies each slice to the setters the page
   provides (`noop`/absent setters are skipped).
 - `MainWindow` pushes state at the existing points: final transcriptions/translations,
-  `_send_gemini_result` (gemini_results), `_capture_screenshot` (screenshots),
+  `_send_gemini_result` (aireply_results), `_capture_screenshot` (screenshots),
   `_on_bullet_points_updated` (bullets), plus the conversation-history mirror.
 - Worker cleanup: `BulletPointsController.cleanup()` now stop → wait → terminate (like
   `TranslationController`) so a worker blocked in a synchronous HTTP call isn't destroyed while
@@ -1576,7 +1576,7 @@ venv/bin/python tools/auto_reply_report.py                              # Bagian
 AUTO_REPLY_LIVE_TESTS=1 venv/bin/python tools/auto_reply_report.py      # + Bagian B (memanggil model)
 venv/bin/python _tmp_auto_reply_record.py                               # re-record Bagian A (memanggil model)
 ```
-Evidence for the reported symptom lives in `sessions/current.json` (`gemini_results`:
+Evidence for the reported symptom lives in `sessions/current.json` (`aireply_results`:
 7 suggestions on 2026-10-16, the last — the answer to "How do we stop that from
 happening?" — gave generic design advice instead of naming the product mechanism), and in
 the report's Bagian A, which scores those same 7 answers deterministically (A1 flagged

@@ -6,7 +6,7 @@ right or wrong — as a readable Markdown report plus a JSON sidecar.
 
 Two sources, both in the same report:
 
-  * **Bagian A — replay sesi terekam.** Every ``gemini_results`` entry in
+  * **Bagian A — replay sesi terekam.** Every ``aireply_results`` entry in
     ``sessions/current.json`` is paired with the utterance that triggered it
     (the merged run of fragments of the same source since the previous result,
     plus the raw last fragment). Free: no model is ever called.
@@ -362,7 +362,7 @@ def pair_triggers(session: dict) -> list:
         (t for t in (session.get("transcriptions") or []) if (t.get("text") or "").strip()),
         key=lambda t: t.get("timestamp", ""),
     )
-    results = session.get("gemini_results") or []
+    results = session.get("aireply_results") or []
     cases = []
     prev_ts = ""
     for i, r in enumerate(results):
@@ -758,7 +758,7 @@ def render_markdown(meta: dict, recorded: list, live: list, contract: dict,
     for title, cases, intro in (
         ("## Bagian A — Replay sesi terekam",
          recorded,
-         "Setiap jawaban nyata dari `gemini_results` dipasangkan dengan pemicunya. "
+         "Setiap jawaban nyata dari `aireply_results` dipasangkan dengan pemicunya. "
          "Latensi di sini **perkiraan** (selisih timestamp transkrip vs hasil), bukan latensi model."),
         ("## Bagian B — Skenario live",
          live,
@@ -998,7 +998,7 @@ def main() -> int:
         "git_rev": git_rev(),
         "session_path": os.path.relpath(os.path.abspath(args.session), REPO),
         "recorded_turns": len(session.get("conversation") or []),
-        "recorded_results": len(session.get("gemini_results") or []),
+        "recorded_results": len(session.get("aireply_results") or []),
         # The two live-tier axes. A report is only comparable to another report
         # that ran with the same values here.
         "jev": jev,

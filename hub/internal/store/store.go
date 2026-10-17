@@ -51,7 +51,7 @@ type State struct {
 	Conversation   []Turn           `json:"conversation"`
 	Transcriptions []Line           `json:"transcriptions"`
 	Translations   []Line           `json:"translations"`
-	GeminiResults  []map[string]any `json:"gemini_results"`
+	GeminiResults  []map[string]any `json:"aireply_results"`
 	Screenshots    []string         `json:"screenshots"`
 	LastPickup     string           `json:"last_pickup"`
 	Speaker        map[string]any   `json:"speaker"`

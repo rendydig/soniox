@@ -145,7 +145,7 @@ try:
     check("a 'complete' gemini_status was broadcast",
           any(s.get("status") == "complete" and s.get("mode") == "auto_reply" for s in statuses()),
           str(statuses()))
-    check("the reply itself was broadcast too", bool(window.session_store.snapshot().get("gemini_results")))
+    check("the reply itself was broadcast too", bool(window.session_store.snapshot().get("aireply_results")))
 
     print("\n[4] a skipped reply settles the ring")
     sent.clear()

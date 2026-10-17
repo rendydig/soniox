@@ -53,11 +53,11 @@ assert s_locks.snapshot()["speaker_locks"]["name"] is False
 s_locks.close()
 
 # async debounced write
-s.append("gemini_results", {"text": "g", "mode": "manual"})
+s.append("aireply_results", {"text": "g", "mode": "manual"})
 time.sleep(3)
 with open(path, encoding="utf-8") as f:
     data = json.load(f)
-assert any(g["text"] == "g" for g in data["gemini_results"]), data["gemini_results"]
+assert any(g["text"] == "g" for g in data["aireply_results"]), data["aireply_results"]
 
 # new_session archives + resets
 archived = s.new_session()

@@ -12,7 +12,7 @@ Laporan ini menjawab tiga hal per kasus: **apa yang ditanyakan**, **apa jawaban 
 
 ## Bagian A — Replay sesi terekam
 
-Setiap jawaban nyata dari `gemini_results` dipasangkan dengan pemicunya. Latensi di sini **perkiraan** (selisih timestamp transkrip vs hasil), bukan latensi model.
+Setiap jawaban nyata dari `aireply_results` dipasangkan dengan pemicunya. Latensi di sini **perkiraan** (selisih timestamp transkrip vs hasil), bukan latensi model.
 
 | # | Sumber | Pemicu | Verdict | Temuan | Latensi |
 |---|--------|--------|---------|--------|---------|

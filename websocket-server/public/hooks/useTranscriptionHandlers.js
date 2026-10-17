@@ -556,7 +556,7 @@ export const useTranscriptionHandlers = ({
             setFinalizedTranslations(toItems(data.translations, (e) => ({ text: e.text, source: e.source })));
         }
         if (typeof setGeminiResults === 'function') {
-            setGeminiResults(toItems(data.gemini_results, (e) => ({ text: e.text, mode: e.mode || 'manual' })));
+            setGeminiResults(toItems(data.aireply_results, (e) => ({ text: e.text, mode: e.mode || 'manual' })));
         }
         if (typeof setScreenshots === 'function') {
             setScreenshots(toItems(data.screenshots || [], (image) => ({ image })));

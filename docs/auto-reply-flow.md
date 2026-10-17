@@ -27,6 +27,11 @@ Soniox final speaker line
       → result / chunk signals → WebSocket → Gemini pane
 ```
 
+Two phases decide whether that chain runs at all: the **scheduling** phase (the timer is
+armed by `ui.py` and cancelled by any partial) and the **gating** phase inside the worker
+(filler filter + optional JEV `should_reply`). §3.1–3.3 list every condition under which
+the AI does *not* reply.
+
 **The single most important finding for your "slop gap":**
 
 The app computes a lot of high-value context — the rolling **bullet list**, the extracted
@@ -105,8 +110,95 @@ session, which is exactly the symptom you describe.
 6. **Result path:** `chunk` → `reply_chunk` → `MainWindow._on_reply_chunk` →
    `gemini_stream` frame; `result` → `auto_reply_result` → `_record_suggestion` (stamps the
    suggestion onto the answered speaker turn) → `_on_auto_reply_result` →
-   `format_gemini_result` → `gemini_result` frame + persisted to `gemini_results`; then
+   `format_gemini_result` → `gemini_result` frame + persisted to `aireply_results`; then
    `_rebuild_reply_digest()` runs again.
+
+### 3.1 Trigger & suppression — when the AI replies and when it stays silent
+
+The reply is decided in **two phases**, and both must pass:
+
+| Phase | Owner | Question |
+|---|---|---|
+| **Scheduling** | `MainWindow._on_transcription_update` + `TranslationController` | *Should a timer be armed at all, and does it survive?* |
+| **Gating** | `GeminiAutoReplyWorker.run()` | *Once armed, is an AI call actually worth spending?* |
+
+A single-shot `QTimer` is the only trigger: nothing calls the provider directly.
+
+### 3.2 The debounce, concretely
+
+Both debounce constants are **1500 ms** (`AUTO_REPLY_DEBOUNCE_MS` and
+`AUTO_REPLY_ENDPOINT_DEBOUNCE_MS`), so the `<end>` path is *not* faster today — it only
+takes a different branch and log line. Because Soniox streams partials while the speaker
+keeps talking, and **any partial with content cancels the pending timer**, the debounce
+effectively means *"the speaker paused for ~1.5 s"*:
+
+```text
+t=0.0  speaker final   "jadi brief-nya…"        → timer 1500 ms
+t=0.4  speaker partial "jadi brief-nya masih"   → cancel (pending dropped)
+t=0.9  speaker final   "…masih hilang ya"       → timer 1500 ms (text REPLACED)
+t=2.4  timeout → worker starts → spinner → stream → result
+```
+
+Consequences that are easy to get wrong:
+
+* **No utterance queue.** `schedule_auto_reply` overwrites `_pending_transcription`, so the
+  reply always answers the **latest** final line; an earlier one is silently dropped.
+* **An empty partial does not cancel.** That is why `SonioxWorker` emits `("", False, …)`
+  when a chunk produced only finals — otherwise a pause would look like new speech.
+* **A *host* partial with content cancels a pending speaker reply** (the non-final branch
+  does not filter by source); a host *final* never cancels and never schedules.
+* **The `Auto reply` toggle is not persisted** — it resets to `false` on every app start
+  (`aireply-app.js` `useState(false)`, `MainWindow._auto_reply_enabled = False`), and is
+  only changed by the pane's `auto_reply_toggle` control message.
+* **Pane visibility is irrelevant**: the reply runs and is broadcast whether or not the
+  Gemini pane is open (unlike Last Picked Up, which is a silent no-op while hidden).
+
+### 3.3 Suppression table — every reason the AI does not answer
+
+| # | Gate | Where | Effect / what the pane shows |
+|---|---|---|---|
+| 1 | `Auto reply` toggle off | `ui.py` (`_auto_reply_enabled`) | No timer is ever armed |
+| 2 | Line came from the **host** | `ui.py` final branch | Recorded in history only, never a trigger |
+| 3 | Empty text | `ui.py` final branch | Not scheduled |
+| 4 | Non-final partial with content while the timer runs | `ui.py` non-final branch | Timer cancelled, pending **dropped** (not deferred) |
+| 5 | A newer final arrives while the timer runs | `schedule_auto_reply` | Timer restarted; only the newest text is answered |
+| 6 | Another reply worker is in flight | `_start_auto_reply_worker` | One `_rerun_pending` rerun after it finishes |
+| 7 | Utterance is **only** acknowledgments | `gemini_worker.run` + `filler_filter.is_filler` | `skipped("Filler utterance")` → `gemini_status skipped` |
+| 8 | JEV `should_reply < JEV_SHOULD_REPLY_MIN` | `gemini_worker.run` | `skipped("No reply needed")`; requires `JEV_ENABLED=true` |
+| 9 | JEV `speech_act == "other"` / low confidence | `gemini_worker.run` | **Not** a skip — escalates to the Other flow (persona synthesis) |
+| 10 | Pending text empty at timeout | `_trigger_auto_reply` | Silent abort |
+
+The **filler filter lives in the worker, not in scheduling**, so the pane's title spinner
+still flickers: `reply_activity(True)` fires when the worker starts, and `skipped`
+immediately emits `reply_activity(False)`.
+
+### 3.4 Manual paths bypass *some* gates, not all
+
+`Ctrl+R`, the pane's **Reply now** (`auto_reply_request`) and `_manual_reply` all route to
+`trigger_reply_now` → `_trigger_auto_reply(force=True)`:
+
+* bypass the debounce (fires immediately), and
+* bypass the filler filter (`allow_filler=True`),
+
+but they do **not** bypass the JEV `should_reply` gate: the worker receives no "manual"
+flag, so with `JEV_ENABLED=true` a confident `< 0.5` still suppresses a user-requested
+reply.
+
+### 3.5 "Last Picked Up" is not a trigger
+
+The Last Picked Up tab is a **separate** pipeline with its own pair of debounce constants
+(`LAST_PICKUP_DEBOUNCE_MS` / `LAST_PICKUP_ENDPOINT_DEBOUNCE_MS`, both 2000 ms). It never
+schedules a reply and is not part of the reply prompt (see §9). Do not read "pickup" as
+"the reply trigger".
+
+### 3.6 Trigger granularity caveats
+
+* The unit of triggering is the **last final line**, so a fragmented or interrupted
+  utterance can fire on a sentence fragment (§11.6).
+* Because scheduling is last-write-wins, a long monologue with few pauses produces **one**
+  reply for the whole stretch, not one per sentence.
+* With `AUTO_REPLY_CONTEXT_DIGEST=false` (default) the reply for that stretch is built from
+  raw turns only — see §9 and §11.1.
 
 ---
 
@@ -307,7 +399,7 @@ the instruction as a `system` message and images as `image_url` parts.
   matches; the final `gemini_result` **replaces** it (formatted via `format_gemini_result`,
   which inserts paragraph breaks before `Speaker's move:`, `<Lang> Text:`,
   `Syllables/Pronunciation:`, `English Translation:` …).
-* Partials are **not** persisted; only the final result is appended to `gemini_results`.
+* Partials are **not** persisted; only the final result is appended to `aireply_results`.
 * **Grok sentence correction is not part of this path.** `server.js` calls `correctSentence`
   only for a separate `check_sentence` message type; the auto-reply never touches it.
 
@@ -347,7 +439,7 @@ understanding" of the conversation, and they are invisible to the reply model by
 | `AI_MODEL` / `AI_BASE_URL` / `AI_API_KEY` | — | model + endpoint selection |
 | `DISABLE_MODEL_REASONING` | `true` | request no thinking tokens |
 | `AUTO_REPLY_DEBOUNCE_MS` | 1500 | debounce for a final without `<end>` |
-| `AUTO_REPLY_ENDPOINT_DEBOUNCE_MS` | 1500 | debounce for a final with `<end>` |
+| `AUTO_REPLY_ENDPOINT_DEBOUNCE_MS` | 1500 | debounce for a final with `<end>`; **currently identical** to the line above, so `<end>` does not speed anything up (§3.2) |
 | `AUTO_REPLY_FILLER_FILTER` | `true` | skip pure-acknowledgment utterances |
 | **`AUTO_REPLY_CONTEXT_DIGEST`** | **`false`** | **attach bullets/KYC/brief/prior suggestions** |
 | `AUTO_REPLY_MAX_BULLETS` | 20 | rolling bullets kept in the digest |
@@ -402,7 +494,8 @@ long-term memory — but §11.1 means it is not sent.
 ### 11.6 Trigger granularity
 The reply is keyed to the **last final line**, and any non-final partial with content cancels
 the pending timer. A fragmented or interrupted utterance can fire on a sentence fragment,
-which the model then over-interprets.
+which the model then over-interprets. The mechanics (and the rest of the suppression
+conditions) are in §3.1–3.3.
 
 ### 11.7 Digest is voice-only
 Image replies get no digest and no objectives (`digest=None if is_image`), so a screenshot
@@ -444,6 +537,8 @@ is wrong) the reply can be in the wrong language, which also changes how "on-con
 | Reply worker (prompt, messages, streaming, JEV, Other flow) | `src/gemini_worker.py` |
 | Debounce, history cap, one-worker + rerun, suggestion recording | `src/controllers/translation_controller.py` |
 | Trigger, digest rebuild, broadcast, webview control messages | `src/ui.py` |
+| Trigger/suppression gates (§3.3) | `src/ui.py` (schedule + cancel), `src/controllers/translation_controller.py` (timer, rerun), `src/gemini_worker.py` (filler, JEV), `src/filler_filter.py` |
+| `Auto reply` toggle + **Reply now** button | `websocket-server/public/aireply-app.js` |
 | JEV decision client + question/state builders | `src/decision_client.py` |
 | Speech acts | `src/speech_acts.py` |
 | Personas / roles / styles (seed) | `src/purposes.py` |

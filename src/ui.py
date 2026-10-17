@@ -1181,7 +1181,7 @@ class MainWindow(QMainWindow, HealthMixin):
         self.websocket_client.send_transcription(
             format_gemini_result(text), True, additional_data={"mode": mode}, message_type="gemini_result"
         )
-        self.session_store.append("gemini_results", {
+        self.session_store.append("aireply_results", {
             "text": text, "mode": mode, "timestamp": datetime.now().isoformat(),
         })
 

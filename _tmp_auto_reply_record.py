@@ -7,7 +7,7 @@ code. This script closes that loop: it pairs each recorded result with the same
 trigger the report uses (the merged run of fragments since the previous result,
 falling back to the raw last fragment), rebuilds the conversation history the
 reply actually saw, and runs the REAL worker on it — then writes a **new**
-session-shaped file whose ``gemini_results`` are the fresh answers.
+session-shaped file whose ``aireply_results`` are the fresh answers.
 
 The original session is never modified. Point the report at the output:
 
@@ -75,7 +75,7 @@ transcriptions = sorted(
     key=lambda t: t.get("timestamp", ""),
 )
 conversation = session.get("conversation") or []
-results = session.get("gemini_results") or []
+results = session.get("aireply_results") or []
 
 print(f"provider={AI_PROVIDER} model={AI_MODEL} base={AI_BASE_URL}")
 print(f"source={SOURCE} ({len(results)} recorded answers, {len(conversation)} conversation turns)")
@@ -147,7 +147,7 @@ for index, recorded in enumerate(results, 1):
     print()
 
 replayed = dict(session)
-replayed["gemini_results"] = new_results
+replayed["aireply_results"] = new_results
 replayed["replay"] = {
     "generated_at": datetime.now().isoformat(timespec="seconds"),
     "source": SOURCE,

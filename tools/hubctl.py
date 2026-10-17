@@ -60,7 +60,7 @@ def cmd_state(args, client):
     if args.summary:
         counts = {
             key: len(session.get(key) or [])
-            for key in ("transcriptions", "translations", "conversation", "gemini_results", "screenshots")
+            for key in ("transcriptions", "translations", "conversation", "aireply_results", "screenshots")
         }
         print(f"session   {session.get('id')}  (updated {session.get('updated_at')})")
         for key, count in counts.items():

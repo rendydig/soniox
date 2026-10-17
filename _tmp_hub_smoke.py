@@ -182,7 +182,7 @@ def main() -> int:
         "conversation": [{"text": "hi", "role": "speaker", "suggestion": ""}],
         "transcriptions": [{"source": "host", "text": "restored", "timestamp": "t"}],
         "translations": [],
-        "gemini_results": [],
+        "aireply_results": [],
         "screenshots": ["data:image/jpeg;base64,AAAA"],
         "last_pickup": "restored pickup",
         "speaker": {"name": "Ada", "occupation": "engineer"},

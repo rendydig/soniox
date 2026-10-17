@@ -1,0 +1,1905 @@
+{
+    "id": "20261017-214741",
+    "created_at": "2026-10-17T14:47:41.398104+00:00",
+    "updated_at": "2026-10-17T22:31:48.680440+00:00",
+    "bullets": [
+        "Handoffs between account managers and design team are a mess",
+        "Original vision/brief gets diluted before reaching design",
+        "Briefs reach designers like a game of telephone; kickoff priorities vanish",
+        "Spend 2 weeks polishing a concept, then find core client requirement dropped in first handoff; back to square one",
+        "Handoffs happen mostly over email and Slack",
+        "Critical details get buried in Slack threads; designers miss client change-of-mind comments",
+        "Host proposes account manager compares brief against locked brief and flags gaps before design starts",
+        "Maya questions whether that gatekeeping turns the account manager into a bottleneck",
+        "Maya is the one who breaks bad news to clients when work misses",
+        "Critical details fragmented across many threads",
+        "Client pivots buried in Slack threads get missed; Friday delivery reflects first meeting",
+        "Host proposes a single pen brief document as source of truth",
+        "Client pivots become dated line items the account manager locks",
+        "Host introduces Helpy, which auto-extracts bullet points and summaries from conversations",
+        "Helpy listens in background and captures objectives automatically",
+        "Maya calls pivot-detection a game changer if it works without team effort",
+        "Maya asks if Helpy only covers conversations it captures, not Slack/email threads",
+        "Maya asks how Helpy distinguishes core requirements from passing suggestions",
+        "Host explains locked line items push straight to designer's ticket, dated change top of brief with approver name",
+        "Maya says this cuts out the middleman; designer sees new direction without hunting Slack",
+        "Maya questions how designer confirms they've seen the change",
+        "Maya feels a plain text confirmation is too casual and could get lost",
+        "Maya asks how confirmation is tied to the brief",
+        "Designer sign-off is attached to the same dated locked-brief line",
+        "Sign-off stays attached to the requirement, killing Slack noise",
+        "Confirmation on the line creates a clear paper trail even if Slack/email chats continue"
+    ],
+    "bullet_windows": [
+        {
+            "end": "2026-10-17T21:52:36.130818",
+            "from_index": 0,
+            "lines": 101,
+            "mode": "rebuild",
+            "start": "2026-10-17T21:47:50.732034",
+            "to_index": 7
+        },
+        {
+            "end": "2026-10-17T21:54:17.884645",
+            "from_index": 8,
+            "lines": 29,
+            "mode": "auto",
+            "start": "2026-10-17T21:52:41.882089",
+            "to_index": 12
+        },
+        {
+            "end": "2026-10-17T21:57:51.599057",
+            "from_index": 13,
+            "lines": 40,
+            "mode": "auto",
+            "start": "2026-10-17T21:55:57.351858",
+            "to_index": 17
+        },
+        {
+            "end": "2026-10-17T22:04:45.951081",
+            "from_index": 18,
+            "lines": 40,
+            "mode": "auto",
+            "start": "2026-10-17T22:01:57.332670",
+            "to_index": 22
+        },
+        {
+            "end": "2026-10-17T22:09:14.002719",
+            "from_index": 23,
+            "lines": 28,
+            "mode": "auto",
+            "start": "2026-10-17T22:07:24.153043",
+            "to_index": 25
+        }
+    ],
+    "bullet_locks": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+    ],
+    "objectives": [
+        "Helpy desktop can be the solution for her problem",
+        "Helpy desktop cannot read the Slack or any other things, it's only capturing conversation for online meeting",
+        "Helpy gonna be standard platform as the solution"
+    ],
+    "objective_locks": [
+        true,
+        false,
+        false
+    ],
+    "objective_history": [
+        {
+            "confidence": 1.0,
+            "index": 0,
+            "source": "lock",
+            "text": "Helpy desktop can be the solution for her problem",
+            "ts": "2026-10-17T14:55:41.385666+00:00"
+        }
+    ],
+    "conversation": [
+        {
+            "text": " We were right.\n",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": " Like, what is the—\n",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": " We were figuring out how",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": ".\n",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": " The designer confirms they've seen the change.\n",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": " You mentioned a text, but I was worried that \"just get buried in more Slack noise.\"\n",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": " I'm still waiting to hear how we actually lock that confirmation down so nothing slips through.\n",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": " So",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": "—\n",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": " I don't know, it can be resolving",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": " your problem or not, but—so here's how the confirmation ties down.\n",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": " The change become a dated line",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": " in.\n",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": " The locked brief, and the designer sign off",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": ".\n",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": " That's to the same",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": " line, so it cannot drift into Slack. Slack and email still see it outside health today.\n",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": " It only captures what it hears like.\n",
+            "role": "host",
+            "suggestion": ""
+        },
+        {
+            "text": " So the confirmation lives right on the line.\n",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": " In the brief. That kills the Slack noise because the sign-off stays attached to the requirement.\n",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": " Even while the messy conversations are still",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": ".\n",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": " Happening on Slack and email.\n",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": " It creates a clear pap",
+            "role": "speaker",
+            "suggestion": ""
+        },
+        {
+            "text": "er trail. I'm just wond",
+            "role": "speaker",
+            "suggestion": ""
+        }
+    ],
+    "transcriptions": [
+        {
+            "source": "speaker",
+            "text": "Standing by? Alright, I'm the client. You're the consultant. Go ahead and kick things off.\n",
+            "timestamp": "2026-10-17T21:47:50.732034"
+        },
+        {
+            "source": "host",
+            "text": "Okay, hi, how are you doing?\n",
+            "timestamp": "2026-10-17T21:47:54.298945"
+        },
+        {
+            "source": "speaker",
+            "text": " I'll start with this:",
+            "timestamp": "2026-10-17T21:47:54.996951"
+        },
+        {
+            "source": "speaker",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:47:54.997529"
+        },
+        {
+            "source": "speaker",
+            "text": " Doing all right,",
+            "timestamp": "2026-10-17T21:48:01.149183"
+        },
+        {
+            "source": "speaker",
+            "text": " though to be honest I've been getting pr",
+            "timestamp": "2026-10-17T21:48:03.182354"
+        },
+        {
+            "source": "speaker",
+            "text": "etty frustrated with how things are moving between my account managers and the design team lately.\n",
+            "timestamp": "2026-10-17T21:48:03.951545"
+        },
+        {
+            "source": "speaker",
+            "text": " It just feels like the original intent gets lost somewhere in the middle,",
+            "timestamp": "2026-10-17T21:48:09.065445"
+        },
+        {
+            "source": "speaker",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:48:09.068870"
+        },
+        {
+            "source": "host",
+            "text": " Okay, can",
+            "timestamp": "2026-10-17T21:48:14.464465"
+        },
+        {
+            "source": "host",
+            "text": " we try to do a little bit before we go further? I think you need to",
+            "timestamp": "2026-10-17T21:48:15.535700"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:48:15.548147"
+        },
+        {
+            "source": "host",
+            "text": " Uh.\n",
+            "timestamp": "2026-10-17T21:48:16.381322"
+        },
+        {
+            "source": "host",
+            "text": " Give me",
+            "timestamp": "2026-10-17T21:48:23.363784"
+        },
+        {
+            "source": "host",
+            "text": " some introductions, l",
+            "timestamp": "2026-10-17T21:48:25.415128"
+        },
+        {
+            "source": "host",
+            "text": "ike who you are, where are you now, and then what kind of business that you are working on right now.\n",
+            "timestamp": "2026-10-17T21:48:25.848699"
+        },
+        {
+            "source": "speaker",
+            "text": " Right, let me set the stage.",
+            "timestamp": "2026-10-17T21:48:29.382428"
+        },
+        {
+            "source": "speaker",
+            "text": " I'm Sara, based in New York, I run a booth.\n",
+            "timestamp": "2026-10-17T21:48:32.785309"
+        },
+        {
+            "source": "host",
+            "text": " No, your name is Maya, not Sarah.\n",
+            "timestamp": "2026-10-17T21:48:34.420719"
+        },
+        {
+            "source": "speaker",
+            "text": " My bad, I'm Maya, I run a boutique brand identity agency here in New York.\n",
+            "timestamp": "2026-10-17T21:48:39.282938"
+        },
+        {
+            "source": "speaker",
+            "text": " We specialize in high-",
+            "timestamp": "2026-10-17T21:48:45.081978"
+        },
+        {
+            "source": "speaker",
+            "text": "end visual storytelling for luxury clients, focusing on brand identity and digital experiences.\n",
+            "timestamp": "2026-10-17T21:48:46.281748"
+        },
+        {
+            "source": "speaker",
+            "text": " I love the work",
+            "timestamp": "2026-10-17T21:48:51.903374"
+        },
+        {
+            "source": "speaker",
+            "text": ", but lately the h",
+            "timestamp": "2026-10-17T21:48:53.946670"
+        },
+        {
+            "source": "speaker",
+            "text": "andoffs between my account managers and the",
+            "timestamp": "2026-10-17T21:48:54.206992"
+        },
+        {
+            "source": "speaker",
+            "text": " design.\n",
+            "timestamp": "2026-10-17T21:48:54.211650"
+        },
+        {
+            "source": "speaker",
+            "text": " Team have been a mess.\n",
+            "timestamp": "2026-10-17T21:48:56.259241"
+        },
+        {
+            "source": "speaker",
+            "text": " I'm worried the original vision is getting diluted,",
+            "timestamp": "2026-10-17T21:49:00.852734"
+        },
+        {
+            "source": "speaker",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:49:00.863453"
+        },
+        {
+            "source": "speaker",
+            "text": " Before it even hits the canvas.\n",
+            "timestamp": "2026-10-17T21:49:02.330096"
+        },
+        {
+            "source": "host",
+            "text": " Okay.\n",
+            "timestamp": "2026-10-17T21:49:06.298642"
+        },
+        {
+            "source": "host",
+            "text": " Can we try to pause for a second, please?\n",
+            "timestamp": "2026-10-17T21:49:08.871126"
+        },
+        {
+            "source": "speaker",
+            "text": "Yep, still here. We were just getting into the mess with",
+            "timestamp": "2026-10-17T21:49:35.418606"
+        },
+        {
+            "source": "speaker",
+            "text": " my account.\n",
+            "timestamp": "2026-10-17T21:49:35.433456"
+        },
+        {
+            "source": "speaker",
+            "text": " Managers and designers.\n",
+            "timestamp": "2026-10-17T21:49:37.216525"
+        },
+        {
+            "source": "host",
+            "text": "Okay, so your name is Maya, right?\n",
+            "timestamp": "2026-10-17T21:49:40.080670"
+        },
+        {
+            "source": "host",
+            "text": " Mm-hm.\n",
+            "timestamp": "2026-10-17T21:49:43.999258"
+        },
+        {
+            "source": "speaker",
+            "text": " That's me, still feeling the heat from that handoff mess between",
+            "timestamp": "2026-10-17T21:49:45.399141"
+        },
+        {
+            "source": "speaker",
+            "text": " my.\n",
+            "timestamp": "2026-10-17T21:49:45.400094"
+        },
+        {
+            "source": "host",
+            "text": " And",
+            "timestamp": "2026-10-17T21:49:46.781614"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:49:46.786259"
+        },
+        {
+            "source": "speaker",
+            "text": " Account manager—\n",
+            "timestamp": "2026-10-17T21:49:47.198483"
+        },
+        {
+            "source": "host",
+            "text": " Okay, keep going.\n",
+            "timestamp": "2026-10-17T21:49:49.165403"
+        },
+        {
+            "source": "speaker",
+            "text": " Right,",
+            "timestamp": "2026-10-17T21:49:55.300048"
+        },
+        {
+            "source": "speaker",
+            "text": " so I've got these account managers who are",
+            "timestamp": "2026-10-17T21:49:57.347004"
+        },
+        {
+            "source": "speaker",
+            "text": " great with a clients, but by the time the",
+            "timestamp": "2026-10-17T21:49:59.381968"
+        },
+        {
+            "source": "speaker",
+            "text": " brief actually reaches the design team,",
+            "timestamp": "2026-10-17T21:50:01.432879"
+        },
+        {
+            "source": "speaker",
+            "text": " it's like a game of telephone. Something that felt like a priority during the kickoff just vanishes.\n",
+            "timestamp": "2026-10-17T21:50:02.881723"
+        },
+        {
+            "source": "speaker",
+            "text": " And we end up with a design that misses the mark entirely.",
+            "timestamp": "2026-10-17T21:50:06.731605"
+        },
+        {
+            "source": "host",
+            "text": " Okay.\n",
+            "timestamp": "2026-10-17T21:50:12.331461"
+        },
+        {
+            "source": "speaker",
+            "text": " It's exhausting.\n",
+            "timestamp": "2026-10-17T21:50:14.666277"
+        },
+        {
+            "source": "speaker",
+            "text": " We'll spend 2 weeks",
+            "timestamp": "2026-10-17T21:50:20.815032"
+        },
+        {
+            "source": "speaker",
+            "text": " polishing a concept, only to find out the client's core requirement was dropped in the first handoff.\n",
+            "timestamp": "2026-10-17T21:50:21.838296"
+        },
+        {
+            "source": "speaker",
+            "text": " Then we're back to square one.\n",
+            "timestamp": "2026-10-17T21:50:24.232263"
+        },
+        {
+            "source": "host",
+            "text": " Okay, before any work starts,",
+            "timestamp": "2026-10-17T21:50:29.282292"
+        },
+        {
+            "source": "host",
+            "text": " the designer.\n",
+            "timestamp": "2026-10-17T21:50:29.282957"
+        },
+        {
+            "source": "host",
+            "text": " Restarts, right?\n",
+            "timestamp": "2026-10-17T21:50:30.948837"
+        },
+        {
+            "source": "host",
+            "text": " Okay, hold on a second.\n",
+            "timestamp": "2026-10-17T21:50:32.364495"
+        },
+        {
+            "source": "host",
+            "text": " So, uh,",
+            "timestamp": "2026-10-17T21:50:35.222840"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:50:35.231369"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm.\n",
+            "timestamp": "2026-10-17T21:50:38.048296"
+        },
+        {
+            "source": "host",
+            "text": " Before the design starts, the account manager compares the brief against the locked lease.\n",
+            "timestamp": "2026-10-17T21:50:50.033169"
+        },
+        {
+            "source": "host",
+            "text": " And flags anything introvert.\n",
+            "timestamp": "2026-10-17T21:50:51.682754"
+        },
+        {
+            "source": "host",
+            "text": " Nothing move forward until it matches, right?\n",
+            "timestamp": "2026-10-17T21:50:55.097950"
+        },
+        {
+            "source": "speaker",
+            "text": " Yeah, that sounds like it would solve the problem.\n",
+            "timestamp": "2026-10-17T21:50:59.216234"
+        },
+        {
+            "source": "speaker",
+            "text": " But",
+            "timestamp": "2026-10-17T21:51:01.331615"
+        },
+        {
+            "source": "speaker",
+            "text": " how.\n",
+            "timestamp": "2026-10-17T21:51:01.349504"
+        },
+        {
+            "source": "speaker",
+            "text": " Does that actually work?\n",
+            "timestamp": "2026-10-17T21:51:02.369450"
+        },
+        {
+            "source": "speaker",
+            "text": " Without turning the account manager into a bottleneck?\n",
+            "timestamp": "2026-10-17T21:51:05.449931"
+        },
+        {
+            "source": "host",
+            "text": " Okay.\n",
+            "timestamp": "2026-10-17T21:51:07.547820"
+        },
+        {
+            "source": "host",
+            "text": " Give me a little bit",
+            "timestamp": "2026-10-17T21:51:10.431130"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T21:51:10.431912"
+        },
+        {
+            "source": "host",
+            "text": " Explain it in support",
+            "timestamp": "2026-10-17T21:51:13.182688"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:51:13.183681"
+        },
+        {
+            "source": "host",
+            "text": " Yeah.\n",
+            "timestamp": "2026-10-17T21:51:14.530983"
+        },
+        {
+            "source": "speaker",
+            "text": " Tsk.\n",
+            "timestamp": "2026-10-17T21:51:14.653662"
+        },
+        {
+            "source": "host",
+            "text": " It's describing that hand-off problems between account managers and the design teams.\n",
+            "timestamp": "2026-10-17T21:51:21.565104"
+        },
+        {
+            "source": "host",
+            "text": " Where the brief gets distorted like a game of teleports.\n",
+            "timestamp": "2026-10-17T21:51:26.114566"
+        },
+        {
+            "source": "host",
+            "text": " Priorities drop off, and then",
+            "timestamp": "2026-10-17T21:51:30.084119"
+        },
+        {
+            "source": "host",
+            "text": " a.\n",
+            "timestamp": "2026-10-17T21:51:30.088695"
+        },
+        {
+            "source": "host",
+            "text": " Resulting design misses the mark.\n",
+            "timestamp": "2026-10-17T21:51:31.866743"
+        },
+        {
+            "source": "host",
+            "text": " Isn't it?\n",
+            "timestamp": "2026-10-17T21:51:32.665304"
+        },
+        {
+            "source": "speaker",
+            "text": " Exactly. That's the nightmare.\n",
+            "timestamp": "2026-10-17T21:51:35.133124"
+        },
+        {
+            "source": "speaker",
+            "text": " It's the worst part.\n",
+            "timestamp": "2026-10-17T21:51:36.247646"
+        },
+        {
+            "source": "speaker",
+            "text": " We end up spending 2 weeks polishing a concept only to realize",
+            "timestamp": "2026-10-17T21:51:41.868325"
+        },
+        {
+            "source": "speaker",
+            "text": " a.\n",
+            "timestamp": "2026-10-17T21:51:41.869816"
+        },
+        {
+            "source": "speaker",
+            "text": " Core.\n",
+            "timestamp": "2026-10-17T21:51:42.747645"
+        },
+        {
+            "source": "speaker",
+            "text": " Requirement was dropped in the first handoff, and we have to start all over again.\n",
+            "timestamp": "2026-10-17T21:51:46.234089"
+        },
+        {
+            "source": "host",
+            "text": " Okay, so basic",
+            "timestamp": "2026-10-17T21:51:57.086230"
+        },
+        {
+            "source": "host",
+            "text": "ally, when you try to work",
+            "timestamp": "2026-10-17T21:51:59.137530"
+        },
+        {
+            "source": "host",
+            "text": " with the account managers and the designers, let's say,",
+            "timestamp": "2026-10-17T21:51:59.514821"
+        },
+        {
+            "source": "host",
+            "text": " uh.\n",
+            "timestamp": "2026-10-17T21:51:59.517445"
+        },
+        {
+            "source": "host",
+            "text": " Is it happening online situations or in the offline situation?\n",
+            "timestamp": "2026-10-17T21:52:07.313628"
+        },
+        {
+            "source": "speaker",
+            "text": " It's mostly on",
+            "timestamp": "2026-10-17T21:52:14.724943"
+        },
+        {
+            "source": "speaker",
+            "text": "line. We're mostly bouncing briefs and feedback through email.\n",
+            "timestamp": "2026-10-17T21:52:15.580866"
+        },
+        {
+            "source": "speaker",
+            "text": " And Slack, which I think is where things start to get messy.\n",
+            "timestamp": "2026-10-17T21:52:19.084617"
+        },
+        {
+            "source": "host",
+            "text": " Mm-hm.\n",
+            "timestamp": "2026-10-17T21:52:20.501579"
+        },
+        {
+            "source": "speaker",
+            "text": " It's just too easy for a critical detail to get buried in a Slack thread.\n",
+            "timestamp": "2026-10-17T21:52:25.065280"
+        },
+        {
+            "source": "speaker",
+            "text": " I'll spend 20 minutes",
+            "timestamp": "2026-10-17T21:52:31.198479"
+        },
+        {
+            "source": "speaker",
+            "text": " scrolling back through a channel trying to find \"the one comment\" where the client changed their mind, only to realize the designer never even saw it.\n",
+            "timestamp": "2026-10-17T21:52:33.266108"
+        },
+        {
+            "source": "host",
+            "text": " Okay.\n",
+            "timestamp": "2026-10-17T21:52:36.130818"
+        },
+        {
+            "source": "speaker",
+            "text": " And then I'm the one who has to break the news to the client that we missed it.\n",
+            "timestamp": "2026-10-17T21:52:41.882118"
+        },
+        {
+            "source": "host",
+            "text": " So you're saying that the biggest",
+            "timestamp": "2026-10-17T21:52:50.417090"
+        },
+        {
+            "source": "host",
+            "text": " problem in the handoff between account managers and designer is that most communications happens.\n",
+            "timestamp": "2026-10-17T21:52:50.531335"
+        },
+        {
+            "source": "host",
+            "text": " Online, mainly through email and Slack, isn't it?\n",
+            "timestamp": "2026-10-17T21:52:54.831839"
+        },
+        {
+            "source": "speaker",
+            "text": " That's the heart of it.\n",
+            "timestamp": "2026-10-17T21:52:57.402778"
+        },
+        {
+            "source": "speaker",
+            "text": " The problem",
+            "timestamp": "2026-10-17T21:53:03.666346"
+        },
+        {
+            "source": "speaker",
+            "text": " is, is that the critical stuff gets fragmented across 5 different threads.\n",
+            "timestamp": "2026-10-17T21:53:03.765550"
+        },
+        {
+            "source": "speaker",
+            "text": " Well, actually, just email and Slack.\n",
+            "timestamp": "2026-10-17T21:53:06.281179"
+        },
+        {
+            "source": "speaker",
+            "text": " And that's where the disaster happens.\n",
+            "timestamp": "2026-10-17T21:53:07.881313"
+        },
+        {
+            "source": "speaker",
+            "text": " I'll see a client's pivot, buried in a Slack thread from Tuesday.\n",
+            "timestamp": "2026-10-17T21:53:11.899633"
+        },
+        {
+            "source": "speaker",
+            "text": " And by Friday, the designer delivers something that's basically a relic of the first meeting.\n",
+            "timestamp": "2026-10-17T21:53:16.347185"
+        },
+        {
+            "source": "host",
+            "text": " Okay.\n",
+            "timestamp": "2026-10-17T21:53:24.448902"
+        },
+        {
+            "source": "host",
+            "text": " Let me take a look for a second.\n",
+            "timestamp": "2026-10-17T21:53:28.287086"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm.\n",
+            "timestamp": "2026-10-17T21:53:31.098902"
+        },
+        {
+            "source": "speaker",
+            "text": " Just give me a shout when you're back.\n",
+            "timestamp": "2026-10-17T21:53:33.500313"
+        },
+        {
+            "source": "host",
+            "text": " Sure.\n",
+            "timestamp": "2026-10-17T21:53:35.384014"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm.\n",
+            "timestamp": "2026-10-17T21:53:36.832968"
+        },
+        {
+            "source": "host",
+            "text": " So,",
+            "timestamp": "2026-10-17T21:53:47.867025"
+        },
+        {
+            "source": "host",
+            "text": " uh.\n",
+            "timestamp": "2026-10-17T21:53:47.873607"
+        },
+        {
+            "source": "speaker",
+            "text": " Yeah?\n",
+            "timestamp": "2026-10-17T21:53:50.132431"
+        },
+        {
+            "source": "speaker",
+            "text": " You got me wondering about those Slack threads.\n",
+            "timestamp": "2026-10-17T21:53:53.548806"
+        },
+        {
+            "source": "host",
+            "text": " So back now",
+            "timestamp": "2026-10-17T21:54:01.438360"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:54:01.448487"
+        },
+        {
+            "source": "host",
+            "text": " We can set up pen brief",
+            "timestamp": "2026-10-17T21:54:05.982121"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:54:05.988107"
+        },
+        {
+            "source": "host",
+            "text": " On the.\n",
+            "timestamp": "2026-10-17T21:54:06.834603"
+        },
+        {
+            "source": "host",
+            "text": " Document as the single source of truth.\n",
+            "timestamp": "2026-10-17T21:54:08.982343"
+        },
+        {
+            "source": "host",
+            "text": " Every client privates become a dated one.\n",
+            "timestamp": "2026-10-17T21:54:14.882004"
+        },
+        {
+            "source": "host",
+            "text": " One linear account manager locks their.\n",
+            "timestamp": "2026-10-17T21:54:17.884665"
+        },
+        {
+            "source": "host",
+            "text": " Designers read it before they deliver.\n",
+            "timestamp": "2026-10-17T21:54:21.784134"
+        },
+        {
+            "source": "host",
+            "text": " So Tuesday",
+            "timestamp": "2026-10-17T21:54:24.666617"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T21:54:24.681709"
+        },
+        {
+            "source": "host",
+            "text": " Period—command cannot become Friday's wrong concept.\n",
+            "timestamp": "2026-10-17T21:54:28.648953"
+        },
+        {
+            "source": "speaker",
+            "text": " Having one source of truth would definitely stop that game of telephone.\n",
+            "timestamp": "2026-10-17T21:54:35.623093"
+        },
+        {
+            "source": "speaker",
+            "text": " My worry is that my account manag",
+            "timestamp": "2026-10-17T21:54:41.748350"
+        },
+        {
+            "source": "speaker",
+            "text": "ers are already underwater if this becomes an",
+            "timestamp": "2026-10-17T21:54:43.814364"
+        },
+        {
+            "source": "speaker",
+            "text": "other manual log they have to maintain perfectly. It'll just be another thing that doesn't happen.\n",
+            "timestamp": "2026-10-17T21:54:44.065135"
+        },
+        {
+            "source": "speaker",
+            "text": " How do we get those pivots into the document without adding more work to their plate?\n",
+            "timestamp": "2026-10-17T21:54:49.699427"
+        },
+        {
+            "source": "host",
+            "text": " Okay, hold on a second.\n",
+            "timestamp": "2026-10-17T21:55:10.572014"
+        },
+        {
+            "source": "speaker",
+            "text": " Shh.\n",
+            "timestamp": "2026-10-17T21:55:13.250105"
+        },
+        {
+            "source": "host",
+            "text": " Let me take a look.\n",
+            "timestamp": "2026-10-17T21:55:13.566432"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm. Take your time.\n",
+            "timestamp": "2026-10-17T21:55:16.591237"
+        },
+        {
+            "source": "host",
+            "text": " Okay.\n",
+            "timestamp": "2026-10-17T21:55:47.751718"
+        },
+        {
+            "source": "host",
+            "text": " I tried to looking for some",
+            "timestamp": "2026-10-17T21:55:51.209346"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T21:55:51.217462"
+        },
+        {
+            "source": "host",
+            "text": " Suggestion for you.\n",
+            "timestamp": "2026-10-17T21:55:52.536442"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm. I'm curious.\n",
+            "timestamp": "2026-10-17T21:55:56.681511"
+        },
+        {
+            "source": "host",
+            "text": " Okay, so",
+            "timestamp": "2026-10-17T21:55:57.348732"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T21:55:57.351867"
+        },
+        {
+            "source": "speaker",
+            "text": " I'm listening.\n",
+            "timestamp": "2026-10-17T21:56:00.532429"
+        },
+        {
+            "source": "host",
+            "text": " So, uh,",
+            "timestamp": "2026-10-17T21:56:13.934228"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:56:13.935271"
+        },
+        {
+            "source": "host",
+            "text": " We have an applications called Helpy.",
+            "timestamp": "2026-10-17T21:56:18.916578"
+        },
+        {
+            "source": "host",
+            "text": " Helpy.\n",
+            "timestamp": "2026-10-17T21:56:18.921549"
+        },
+        {
+            "source": "host",
+            "text": " Itself, it's like a build. The brief itself",
+            "timestamp": "2026-10-17T21:56:22.886971"
+        },
+        {
+            "source": "host",
+            "text": " from.\n",
+            "timestamp": "2026-10-17T21:56:22.898841"
+        },
+        {
+            "source": "host",
+            "text": " Our kickoff call",
+            "timestamp": "2026-10-17T21:56:25.448469"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:56:25.449614"
+        },
+        {
+            "source": "host",
+            "text": " Yeah.\n",
+            "timestamp": "2026-10-17T21:56:29.481969"
+        },
+        {
+            "source": "speaker",
+            "text": " Wait, helpy?",
+            "timestamp": "2026-10-17T21:56:33.116882"
+        },
+        {
+            "source": "speaker",
+            "text": " Does it actually handle the logging for the account managers, or is there still a manual part they have to manage?\n",
+            "timestamp": "2026-10-17T21:56:34.318353"
+        },
+        {
+            "source": "host",
+            "text": " No, it will do it authentically.\n",
+            "timestamp": "2026-10-17T21:56:37.800372"
+        },
+        {
+            "source": "host",
+            "text": " So let's say you have a",
+            "timestamp": "2026-10-17T21:56:41.238393"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T21:56:41.245185"
+        },
+        {
+            "source": "host",
+            "text": " So",
+            "timestamp": "2026-10-17T21:56:43.815875"
+        },
+        {
+            "source": "host",
+            "text": " your.\n",
+            "timestamp": "2026-10-17T21:56:43.832938"
+        },
+        {
+            "source": "host",
+            "text": " Managers and your designers, they talk each other in the online person, right?\n",
+            "timestamp": "2026-10-17T21:56:48.949800"
+        },
+        {
+            "source": "host",
+            "text": " And then",
+            "timestamp": "2026-10-17T21:56:52.500821"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T21:56:52.501687"
+        },
+        {
+            "source": "host",
+            "text": " The Helpy will try to",
+            "timestamp": "2026-10-17T21:56:56.285077"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T21:56:56.299894"
+        },
+        {
+            "source": "host",
+            "text": " Get automatically the bullet points, the",
+            "timestamp": "2026-10-17T21:57:00.184042"
+        },
+        {
+            "source": "host",
+            "text": " the last.\n",
+            "timestamp": "2026-10-17T21:57:00.199686"
+        },
+        {
+            "source": "host",
+            "text": " Pick it up, and then the summarizations",
+            "timestamp": "2026-10-17T21:57:03.468135"
+        },
+        {
+            "source": "host",
+            "text": " and.\n",
+            "timestamp": "2026-10-17T21:57:03.473865"
+        },
+        {
+            "source": "host",
+            "text": " Also it can taking the objective",
+            "timestamp": "2026-10-17T21:57:06.904190"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T21:57:06.915763"
+        },
+        {
+            "source": "host",
+            "text": " From the conversations.\n",
+            "timestamp": "2026-10-17T21:57:09.349663"
+        },
+        {
+            "source": "host",
+            "text": " Automatically.\n",
+            "timestamp": "2026-10-17T21:57:10.899980"
+        },
+        {
+            "source": "speaker",
+            "text": " So it's listening in the background and pulling those details out on its own.\n",
+            "timestamp": "2026-10-17T21:57:17.149039"
+        },
+        {
+            "source": "speaker",
+            "text": " If it can actually spot",
+            "timestamp": "2026-10-17T21:57:23.200379"
+        },
+        {
+            "source": "speaker",
+            "text": " a pivot in a chaotic thread without my team lifting a finger,",
+            "timestamp": "2026-10-17T21:57:23.621976"
+        },
+        {
+            "source": "speaker",
+            "text": " then.\n",
+            "timestamp": "2026-10-17T21:57:23.632411"
+        },
+        {
+            "source": "speaker",
+            "text": " That's a game changer.\n",
+            "timestamp": "2026-10-17T21:57:24.498532"
+        },
+        {
+            "source": "speaker",
+            "text": " Wait, just to be clear, this only works for the conversations it captures, right?\n",
+            "timestamp": "2026-10-17T21:57:28.082351"
+        },
+        {
+            "source": "speaker",
+            "text": " It can't monitor those Slack threads or emails where the mess usually starts.\n",
+            "timestamp": "2026-10-17T21:57:32.435360"
+        },
+        {
+            "source": "speaker",
+            "text": " How does it know if something is a core requirement or just a passing suggestion?\n",
+            "timestamp": "2026-10-17T21:57:36.866199"
+        },
+        {
+            "source": "host",
+            "text": " Give me a second.\n",
+            "timestamp": "2026-10-17T21:57:51.599117"
+        },
+        {
+            "source": "speaker",
+            "text": "Manager is the one who actually",
+            "timestamp": "2026-10-17T22:01:22.549320"
+        },
+        {
+            "source": "speaker",
+            "text": " decides if it's a requirement. That takes the pressure off the AI to be perfec",
+            "timestamp": "2026-10-17T22:01:24.249788"
+        },
+        {
+            "source": "speaker",
+            "text": "t, but.\n",
+            "timestamp": "2026-10-17T22:01:24.254383"
+        },
+        {
+            "source": "speaker",
+            "text": " I'm wondering how the account manager actually reviews those flags.",
+            "timestamp": "2026-10-17T22:01:29.303422"
+        },
+        {
+            "source": "speaker",
+            "text": " Already underwater, is there a risk they just rubber-stamp everything to clear the queue?\n",
+            "timestamp": "2026-10-17T22:01:34.414947"
+        },
+        {
+            "source": "host",
+            "text": "So the rev",
+            "timestamp": "2026-10-17T22:01:51.183751"
+        },
+        {
+            "source": "host",
+            "text": "iew itself sits inside the single",
+            "timestamp": "2026-10-17T22:01:53.217302"
+        },
+        {
+            "source": "host",
+            "text": " break, as a dated",
+            "timestamp": "2026-10-17T22:01:55.268899"
+        },
+        {
+            "source": "host",
+            "text": " line items, not a",
+            "timestamp": "2026-10-17T22:01:57.332683"
+        },
+        {
+            "source": "host",
+            "text": " separate like queue.",
+            "timestamp": "2026-10-17T22:01:59.365689"
+        },
+        {
+            "source": "host",
+            "text": " So your account manager sees H",
+            "timestamp": "2026-10-17T22:02:01.417680"
+        },
+        {
+            "source": "host",
+            "text": "P5 beside the original requirements. That context makes ro",
+            "timestamp": "2026-10-17T22:02:02.565326"
+        },
+        {
+            "source": "host",
+            "text": "bust.\n",
+            "timestamp": "2026-10-17T22:02:02.566797"
+        },
+        {
+            "source": "host",
+            "text": " Stamping harder,",
+            "timestamp": "2026-10-17T22:02:08.733036"
+        },
+        {
+            "source": "host",
+            "text": " because they're judging scope change, not clearing tickets.\n",
+            "timestamp": "2026-10-17T22:02:08.838469"
+        },
+        {
+            "source": "host",
+            "text": " Keyword lines that actually change scope and review stays light.",
+            "timestamp": "2026-10-17T22:02:14.600325"
+        },
+        {
+            "source": "speaker",
+            "text": " I see what you mean. Seeing",
+            "timestamp": "2026-10-17T22:02:21.270784"
+        },
+        {
+            "source": "speaker",
+            "text": " the new pivot right next to the original re",
+            "timestamp": "2026-10-17T22:02:23.308002"
+        },
+        {
+            "source": "speaker",
+            "text": "quirement definitely makes it harder to ignore,",
+            "timestamp": "2026-10-17T22:02:25.361647"
+        },
+        {
+            "source": "speaker",
+            "text": " but once the account manager",
+            "timestamp": "2026-10-17T22:02:27.401310"
+        },
+        {
+            "source": "speaker",
+            "text": " signs off and that dotted line becomes a solid requirement,",
+            "timestamp": "2026-10-17T22:02:28.341049"
+        },
+        {
+            "source": "speaker",
+            "text": " how.\n",
+            "timestamp": "2026-10-17T22:02:28.346674"
+        },
+        {
+            "source": "speaker",
+            "text": " Does the design team actually get alerted?\n",
+            "timestamp": "2026-10-17T22:02:30.053500"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm.\n",
+            "timestamp": "2026-10-17T22:02:49.094797"
+        },
+        {
+            "source": "speaker",
+            "text": " That's a smart bit of friction. It's much hard",
+            "timestamp": "2026-10-17T22:02:57.098801"
+        },
+        {
+            "source": "speaker",
+            "text": "er to just nod and move on when the original requirement is staring you in the face.\n",
+            "timestamp": "2026-10-17T22:02:57.365771"
+        },
+        {
+            "source": "host",
+            "text": " So the moment the account manager locks that lin",
+            "timestamp": "2026-10-17T22:03:03.949503"
+        },
+        {
+            "source": "host",
+            "text": "e.\n",
+            "timestamp": "2026-10-17T22:03:03.950121"
+        },
+        {
+            "source": "host",
+            "text": " Anything healthy texts stop",
+            "timestamp": "2026-10-17T22:03:10.450476"
+        },
+        {
+            "source": "host",
+            "text": ". Like a push, it's straight to the designer's ticket on the thread.\n",
+            "timestamp": "2026-10-17T22:03:11.000298"
+        },
+        {
+            "source": "host",
+            "text": " So nobody's waiting",
+            "timestamp": "2026-10-17T22:03:16.767221"
+        },
+        {
+            "source": "host",
+            "text": " on Slack ping. It shows up top of the brief as a dated change.",
+            "timestamp": "2026-10-17T22:03:18.552998"
+        },
+        {
+            "source": "host",
+            "text": " With.\n",
+            "timestamp": "2026-10-17T22:03:18.558381"
+        },
+        {
+            "source": "host",
+            "text": " Who approved it.\n",
+            "timestamp": "2026-10-17T22:03:19.633303"
+        },
+        {
+            "source": "host",
+            "text": " They open the file and already know what changed.",
+            "timestamp": "2026-10-17T22:03:24.100813"
+        },
+        {
+            "source": "speaker",
+            "text": " That complet",
+            "timestamp": "2026-10-17T22:03:30.049143"
+        },
+        {
+            "source": "speaker",
+            "text": "ely cuts out the middleman. Knowing exact",
+            "timestamp": "2026-10-17T22:03:32.082280"
+        },
+        {
+            "source": "speaker",
+            "text": "ly what changed and who",
+            "timestamp": "2026-10-17T22:03:34.049756"
+        },
+        {
+            "source": "speaker",
+            "text": " signed off on it means the",
+            "timestamp": "2026-10-17T22:03:36.283003"
+        },
+        {
+            "source": "speaker",
+            "text": " designer doesn't have to go",
+            "timestamp": "2026-10-17T22:03:38.148216"
+        },
+        {
+            "source": "speaker",
+            "text": " hunting through Slack threads to find the truth. They just open the brief and see the new direction.\n",
+            "timestamp": "2026-10-17T22:03:39.366241"
+        },
+        {
+            "source": "speaker",
+            "text": " How does the designer let the account manager know they've actually seen the change?\n",
+            "timestamp": "2026-10-17T22:03:43.388097"
+        },
+        {
+            "source": "speaker",
+            "text": " Wait, just a text?\n",
+            "timestamp": "2026-10-17T22:03:51.734227"
+        },
+        {
+            "source": "speaker",
+            "text": " That feels a bit too casual for this kind of work, and it's just one more thing that could get lost in the noise.\n",
+            "timestamp": "2026-10-17T22:03:58.969546"
+        },
+        {
+            "source": "speaker",
+            "text": " How do we make sure that confirmation is actually tied to the brief?\n",
+            "timestamp": "2026-10-17T22:04:03.233029"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm. Just give me a shout when you're back.\n",
+            "timestamp": "2026-10-17T22:04:18.868240"
+        },
+        {
+            "source": "host",
+            "text": " Okay, we see what happened here.\n",
+            "timestamp": "2026-10-17T22:04:42.067742"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm. I'm curious to see how we lock that down.\n",
+            "timestamp": "2026-10-17T22:04:45.951168"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm.\n",
+            "timestamp": "2026-10-17T22:05:35.064629"
+        },
+        {
+            "source": "speaker",
+            "text": " Yeah?\n",
+            "timestamp": "2026-10-17T22:05:35.149377"
+        },
+        {
+            "source": "host",
+            "text": " Yeah.\n",
+            "timestamp": "2026-10-17T22:05:36.371524"
+        },
+        {
+            "source": "host",
+            "text": " It's interesting.",
+            "timestamp": "2026-10-17T22:05:38.029982"
+        },
+        {
+            "source": "speaker",
+            "text": " Ooh.\n",
+            "timestamp": "2026-10-17T22:05:40.085637"
+        },
+        {
+            "source": "speaker",
+            "text": " I like that. What the part of it just clicked for you?\n",
+            "timestamp": "2026-10-17T22:05:43.246087"
+        },
+        {
+            "source": "host",
+            "text": " So",
+            "timestamp": "2026-10-17T22:05:47.191110"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T22:05:47.195950"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm.\n",
+            "timestamp": "2026-10-17T22:05:49.135978"
+        },
+        {
+            "source": "host",
+            "text": " So let's say the AI suggestions from my application right now is that",
+            "timestamp": "2026-10-17T22:05:56.353901"
+        },
+        {
+            "source": "host",
+            "text": " Corella.\n",
+            "timestamp": "2026-10-17T22:05:56.367983"
+        },
+        {
+            "source": "host",
+            "text": " It has.\n",
+            "timestamp": "2026-10-17T22:05:57.204961"
+        },
+        {
+            "source": "host",
+            "text": " Relationship, it have contex",
+            "timestamp": "2026-10-17T22:06:00.950852"
+        },
+        {
+            "source": "host",
+            "text": "t.\n",
+            "timestamp": "2026-10-17T22:06:00.954739"
+        },
+        {
+            "source": "host",
+            "text": " But sometime it still",
+            "timestamp": "2026-10-17T22:06:04.522721"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T22:06:04.534523"
+        },
+        {
+            "source": "host",
+            "text": " Missing the part where",
+            "timestamp": "2026-10-17T22:06:07.404880"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T22:06:07.418791"
+        },
+        {
+            "source": "host",
+            "text": " Like",
+            "timestamp": "2026-10-17T22:06:09.967487"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T22:06:09.985159"
+        },
+        {
+            "source": "host",
+            "text": " Suggestions my tools",
+            "timestamp": "2026-10-17T22:06:13.803498"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T22:06:13.818419"
+        },
+        {
+            "source": "host",
+            "text": " As the",
+            "timestamp": "2026-10-17T22:06:16.835328"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T22:06:16.838653"
+        },
+        {
+            "source": "host",
+            "text": " What do you call it, as the",
+            "timestamp": "2026-10-17T22:06:20.028232"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T22:06:20.037950"
+        },
+        {
+            "source": "speaker",
+            "text": " Wait, you're stepping out of character to talk about the AI's logic? You were saying it's still missing something in the suggestion.\n",
+            "timestamp": "2026-10-17T22:06:27.937267"
+        },
+        {
+            "source": "host",
+            "text": " Behold.\n",
+            "timestamp": "2026-10-17T22:06:44.421468"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm.\n",
+            "timestamp": "2026-10-17T22:06:46.892496"
+        },
+        {
+            "source": "host",
+            "text": " Okay.\n",
+            "timestamp": "2026-10-17T22:07:24.153325"
+        },
+        {
+            "source": "speaker",
+            "text": " Hmm.\n",
+            "timestamp": "2026-10-17T22:07:28.352434"
+        },
+        {
+            "source": "host",
+            "text": " So what—what are we before?\n",
+            "timestamp": "2026-10-17T22:07:32.153848"
+        },
+        {
+            "source": "speaker",
+            "text": " We were right.\n",
+            "timestamp": "2026-10-17T22:07:34.167352"
+        },
+        {
+            "source": "host",
+            "text": " Like, what is the—\n",
+            "timestamp": "2026-10-17T22:07:34.918239"
+        },
+        {
+            "source": "speaker",
+            "text": " We were figuring out how",
+            "timestamp": "2026-10-17T22:07:38.660748"
+        },
+        {
+            "source": "speaker",
+            "text": ".\n",
+            "timestamp": "2026-10-17T22:07:38.665712"
+        },
+        {
+            "source": "speaker",
+            "text": " The designer confirms they've seen the change.\n",
+            "timestamp": "2026-10-17T22:07:41.741338"
+        },
+        {
+            "source": "speaker",
+            "text": " You mentioned a text, but I was worried that \"just get buried in more Slack noise.\"\n",
+            "timestamp": "2026-10-17T22:07:47.125157"
+        },
+        {
+            "source": "speaker",
+            "text": " I'm still waiting to hear how we actually lock that confirmation down so nothing slips through.\n",
+            "timestamp": "2026-10-17T22:07:51.910857"
+        },
+        {
+            "source": "host",
+            "text": " So",
+            "timestamp": "2026-10-17T22:08:26.054075"
+        },
+        {
+            "source": "host",
+            "text": "—\n",
+            "timestamp": "2026-10-17T22:08:26.055587"
+        },
+        {
+            "source": "host",
+            "text": " I don't know, it can be resolving",
+            "timestamp": "2026-10-17T22:08:32.186758"
+        },
+        {
+            "source": "host",
+            "text": " your problem or not, but—so here's how the confirmation ties down.\n",
+            "timestamp": "2026-10-17T22:08:32.356369"
+        },
+        {
+            "source": "host",
+            "text": " The change become a dated line",
+            "timestamp": "2026-10-17T22:08:35.770398"
+        },
+        {
+            "source": "host",
+            "text": " in.\n",
+            "timestamp": "2026-10-17T22:08:35.771896"
+        },
+        {
+            "source": "host",
+            "text": " The locked brief, and the designer sign off",
+            "timestamp": "2026-10-17T22:08:39.730386"
+        },
+        {
+            "source": "host",
+            "text": ".\n",
+            "timestamp": "2026-10-17T22:08:39.737694"
+        },
+        {
+            "source": "host",
+            "text": " That's to the same",
+            "timestamp": "2026-10-17T22:08:45.809933"
+        },
+        {
+            "source": "host",
+            "text": " line, so it cannot drift into Slack. Slack and email still see it outside health today.\n",
+            "timestamp": "2026-10-17T22:08:46.588476"
+        },
+        {
+            "source": "host",
+            "text": " It only captures what it hears like.\n",
+            "timestamp": "2026-10-17T22:08:49.638547"
+        },
+        {
+            "source": "speaker",
+            "text": " So the confirmation lives right on the line.\n",
+            "timestamp": "2026-10-17T22:08:54.704410"
+        },
+        {
+            "source": "speaker",
+            "text": " In the brief. That kills the Slack noise because the sign-off stays attached to the requirement.\n",
+            "timestamp": "2026-10-17T22:09:00.169123"
+        },
+        {
+            "source": "speaker",
+            "text": " Even while the messy conversations are still",
+            "timestamp": "2026-10-17T22:09:03.922594"
+        },
+        {
+            "source": "speaker",
+            "text": ".\n",
+            "timestamp": "2026-10-17T22:09:03.937747"
+        },
+        {
+            "source": "speaker",
+            "text": " Happening on Slack and email.\n",
+            "timestamp": "2026-10-17T22:09:05.802755"
+        },
+        {
+            "source": "speaker",
+            "text": " It creates a clear pap",
+            "timestamp": "2026-10-17T22:09:11.953157"
+        },
+        {
+            "source": "speaker",
+            "text": "er trail. I'm just wond",
+            "timestamp": "2026-10-17T22:09:14.002744"
+        }
+    ],
+    "translations": [],
+    "aireply_results": [
+        {
+            "text": "Speaker's move: Directive — she's assigning the roles and telling the Host to open the consultation as the consultant.\n\nEnglish Text: Let's treat this as one working session, Maya. Tell me the outcome you're chasing and your deadline, then where things stand today. From there I'll draft a brief, flag the gaps, and hand you a roadmap.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:47:54.314501"
+        },
+        {
+            "text": "Speaker's move: Declarative — Maya corrected her name and stated that she runs a boutique brand identity agency in New York doing high-end visual storytelling for luxury clients.\n\nEnglish Text: Got it, Maya — boutique brand identity work for luxury clients. Here's where I'd start: pick one recent project where the intent slipped, and walk me through the handoff from account manager to design. That single story will show us where the gap actually lives.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:48:49.964385"
+        },
+        {
+            "text": "Speaker's move: Declarative — Maya corrects her name and states her agency's focus while flagging a handoff pain point.\n\nEnglish Text: Then let's fix the handoff itself, Maya. Have your account manager write a one-page brief that names the client's core intent and the one feeling the design must land — and have the designer sign it before starting. That single signed page becomes your anchor when things drift.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:49:11.100638"
+        },
+        {
+            "text": "Speaker's move: Assertive — she restated her worry that the original vision gets diluted before it ever reaches the canvas.\n\nEnglish Text: Maya, the fix is a single version-controlled brief that both account managers and designers edit in the same place. Lock the original intent at the top, then every change gets tracked, so nothing gets lost before it hits your canvas.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:49:31.617004"
+        },
+        {
+            "text": "Speaker's move: Assertive — Maya describes how briefs degrade between her account managers and designers, like a game of telephone, so priorities vanish and the work misses the mark.\n\nEnglish Text: Try a designer readback: before any work starts, the designer restates the top three priorities in writing and the account manager confirms or corrects them. Anything the kickoff raised but the readback drops gets flagged right there. That's where your priority quietly dies, so catching it takes ten minutes, not a redesign.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:50:14.580548"
+        },
+        {
+            "text": "Speaker's move: Expressive — Maya vented that two weeks of polishing gets wasted because the client's core requirement dropped in the first handoff, sending the team back to square one.\n\nEnglish Text: Lock the client's must-haves into a \"non-negotiables\" field at kickoff that only you can unlock, then make a diff-check part of every handoff. Before design starts, the account manager compares the brief against that locked list and flags anything dropped. Nothing moves forward until it matches.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:50:29.764120"
+        },
+        {
+            "text": "Speaker's move: Directive — Maya is asking how the handoff check can work in practice without the account manager becoming a bottleneck.\n\nEnglish Text: The non-negotiables field does the policing, not your account manager. It's a shared checklist that auto-flags any dropped requirement at handoff, so the AM just confirms instead of hunting through the brief. It's a sixty-second check, and only you get pinged when something's missing.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:51:11.363953"
+        },
+        {
+            "text": "Speaker's move: Expressive — Maya clicked her tongue in disapproval, signaling the last explanation didn’t land.\n\nEnglish Text: The design lead should own a self-serve handoff checklist that mirrors the brief. They run it at each stage and only ping the account manager when a requirement conflicts. That keeps the account manager out of routine handoffs, so they never become the bottleneck.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:51:24.081685"
+        },
+        {
+            "text": "Speaker's move: Maya confirms the handoff nightmare and describes losing two weeks to a dropped core requirement.\n\nEnglish Text: Make the brief a single locked snapshot that everyone opens by link — the account manager just forwards it, never retypes it. Nothing gets summarized or gatekept, so they can't become a bottleneck. Any change routes back to you for approval, and the canvas reads straight from that same source.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:51:51.732798"
+        },
+        {
+            "text": "Speaker's move: Assertive — She confirmed their handoffs happen mostly online through email and Slack, which she thinks is where things get messy.\n\nEnglish Text: Then pin one living brief per project in Slack, and make every feedback message reply in-thread to the exact requirement it touches. Nothing gets lost since each comment stays tied to its line item. I can build that with a simple Slack bot, so your team just types like normal.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:52:31.597162"
+        },
+        {
+            "text": "Speaker's move: Expressive — Maya vents that critical client changes get buried in Slack threads and designers miss them.\n\nEnglish Text: Run every client change comment through a Slack workflow that logs it as a tracked decision in one shared doc. It pings the designer to acknowledge, so nothing sits unseen. That way you stop scrolling—you just check the log.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:52:43.848538"
+        },
+        {
+            "text": "Speaker's move: Expressive — Maya is expressing the personal burden of having to tell clients when something was missed.\n\nEnglish Text: That's the part to kill off — give the client a one-click \"request a change\" link that writes straight into the brief and pings the designer. Then the change never lives in Slack, so you never have to deliver that news. It keeps the client in the loop without you playing telephone.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:52:50.149012"
+        },
+        {
+            "text": "Speaker's move: Assertive — Maya confirms that the online, email-and-Slack handoff is the core of the problem, agreeing with the Host's summary.\n\nEnglish Text: Close the loop with a 10-minute readback before anyone starts sketching: the designer says the brief's three must-haves out loud, and the account manager confirms or corrects them. The designer catches the drop, not you — and your account manager stays a second voice, not a gate.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:53:05.931691"
+        },
+        {
+            "text": "Speaker's move: Expressive — Maya is expressing frustration that critical client details get fragmented across email and Slack, causing designers to deliver outdated work.\n\nEnglish Text: Use a Slack-to-brief bot that auto-logs any client pivot into a single pinned doc. It scans messages for change phrases and tags the designer, so no more Tuesday comments lost by Friday. You can wire it with Zapier or a short Python script.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:53:29.765229"
+        },
+        {
+            "text": "Speaker's move: Directive — Maya asked the Host to signal when they return to the conversation.\n\nEnglish Text: Back now. Set up one pinned \"Brief + Change Log\" doc as the single source of truth — every client pivot becomes a dated one-liner the account manager logs there. Designers read it before they deliver, so Tuesday's buried comment can't become Friday's wrong concept.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:53:40.316340"
+        },
+        {
+            "text": "Speaker's move: Expressive — Maya is voicing a worry that a shared brief doc will just become another manual log her underwater account managers won't maintain.\n\nEnglish Text: Make it one tap, not one more log: a Slack shortcut or bookmark reaction on the client's own message drops that exact quote, timestamped, straight into the brief. Nobody writes a summary, so there's nothing to maintain perfectly. Append-only means a missed pivot surfaces at the readback, not on Friday.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:54:54.949256"
+        },
+        {
+            "text": "Speaker's move: Commissive — Maya grants me time to work, waiting for my recommendation rather than asking anything new.\n\nEnglish Text: No writing required: give the brief doc its own intake — a dedicated email address plus a #brief-changes channel. Your account manager just forwards the client's note there, and it lands in the doc timestamped, automatically. That's a forward they're already doing, not a new log.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:55:21.482271"
+        },
+        {
+            "text": "Speaker's move: Maya asks how client pivots can land in the brief document without adding another manual logging chore to her already-stretched account managers.\n\nEnglish Text: Helpy desktop does the logging for them — it watches Slack and email in the background and drops each client pivot into the brief as a dated line the moment it's said. Your account manager just taps confirm. So the log maintains itself, and they're approving, not writing.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:55:50.348821"
+        },
+        {
+            "text": "Speaker's move: Maya asked how client pivots can land in the brief without adding another manual log for her already-stretched account managers.\n\nEnglish Text: Nothing to log — Helpy writes each pivot into the brief itself, and your account managers just reply \"confirmed\" in that same Slack thread. They're approving, not maintaining. Anything unconfirmed gets flagged, so it never hinges on them being perfect.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:56:05.732557"
+        },
+        {
+            "text": "Speaker's move: Directive — she asked how to get client pivots into the brief without adding another manual logging job for her already-stretched account managers.\n\nEnglish Text: Helpy builds the brief itself from your kickoff call and the original email thread, so nobody types it in. Your account managers just tap approve once at the start. After that, Helpy watches for drift and pings them only when something contradicts that locked brief — so logging stops being a job at all.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:56:12.101981"
+        },
+        {
+            "text": "Speaker's move: Directive — Maya asks whether Helpy can only capture connected conversations and how it tells a core requirement from a passing suggestion.\n\nEnglish Text: Helpy only listens to the Slack channels and email inboxes you connect it to — nothing outside that. Whether a line is a core requirement or a passing remark, it still lands as a dated line item your account manager approves or drops. Anything missing then gets flagged against the locked brief.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:57:41.402045"
+        },
+        {
+            "text": "Speaker's move: Maya asks how Helpy tells a core requirement apart from a passing suggestion in the captured conversations.\n\nEnglish Text: Helpy doesn't judge that — it flags anything that sounds like a decision or a change of direction, and your account manager tags it core or passing at the brief lock. Only tagged items go into the pen brief as dated lines. Passing suggestions stay visible but don't steer the work.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T21:58:24.112270"
+        },
+        {
+            "text": "Speaker's move: Assertive — Maya asks how Helpy tells a core requirement apart from a passing suggestion.\n\nEnglish Text: Helpy turns every candidate pivot into a dated line in the brief, and your account manager tags it core or passing during review. So it catches the language; you keep the judgment. That keeps the gate light and stops small comments from silently becoming requirements.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T22:00:42.747876"
+        },
+        {
+            "text": "Speaker's move: Assertive — Maya confirms the account manager makes the final call and asks whether reviewing Helpy’s flags risks rubber-stamping.\n\nEnglish Text: The review sits inside the single brief as dated line items, not a separate flag queue, so your account manager sees each pivot beside the original requirement. That context makes rubber-stamping harder, because they’re judging scope change, not clearing tickets. Keep it to lines that actually change scope, and the review stays light.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T22:01:43.081441"
+        },
+        {
+            "text": "Speaker's move: Directive — Maya asks how the design team actually gets alerted once the account manager signs off on a pivot.\n\nEnglish Text: The moment the account manager locks that line, Helpy desktop pushes it straight to the designers tagged on that brief, so nobody's waiting on a Slack ping. It shows up at the top of their brief as a dated change, with who approved it. They open the file and already know what changed.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T22:02:53.631994"
+        },
+        {
+            "text": "Speaker's move: Directive — she asks how a designer actually signals the account manager they've seen the change, and pushes back that a casual text is too flimsy and wants that confirmation tied to the brief itself.\n\nEnglish Text: It sits on the brief as a pinned line, not a chat message. When the designer opens the locked brief and confirms, that acknowledgement gets pinned, so a full rebuild can never drop or reword it — and it lands in the Decisions section with the date and who signed off. Slack never carries the truth again.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T22:04:43.865381"
+        },
+        {
+            "text": "Speaker's move: Expressive — a brief pondering beat rather than a question, push-back or commitment.\n\nEnglish Text: So here's how the confirmation ties down: the change becomes a dated line in the locked brief, and the designer's sign-off attaches to that same line, so it can't drift into Slack. Slack and email still sit outside Helpy today — it only captures what it hears live.",
+            "mode": "auto_reply",
+            "timestamp": "2026-10-17T22:07:02.833242"
+        }
+    ],
+    "screenshots": [],
+    "last_pickup": "Pembicara tadi menegaskan kembali pemahamannya: konfirmasi dari desainer itu tersimpan langsung di baris yang sama di dalam brief, jadi tanda persetujuannya tetap menempel pada requirement dan tidak akan hilang atau tercampur ke dalam bisingnya percakapan Slack. Menurutnya, itulah yang menyelesaikan masalah \"tenggelam di Slack\", meskipun obrolan-obrolan berantakan yang lain tetap berjalan seperti biasa.\n\nEnglish: The speaker is confirming their understanding back: the designer's confirmation lives right on the same line in the brief, so the sign-off stays attached to the requirement and won't get lost or drift into the noise of Slack. That, they say, is what kills the Slack-noise problem, even while the messy conversations keep going on elsewhere.",
+    "summary": "",
+    "brief": "## Goals\n- Stop the \"game of telephone\" so the original intent survives from kickoff to the canvas.\n- Have one source of truth so a Tuesday pivot doesn't become Friday's wrong concept.\n- Catch pivots in chaotic threads without the team lifting a finger.\n- Ensure the designer's confirmation is actually tied to the brief, not lost in Slack noise.\n- Keep a clear paper trail with what changed and who signed off.\n\n## Pain Points\n- Handoffs between account managers and the design team are a mess; the original vision gets diluted before it hits the canvas.\n- By the time the brief reaches the design team it's like a game of telephone — priorities from kickoff vanish.\n- Designs end up missing the mark entirely, forcing a restart.\n- Spending 2 weeks polishing a concept only to find the client's core requirement was dropped in the first handoff, then back to square one.\n- Critical details get buried in Slack threads; spending 20 minutes scrolling back to find the one comment where the client changed their mind, only to realize the designer never saw it.\n- Being the one who has to break the news to the client that it was missed.\n- Critical stuff gets fragmented across threads; a client's pivot buried in a Slack thread from Tuesday leads to Friday's relic of the first meeting.\n- Account managers are already underwater; another manual log they have to maintain perfectly will just be another thing that doesn't happen.\n- Risk that account managers rubber-stamp everything to clear the queue.\n- Plain-text confirmations feel too casual for this kind of work and could get lost in the noise.\n- The mess usually starts in Slack threads and emails, which the tool can't monitor.\n\n## Constraints\n- The mess usually happens in Slack and email, and the tool only captures the conversations it hears.\n- The account managers are already underwater, so any new process must not add more work to their plate.\n\n## Success Metrics\n- Account managers don't become a bottleneck.\n- Account managers don't just rubber-stamp everything to clear the queue.\n- Designer doesn't have to hunt through Slack threads to find the truth.\n- Confirmation can't drift into Slack.\n\n## Scope\n- Online only — briefs and feedback mostly bounce through email and Slack.\n- One source of truth: the brief as a document, with every client pivot as a dated line.\n- Account manager locks the line, and it goes straight to the designer's ticket/thread.\n- Designer signs off on the same line in the locked brief.\n- Account manager decides if something is a core requirement; review sits inside the brief as dated line items, not a separate queue, so they're judging scope change rather than clearing tickets.\n\n## Open Questions\n- How does the account manager actually review those flags, given they're already underwater?\n- How does the designer let the account manager know they've actually seen the change?\n- How do we make sure the confirmation is actually tied to the brief?\n- How do we get those pivots into the document without adding more work to the account managers' plate?\n- How does the tool know if something is a core requirement or just a passing suggestion?",
+    "gaps": "**Success metric undefined** — Maya calls the current state \"exhausting\" and the fix a \"game changer,\" but neither side has named a measurable target (e.g., dropped-requirement rate, rework cycles) for judging it a success.\nAsk: \"If this works, what number needs to change — how many two-week reworks per quarter, or how many dropped requirements — for you to call it a win?\"\n\n**Constraint on capture still unresolved** — Maya has twice said the mess \"usually starts\" in Slack and email, which the tool doesn't capture, yet no answer has addressed where the pivots will actually be caught.\nAsk: \"Since the pivots usually start in Slack and email the tool can't hear, who is responsible for getting those changes into the brief before review?\"\n\n**Adoption risk left open** — Maya predicted the account managers are \"already underwater\" and would let a manual log \"not happen,\" and her rubber-stamping worry was answered only for review effort, not for ongoing team capacity.\nAsk: \"What would it take for your account managers to actually sustain this alongside their client work — and what tells you in the first month that it's failing?\"\n\n**Rollout scope and timeline unstated** — The conversation has stayed on the mechanism; nothing covers how many account managers and designers would adopt it, when, or in what order.\nAsk: \"Who are the first account managers and designers you'd pilot this with, and what's the window you'd give it before deciding to keep or drop it?\"",
+    "roadmap": "The destination: a validated, adoption-ready handoff fix — one source-of-truth brief that catches Slack/email pivots and keeps designers' sign-off attached — before any build or rollout is committed.\n\n1. **Lock the success metric with Maya** — Ask directly: \"If this works, what number needs to change — two-week reworks per quarter, dropped requirements, or something else — for you to call it a win?\" Do this first because without a measurable target, every later design, pilot, and keep/drop decision has no yardstick, and the current \"exhausting\" vs. \"game changer\" language stays unfalsifiable.\n\n2. **Resolve the capture gap for pivots in Slack and email** — Maya has twice said the mess \"usually starts\" in the channels the tool can't hear, so confirm ownership: \"Since the pivots usually start in Slack and email the tool can't hear, who gets those changes into the brief before review — the account manager, the designer, or a routine at kickoff?\" This is next because it determines whether the single source of truth is actually fed, or just another document that drifts — it validates the core mechanism before anything is built on top of it.\n\n3. **Stress-test the adoption and rubber-stamp risk against real capacity** — Restate that review sits as dated line items beside the original requirements (so it's scope judgment, not ticket-clearing), then ask: \"What would it take for your account managers to sustain this alongside client work — and what tells you in the first month that it's failing?\" This closes the flagged adoption gap by testing whether the anti-rubber-stamp design survives contact with an already-underwater team, and it validates the \"no new manual log\" constraint.\n\n4. **Pin down the designer sign-off mechanism end-to-end** — Confirm the full loop: account manager locks the dated line → it lands straight in the designer's ticket/thread → designer signs off on that same line in the locked brief, so confirmation can't drift into Slack. This resolves the open questions on how the designer signals they've seen the change and how that confirmation stays tied to the brief — and it validates the \"paper trail with what changed and who signed off\" goal.\n\n5. **Confirm the account-manager review flow before build** — Walk through exactly how a flag appears (HP5-style marker beside the original requirement, inside the brief, not a separate queue) and how the manager decides core requirement vs. passing suggestion. This validates the anti-bottleneck and anti-rubber-stamp metrics at the point of use, and it closes the open question on how review actually happens given their load.\n\n6. **Define the pilot: who, how many, and how long** — Ask: \"Who are the first account managers and designers you'd pilot this with, and what's the window before you decide to keep or drop it?\" This closes the rollout-scope gap and gives the success metric from Step 1 a population and a deadline to be measured against.\n\n7. **Set the keep/drop decision checkpoint** — Before building further, agree what the first month must show against the metric from Step 1, the capture ownership from Step 2, and the adoption signal from Step 3 — this locks the paper trail in place as the standing record and turns the roadmap into a gated pilot rather than an open-ended rollout.",
+    "speaker": {
+        "facts": [
+            "Team bounces briefs and feedback mostly through email and Slack"
+        ],
+        "goals": [],
+        "interests": [],
+        "location": "New York",
+        "name": "Maya",
+        "occupation": "Runs a boutique brand identity agency",
+        "pain_points": [
+            "Mess usually starts in Slack threads and emails outside captured conversations",
+            "Plain text confirmations feel too casual and can get lost in the noise"
+        ]
+    },
+    "brief_meta": {
+        "confirmed": true,
+        "confirmed_at": "2026-10-18T05:23:52.904046"
+    },
+    "objective_meta": {
+        "pending": null,
+        "streak": 0,
+        "active": 0,
+        "confidence": 1.0,
+        "source": "lock",
+        "updated_at": "2026-10-17T14:55:41.385608+00:00"
+    },
+    "speaker_locks": {
+        "name": true,
+        "location": true,
+        "occupation": true,
+        "interests": [],
+        "goals": [],
+        "pain_points": [
+            false,
+            false
+        ],
+        "facts": [
+            false
+        ]
+    }
+}

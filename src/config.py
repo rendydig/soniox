@@ -391,7 +391,7 @@ MAX_DYNAMIC_PURPOSES = 30
 #     coalesces into one write (same pattern as the purpose store).
 #   SESSION_MAX_TRANSCRIPT_LINES — retention cap for the transcriptions and
 #     translations lists.
-#   SESSION_MAX_GEMINI — retention cap for gemini_results (auto-replies).
+#   SESSION_MAX_GEMINI — retention cap for aireply_results (auto-replies).
 #   SESSION_MAX_SCREENSHOTS — retention cap for the persisted screenshots list.
 SESSION_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "sessions"

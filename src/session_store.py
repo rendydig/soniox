@@ -38,7 +38,7 @@ SESSION_FIELDS = (
     "conversation",
     "transcriptions",
     "translations",
-    "gemini_results",
+    "aireply_results",
     "screenshots",
 )
 
@@ -63,7 +63,7 @@ ALL_SESSION_FIELDS = SESSION_FIELDS + SESSION_TEXT_FIELDS + SESSION_OBJECT_FIELD
 SESSION_CAPS = {
     "transcriptions": SESSION_MAX_TRANSCRIPT_LINES,
     "translations": SESSION_MAX_TRANSCRIPT_LINES,
-    "gemini_results": SESSION_MAX_GEMINI,
+    "aireply_results": SESSION_MAX_GEMINI,
     "screenshots": SESSION_MAX_SCREENSHOTS,
     "objectives": OBJECTIVE_MAX_ITEMS,
     "objective_history": OBJECTIVE_MAX_HISTORY,
