@@ -20,6 +20,9 @@ export const useWebSocketHandler = ({
     handleSummaryStatus,
     handleConsulting,
     handleConsultingStatus,
+    handleObjectives,
+    handleObjectivesHistory,
+    handleObjectivesStatus,
     handlePurposeState,
     handleSessionState,
     handleContextState,
@@ -111,6 +114,18 @@ export const useWebSocketHandler = ({
             if (typeof handleConsultingStatus === 'function') {
                 handleConsultingStatus(data.mode, data.status, data.message);
             }
+        } else if (data.type === 'objectives') {
+            if (typeof handleObjectives === 'function') {
+                handleObjectives(data.items || [], data.locks, data.active);
+            }
+        } else if (data.type === 'objectives_history') {
+            if (typeof handleObjectivesHistory === 'function') {
+                handleObjectivesHistory(data.entry);
+            }
+        } else if (data.type === 'objectives_status') {
+            if (typeof handleObjectivesStatus === 'function') {
+                handleObjectivesStatus(data.status, data.message);
+            }
         } else if (data.type === 'purpose_state') {
             if (typeof handlePurposeState === 'function') {
                 handlePurposeState(data.purpose, data.role);
@@ -150,6 +165,9 @@ export const useWebSocketHandler = ({
         handleSummaryStatus,
         handleConsulting,
         handleConsultingStatus,
+        handleObjectives,
+        handleObjectivesHistory,
+        handleObjectivesStatus,
         handlePurposeState,
         handleSessionState,
         handleContextState,

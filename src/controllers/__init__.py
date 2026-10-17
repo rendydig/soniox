@@ -5,6 +5,7 @@ from .bullet_points_controller import BulletPointsController
 from .last_pickup_controller import LastPickupController
 from .summarize_controller import SummarizeController
 from .consulting_controller import ConsultingController
+from .objective_controller import ObjectiveController
 
 __all__ = [
     'DeviceController',
@@ -14,4 +15,5 @@ __all__ = [
     'LastPickupController',
     'SummarizeController',
     'ConsultingController',
+    'ObjectiveController',
 ]

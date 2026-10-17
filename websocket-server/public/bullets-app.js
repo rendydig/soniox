@@ -6,6 +6,7 @@ import { BulletPointsList } from './components/BulletPointsList.js';
 import { SpeakerProfile } from './components/SpeakerProfile.js';
 import { SummaryView } from './components/SummaryView.js';
 import { ConsultingView } from './components/ConsultingView.js';
+import { ObjectivesView } from './components/ObjectivesView.js';
 import { useWebSocketHandler } from './hooks/useWebSocketHandler.js';
 import { useTranscriptionHandlers } from './hooks/useTranscriptionHandlers.js';
 
@@ -32,6 +33,11 @@ const BulletPointsApp = () => {
     const [roadmap, setRoadmap] = useState('');
     const [briefConfirmed, setBriefConfirmed] = useState(false);
     const [consultingStatus, setConsultingStatus] = useState({});
+    const [objectives, setObjectives] = useState([]);
+    const [objectiveLocks, setObjectiveLocks] = useState([]);
+    const [objectiveActive, setObjectiveActive] = useState({});
+    const [objectiveHistory, setObjectiveHistory] = useState([]);
+    const [objectiveStatus, setObjectiveStatus] = useState('');
     const wsManager = useRef(null);
 
     const {
@@ -44,6 +50,9 @@ const BulletPointsApp = () => {
         handleSummaryStatus,
         handleConsulting,
         handleConsultingStatus,
+        handleObjectives,
+        handleObjectivesHistory,
+        handleObjectivesStatus,
         handleSessionState
     } = useTranscriptionHandlers({
         /** Unused on this page — only the bullet list is shown. */
@@ -71,6 +80,11 @@ const BulletPointsApp = () => {
         setRoadmap,
         setBriefConfirmed,
         setConsultingStatus,
+        setObjectives,
+        setObjectiveLocks,
+        setObjectiveActive,
+        setObjectiveHistory,
+        setObjectiveStatus,
         wsManager
     });
 
@@ -123,6 +137,9 @@ const BulletPointsApp = () => {
         handleSummaryStatus,
         handleConsulting,
         handleConsultingStatus,
+        handleObjectives,
+        handleObjectivesHistory,
+        handleObjectivesStatus,
         handleSessionState,
         handleConnection
     });
@@ -198,6 +215,25 @@ const BulletPointsApp = () => {
             onGenerateRoadmap=${() => sendControl({ type: 'generate_roadmap' })}
             onConfirmBrief=${() => sendControl({ type: 'confirm_brief' })}
             onEdit=${handleConsultingEdit}
+        />
+    `;
+
+    const objectivesView = html`
+        <${ObjectivesView}
+            items=${objectives}
+            locks=${objectiveLocks}
+            active=${objectiveActive}
+            history=${objectiveHistory}
+            status=${objectiveStatus}
+            onToggleLock=${(index, text, locked) => sendControl({
+                type: 'set_objective_lock',
+                index,
+                text,
+                locked
+            })}
+            onAdd=${(text) => sendControl({ type: 'add_objective', text })}
+            onRemove=${(index) => sendControl({ type: 'remove_objective', index })}
+            onPredict=${() => sendControl({ type: 'trigger_objective_prediction' })}
         />
     `;
 
@@ -284,6 +320,12 @@ const BulletPointsApp = () => {
                             aria-selected=${tab === 'consulting'}
                             onClick=${() => setTab('consulting')}
                         >Consulting</button>
+                        <button
+                            class="bullet-tab ${tab === 'objectives' ? 'active' : ''}"
+                            role="tab"
+                            aria-selected=${tab === 'objectives'}
+                            onClick=${() => setTab('objectives')}
+                        >Objectives</button>
                     </div>
                     ${tab === 'bullets' && html`
                         <div class="bullet-header-actions">
@@ -321,7 +363,9 @@ const BulletPointsApp = () => {
                         ? pickupView
                         : tab === 'summary'
                             ? summaryView
-                            : consultingView}
+                            : tab === 'consulting'
+                                ? consultingView
+                                : objectivesView}
         </div>
     `;
 };

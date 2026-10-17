@@ -129,6 +129,51 @@ AI_STREAM_CHUNK_INTERVAL_MS = 60
 AUTO_REPLY_DEBOUNCE_MS = 1500
 AUTO_REPLY_ENDPOINT_DEBOUNCE_MS = 1500
 
+# Filler filter for the auto-reply path. When on, an utterance that is nothing but
+# acknowledgments ("Okay.", "Exactly. You nailed it.") skips the AI call instead of
+# spending a suggestion on it (see src/filler_filter.py). The manual "Reply now"
+# path and the hotkey always bypass it, so an explicit request is never refused.
+AUTO_REPLY_FILLER_FILTER = True
+
+# Session digest in the auto-reply prompt. When on, the reply prompt carries the
+# already-computed digest (bullet list, locked bullets, KYC speaker profile,
+# confirmed brief, own prior suggestions) as a "Context digest:" section built by
+# src/reply_context.py. Opt-in so the change can be measured: with it off the
+# rendered system instruction is byte-identical to the pre-digest one.
+#   AUTO_REPLY_MAX_BULLETS — how many of the most recent bullets are sent.
+#   AUTO_REPLY_MAX_BULLET_CHARS — per-bullet (and per-suggestion) truncation.
+#   AUTO_REPLY_MAX_PROFILE_ITEMS — per KYC list field (goals/pain_points/...).
+#   AUTO_REPLY_MAX_BRIEF_CHARS — confirmed-brief truncation.
+#   AUTO_REPLY_MAX_PRIOR_SUGGESTIONS — how many own prior suggestions to show.
+AUTO_REPLY_CONTEXT_DIGEST = _env_bool("AUTO_REPLY_CONTEXT_DIGEST", False)
+AUTO_REPLY_MAX_BULLETS = 20
+AUTO_REPLY_MAX_BULLET_CHARS = 160
+AUTO_REPLY_MAX_PROFILE_ITEMS = 5
+AUTO_REPLY_MAX_BRIEF_CHARS = 1200
+AUTO_REPLY_MAX_PRIOR_SUGGESTIONS = 3
+
+# Session objectives (the Bullet Points pane's Objectives tab). A session-level
+# list of what the conversation is working towards — independent of the purpose
+# — that is tracked, lockable and persisted as a history timeline.
+#   OBJECTIVE_DEBOUNCE_MS — delay after a finalized Speaker line before a
+#     prediction runs (mirrors LAST_PICKUP_DEBOUNCE_MS: every new line re-arms
+#     the timer, so a prediction fires only once the speaker pauses).
+#   OBJECTIVE_MIN_STREAK — consecutive agreeing predictions required before a
+#     transition is committed. Load-bearing: without it the tracker oscillates
+#     on adjacent utterances and the history becomes unreadable.
+#   OBJECTIVE_MAX_ITEMS — session cap on the objective list (the oldest entries
+#     are dropped).
+#   OBJECTIVE_MAX_HISTORY — session cap on the append-only history timeline.
+#   OBJECTIVE_MAX_LINE_CHARS — per transcript line in the prediction prompt.
+#   OBJECTIVE_WINDOW_LINES — size of the rolling transcript window a prediction
+#     is asked about.
+OBJECTIVE_DEBOUNCE_MS = 2000
+OBJECTIVE_MIN_STREAK = 2
+OBJECTIVE_MAX_ITEMS = 20
+OBJECTIVE_MAX_HISTORY = 200
+OBJECTIVE_MAX_LINE_CHARS = 300
+OBJECTIVE_WINDOW_LINES = 20
+
 # Per-provider fallback model name, used by src/ai_client.py when neither
 # AI_MODEL nor GEMINI_MODEL is set.
 DEFAULT_AI_MODELS = {
@@ -297,10 +342,14 @@ CONSULTING_MAX_LINE_CHARS = 300
 SPEAKER_CONTEXT_FILE = os.environ.get("SPEAKER_CONTEXT_FILE")
 
 # Purpose store. Built-ins are the immutable seed (src/purposes.py); user edits
-# and AI-learned purposes are overlaid from PURPOSES_PATH, written back by a
-# background thread (debounced), and marked "(auto)" in the UI.
-#   PURPOSES_PATH — purposes.json at the repo root; same-key entries merge onto
-#     the built-in seed, new keys are added (PurposeStore._load).
+# and AI-learned purposes live in PURPOSES_PATH, written back by a background
+# thread (debounced), and marked "(auto)" in the UI.
+#   PURPOSES_PATH — purposes.json at the repo root (gitignored). Schema 2:
+#     {"schema_version": 2, "overrides": {...}, "purposes": {...}}. The file
+#     carries only non-built-in entries; the loader adds them to the seed and
+#     IGNORES any stale on-disk copy of a built-in, so the seed is always
+#     authoritative (PurposeStore._load). A legacy flat {key: purpose} file
+#     still loads, and `overrides` is reserved for deliberate built-in edits.
 #   PURPOSES_WRITE_DEBOUNCE_MS — the writer thread sleeps this long after the
 #     dirty flag is set, coalescing a burst of updates into one disk write.
 #   MAX_DYNAMIC_PURPOSES — cap on AI-learned ("(auto)") purposes; the oldest

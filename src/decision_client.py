@@ -22,6 +22,7 @@ from src.config import (
     JEV_MODEL,
     LANGUAGES,
 )
+from src.objectives import objective_key
 from src.speech_acts import SPEECH_ACTS, act_criteria, speaker_act_criteria
 
 logger = logging.getLogger(__name__)
@@ -85,12 +86,15 @@ def language_options(speaker_language: str = None, target_language: str = None) 
 
 
 def build_questions(purpose: dict, roles: dict, checklist: list, smart_role: bool,
-                    languages: list, target_language: str = None) -> dict:
+                    languages: list, target_language: str = None,
+                    objectives: list = None) -> dict:
     """Build the JEV ``questions`` dict for one reply decision.
 
     ``should_reply`` (noul), ``speaker_act`` and ``speech_act`` (choice) are
     always present; ``host_role`` only in Smart mode; ``reply_language`` when any
-    candidate is known; and one ``objective_N`` noul per checklist item.
+    candidate is known; ``current_objective`` (choice) plus one ``objective_N``
+    noul per item when the session has objectives; otherwise one ``objective_N``
+    per purpose checklist item.
     """
     questions = {
         "should_reply": {
@@ -146,7 +150,18 @@ def build_questions(purpose: dict, roles: dict, checklist: list, smart_role: boo
             "criteria": lang_criteria,
         }
 
-    for i, item in enumerate(checklist or []):
+    # The session-level objectives are the source of truth when the user has
+    # defined any; the purpose's static checklist stays as the fallback.
+    session_objectives = [str(o).strip() for o in (objectives or []) if str(o).strip()]
+    if session_objectives:
+        questions["current_objective"] = {
+            "type": "choice",
+            "instructions": (
+                "Which objective is the conversation currently working on?"
+            ),
+            "criteria": {objective_key(o): o for o in session_objectives},
+        }
+    for i, item in enumerate(session_objectives or (checklist or [])):
         questions[f"objective_{i}"] = {
             "type": "noul",
             "instructions": item,
@@ -156,7 +171,8 @@ def build_questions(purpose: dict, roles: dict, checklist: list, smart_role: boo
 
 
 def build_state(host_profile: str, speaker_profile: str, purpose_label: str,
-                host_role: str, turns: list, latest_utterance: str) -> dict:
+                host_role: str, turns: list, latest_utterance: str,
+                objectives: list = None, active_objective: dict = None) -> dict:
     """Build the unstructured ``state`` sent alongside the questions."""
     state = {
         "host_profile": host_profile or "",
@@ -167,6 +183,10 @@ def build_state(host_profile: str, speaker_profile: str, purpose_label: str,
     }
     if speaker_profile:
         state["speaker_profile"] = speaker_profile
+    if objectives:
+        state["objectives"] = list(objectives)
+    if active_objective:
+        state["active_objective"] = active_objective
     return state
 
 

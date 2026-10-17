@@ -86,8 +86,8 @@ AI provider (translation/auto-reply/image reply, `src/ai_client.py`):
   roughly halving reply latency. Set `false` to re-enable reasoning.
 
 Auto-reply latency (constants in `src/config.py`):
-- `AUTO_REPLY_DEBOUNCE_MS` (1200) — debounce for a final **without** Soniox's `<end>` marker.
-- `AUTO_REPLY_ENDPOINT_DEBOUNCE_MS` (1200) — delay for a final **with** `<end>` (true end of the
+- `AUTO_REPLY_DEBOUNCE_MS` (1500) — debounce for a final **without** Soniox's `<end>` marker.
+- `AUTO_REPLY_ENDPOINT_DEBOUNCE_MS` (1500) — delay for a final **with** `<end>` (true end of the
   utterance). It now debounces like the non-endpoint path instead of firing immediately. The
   `<end>` flag rides as the 4th arg of the `transcription_update` signal
   (`src/workers.py` → `src/controllers/transcription_controller.py` → `src/ui.py`).
@@ -96,10 +96,49 @@ Auto-reply latency (constants in `src/config.py`):
   (`src/workers.py`) so endpoint detection emits `<end>` sooner. Aggressive preset: faster but
   can slightly reduce word-recognition accuracy and split long speech into more segments; lower
   them to trade speed back for accuracy.
+- `AUTO_REPLY_FILLER_FILTER` (true) — when on, an utterance that is *nothing but* acknowledgments
+  (`"Okay."`, `"Exactly. You nailed it."`) skips the AI call and emits `skipped`
+  ("Filler utterance") instead of spending a suggestion on it (`src/filler_filter.py::is_filler`:
+  a conservative closed list, and every sentence-sized segment must be one, so a short-but-real
+  answer like "Right, but the brief still gets lost" is never filtered). The manual path
+  (`Ctrl+R` / the pane's "Reply now") passes `allow_filler=True` and always answers.
+- `AUTO_REPLY_CONTEXT_DIGEST` (false, `_env_bool`) — when on, the reply prompt carries the
+  **session digest** the app already computed but used to throw away: the bullet list, the
+  locked bullets, the extracted KYC speaker profile, the confirmed brief and its own prior
+  suggestions (`src/reply_context.py::build_digest` → `gemini_worker._digest_block`, a
+  `Context digest:` section placed after the profile lines and before `Objective:`). Opt-in so
+  the change can be measured: with it off (or with an empty digest) the rendered system
+  instruction is **byte-identical** to the pre-digest one (asserted in `[18]`). Caps:
+  `AUTO_REPLY_MAX_BULLETS` (20, newest kept), `AUTO_REPLY_MAX_BULLET_CHARS` (160, per bullet
+  and per prior suggestion), `AUTO_REPLY_MAX_PROFILE_ITEMS` (5, per KYC list field),
+  `AUTO_REPLY_MAX_BRIEF_CHARS` (1200), `AUTO_REPLY_MAX_PRIOR_SUGGESTIONS` (3). The digest is
+  rebuilt (pure, no AI call, no disk I/O) whenever the bullet list, the speaker profile or the
+  confirmed brief changes and after each reply — the current brief is the *confirmed* one only.
+  `_stream_reply` logs `System instruction: <n> chars (digest=on|off, objective_focus=on|off)` at
+  DEBUG (markers only, never the prompt text), which is how the block is confirmed from the
+  terminal while the app runs.
+  Prior suggestions come from the conversation turns: `TranslationController._record_suggestion`
+  stamps each finished reply onto the Speaker turn it answered (the analysis preamble is
+  stripped, the turn is **replaced** rather than mutated so the session writer's shallow
+  snapshot cannot race it), while `_build_messages` keeps ignoring the field.
+  **Measured 2026-10-17** (`AUTO_REPLY_CONTEXT_DIGEST=1 AUTO_REPLY_LIVE_TESTS=1
+  venv/bin/python tools/auto_reply_report.py --repeat 3 --out reports/auto-reply-digest.md`,
+  deepseek-v4.1-flash via OpenRouter, reasoning off) against the flag-off baseline
+  `reports/auto-reply-report.md`: two digest-on runs scored `OK=4` and `OK=6` of 14 cases versus
+  `OK=4` for the baseline, with Bagian A identical in all three (it re-scores recorded answers).
+  The per-scenario verdicts moved in **both** directions — L10 was `grounding_late` in the baseline
+  and grounded in both digest runs, L2 slipped to `grounding_late` once — so this is directional
+  evidence, not a proven win; the flag stays off by default. The report's appendix now prints
+  whether the digest was on (`digest_enabled`) and that the `Objective focus:` block stays out of
+  the prompt while nothing is tracked.
+- Session objectives (the pane's Objectives tab) — `OBJECTIVE_DEBOUNCE_MS` (2000, re-armed by
+  every finalized Speaker line), `OBJECTIVE_MIN_STREAK` (2, the hysteresis that keeps the
+  tracker from flip-flopping), `OBJECTIVE_MAX_ITEMS` (20), `OBJECTIVE_MAX_HISTORY` (200),
+  `OBJECTIVE_MAX_LINE_CHARS` (300) and `OBJECTIVE_WINDOW_LINES` (20).
 
 "Last Picked Up" (the Bullet Points pane's third tab) uses its **own** pair of debounce
-constants, separate from auto-reply: `LAST_PICKUP_DEBOUNCE_MS` (1200) and
-`LAST_PICKUP_ENDPOINT_DEBOUNCE_MS` (1200). Every finalized **speaker** line re-arms the timer
+constants, separate from auto-reply: `LAST_PICKUP_DEBOUNCE_MS` (2000) and
+`LAST_PICKUP_ENDPOINT_DEBOUNCE_MS` (2000). Every finalized **speaker** line re-arms the timer
 (`src/ui.py` → `LastPickupController.schedule`), so a pickup AI call fires only once the speaker
 pauses — the `<end>` path no longer fires at 0 ms. Host lines are buffered into the window but
 never schedule a pickup; the whole rolling window (`LAST_PICKUP_MAX_LINES`, 40) is sent to the
@@ -179,6 +218,51 @@ flagged gaps; it reuses the `.env` provider/model with reasoning off (same as Su
   `no_input` notice per section instead of a dead button; there is **no hotkey**. `_restore_session`
   seeds the controller, New Session clears + archives it, and `closeEvent` cleans the worker up.
 
+**"Objectives"** (the Bullet Points pane's sixth tab) is the **session-level list of what the
+conversation is working towards** — independent of the Purpose — plus which one is currently
+active and a timeline of the transitions. `ObjectiveController`
+(`src/controllers/objective_controller.py`) mirrors `LastPickupController` (lines are always
+buffered for free into a rolling window of `OBJECTIVE_WINDOW_LINES`; every finalized Speaker line
+re-arms a single-shot `OBJECTIVE_DEBOUNCE_MS` timer, so a prediction fires only once the speaker
+pauses; one prediction at a time with a single queued rerun) and adds the bullet-points lock
+semantics. Predictions come from `ObjectiveWorker` (`src/objective_worker.py`): **JEV first** —
+its `current_objective` choice question is asked against the session objectives — and the **LLM
+fallback** (one small `{"objective","confidence"}` classification call, reasoning off) when JEV is
+disabled/unavailable/unconfident, so the default (`JEV_ENABLED=false`) user is tracked too. The
+reply worker's own JEV decision call answers the same question for free when a voice reply
+happens (`GeminiAutoReplyWorker._run_objective_decision` → the `objective_observed` signal →
+`MainWindow._on_objective_observed`).
+- `src/objectives.py` holds the pure rules: `objective_key` (mirrors `purpose_store.slugify`),
+  `align_locks`, `locked_index`, `resolve_active` (**a locked objective beats the prediction**;
+  the resolved dict is `{index, text, locked, confidence, source}`, `{}` when nothing is tracked)
+  and `observe` — the hysteresis: a transition commits only after `OBJECTIVE_MIN_STREAK` (2)
+  consecutive agreeing predictions, an out-of-range/`-1` prediction resets the streak, and a lock
+  pins the tracker immediately (`source: "lock"`, confidence 1.0). Locking commits the pin (meta
+  plus one history entry); unlocking leaves the focus where it was. The tracker state is
+  `objective_meta` (`{active, confidence, source, updated_at}` + the `pending`/`streak` hysteresis
+  state) and every **committed** transition appends `{ts, index, text, confidence, source}` to
+  `objective_history`.
+- The reply prompt gains a soft `Objective focus:` block (`gemini_worker._objective_block`) naming
+  the resolved objective, its confidence/source and — when locked — "This objective is locked by
+  the user; serve it."; it renders only when something is tracked, so an unused tracker leaves the
+  prompt byte-identical. JEV is asked about the objectives through
+  `decision_client.build_questions(..., objectives=…)` / `build_state(..., objectives,
+  active_objective)`, which also repurpose the previously-dead `objective_N` noul questions to the
+  session list (the purpose's `objective_checklist` stays the fallback).
+- Messages: the pane sends `add_objective` (empty/duplicate → an `objectives_status` `no_input`
+  notice), `remove_objective`, `set_objective_lock` (`{index, text, locked}` — resolved by text
+  first, mirroring the bullet locks) and `trigger_objective_prediction`; the app broadcasts
+  `{"type":"objectives", items, locks, active}`, `{"type":"objectives_history", entry}` per
+  committed transition and `{"type":"objectives_status", status}` (`started` / `error` /
+  `no_input`). `_send_session_state` also carries `objective_active`, so a reloaded pane never
+  re-implements the lock precedence in JavaScript.
+- Persisted as the session lists `objectives` / `objective_locks` / `objective_history` and the
+  object field `objective_meta` (`src/session_store.py`, capped via `SESSION_CAPS`); the pane
+  restores them through `session_state`, `_restore_session` seeds the controller and mirrors it to
+  the reply prompt, New Session clears + archives it and `closeEvent` cleans the worker up. The Go
+  hub does **not** own objectives yet (a follow-up: it would need a topic in
+  `hub/internal/store/store.go`).
+
 Auto-reply **streaming** (word-by-word, not SSE — it rides the existing WebSocket):
 - `AIClient.generate_stream(system_instruction, messages)` (`src/ai_client.py`) is a generator:
   Gemini uses `models.generate_content_stream`, OpenAI-compatible clients use
@@ -212,6 +296,49 @@ Auto-reply **analysis preamble** (always on for voice auto-replies — not for i
   the Speaker-side wording.
 - `format_gemini_result` (`src/text_formatter.py`) knows the new header (plus `<Language> Text:`) and
   no longer prepends a newline when a header sits at position 0.
+
+Auto-reply **prompt contract & gating** (F1/F2/F5/F6/F7, shipped with the regression suite below):
+- **Grounding rule** (`_build_system_instruction`): when a Host context is attached, the prompt
+  carries two bullets — `The Host profile is the source of truth for what the Host offers: answer the
+  Speaker's question from it, and never invent product facts that are not in it.` and `Name the
+  concrete product mechanism in your FIRST sentence, then explain it; never answer a product
+  question in the abstract.` With **no** Host context the pair is replaced by its mirror image —
+  `No profile of what the Host offers is available: do not invent product specifics (features,
+  integrations, dashboards, pricing, roadmaps)…` — which deliberately avoids the phrase "Host
+  profile": `_tmp_context_prompt_check.py` and offline scenario [7] assert that phrase is absent
+  when the user selected no context.
+  Measured effect: the live scenarios now lead with the product in the first sentence (L1-L4 were
+  `OK` in the post-fix report, vs `OK`/`grounding_late` before).
+- **Per-role style block** (`style` in `src/purposes.py` → `gemini_worker._style_block`): every role
+  may carry `approach` / `tone` / `length` / `answer_first` / `structure`, rendered as a `Style:`
+  section right after `Objective:`. `answer_first: true` emits *"If the Speaker asked a question,
+  answer it in your first sentence; never open with an acknowledgment or a counter-question."*; the
+  two Interviewer roles set it **false** (their job is to ask), so answer-first is per-persona rather
+  than one global rule. A role with no `style` — an older `purposes.json` entry, an AI-synthesized
+  role — falls back to `DEFAULT_ROLE_STYLE`, so the section is always rendered. The ad-hoc
+  tone/length/structure sentences were moved out of each `objective` into that block.
+- **Seed-authoritative purposes** (`src/purpose_store.py`): `BUILTIN_PURPOSES` is the immutable seed.
+  `purposes.json` (gitignored, schema 2: `{"schema_version": 2, "overrides": {...}, "purposes":
+  {...}}`) carries **only** non-built-in (user / AI-learned) entries: `_load()` ignores any on-disk
+  copy of a built-in key (`Ignoring stale built-in copy of %r from purposes.json`) and `_write()`
+  never dumps the built-ins. The legacy flat `{key: purpose}` shape still loads, and `overrides` is
+  reserved for deliberate built-in edits (no UI for them yet). A stale file can therefore no longer
+  shadow the seed — the old "editing `src/purposes.py` alone changes the tests, not the running app"
+  caveat no longer applies.
+- **History hygiene** (`_build_messages`): *all* leading host turns are dropped (not just one) so the
+  message list starts with a `user` turn; speaker-side filler turns are dropped (host turns never
+  are — what the Host said is the conversation the reply has to continue); and a repeated latest
+  utterance is de-duplicated while staying the final user message (a host turn landing after the
+  question used to send the question **twice**).
+- **Filler filter**: see `AUTO_REPLY_FILLER_FILTER` in the constants list above.
+- **Session digest + objective focus** (Phase 1 / Phase 2, both opt-in-ish): the digest above is
+  gated on `AUTO_REPLY_CONTEXT_DIGEST`; the `Objective focus:` block (`gemini_worker._objective_block`)
+  only renders when the tracker has a resolved objective, so an unused feature leaves the prompt
+  byte-identical. It is *soft*: a locked objective is marked and the reply is told to serve it, but it
+  never suppresses a reply.
+- **Queued rerun** (`TranslationController`): a final arriving while a worker is running is queued
+  (`_rerun_pending`) and re-run when that worker finishes — result, error or skip — instead of being
+  dropped with no suggestion at all (mirrors `LastPickupController`'s `_run_pending`).
 
 ## Central hub (Go) — M0 + M1 shipped
 `hub/` is a stdlib-only Go process that owns the **live session state** and the
@@ -586,14 +713,15 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   (not edge-docked) to avoid colliding with the docked panes. Its web view loads
   `http://localhost:8765/bullets` → `public/bullets.html` + `public/bullets-app.js`
   (server route `/bullets`), rendering `components/BulletPointsList.js` with a custom
-  CSS-drawn checkmark. The pane has **five tabs** — Bullet Points / **Speaker** /
-  Last Picked Up / **Summary** / **Consulting**; the Speaker tab renders `components/SpeakerProfile.js` (identity
+  CSS-drawn checkmark. The pane has **six tabs** — Bullet Points / **Speaker** /
+  Last Picked Up / **Summary** / **Consulting** / **Objectives**; the Speaker tab renders `components/SpeakerProfile.js` (identity
   rows + `.kyc-*` sections, `.kyc-pain` accent for pain points, shares the update status line and
   an empty-state hint), the Summary tab renders `components/SummaryView.js` (a Summarize button
   plus the markdown summary in preview, or a double-click-to-edit autosaving textarea; green
   overrides so the renderer matches the pane accent), and the Consulting tab renders
   `components/ConsultingView.js` (three stacked sections — brief / gaps / roadmap — see the
-  "Consulting" paragraph above). The bullets
+  "Consulting" paragraph above), and the Objectives tab renders
+  `components/ObjectivesView.js` (see the "Objectives" paragraph below). The bullets
   tab carries two text buttons: **Fetch new** (incremental — merges only the newly buffered lines,
   keeps the list; `trigger_bullet_points`) and **Rebuild** (regenerates the list from the whole
   transcript; also refreshes the profile, since it is one AI call). Each item also carries a padlock
@@ -606,9 +734,12 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   panes.
 
 ## Sessions (persistence, resume, new session)
-- A **session** is the conversation state persisted to `sessions/current.json` (gitignored):  `bullets`, `bullet_windows`, `bullet_locks`, `conversation`, `transcriptions`, `translations`, `gemini_results`, `screenshots`
+- A **session** is the conversation state persisted to `sessions/current.json` (gitignored):  `bullets`, `bullet_windows`, `bullet_locks`, `objectives`, `objective_locks`, `objective_history`, `conversation`, `transcriptions`, `translations`, `gemini_results`, `screenshots`
   (each capped in `src/config.py` except `bullets`/`bullet_windows`/`bullet_locks`, which are uncapped) plus the
-  dict-typed `speaker` profile and `brief_meta` and the strings `last_pickup`, `summary`, `brief`, `gaps` and `roadmap`.
+  dict-typed `speaker` profile, `brief_meta` and `objective_meta` and the strings `last_pickup`, `summary`, `brief`, `gaps` and `roadmap`.
+  `_normalize` keeps only the keys of `_new_session_data()`, so a field missing from
+  `SESSION_FIELDS` / `SESSION_OBJECT_FIELDS` is silently dropped on load — and `objective_locks`
+  is re-aligned (padded/trimmed) to `objectives` there so an older session file still loads.
  `SessionStore` (`src/session_store.py`) holds it in memory and
   a **background daemon thread** JSON-dumps snapshots on a debounce
   (`SESSION_WRITE_DEBOUNCE_MS`, 2 s) via a temp file + `os.replace`, so file I/O never blocks the
@@ -1015,6 +1146,36 @@ few seconds, because Qt WebEngine cannot render on the offscreen platform here.
   and the brief edit flow (double-click → type → debounced `consulting_save` → Back shows the edit).
   28 checks.
 
+### Session objectives tab (throwaway)
+- `_tmp_objective_check.py` — the offline gate: the pure helpers (`objective_key`, `align_locks`,
+  `locked_index`, `resolve_active` precedence including "a lock beats the prediction", the
+  `observe` hysteresis — one prediction does not commit, the second agreeing one does, a different
+  index starts a new streak, returning to the active index or an out-of-range/`-1` prediction
+  resets it, a lock pins immediately), the controller (list editing, `set_lock` by text/index,
+  meta pruning and index shifting on removal, the cap, the debounce interval, a prediction commit
+  and its history entry, the stale-window discard, the busy guard's queued rerun, the JEV
+  observation path, the history cap), the JEV plumbing (`current_objective` + the repurposed
+  `objective_N` questions, the `objectives` / `active_objective` state fields) and the session
+  round-trip (all four fields survive `_normalize`, a short lock list is padded, a missing
+  `objective_meta` degrades to `{}`, `new_session` clears and archives). No server needed. 79 checks.
+- `_tmp_objective_app_check.py` — the app-side wiring in a real `MainWindow` (the prediction worker
+  stubbed): `add_objective` broadcasts / persists / mirrors to the reply prompt (a duplicate is
+  refused with a `no_input` notice), locking pins the focus in the frame + meta + history + prompt,
+  `remove_objective` updates all three, `trigger_objective_prediction` reaches the tracker, the
+  mirrored objectives/locks/meta reach the **voice** worker and are kept out of the image path, a
+  finalized speaker line fills the window and arms the debounce (a host line does neither),
+  `session_state` carries the list/locks/history and the derived `objective_active`, and restore /
+  New Session / archive / the reply worker's JEV observation all behave. No server needed. 44 checks.
+- `_tmp_objective_pane_check.py` — the pane really renders (needs a server: `PORT=8796 node
+  server.js`): loads `/bullets`, opens the Objectives tab, asserts the add form + Predict now, that
+  clicking sends `trigger_objective_prediction` and the submitted text sends `add_objective`, that an
+  incoming `objectives` frame renders both items with the tracked one highlighted, the amber lock
+  tint and the Locked badge, that an `objectives_history` frame appends to the timeline, that a
+  padlock sends `set_objective_lock` and the × sends `remove_objective`, and that the console stays
+  clean. It caught exactly the kind of bug `node --check` cannot: a conditional block in the middle
+  of the render tree made Preact throw `insertBefore` and drop the timeline (the component now keeps
+  every block in the DOM and hides the empty ones with an `empty` class). 21 checks.
+
 ### Microphone mute (throwaway)
 - `_tmp_mute_check.py` — the soft-mute sender loop against a **fake `websockets` connection**
   (no real API): live chunks go as binary frames; while muted nothing binary is sent, the queue
@@ -1060,3 +1221,99 @@ threads constant 15, webview heaps constant 9.5 MB, editor blocks capped at 500,
 child restarts, no new `faulthandler.log` block, empty `audio-capture.log`/`crash.log`**,
 146.3 MB PCM reached the fake Soniox (≈153.6 MB expected → both streams flowed the whole
 run), clean shutdown with no orphaned capture children.
+
+### Auto-reply (AI suggestion) regression tests (throwaway)
+Two-tier suite for the auto-reply pipeline. The offline tier drives the real
+`GeminiAutoReplyWorker.run()` with a stubbed `generate_stream` (no network) and
+asserts the *contract of what we send*; the live tier runs the real provider and
+asserts the reply text. Both draw on the same 16-case scenario table from the flow
+review (sample conversation, question, answer→ack→question, filler, trailing host
+turn, context states, endpoint debounce, history cap, trigger-drop, manual reply,
+image reply, pinned role under JEV), split across the two tiers.
+- `_tmp_auto_reply_prompt_check.py` — offline, deterministic, the merge gate.
+  Scenarios 1, 2, 2b, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17. Hard `check()`
+  assertions plus `witness()` observations of the known causes, plus section **[18]** (the session
+  digest: flag off → prompt byte-identical, flag on → bullets/locked markers/KYC profile/confirmed
+  brief/prior suggestions, every cap enforced, `_record_suggestion` on the answered turn without
+  mutating the shared history objects, the voice-vs-image worker plumbing, and
+  `MainWindow._rebuild_reply_digest` taking the *confirmed* brief only) and **[19]** (the
+  `Objective focus:` block: absent with no objectives or no tracked focus, the tracked objective
+  with its confidence/source, a lock beating the prediction and adding the serve-it line, the JEV
+  `current_objective` question/state, the `objective_observed` emission, and the low-confidence /
+  unknown-key / no-objectives guards). **121 checks, all 7
+  witnesses ABSENT** (verified 2026-10-17, after F1/F2/F5/F6/F7 and the per-role style
+  block landed): both grounding bullets (source-of-truth **and** first-sentence), the
+  no-context anti-invention rule (which still never says "Host profile"), the per-role
+  `Style:` block (`answer_first` honoured, an Interviewer omits the directive, two roles
+  render different styles, a style-less role falls back to `DEFAULT_ROLE_STYLE`), F2
+  answer-first via the role style, the schema-2 purpose store (a stale built-in copy can
+  no longer shadow the seed, a synthesized role keeps its own tone, only non-built-in
+  entries are written back), *all* leading host turns dropped, speaker-side
+  fillers dropped, the question sent once, the filler filter (a filler makes **no** AI call,
+  a run of acknowledgments counts as one, an explicit `allow_filler=True` request still
+  answers, and "Right, but the brief still gets lost" is not mistaken for a filler), the
+  queued rerun, and `maya.context.txt` aligned with the extracted profile. The recorded
+  session's always-empty `suggestion` field is a documented data fact rather than a
+  witness (no code change can flip it). `AUTO_REPLY_STRICT=1` turns every witness into a
+  failure and **passes** — run that as the gate. No server needed.
+- `_tmp_auto_reply_live_check.py` — opt-in, real model. Gated by
+  `AUTO_REPLY_LIVE_TESTS=1`; exits 0 with a notice when the flag is unset or the
+  provider cannot be built (missing key), so it is a no-op without credentials.
+  Scenarios L1 (replay the recorded failing question), L2, L3 (grounding),
+  L4 (role inversion), L5 (now asserts the filler **skip**, 1 ms, no model call),
+  L7, L10 (Indonesian). Prints each reply and the latency, since the model output is
+  non-deterministic. `AUTO_REPLY_STRICT` has no effect here; `AUTO_REPLY_LIVE_REPEAT=N`
+  repeats the L1 headline replay N times.
+  **Verified 2026-10-17** (deepseek-v4.1-flash via OpenRouter, reasoning ON): **15/15
+  checks pass, all 5 witnesses ABSENT**; L1-L4 now lead with the product in the first
+  sentence. Earlier baseline (2026-10-16, 2 full runs + an ON/OFF A/B): 14/14 and the
+  reported symptom **did not reproduce** — L1 was grounded in **8/8** samples, and the
+  24-turn history the worker sends contains **zero** product terms, so
+  "brief"/"capture"/"helpy" can only come from the attached Host profile. Reasoning ON vs
+  OFF both scored 3/3 grounded; the only measured effect of reasoning was latency
+  (~5.8 s avg ON vs ~1.8 s OFF, with a 13–26 s tail), which weakens F4. Known harness
+  limitation: the L7 invented-product detector is under-sensitive (it missed "upload your
+  data … ranked results", "a live dashboard" and "30-second call … two-week cycles" by
+  hand), and it can also false-positive on a process metaphor ("Helpy's consulting
+  pipeline") — see the report's caveats.
+- `_tmp_auto_reply_record.py` — re-records Bagian A: it pairs each stored answer in
+  `sessions/current.json` with the same trigger the report uses, rebuilds the history the
+  reply saw, and re-runs the REAL worker on it through today's prompt, writing a **new**
+  session-shaped file (`reports/auto-reply-replay-session.json`). `sessions/current.json` is
+  never modified. A trigger the current pipeline intentionally skips (F6 filler) spends no
+  call and writes no entry, so the replay can hold fewer results than the source; the skipped
+  triggers are listed in the file's `replay` block. Point the report at it:
+  `tools/auto_reply_report.py --recorded-only --session reports/auto-reply-replay-session.json`.
+  Verified 2026-10-17: same 7 triggers → 4×`OK` + 1×`CATATAN` and 2 skips, vs 4
+  `PERLU DIPERHATIKAN` + 3 `CATATAN` in the original record.
+- `tools/auto_reply_report.py` — the **evidence report** (Markdown + JSON sidecar under
+  `reports/`): per case what was asked, what the AI answered, and a deterministic verdict
+  (`OK` / `CATATAN` = low-severity notes only / `PERLU DIPERHATIKAN`) with the reason and the
+  ranked cause it belongs to. Bagian A replays the 7 recorded answers from
+  `sessions/current.json`, pairing each with its trigger utterance (the merged run of
+  fragments since the previous result, which is what exposes the filler triggers); Bagian B
+  runs the live scenarios under the same `AUTO_REPLY_LIVE_TESTS=1` gate; Bagian C aggregates;
+  `--session PATH` scores a different record (default `sessions/current.json`; the replayed one
+  comes from `_tmp_auto_reply_record.py`) and the header prints the file it actually read;
+  the appendix reports the prompt contract (both grounding bullets, the no-context anti-invention
+  rule, the per-role `Style:` block, the answer-first directive, leading-turn,
+  duplicate-question) so a symptom can be tied to its structural cause — plus a
+  `stale_builtin_copy` warning when `purposes.json` still holds a stale built-in copy
+  (`runtime_purpose()` mirrors the schema-2 load, so the contract now reflects the app).
+  Its `invented` detector no longer flags ambiguous words (`api`, `crm`, `platform`,
+  `pipeline`) in a sentence that names a real product, and now catches capability claims
+  (`it syncs`, `automatically`, `you get a … report`, `weekly report`, `free trial`).
+  This is an evidence tool, not a gate — it always exits 0.
+```bash
+venv/bin/python _tmp_auto_reply_prompt_check.py
+AUTO_REPLY_STRICT=1 venv/bin/python _tmp_auto_reply_prompt_check.py
+AUTO_REPLY_LIVE_TESTS=1 venv/bin/python _tmp_auto_reply_live_check.py
+venv/bin/python tools/auto_reply_report.py                              # Bagian A saja (gratis)
+AUTO_REPLY_LIVE_TESTS=1 venv/bin/python tools/auto_reply_report.py      # + Bagian B (memanggil model)
+venv/bin/python _tmp_auto_reply_record.py                               # re-record Bagian A (memanggil model)
+```
+Evidence for the reported symptom lives in `sessions/current.json` (`gemini_results`:
+7 suggestions on 2026-10-16, the last — the answer to "How do we stop that from
+happening?" — gave generic design advice instead of naming the product mechanism), and in
+the report's Bagian A, which scores those same 7 answers deterministically (A1 flagged
+`role_inversion` + `ungrounded`, A5/A6 flagged `filler_trigger`, A7 `grounding_late`).

@@ -22,6 +22,9 @@ class TranslationController(QObject):
     reply_chunk = Signal(str, bool)
     # Emitted when JEV suppresses a reply (reason text) — nothing is persisted.
     reply_skipped = Signal(str)
+    # A JEV prediction of the active session objective (index, confidence, source),
+    # forwarded from the reply worker so the tracker gets it for free.
+    objective_observed = Signal(int, float, str)
     
     MAX_HISTORY_TURNS = 25
     HISTORY_LOG_FILE = os.path.join(
@@ -45,6 +48,10 @@ class TranslationController(QObject):
         self._auto_reply_timer.timeout.connect(self._trigger_auto_reply)
         self._pending_transcription = ""
         self._pending_input_source = "speaker"
+        # A final that arrives while a worker is running is queued once and re-run
+        # when that worker finishes (mirrors LastPickupController), instead of
+        # being dropped with no suggestion at all.
+        self._rerun_pending = False
         self._auto_reply_target_language = "English"
         self._include_pronunciation = False
         self._auto_reply_purpose = DEFAULT_PURPOSE
@@ -53,6 +60,16 @@ class TranslationController(QObject):
         # Host/Speaker context mirrored from the web service (the Context pane).
         # None means "not known yet", which keeps the worker on its .env files.
         self._context = None
+        # Session digest (src/reply_context.py) rebuilt by MainWindow whenever the
+        # bullet list, speaker profile or confirmed brief changes. ``{}`` means
+        # "nothing to attach"; the worker also gates it on the feature flag.
+        self._session_digest = {}
+        # Session objectives mirrored from the ObjectiveController: the list, its
+        # parallel locks and the tracker state. The reply prompt resolves the
+        # focus from these and JEV is asked about the whole list.
+        self._objectives = []
+        self._objective_locks = []
+        self._objective_meta = {}
     
     def is_translating(self):
         """Check if currently translating."""
@@ -153,6 +170,42 @@ class TranslationController(QObject):
             len(self._context["speaker"]),
         )
 
+    def set_session_digest(self, digest):
+        """Mirror the session digest the auto-reply prompt carries.
+
+        Mirrors :meth:`set_context`: the digest is built once by ``MainWindow``
+        from state it already has (no AI call, no disk I/O) and handed to each
+        worker, so the reply path does no extra work. A non-dict payload is
+        ignored so the last known digest survives.
+        """
+        if not isinstance(digest, dict):
+            logger.warning("Ignoring malformed session digest: %r", digest)
+            return
+        self._session_digest = dict(digest)
+        logger.debug("Session digest updated: %d key(s)", len(self._session_digest))
+
+    def get_session_digest(self):
+        """Return a copy of the mirrored session digest (``{}`` when empty)."""
+        return dict(self._session_digest)
+
+    def set_objectives(self, objectives, locks=None, meta=None):
+        """Mirror the session objectives the auto-reply prompt is focused on.
+
+        Same contract as :meth:`set_context` / :meth:`set_session_digest`: the
+        ``ObjectiveController`` owns the state, and each new worker is handed a
+        copy, so the reply path never reaches back into the tracker.
+        """
+        self._objectives = [str(o).strip() for o in (objectives or []) if str(o).strip()]
+        self._objective_locks = [bool(x) for x in (locks or [])]
+        self._objective_meta = dict(meta) if isinstance(meta, dict) else {}
+        logger.debug("Objectives mirrored: %d item(s), %d locked",
+                     len(self._objectives), sum(1 for x in self._objective_locks if x))
+
+    def get_objectives(self):
+        """Return ``(objectives, locks, meta)`` copies of the mirrored state."""
+        return (list(self._objectives), list(self._objective_locks),
+                dict(self._objective_meta))
+
     def get_context(self):
         """Return the mirrored Host/Speaker context, or ``None`` before any update.
 
@@ -186,7 +239,7 @@ class TranslationController(QObject):
             self._pending_transcription = transcription_text
         self._pending_input_source = input_source
         self._auto_reply_timer.stop()
-        self._trigger_auto_reply()
+        self._trigger_auto_reply(force=True)
 
     def cancel_auto_reply(self):
         """Cancel any pending auto-reply."""
@@ -194,11 +247,14 @@ class TranslationController(QObject):
         self._auto_reply_timer.stop()
         self._pending_transcription = ""
         self._pending_input_source = "speaker"
+        self._rerun_pending = False
     
-    def _start_auto_reply_worker(self, transcription_text: str, images: list = None, is_image: bool = False):
+    def _start_auto_reply_worker(self, transcription_text: str, images: list = None, is_image: bool = False,
+                                 allow_filler: bool = False):
         """Create and start a Gemini auto-reply worker. Returns True if started."""
         if self._auto_reply_worker is not None and self._auto_reply_worker.isRunning():
-            logger.debug("Auto-reply worker already running, aborting")
+            logger.debug("Auto-reply worker already running, queueing one rerun")
+            self._rerun_pending = True
             return False
 
         try:
@@ -215,12 +271,23 @@ class TranslationController(QObject):
                 host_role=self._host_role,
                 jev_enabled=self._jev_enabled,
                 context=self._context,
+                allow_filler=allow_filler,
+                # The digest is voice-only for now: an image reply has no
+                # utterance, so the conversation digest buys it nothing.
+                digest=None if is_image else self._session_digest,
+                # Same as the digest: an image reply has no utterance, so the
+                # conversation's objective focus is not attached to it.
+                objectives=None if is_image else self._objectives,
+                objective_locks=None if is_image else self._objective_locks,
+                objective_meta=None if is_image else self._objective_meta,
             )
             self._auto_reply_worker.result.connect(self._on_auto_reply_result, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.error.connect(self._on_auto_reply_error, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.chunk.connect(self._on_auto_reply_chunk, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.skipped.connect(self._on_auto_reply_skipped, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.status.connect(self._on_auto_reply_status, Qt.ConnectionType.QueuedConnection)
+            self._auto_reply_worker.objective_observed.connect(
+                self.objective_observed.emit, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.start()
             return True
         except Exception as e:
@@ -230,17 +297,32 @@ class TranslationController(QObject):
             self._auto_reply_is_image = False
             return False
 
-    def _trigger_auto_reply(self):
-        """Trigger the auto-reply after debounce period."""
+    def _trigger_auto_reply(self, force: bool = False):
+        """Trigger the auto-reply after debounce period.
+
+        ``force`` marks an explicit request (the manual "Reply now" / hotkey),
+        which also answers a filler utterance.
+        """
         logger.debug("_trigger_auto_reply called! Pending text: %r", self._pending_transcription)
 
         if not self._pending_transcription.strip():
             logger.debug("No pending transcription, aborting")
             return
 
-        if self._start_auto_reply_worker(self._pending_transcription, is_image=False):
+        if self._start_auto_reply_worker(self._pending_transcription, is_image=False,
+                                         allow_filler=force):
             self.status_changed.emit(f"Auto-replying to: {self._pending_transcription[:50]}...")
             logger.debug("Auto-reply worker started!")
+
+    def _run_pending_auto_reply(self):
+        """Re-run the utterance that was refused while a worker was in flight."""
+        if not self._rerun_pending:
+            return
+        self._rerun_pending = False
+        if not self._pending_transcription.strip():
+            return
+        logger.debug("Re-running the queued auto-reply: %r", self._pending_transcription[:60])
+        self._trigger_auto_reply()
 
     def trigger_image_reply(self, images: list):
         """Send captured screenshots to Gemini using the auto-reply context/format."""
@@ -260,11 +342,40 @@ class TranslationController(QObject):
         """Forward a partial (streaming) auto-reply to the UI."""
         self.reply_chunk.emit(text, self._auto_reply_is_image)
 
+    def _record_suggestion(self, text: str):
+        """Attach a finished reply to the Speaker turn it answered.
+
+        The digest builder reads these back as "already suggested", so the model
+        stops repeating itself; ``_build_messages`` still ignores the field, so
+        the message list is unchanged. The turn is replaced rather than mutated:
+        the session store hands out shallow snapshots on the writer thread, and
+        mutating a shared dict there could race its ``json.dumps``.
+        """
+        text = (text or "").strip()
+        # Drop the analysis preamble ("Speaker's move: …" + blank line): the
+        # digest wants the suggestion itself, not the status line.
+        if text.startswith("Speaker's move:") and "\n\n" in text:
+            text = text.split("\n\n", 1)[1].strip()
+        if not text or not self._conversation_history:
+            return
+        for index in range(len(self._conversation_history) - 1, -1, -1):
+            turn = self._conversation_history[index]
+            if turn.get("role") != "speaker":
+                continue
+            updated = list(self._conversation_history)
+            updated[index] = {**turn, "suggestion": text}
+            self._conversation_history = updated
+            logger.debug("Recorded suggestion on speaker turn %d (%d chars)",
+                         index, len(text))
+            return
+
     def _on_auto_reply_result(self, result: str):
         """Handle auto-reply result from worker."""
         logger.debug("Auto-reply result received: %r...", result[:100])
         is_image = self._auto_reply_is_image
         self._auto_reply_is_image = False
+        if not is_image:
+            self._record_suggestion(result)
         if self._auto_reply_worker is not None:
             self._old_workers.append(self._auto_reply_worker)
             self._auto_reply_worker = None
@@ -274,6 +385,7 @@ class TranslationController(QObject):
         else:
             self.auto_reply_result.emit(result)
         self.status_changed.emit("Auto-reply complete.")
+        self._run_pending_auto_reply()
     
     def _on_auto_reply_status(self, text: str):
         """Surface the resolved role/speech-act/language in the status text."""
@@ -289,6 +401,7 @@ class TranslationController(QObject):
             self._auto_reply_worker = None
             self._cleanup_old_workers()
         self.reply_skipped.emit(reason or "No reply needed")
+        self._run_pending_auto_reply()
 
     def _on_auto_reply_error(self, msg: str):
         """Handle errors from auto-reply worker."""
@@ -300,6 +413,7 @@ class TranslationController(QObject):
             self._cleanup_old_workers()
         self.error_occurred.emit(msg)
         self.status_changed.emit("Auto-reply error.")
+        self._run_pending_auto_reply()
     
     def _cleanup_old_workers(self):
         """Clean up finished workers to prevent memory buildup."""
@@ -366,6 +480,7 @@ class TranslationController(QObject):
     def cleanup(self):
         """Clean up resources."""
         self._auto_reply_timer.stop()
+        self._rerun_pending = False
         if self._gemini_worker is not None:
             if self._gemini_worker.isRunning():
                 self._gemini_worker.stop()

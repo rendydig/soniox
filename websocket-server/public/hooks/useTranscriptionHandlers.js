@@ -34,6 +34,11 @@ export const useTranscriptionHandlers = ({
     setRoadmap,
     setBriefConfirmed,
     setConsultingStatus,
+    setObjectives,
+    setObjectiveLocks,
+    setObjectiveActive,
+    setObjectiveHistory,
+    setObjectiveStatus,
     setPurposeState,
     wsManager
 }) => {
@@ -47,6 +52,8 @@ export const useTranscriptionHandlers = ({
     const summaryNoticeTimer = useRef(null);
     // And one for the Consulting tab's transient `no_input` notice.
     const consultingNoticeTimer = useRef(null);
+    // And one for the Objectives tab's transient notices.
+    const objectiveNoticeTimer = useRef(null);
     
     useEffect(() => {
         correctionEnabledRef.current = correctionEnabled;
@@ -446,6 +453,54 @@ export const useTranscriptionHandlers = ({
         console.log('[DEBUG] Consulting status:', mode, status);
     }, [setConsultingStatus]);
 
+    /** Session objectives (list, parallel locks and the resolved focus). */
+    const handleObjectives = useCallback((items, locks, active) => {
+        if (typeof setObjectives === 'function') {
+            setObjectives(Array.isArray(items) ? items : []);
+        }
+        if (typeof setObjectiveLocks === 'function') {
+            setObjectiveLocks(Array.isArray(locks) ? locks.map((l) => l === true) : []);
+        }
+        if (typeof setObjectiveActive === 'function') {
+            setObjectiveActive(active && typeof active === 'object' ? active : {});
+        }
+        console.log('[DEBUG] Objectives updated:', Array.isArray(items) ? items.length : 0);
+    }, [setObjectives, setObjectiveLocks, setObjectiveActive]);
+
+    /** One committed transition appended to the history timeline. */
+    const handleObjectivesHistory = useCallback((entry) => {
+        if (typeof setObjectiveHistory !== 'function') return;
+        if (!entry || typeof entry !== 'object') return;
+        setObjectiveHistory(prev => {
+            const next = [...(Array.isArray(prev) ? prev : []), entry];
+            // The backend caps the timeline (OBJECTIVE_MAX_HISTORY = 200); match
+            // it so a long session stays bounded here too.
+            return next.length > 200 ? next.slice(next.length - 200) : next;
+        });
+        console.log('[DEBUG] Objective history appended:', entry.text);
+    }, [setObjectiveHistory]);
+
+    /** Objective-tracker progress / failure / notice status. */
+    const handleObjectivesStatus = useCallback((status, message) => {
+        if (typeof setObjectiveStatus !== 'function') return;
+        if (objectiveNoticeTimer.current) {
+            clearTimeout(objectiveNoticeTimer.current);
+            objectiveNoticeTimer.current = null;
+        }
+        if (status === 'started') {
+            setObjectiveStatus('Tracking…');
+        } else if (status === 'failed' || status === 'error') {
+            setObjectiveStatus(message || 'Objective prediction failed.');
+        } else if (status === 'no_input') {
+            // Nothing to add / nothing to predict: show it briefly, then clear.
+            setObjectiveStatus(message || 'Nothing to track yet');
+            objectiveNoticeTimer.current = setTimeout(() => setObjectiveStatus(''), 2500);
+        } else {
+            setObjectiveStatus('');
+        }
+        console.log('[DEBUG] Objectives status:', status);
+    }, [setObjectiveStatus]);
+
     /** Selected Purpose + "I am:" role pushed by the desktop app. */
     const handlePurposeState = useCallback((purpose, role) => {
         if (typeof setPurposeState !== 'function') return;
@@ -509,11 +564,36 @@ export const useTranscriptionHandlers = ({
         if (typeof setConsultingStatus === 'function') {
             setConsultingStatus({ mode: '', status: '', message: '' });
         }
+        if (typeof setObjectives === 'function') {
+            setObjectives(Array.isArray(data.objectives) ? data.objectives : []);
+        }
+        if (typeof setObjectiveLocks === 'function') {
+            setObjectiveLocks(
+                Array.isArray(data.objective_locks)
+                    ? data.objective_locks.map((l) => l === true)
+                    : []
+            );
+        }
+        if (typeof setObjectiveHistory === 'function') {
+            setObjectiveHistory(Array.isArray(data.objective_history) ? data.objective_history : []);
+        }
+        if (typeof setObjectiveActive === 'function') {
+            // Derived backend-side (a locked objective beats the prediction), so
+            // the pane never re-implements the precedence rule.
+            setObjectiveActive(
+                data.objective_active && typeof data.objective_active === 'object'
+                    ? data.objective_active
+                    : {}
+            );
+        }
+        if (typeof setObjectiveStatus === 'function') {
+            setObjectiveStatus('');
+        }
         if (typeof setLastPickupAuto === 'function' && typeof data.last_pickup_auto === 'boolean') {
             setLastPickupAuto(data.last_pickup_auto);
         }
         console.log('[DEBUG] Session state applied');
-    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints, setBulletLocks, setSpeakerProfile, setLastPickup, setSummary, setBrief, setGaps, setRoadmap, setBriefConfirmed, setConsultingStatus, setLastPickupAuto]);
+    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints, setBulletLocks, setSpeakerProfile, setLastPickup, setSummary, setBrief, setGaps, setRoadmap, setBriefConfirmed, setConsultingStatus, setObjectives, setObjectiveLocks, setObjectiveHistory, setObjectiveActive, setObjectiveStatus, setLastPickupAuto]);
 
     return {
         handleFinalTranscription,
@@ -535,6 +615,9 @@ export const useTranscriptionHandlers = ({
         handleSummaryStatus,
         handleConsulting,
         handleConsultingStatus,
+        handleObjectives,
+        handleObjectivesHistory,
+        handleObjectivesStatus,
         handlePurposeState,
         handleSessionState
     };

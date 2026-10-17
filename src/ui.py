@@ -32,7 +32,8 @@ from src.controllers import (
     BulletPointsController,
     LastPickupController,
     SummarizeController,
-    ConsultingController
+    ConsultingController,
+    ObjectiveController
 )
 from src.websocket_client import WebSocketClient
 from src.websocket_server_manager import WebSocketServerManager
@@ -55,6 +56,7 @@ from src.ui_components import (
 )
 from src.ui_components.pane_resize_handle import PaneResizeHandle
 from src.ui_state import load_state, save_state
+from src.reply_context import build_digest
 from src.session_store import SessionStore
 
 logger = logging.getLogger(__name__)
@@ -137,6 +139,9 @@ class MainWindow(QMainWindow):
         self.last_pickup_controller = LastPickupController()
         self.summarize_controller = SummarizeController()
         self.consulting_controller = ConsultingController()
+        # Session objectives: the tracked focus of the conversation (JEV first,
+        # LLM fallback) with lock/pin semantics and a history timeline.
+        self.objective_controller = ObjectiveController()
         # Session state (restored below, persisted asynchronously to disk).
         self.session_store = SessionStore()
         
@@ -869,6 +874,16 @@ class MainWindow(QMainWindow):
         self.consulting_controller.updated.connect(self._on_consulting_updated)
         self.consulting_controller.status_changed.connect(self._send_consulting_status)
         self.consulting_controller.error_occurred.connect(self._on_consulting_error)
+
+        self.objective_controller.objectives_changed.connect(self._on_objectives_changed)
+        self.objective_controller.active_changed.connect(self._send_objectives)
+        self.objective_controller.history_appended.connect(self._on_objective_history)
+        self.objective_controller.status_changed.connect(self._send_objective_status)
+        self.objective_controller.error_occurred.connect(self._on_objective_error)
+        # The auto-reply's JEV decision call also answers ``current_objective``,
+        # so its prediction is folded into the tracker for free.
+        self.translation_controller.objective_observed.connect(
+            self._on_objective_observed, Qt.ConnectionType.QueuedConnection)
         
         self.gemini_lang_combo.currentTextChanged.connect(self._on_auto_reply_language_changed)
 
@@ -939,7 +954,18 @@ class MainWindow(QMainWindow):
             data.get("gaps") or "",
             data.get("roadmap") or "",
         )
+        self.objective_controller.load_state(
+            data.get("objectives") or [],
+            data.get("objective_locks") or [],
+            data.get("objective_history") or [],
+            data.get("objective_meta") or {},
+        )
         self.translation_controller.load_conversation_history(data.get("conversation") or [])
+        # Seed the auto-reply digest from the restored session (the bullet
+        # controller's load_state does not emit, so it must be rebuilt here).
+        self._rebuild_reply_digest()
+        # The reply prompt needs the objectives/locks/tracker state too.
+        self._mirror_objectives()
         self._screenshots = list(data.get("screenshots") or [])
         for entry in data.get("transcriptions") or []:
             text = entry.get("text", "")
@@ -977,6 +1003,7 @@ class MainWindow(QMainWindow):
         self.last_pickup_controller.reset()
         self.summarize_controller.reset()
         self.consulting_controller.reset()
+        self.objective_controller.reset()
         self._screenshots.clear()
         self._reset_session_timer()
         # Empty state resets every webview (gemini/live/bullets).
@@ -1001,6 +1028,12 @@ class MainWindow(QMainWindow):
                 self.translation_controller.append_to_history(transcription_text, "", input_source)
                 # Always buffered (free); auto mode / the hotkey decide when to call the AI.
                 self.bullet_points_controller.add_line(input_source, transcription_text)
+                # Session objectives: always buffer the line (host+speaker) and,
+                # at the end of a speaker utterance, re-arm the prediction
+                # debounce so a prediction fires only once the speaker pauses.
+                self.objective_controller.add_line(input_source, transcription_text)
+                if input_source != "host":
+                    self.objective_controller.schedule()
                 # "Last Picked Up": always buffer the line (host+speaker); a
                 # speaker utterance end schedules a refresh when auto is active.
                 self.last_pickup_controller.add_line(input_source, transcription_text)
@@ -1217,6 +1250,9 @@ class MainWindow(QMainWindow):
     def _on_auto_reply_result(self, result: str):
         """Handle auto-reply result."""
         self._send_gemini_result(result, "auto_reply")
+        # The controller just recorded this reply as the answered turn's
+        # suggestion, so refresh the digest's "already suggested" list.
+        self._rebuild_reply_digest()
 
     def _on_image_reply_result(self, result: str):
         """Handle the reply to a screenshot sent to Gemini."""
@@ -1250,6 +1286,36 @@ class MainWindow(QMainWindow):
         self.session_store.set_bullet_windows(windows)
         self.session_store.set_bullet_locks(locks)
         self.hub.bullets(items, speaker, windows, locks)
+        # The digest carries the same state, so keep it in step here (pure call).
+        self._rebuild_reply_digest(items, speaker, locks)
+
+    def _rebuild_reply_digest(self, items=None, speaker=None, locks=None):
+        """Rebuild the session digest the auto-reply prompt carries.
+
+        Everything it needs is already in memory (bullet list, locked bullets,
+        KYC speaker profile, confirmed brief and the app's own prior
+        suggestions), so this is a pure, cheap call — no AI request, no disk
+        I/O. The live conversation history is the source for the suggestions:
+        the controller stamps each finished reply onto the turn it answered the
+        moment it arrives, while the persisted ``conversation`` field only
+        catches up on the next finalized line.
+        """
+        snapshot = self.session_store.snapshot()
+        if items is None:
+            items = snapshot.get("bullets") or []
+        if locks is None:
+            locks = snapshot.get("bullet_locks") or []
+        if speaker is None:
+            speaker = snapshot.get("speaker") or {}
+        digest = build_digest(
+            items,
+            locks,
+            speaker,
+            # Only the *confirmed* brief is authoritative enough to prompt with.
+            self._consulting_reference(snapshot),
+            self.translation_controller.get_conversation_history(),
+        )
+        self.translation_controller.set_session_digest(digest)
 
     def _send_bullet_status(self, status: str, message: str = ""):
         """Broadcast a bullet-points progress/failure/notice status to the webview.
@@ -1394,6 +1460,8 @@ class MainWindow(QMainWindow):
         confirmed = False
         if mode == "brief":
             self.session_store.update("brief_meta", {"confirmed": False})
+            # A changed brief is no longer confirmed, so the digest drops it.
+            self._rebuild_reply_digest()
         self.websocket_client.send_message({
             "type": "consulting", "mode": mode, "text": text, "confirmed": confirmed,
         })
@@ -1404,6 +1472,8 @@ class MainWindow(QMainWindow):
         text = snapshot.get("brief") or ""
         meta = {"confirmed": True, "confirmed_at": datetime.now().isoformat()}
         self.session_store.update("brief_meta", meta)
+        # Confirming is what makes the brief part of the reply prompt.
+        self._rebuild_reply_digest()
         self.websocket_client.send_message({
             "type": "consulting", "mode": "brief", "text": text, "confirmed": True,
         })
@@ -1425,6 +1495,10 @@ class MainWindow(QMainWindow):
         # The auto-pickup toggle lives in ui_state (not the session), so include
         # it here so the pane's checkbox reflects the current value on connect.
         payload["last_pickup_auto"] = self._last_pickup_auto_enabled
+        # The objectives ride along as session fields; the *resolved* focus is
+        # derived state, so send it too rather than duplicating lock precedence
+        # in JavaScript.
+        payload["objective_active"] = self.objective_controller.get_active()
         self.websocket_client.send_message(payload)
         self._send_purpose_state()
         # A (re)connecting pane has no countdown yet: push the current one so a
@@ -1443,6 +1517,61 @@ class MainWindow(QMainWindow):
     def _on_bullet_points_error(self, msg: str):
         """Handle bullet-points worker errors (logged, not popped up)."""
         logger.warning("Bullet points error: %s", msg)
+
+    def _mirror_objectives(self):
+        """Hand the objectives (list, locks, tracker state) to the reply prompt.
+
+        Mirrors ``set_context`` / ``set_session_digest``: the reply worker only
+        reads what it is given, so nothing on the reply path does extra work.
+        """
+        self.translation_controller.set_objectives(
+            self.objective_controller.get_objectives(),
+            self.objective_controller.get_locks(),
+            self.objective_controller.get_meta(),
+        )
+
+    def _send_objectives(self, *_args):
+        """Broadcast the objective list, its locks and the resolved focus.
+
+        Idempotent, so both ``objectives_changed`` and ``active_changed`` can
+        route here: the pane always renders the same, complete view.
+        """
+        self.websocket_client.send_message({
+            "type": "objectives",
+            "items": self.objective_controller.get_objectives(),
+            "locks": self.objective_controller.get_locks(),
+            "active": self.objective_controller.get_active(),
+        })
+
+    def _on_objectives_changed(self, objectives: list, locks: list):
+        """The list or its locks changed: persist, mirror and broadcast."""
+        self.session_store.set_objectives(objectives)
+        self.session_store.set_objective_locks(locks)
+        self.session_store.set_objective_meta(self.objective_controller.get_meta())
+        self._mirror_objectives()
+        self._send_objectives()
+
+    def _on_objective_history(self, entry: dict):
+        """A committed transition: append it to the timeline and push it out."""
+        entry = dict(entry or {})
+        self.session_store.append("objective_history", entry)
+        self.session_store.set_objective_meta(self.objective_controller.get_meta())
+        self._mirror_objectives()
+        self.websocket_client.send_message({"type": "objectives_history", "entry": entry})
+
+    def _send_objective_status(self, status: str):
+        """Broadcast an objective-tracker progress/failure/notice status."""
+        self.websocket_client.send_message({"type": "objectives_status", "status": status})
+
+    def _on_objective_error(self, msg: str):
+        """Handle objective-prediction errors (logged, not popped up)."""
+        logger.warning("Objective prediction error: %s", msg)
+
+    def _on_objective_observed(self, index: int, confidence: float, source: str):
+        """Fold the auto-reply's own JEV objective prediction into the tracker."""
+        if not self.objective_controller.get_objectives():
+            return
+        self.objective_controller.observe(index, confidence, source)
     
     def _on_ws_message_raw(self, data: dict):
         """Receive a decoded WebSocket message (runs on the asyncio thread)."""
@@ -1519,6 +1648,23 @@ class MainWindow(QMainWindow):
             self.bullet_points_controller.set_lock(
                 data.get("index"), data.get("text"), data.get("locked")
             )
+        elif msg_type == "set_objective_lock":
+            logger.info("Objective lock toggle from webview: %s", data.get("index"))
+            self.objective_controller.set_lock(
+                data.get("index"), data.get("text"), data.get("locked")
+            )
+        elif msg_type == "add_objective":
+            text = data.get("text") or ""
+            logger.info("Objective add from webview: %r", text[:60])
+            if not self.objective_controller.add_objective(text):
+                # Empty or already present: tell the pane instead of doing nothing.
+                self._send_objective_status("no_input")
+        elif msg_type == "remove_objective":
+            logger.info("Objective remove from webview: %s", data.get("index"))
+            self.objective_controller.remove_objective(data.get("index"))
+        elif msg_type == "trigger_objective_prediction":
+            logger.info("Objective prediction requested from webview")
+            self.objective_controller.predict_now()
         elif msg_type == "trigger_last_pickup":
             logger.info("Last pickup update requested from webview")
             self._trigger_last_pickup_now()
@@ -2015,6 +2161,9 @@ class MainWindow(QMainWindow):
 
             # Stop the consulting worker
             self.consulting_controller.cleanup()
+
+            # Stop the objective-tracker worker/timer
+            self.objective_controller.cleanup()
             
             # Stop websocket
             self.websocket_client.stop()

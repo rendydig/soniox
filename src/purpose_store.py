@@ -6,9 +6,13 @@ JSON-dumps a snapshot to ``purposes.json`` on a debounce via a temp file +
 QThread), so the in-memory dict is guarded by a lock and ``purposes_changed`` is
 delivered to the Qt main thread through the normal queued connection.
 
-Load order: seed ``BUILTIN_PURPOSES``, then overlay ``purposes.json`` — same-key
-entries *merge* onto the seed, new entries are added, and built-in keys are never
-removed by the file.
+Load order: seed ``BUILTIN_PURPOSES`` (the immutable seed), then overlay
+``purposes.json`` — which now carries **only** non-built-in (user / AI-learned)
+entries, wrapped as ``{"schema_version": 2, "overrides": {...}, "purposes": {...}}``.
+A stale on-disk copy of a built-in (the old whole-dict dump) is **ignored**, so the
+seed is always authoritative. ``overrides`` is reserved for deliberate built-in
+edits (there is no UI for them yet) and is empty today. The legacy flat
+``{key: purpose}`` shape still loads.
 """
 
 import copy
@@ -27,11 +31,16 @@ from src.config import (
     PURPOSES_PATH,
     PURPOSES_WRITE_DEBOUNCE_MS,
 )
-from src.purposes import BUILTIN_PURPOSES, DEFAULT_PURPOSE, purpose_roles
+from src.purposes import (
+    BUILTIN_PURPOSES,
+    DEFAULT_PURPOSE,
+    DEFAULT_ROLE_STYLE,
+    purpose_roles,
+)
 
 logger = logging.getLogger(__name__)
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 def slugify(label: str) -> str:
@@ -53,6 +62,9 @@ class PurposeStore(QObject):
         self._write_lock = threading.Lock()
         self._dirty = threading.Event()
         self._stop = threading.Event()
+        # Deliberate built-in edits, loaded from the file's ``overrides`` block.
+        # Empty today (no UI edits built-ins) but preserved across writes.
+        self._overrides = {}
         self._purposes = self._load()
         self._thread = threading.Thread(
             target=self._writer_loop, name="purpose-writer", daemon=True
@@ -124,17 +136,36 @@ class PurposeStore(QObject):
     # --- internals ----------------------------------------------------
     def _load(self) -> dict:
         purposes = {k: copy.deepcopy(v) for k, v in BUILTIN_PURPOSES.items()}
+        self._overrides = {}
         disk = self._read_file()
-        if isinstance(disk, dict):
-            for key, value in disk.items():
-                if not isinstance(key, str) or not isinstance(value, dict):
-                    continue
-                if key in purposes:
-                    merged = dict(purposes[key])
-                    merged.update(value)  # same-key entries merge onto the seed
-                    purposes[key] = merged
-                else:
-                    purposes[key] = value
+        if not isinstance(disk, dict):
+            return purposes
+        # Schema 2 wraps the payload; the legacy shape is a bare {key: purpose} map.
+        wrapped = isinstance(disk.get("purposes"), dict)
+        entries = disk["purposes"] if wrapped else disk
+        if wrapped and isinstance(disk.get("overrides"), dict):
+            self._overrides = {
+                key: value for key, value in disk["overrides"].items()
+                if isinstance(key, str) and isinstance(value, dict)
+                and key in BUILTIN_PURPOSES
+            }
+        for key, value in entries.items():
+            if not isinstance(key, str) or not isinstance(value, dict):
+                continue
+            if key in BUILTIN_PURPOSES:
+                # Built-ins come from the seed, always: a stale on-disk copy from
+                # the old whole-dict dump must never shadow it.
+                if value != BUILTIN_PURPOSES[key]:
+                    logger.warning(
+                        "Ignoring stale built-in copy of %r from purposes.json", key
+                    )
+                continue
+            purposes[key] = value
+        # A deliberate built-in edit (reserved; unused today) merges onto the seed.
+        for key, value in self._overrides.items():
+            merged = dict(purposes[key])
+            merged.update(value)
+            purposes[key] = merged
         return purposes
 
     def _unique_key(self, base: str) -> str:
@@ -161,6 +192,11 @@ class PurposeStore(QObject):
         except (TypeError, ValueError):
             confidence = None
 
+        style = purpose.get("style")
+        style = (
+            {k: v for k, v in style.items() if v not in (None, "")}
+            if isinstance(style, dict) else {}
+        )
         display_label = label if label.endswith("(auto)") else f"{label} (auto)"
         entry = {
             "label": display_label,
@@ -174,6 +210,10 @@ class PurposeStore(QObject):
                     "label": label,
                     "persona": persona,
                     "objective": objective,
+                    # Style is optional: an AI-synthesized role carries it when the
+                    # synthesis returned one, otherwise it inherits the
+                    # persona-neutral default (see src/purposes.py).
+                    "style": {**DEFAULT_ROLE_STYLE, **style},
                     "counterpart": purpose.get("counterpart") or "Speaker",
                 }
             },
@@ -223,7 +263,19 @@ class PurposeStore(QObject):
     def _write(self):
         with self._lock:
             self._dirty.clear()
-            data = dict(self._purposes)  # shallow: values are replaced, never mutated
+            # Shallow copies: values are replaced, never mutated. Built-ins are the
+            # seed and are never written back, so the file only carries state the
+            # seed cannot reconstruct (user edits and AI-learned purposes).
+            entries = {
+                key: value for key, value in self._purposes.items()
+                if key not in BUILTIN_PURPOSES
+            }
+            overrides = dict(self._overrides)
+        data = {
+            "schema_version": SCHEMA_VERSION,
+            "overrides": overrides,
+            "purposes": entries,
+        }
         try:
             payload = json.dumps(data, ensure_ascii=False, indent=2)
         except (TypeError, ValueError) as e:

@@ -7,6 +7,8 @@ from PySide6.QtCore import QThread, Signal
 from src.ai_client import get_ai_client, IMAGE_CONTEXT_PROMPT
 from src.config import (
     AI_STREAM_CHUNK_INTERVAL_MS,
+    AUTO_REPLY_CONTEXT_DIGEST,
+    AUTO_REPLY_FILLER_FILTER,
     JEV_MIN_CONFIDENCE,
     JEV_SHOULD_REPLY_MIN,
     PRONUNCIATION_GUIDES,
@@ -22,10 +24,13 @@ from src.decision_client import (
     build_state,
     language_options,
 )
+from src.filler_filter import is_filler
+from src.objectives import objective_key, resolve_active
 from src.purpose_store import slugify
 from src.purposes import (
     BUILTIN_PURPOSES,
     DEFAULT_PURPOSE,
+    DEFAULT_ROLE_STYLE,
     default_role_key,
     purpose_roles,
 )
@@ -47,6 +52,18 @@ _ENGLISH_MARKERS = {
     "the", "is", "are", "you", "what", "how", "and", "to", "of", "in", "that",
     "it", "for", "this", "with", "hello", "thanks", "do", "does", "can", "would",
 }
+
+# Meta-prompt for the "Other" flow: one call returns the learning payload and the
+# Host's reply as a single JSON object.
+# Digest profile fields, in the order the prompt lists them (mirrors
+# src/reply_context.py, which builds the dict).
+_DIGEST_PROFILE_LABELS = (
+    ("name", "Name"),
+    ("occupation", "Occupation"),
+    ("goals", "Goals"),
+    ("pain_points", "Pain points"),
+    ("facts", "Facts"),
+)
 
 # Meta-prompt for the "Other" flow: one call returns the learning payload and the
 # Host's reply as a single JSON object.
@@ -85,9 +102,10 @@ def _build_messages(conversation_history: list, latest_text: str, images: list =
     Returns a list of ``{"role": "user" | "assistant", "text": str, "images": [...]}``
     dicts. The trailing Speaker turn is kept as its own clean final user message
     (so the latest utterance is never merged into a block or duplicated); the
-    remaining consecutive same-role turns are merged, a leading host turn is
-    dropped (so the list starts with a user turn), and screenshots are attached
-    to the final user turn.
+    remaining consecutive same-role turns are merged, leading host turns are
+    dropped (so the list starts with a user turn), speaker-side fillers are
+    dropped (a run of "Exactly."/"You nailed it." is not conversation), and
+    screenshots are attached to the final user turn.
     """
     logger.debug("Contents Length (%d turns):", len(conversation_history))
     for i, turn in enumerate(conversation_history):
@@ -100,8 +118,9 @@ def _build_messages(conversation_history: list, latest_text: str, images: list =
         if text:
             turns.append({"role": t.get("role"), "text": text})
 
-    # The list must start with a 'user' turn, so drop any leading unpaired host turn.
-    if turns and turns[0].get("role") == "host":
+    # The list must start with a 'user' turn: drop every leading unpaired host turn
+    # (a single one is not enough — a run of ASR host fragments would still lead).
+    while turns and turns[0].get("role") == "host":
         turns.pop(0)
 
     # The trailing Speaker turn is the authoritative "latest utterance": keep it
@@ -111,6 +130,13 @@ def _build_messages(conversation_history: list, latest_text: str, images: list =
         latest_utterance = turns.pop()["text"]
     if not latest_utterance:
         latest_utterance = (latest_text or "").strip()
+
+    # Speaker-side fillers carry no content. Host turns are never dropped here:
+    # what the Host said is the conversation the reply has to continue.
+    turns = [
+        t for t in turns
+        if t.get("role") == "host" or not is_filler(t.get("text") or "")
+    ]
 
     # Merge consecutive turns with the same role to reduce fragmentation/noise
     merged_history = []
@@ -156,13 +182,22 @@ def _build_messages(conversation_history: list, latest_text: str, images: list =
         idx += 1
 
     # Guarantee the final turn is a single, clean Speaker utterance (never merged
-    # into a block and never duplicated).
-    if latest_utterance and not (
-        messages
-        and messages[-1].get("role") == "user"
-        and messages[-1].get("text", "").strip() == latest_utterance
-    ):
-        messages.append({"role": "user", "text": latest_utterance})
+    # into a block and never duplicated). A host turn landing after the question
+    # leaves the question earlier in the list, so the earlier copy is dropped
+    # rather than sent twice.
+    if latest_utterance:
+        already_last = (
+            messages
+            and messages[-1].get("role") == "user"
+            and messages[-1].get("text", "").strip() == latest_utterance
+        )
+        if not already_last:
+            messages = [
+                m for m in messages
+                if not (m.get("role") == "user"
+                        and m.get("text", "").strip() == latest_utterance)
+            ]
+            messages.append({"role": "user", "text": latest_utterance})
 
     # Attach screenshots to the final user turn, or append a new user turn when
     # the conversation ends with an assistant turn (or is empty).
@@ -203,6 +238,36 @@ def _analysis_prompt_lines(speaker_act: str = None) -> list:
         f"Speaker's move: [{move}in one English sentence, what the Speaker just "
         "asked, confirmed, or stated]",
     ]
+
+
+def _style_block(role: dict) -> str:
+    """Render a role's optional ``style`` into the prompt's ``Style:`` section.
+
+    Missing fields — and a role with no ``style`` block at all (an older
+    ``purposes.json`` entry or an AI-synthesized role) — fall back to
+    ``DEFAULT_ROLE_STYLE``, so every persona gets an explicit approach, tone,
+    length and structure instead of one global rule. ``answer_first`` emits the
+    answer-first directive; a false value (e.g. an Interviewer) emits nothing, so
+    the prompt does not contradict a role whose job is to ask.
+    """
+    raw = role.get("style") if isinstance(role, dict) else None
+    style = dict(DEFAULT_ROLE_STYLE)
+    if isinstance(raw, dict):
+        style.update({k: v for k, v in raw.items() if v not in (None, "")})
+    lines = []
+    if style.get("answer_first"):
+        lines.append(
+            "If the Speaker asked a question, answer it in your first sentence; "
+            "never open with an acknowledgment or a counter-question."
+        )
+    for field, label in (("approach", "Approach"), ("tone", "Tone"),
+                         ("length", "Length"), ("structure", "Structure")):
+        value = str(style.get(field) or "").strip()
+        if value:
+            lines.append(f"{label}: {value}")
+    if not lines:
+        return ""
+    return "\nStyle:\n" + "\n".join(f"- {line}" for line in lines) + "\n"
 
 
 def _analysis_text(speaker_move: str) -> str:
@@ -328,11 +393,17 @@ class GeminiAutoReplyWorker(QThread):
     skipped = Signal(str)
     # Human-readable progress (e.g. "Replying as Interviewer · Directive").
     status = Signal(str)
+    # A JEV prediction of the active session objective: (index, confidence, source).
+    # The decision call the reply already pays for answers ``current_objective``
+    # too, so the objective tracker gets a free observation per reply.
+    objective_observed = Signal(int, float, str)
 
     def __init__(self, transcription_text: str, target_language: str, conversation_history: list = None,
                  include_pronunciation: bool = True, purpose: str = DEFAULT_PURPOSE, images: list = None,
                  purpose_store=None, host_role: str = "smart", jev_enabled: bool = False,
-                 context: dict = None, parent=None):
+                 context: dict = None, allow_filler: bool = False, digest: dict = None,
+                 objectives: list = None, objective_locks: list = None,
+                 objective_meta: dict = None, parent=None):
         super().__init__(parent)
         self._transcription_text = transcription_text
         self._target_language = target_language
@@ -343,6 +414,8 @@ class GeminiAutoReplyWorker(QThread):
         self._purpose_store = purpose_store
         self._host_role = host_role or "smart"
         self._jev_enabled = bool(jev_enabled)
+        # An explicit request (the manual "Reply now" / hotkey) answers even a filler.
+        self._allow_filler = bool(allow_filler)
         self._is_running = True
         # The Host/Speaker context is pushed by the web service (the Context
         # pane owns the files). ``None`` means nothing has arrived yet, so the
@@ -354,6 +427,16 @@ class GeminiAutoReplyWorker(QThread):
         else:
             self._self_context = (context.get("host") or "").strip()
             self._speaker_context = (context.get("speaker") or "").strip()
+        # The session digest built by src/reply_context.py (bullets, locked
+        # bullets, KYC profile, confirmed brief, prior suggestions). Only
+        # rendered when AUTO_REPLY_CONTEXT_DIGEST is on.
+        self._digest = digest if isinstance(digest, dict) else None
+        # Session objectives mirrored from the ObjectiveController: the list, its
+        # parallel lock flags and the tracker state. The prompt only needs the
+        # *resolved* objective, but JEV is asked about the whole list.
+        self._objectives = [str(o) for o in (objectives or []) if str(o).strip()]
+        self._objective_locks = [bool(x) for x in (objective_locks or [])]
+        self._objective_meta = dict(objective_meta or {})
         self._decision_client = None
 
     # --- JEV helpers --------------------------------------------------
@@ -381,7 +464,8 @@ class GeminiAutoReplyWorker(QThread):
         checklist = purpose.get("objective_checklist") or []
         smart_role = self._host_role == "smart" and len(roles) > 1
         questions = build_questions(
-            purpose, roles, checklist, smart_role, languages, self._target_language
+            purpose, roles, checklist, smart_role, languages, self._target_language,
+            objectives=self._objectives,
         )
         state = build_state(
             self._self_context,
@@ -390,8 +474,32 @@ class GeminiAutoReplyWorker(QThread):
             role_key,
             self._recent_turns(),
             self._transcription_text,
+            objectives=self._objectives,
+            active_objective=resolve_active(
+                self._objectives, self._objective_locks, self._objective_meta
+            ),
         )
         return client.decide(state, questions)
+
+    def _run_objective_decision(self, decision):
+        """Read the ``current_objective`` answer out of a decision call.
+
+        The question's criteria are keyed by ``objective_key``, so the choice is
+        mapped back to its index. Returns ``(index, confidence)`` — ``(None,
+        0.0)`` when JEV did not answer, the key is unknown, or the confidence is
+        below ``JEV_MIN_CONFIDENCE``.
+        """
+        if not self._objectives:
+            return None, 0.0
+        choice, confidence = answer_choice(decision, "current_objective")
+        if not choice or confidence < JEV_MIN_CONFIDENCE:
+            return None, 0.0
+        keys = {objective_key(o): i for i, o in enumerate(self._objectives)}
+        index = keys.get(choice)
+        if index is None:
+            logger.debug("JEV named an unknown objective (%r); ignoring", choice)
+            return None, 0.0
+        return index, confidence
 
     # --- purpose / role resolution ------------------------------------
     def _resolve_purpose(self) -> dict:
@@ -427,6 +535,7 @@ class GeminiAutoReplyWorker(QThread):
                                   speaker_act=None) -> str:
         persona = role.get("persona", "")
         objective = "\n".join(f"- {line}" for line in role.get("objective", []))
+        style_section = _style_block(role)
         counterpart = role.get("counterpart")
 
         # Language priority: JEV choice -> detected Speaker language -> target.
@@ -465,6 +574,22 @@ class GeminiAutoReplyWorker(QThread):
             f"- Host profile (pre-identified): {self._self_context}\n"
             if self._self_context else ""
         )
+        # The profile is only authoritative when it is actually attached, so the
+        # rule travels with the bullet instead of being stated unconditionally. The
+        # no-context branch is its mirror image: with nothing about what the Host
+        # offers, the model must not invent product specifics. It deliberately avoids
+        # the phrase "Host profile" — _tmp_context_prompt_check.py asserts that
+        # phrase is absent when the user selected no context.
+        grounding_rule = (
+            "- The Host profile is the source of truth for what the Host offers: answer the\n"
+            "  Speaker's question from it, and never invent product facts that are not in it.\n"
+            "- Name the concrete product mechanism in your FIRST sentence, then explain it;\n"
+            "  never answer a product question in the abstract.\n"
+            if self._self_context else
+            "- No profile of what the Host offers is available: do not invent product\n"
+            "  specifics (features, integrations, dashboards, pricing, roadmaps). If the\n"
+            "  answer depends on facts you do not have, say so briefly or ask.\n"
+        )
 
         detected_line = (
             f"- The Speaker appears to be speaking {speaker_language} in their latest turn."
@@ -482,16 +607,19 @@ class GeminiAutoReplyWorker(QThread):
             if has_utterance else ""
         )
 
+        digest_block = self._digest_block()
+        objective_block = self._objective_block()
+
         return f"""{persona}
 
 - Messages with role 'user' are what the other person (Speaker) said.
 - Messages with role 'assistant' are what you (the Host) have said previously.
-{identity_block}
-{host_line}{speaker_line}
+{grounding_rule}{identity_block}
+{host_line}{speaker_line}{digest_block}{objective_block}
 
 Objective:
 {objective}
-
+{style_section}
 Language:
 - Write the Host's reply in {language}.
 {analysis_rule}{detected_line}
@@ -501,6 +629,65 @@ Language:
 
 Format your response exactly as follows:
 {self._format_block(language, purpose, speaker_act)}{output_rule}"""
+
+    def _objective_block(self) -> str:
+        """Render the prompt's ``Objective focus:`` section.
+
+        The resolved objective is what the reply should serve. It is *soft*: a
+        locked objective is marked (and always wins over the prediction), but it
+        never suppresses a reply. Returns ``""`` when no objective is tracked, so
+        the prompt is byte-identical to today's when the feature is unused.
+        """
+        active = resolve_active(self._objectives, self._objective_locks, self._objective_meta)
+        if not active:
+            return ""
+        source = active.get("source") or ""
+        detail = f" (confidence {active.get('confidence', 0.0):.2f}, from {source})" \
+            if source and source != "lock" else ""
+        lines = ["", "", "Objective focus:", f"- Working towards: {active['text']}{detail}"]
+        if active.get("locked"):
+            lines.append("- This objective is locked by the user; serve it.")
+        return "\n".join(lines)
+
+    def _digest_block(self) -> str:
+        """Render the session digest as the prompt's ``Context digest:`` section.
+
+        Carries what the app already computed: the bullet list, the bullets the
+        user locked, the extracted KYC profile, the confirmed brief and the
+        suggestions already given (so the reply does not repeat itself). Returns
+        ``""`` when the feature flag is off or the digest is empty, which keeps
+        the rendered system instruction byte-identical to the pre-digest one.
+        """
+        digest = self._digest if AUTO_REPLY_CONTEXT_DIGEST else None
+        if not digest:
+            return ""
+        locked = digest.get("locked") or []
+        bullets = digest.get("bullets") or []
+        profile = digest.get("speaker") or {}
+        brief = (digest.get("brief") or "").strip()
+        suggestions = digest.get("prior_suggestions") or []
+
+        lines = ["", "", "Context digest:"]
+        if locked or bullets:
+            lines.append("Conversation points so far:")
+            lines.extend(f"- [locked] {item}" for item in locked)
+            lines.extend(f"- {item}" for item in bullets)
+        if profile:
+            lines.append("Extracted Speaker profile:")
+            for field, label in _DIGEST_PROFILE_LABELS:
+                value = profile.get(field)
+                if not value:
+                    continue
+                if isinstance(value, (list, tuple)):
+                    value = "; ".join(str(v) for v in value)
+                lines.append(f"- {label}: {value}")
+        if brief:
+            lines.append("Confirmed client brief:")
+            lines.extend(f"  {line}" for line in brief.splitlines() if line.strip())
+        if suggestions:
+            lines.append("Already suggested (do not repeat these):")
+            lines.extend(f"- {item}" for item in suggestions)
+        return "\n".join(lines)
 
     def _emit_role_status(self, role, act_key=None, reply_language=None):
         parts = [f"Replying as {role.get('label', 'Host')}"]
@@ -519,6 +706,14 @@ Format your response exactly as follows:
         )
         if not self._is_running:
             return
+        # Which optional prompt sections made it in, so the digest / objective
+        # focus can be confirmed from the log without dumping the prompt itself.
+        logger.debug(
+            "System instruction: %d chars (digest=%s, objective_focus=%s)",
+            len(system_instruction or ""),
+            "on" if "Context digest:" in (system_instruction or "") else "off",
+            "on" if "Objective focus:" in (system_instruction or "") else "off",
+        )
         logger.debug("Messages (%d turns):", len(messages))
         for i, m in enumerate(messages):
             logger.debug("  [%d] role=%s | images=%d | %r", i, m['role'], len(m.get('images') or []), m.get('text', '')[:200])
@@ -650,6 +845,17 @@ Format your response exactly as follows:
 
             client = get_ai_client()
 
+            # A pure filler ("Okay.", "Exactly. You nailed it.") asks nothing, so it
+            # skips the call instead of spending a suggestion on it. The manual path
+            # (allow_filler) always replies.
+            if (AUTO_REPLY_FILLER_FILTER and not self._allow_filler
+                    and self._has_utterance() and not self._images
+                    and is_filler(self._transcription_text)):
+                logger.info("Auto-reply skipped: filler utterance %r",
+                            self._transcription_text[:40])
+                self.skipped.emit("Filler utterance")
+                return
+
             purpose = self._resolve_purpose()
             roles = purpose_roles(purpose)
             role_key, role = self._resolve_role(purpose, roles)
@@ -695,6 +901,13 @@ Format your response exactly as follows:
                     choice, _ = answer_choice(decision, "reply_language")
                     if choice:
                         reply_language = choice
+
+                    # The objective tracker gets this prediction for free: the
+                    # controller folds it in with its hysteresis, and only a
+                    # committed transition reaches the prompt / history.
+                    obj_index, obj_confidence = self._run_objective_decision(decision)
+                    if obj_index is not None:
+                        self.objective_observed.emit(obj_index, obj_confidence, "jev")
 
             self._emit_role_status(role, act_key, reply_language)
             system_instruction = self._build_system_instruction(

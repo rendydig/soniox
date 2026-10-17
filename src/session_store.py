@@ -7,6 +7,8 @@ import time
 from datetime import datetime, timezone
 
 from src.config import (
+    OBJECTIVE_MAX_HISTORY,
+    OBJECTIVE_MAX_ITEMS,
     SESSION_DIR,
     SESSION_MAX_GEMINI,
     SESSION_MAX_SCREENSHOTS,
@@ -22,10 +24,17 @@ logger = logging.getLogger(__name__)
 # of the bullets it appended (or the whole list for a rebuild).
 # ``bullet_locks`` is a parallel list[bool] index-aligned with ``bullets``: a
 # ``True`` pins that bullet so a Rebuild keeps it verbatim at the top.
+# ``objectives`` is the session-level list of what the conversation is working
+# towards (see src/objectives.py), ``objective_locks`` is its parallel list[bool]
+# (True pins an objective so a prediction can never re-classify away from it) and
+# ``objective_history`` is the append-only timeline of committed transitions.
 SESSION_FIELDS = (
     "bullets",
     "bullet_windows",
     "bullet_locks",
+    "objectives",
+    "objective_locks",
+    "objective_history",
     "conversation",
     "transcriptions",
     "translations",
@@ -39,7 +48,10 @@ SESSION_TEXT_FIELDS = ("last_pickup", "summary", "brief", "gaps", "roadmap")
 # Session fields stored as JSON objects (dicts) rather than lists.
 # ``brief_meta`` carries the Consulting tab's confirmation state
 # (``{"confirmed": bool, "confirmed_at": iso}``) alongside the ``brief`` text.
-SESSION_OBJECT_FIELDS = ("speaker", "brief_meta")
+# ``objective_meta`` carries the objective tracker's state
+# (``{"active": int|None, "confidence": float, "source": "jev"|"llm",
+# "updated_at": iso}`` plus the hysteresis state ``pending``/``streak``).
+SESSION_OBJECT_FIELDS = ("speaker", "brief_meta", "objective_meta")
 
 # Every persisted field, in the order they are created / normalized.
 ALL_SESSION_FIELDS = SESSION_FIELDS + SESSION_TEXT_FIELDS + SESSION_OBJECT_FIELDS
@@ -50,6 +62,8 @@ SESSION_CAPS = {
     "translations": SESSION_MAX_TRANSCRIPT_LINES,
     "gemini_results": SESSION_MAX_GEMINI,
     "screenshots": SESSION_MAX_SCREENSHOTS,
+    "objectives": OBJECTIVE_MAX_ITEMS,
+    "objective_history": OBJECTIVE_MAX_HISTORY,
 }
 
 
@@ -138,6 +152,28 @@ class SessionStore:
 
     def set_speaker(self, profile):
         self.update("speaker", dict(profile or {}))
+
+    def set_objectives(self, objectives):
+        """Replace the session objectives, keeping at most ``OBJECTIVE_MAX_ITEMS``.
+
+        The newest entries win, matching the ``append`` discipline; a drop is
+        logged rather than silent (the pane shows the list it sent back).
+        """
+        items = [str(x) for x in (objectives or []) if str(x).strip()]
+        cap = SESSION_CAPS["objectives"]
+        if len(items) > cap:
+            logger.warning("Objective list over cap (%d > %d); dropping the oldest",
+                           len(items), cap)
+            items = items[-cap:]
+        self.update("objectives", items)
+
+    def set_objective_locks(self, locks):
+        """Replace the per-objective lock flags (parallel to ``objectives``)."""
+        self.update("objective_locks", [bool(x) for x in (locks or [])])
+
+    def set_objective_meta(self, meta):
+        """Replace the objective tracker state (which objective is active, etc.)."""
+        self.update("objective_meta", dict(meta or {}))
 
     def clear_fields(self, fields):
         """Empty the given fields (used by New Session / reset)."""
@@ -241,4 +277,15 @@ class SessionStore:
         for field in SESSION_OBJECT_FIELDS:
             if not isinstance(base.get(field), dict):
                 base[field] = {}
+        # ``objectives`` is capped like any other list, and ``objective_locks`` is
+        # parallel to it — an older session file (or a hand-edited one) may be
+        # short, absent or longer, so pad / trim it to match. ``_normalize`` keeps
+        # only keys in ``_new_session_data``, so a field missing from
+        # SESSION_FIELDS/SESSION_OBJECT_FIELDS is silently dropped here.
+        cap = SESSION_CAPS["objectives"]
+        if len(base["objectives"]) > cap:
+            base["objectives"] = base["objectives"][-cap:]
+        count = len(base["objectives"])
+        locks = [bool(x) for x in base["objective_locks"]]
+        base["objective_locks"] = (locks + [False] * count)[:count]
         return base
