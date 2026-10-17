@@ -471,6 +471,18 @@ tools/hubctl.py                # debug CLI: state/health/tail/publish/config/res
   width from the panes.
   `_apply_bar_geometry` runs on `showEvent` and on the primary screen's
   `availableGeometryChanged`.
+- The long-run health/diagnostics cluster (~72 lines) now lives in `src/ui_health.py` as
+  `HealthMixin`, which `MainWindow` inherits (`class MainWindow(QMainWindow, HealthMixin)` —
+  the Qt base first so Shiboken's metaclass/`__init__` resolution is untouched; the mixin
+  defines no `__init__`/`__new__`). Split rule: extract a cluster to a **mixin in a new
+  `src/ui_*.py`**, never a free-standing helper, so every method stays an attribute of
+  `MainWindow` (reachable as `ui.MainWindow.<method>` and on instances). The `_tmp_*` checks
+  monkeypatch `src.ui` module globals and reach `MainWindow` members as unbound class
+  attributes, so a mixin keeps them working with no call-site edit; this is the template for
+  the follow-up clusters (bar geometry, pane/window management, broadcast senders,
+  `_handle_webview_message`, `_init_menu`). Anything whose method resolves a patched
+  `src.ui` global (`save_state`/`load_state`, `has_permission`/`request_permission`,
+  `QFileDialog`, `QMessageBox`, `GlobalHotkeys`, the pane classes) must stay in `ui.py`.
 - The bar's layout (`_init_ui`) is an outer `QHBoxLayout` of `[content] · [width handle]`,
   where `content` is a `QVBoxLayout`: the optional translation-input row
   (`TranslationSectionWidget`, hidden by default) above the single control row. The control
@@ -1109,7 +1121,8 @@ offline suite).
   installed by `setup_logging`): `faulthandler` dumps a per-thread Python stack to
   `logs/faulthandler.log` on a native fault (SIGSEGV/SIGABRT/…), and `sys.excepthook` +
   `threading.excepthook` append unhandled exceptions to `logs/crash.log`.
-  `MainWindow._log_health` (every `HEALTH_LOG_INTERVAL_MS`, 30 s) appends a sample to
+  `src/ui_health.py` (`HealthMixin`, inherited by `MainWindow`) runs `_log_health` (every
+  `HEALTH_LOG_INTERVAL_MS`, 30 s) in the same cadence as before, appending a sample to
   `logs/health.log` — RSS, thread count, editor block count, session-file size, and each
   pane's webview JS heap (`performance.memory.usedJSHeapSize`) — so growth over a
   multi-hour session is measurable. `QWebEnginePage.renderProcessTerminated` is logged too.

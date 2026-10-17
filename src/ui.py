@@ -2,7 +2,6 @@ import sys
 import os
 import time
 import logging
-import threading
 from datetime import datetime
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QDialog, QFileDialog, QMenu, QToolButton, QPushButton, QMessageBox)
@@ -59,15 +58,13 @@ from src.ui_components.pane_resize_handle import PaneResizeHandle
 from src.ui_state import load_state, save_state
 from src.reply_context import build_digest
 from src.session_store import SessionStore
+from src.ui_health import HealthMixin, HEALTH_LOG_INTERVAL_MS
 
 logger = logging.getLogger(__name__)
 
-# Long-run diagnostics: a one-line memory/thread/editor sample appended here
-# every HEALTH_LOG_INTERVAL_MS so growth (or a crash) is visible over hours.
+# Repo root, still used here to seed the Context pane's Browse/New dialogs.
+# (The long-run diagnostics constants moved to src/ui_health.py with the block.)
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_LOGS_DIR = os.path.join(_REPO_ROOT, "logs")
-HEALTH_LOG = os.path.join(_LOGS_DIR, "health.log")
-HEALTH_LOG_INTERVAL_MS = 30000
 
 # How often the bar's session timer repaints its HH:MM:SS readout. The elapsed
 # value is derived from time.monotonic() deltas, so a delayed tick never drifts.
@@ -117,7 +114,7 @@ def _format_duration(total_seconds):
     return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, HealthMixin):
     # Emitted from the WebSocket receive thread and marshalled onto the Qt
     # main thread via a QueuedConnection (see _setup_controller_connections).
     webview_message = Signal(dict)
@@ -1881,78 +1878,6 @@ class MainWindow(QMainWindow):
     def _on_device_error(self, msg: str):
         """Handle device errors."""
         logger.warning("Device error: %s", msg)
-
-    def _update_memory_usage(self):
-        """Update memory usage indicator."""
-        try:
-            import psutil
-            process = psutil.Process(os.getpid())
-            mem_info = process.memory_info()
-            mem_mb = mem_info.rss / 1024 / 1024
-            
-            trans_lines = self.transcription_editor.document().blockCount()
-            
-            self.memory_label.setText(f"Memory: {mem_mb:.1f} MB | Lines: {trans_lines}/{MAX_TRANSCRIPTION_LINES}")
-        except ImportError:
-            trans_lines = self.transcription_editor.document().blockCount()
-            self.memory_label.setText(f"Lines: {trans_lines}/{MAX_TRANSCRIPTION_LINES}")
-        except Exception:
-            pass
-
-    def _on_render_process_terminated(self, status, exit_code):
-        """A pane's Chromium renderer died (would otherwise show a blank pane)."""
-        logger.error("Webview renderer terminated: status=%s exit_code=%s", status, exit_code)
-
-    def _append_health(self, fields: str):
-        """Append one health sample line to logs/health.log (best effort)."""
-        line = "%s %s" % (datetime.now().isoformat(timespec="seconds"), fields)
-        try:
-            os.makedirs(_LOGS_DIR, exist_ok=True)
-            with open(HEALTH_LOG, "a", encoding="utf-8") as f:
-                f.write(line + "\n")
-        except OSError:
-            pass
-        logger.info("health: %s", line)
-
-    def _log_health(self):
-        """Sample process/editor health and the webview JS heaps."""
-        try:
-            import psutil
-            rss_mb = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
-        except Exception:
-            rss_mb = -1.0
-        try:
-            blocks = self.transcription_editor.document().blockCount()
-        except Exception:
-            blocks = -1
-        try:
-            session_kb = os.path.getsize(self.session_store.path) / 1024
-        except OSError:
-            session_kb = -1.0
-        self._append_health(
-            "rss_mb=%.1f threads=%d editor_blocks=%d session_kb=%.1f"
-            % (rss_mb, threading.active_count(), blocks, session_kb)
-        )
-        # JS heap is only available asynchronously; each pane logs its own line.
-        for name, pane in (("gemini", self.gemini_window),
-                           ("live", self.live_window),
-                           ("bullets", self.bullet_points_window),
-                           ("context", self.context_window)):
-            view = getattr(pane, "webview", None)
-            if view is None:
-                continue
-            view.page().runJavaScript(
-                "(window.performance && performance.memory)"
-                " ? performance.memory.usedJSHeapSize : 0",
-                lambda value, _name=name: self._on_webview_heap(_name, value),
-            )
-
-    def _on_webview_heap(self, name, value):
-        try:
-            heap_mb = int(value) / 1024 / 1024
-        except (TypeError, ValueError):
-            return
-        self._append_health("webview_%s_heap_mb=%.1f" % (name, heap_mb))
 
     def _set_gemini_window_visible(self, visible):
         """Show or hide the separate AI suggestion pane."""
