@@ -41,6 +41,8 @@ const formatTime = (ts) => {
  * `add_objective`, `remove_objective`, `set_objective_lock` and
  * `trigger_objective_prediction`. A locked objective is pinned: the tracker
  * cannot move the focus away from it, and the reply prompt is told to serve it.
+ * `satisfied` is the list of indexes the tracker's JEV call judged already met;
+ * those items are struck through (the reply prompt also stops re-opening them).
  *
  * Every block is rendered **unconditionally** and hidden with an `empty` class
  * instead of a conditional child. Each of these sections appears and disappears
@@ -53,6 +55,7 @@ export const ObjectivesView = ({
     items,
     locks,
     active,
+    satisfied,
     history,
     status,
     onToggleLock,
@@ -62,6 +65,10 @@ export const ObjectivesView = ({
 }) => {
     const list = Array.isArray(items) ? items : [];
     const lockAt = (index) => Array.isArray(locks) && locks[index] === true;
+    // Indexes the tracker's JEV call judged already met (derived in Python, so
+    // the pane never re-derives it). Shown as a "done" tint, never removed: an
+    // objective that is met is still part of the list the user maintains.
+    const doneAt = (index) => Array.isArray(satisfied) && satisfied.includes(index);
     const timeline = Array.isArray(history) ? history : [];
     const focus = active && typeof active === 'object' ? active : {};
     const hasFocus = typeof focus.text === 'string' && focus.text.length > 0;
@@ -121,10 +128,13 @@ export const ObjectivesView = ({
             <ul class="bullet-list objectives-list">
                 ${list.map((text, index) => html`
                     <li
-                        class="bullet-item objective-item ${lockAt(index) ? 'locked' : ''} ${index === focus.index ? 'active' : ''}"
+                        class="bullet-item objective-item ${lockAt(index) ? 'locked' : ''} ${index === focus.index ? 'active' : ''} ${doneAt(index) ? 'satisfied' : ''}"
                     >
                         <span class="bullet-number" aria-hidden="true">${index + 1}.</span>
                         <span class="bullet-text">${text}</span>
+                        <span class=${'consulting-badge confirmed objective-done' + (doneAt(index) ? '' : ' empty')}>
+                            Met
+                        </span>
                         <button
                             type="button"
                             class="bullet-lock ${lockAt(index) ? 'locked' : ''}"

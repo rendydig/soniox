@@ -116,7 +116,7 @@ export const useWebSocketHandler = ({
             }
         } else if (data.type === 'objectives') {
             if (typeof handleObjectives === 'function') {
-                handleObjectives(data.items || [], data.locks, data.active);
+                handleObjectives(data.items || [], data.locks, data.active, data.satisfied);
             }
         } else if (data.type === 'objectives_history') {
             if (typeof handleObjectivesHistory === 'function') {

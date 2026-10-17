@@ -1,11 +1,11 @@
 {
   "meta": {
-    "generated_at": "2026-10-17T08:47:56",
+    "generated_at": "2026-10-17T12:18:56",
     "provider": "openai",
     "model": "deepseek/deepseek-v4.1-flash",
     "base_url": "https://openrouter.ai/api/v1",
     "disable_reasoning": false,
-    "git_rev": "03aae15",
+    "git_rev": "1ae4b00",
     "session_path": "sessions/current.json",
     "recorded_turns": 25,
     "recorded_results": 7
@@ -292,27 +292,29 @@
       "trigger_effective": "How do we stop that from happening?",
       "trigger_source": "speaker",
       "context": "attached",
-      "answer": "Speaker's move: Directive — she's asking how the tool stops her intent from being lost when work passes to a designer.\n\nEnglish Text: That's what the confirmed brief in the consulting pipeline is for. Your exact words — \"a quiet morning in a gallery\" — go into the brief and get signed off before anyone designs. Then the gap analysis checks the work against those words, not a paraphrase.",
+      "answer": "Speaker's move: Expressive — she vented about a handoff that stripped the soul out of her brief and asked how to stop it recurring.\n\nEnglish Text: We'd catch that line the moment you say it — Helpy's rolling bullet points log \"quiet morning in a gallery\" word for word, and you pin it so no later summary can smooth it away. That pinned wording then feeds straight into the brief your designer reads. Same words you used, not a rewrite.",
       "error": "",
       "skipped": "",
-      "latency_ms": 2761,
-      "stream_chunks": 6,
+      "latency_ms": 3400,
+      "stream_chunks": 2,
       "analysis": {
         "verdict": "OK",
-        "body": "That's what the confirmed brief in the consulting pipeline is for. Your exact words — \"a quiet morning in a gallery\" — go into the brief and get signed off before anyone designs. Then the gap analysis checks the work against those words, not a paraphrase.",
-        "preamble": "Speaker's move: Directive — she's asking how the tool stops her intent from being lost when work passes to a designer.",
+        "body": "We'd catch that line the moment you say it — Helpy's rolling bullet points log \"quiet morning in a gallery\" word for word, and you pin it so no later summary can smooth it away. That pinned wording then feeds straight into the brief your designer reads. Same words you used, not a rewrite.",
+        "preamble": "Speaker's move: Expressive — she vented about a handoff that stripped the soul out of her brief and asked how to stop it recurring.",
         "header_language": "English",
         "matched_product_terms": [
           "brief",
-          "gap"
+          "helpy",
+          "summary"
         ],
         "matched_product_terms_first_sentence": [
-          "brief"
+          "helpy",
+          "summary"
         ],
         "matched_invention_terms": [],
         "expect_grounded": true,
         "skipped": "",
-        "latency_ms": 2761,
+        "latency_ms": 3400,
         "findings": []
       }
     },
@@ -325,31 +327,34 @@
       "trigger_effective": "How does your tool actually fix the handoffs?",
       "trigger_source": "speaker",
       "context": "attached",
-      "answer": "Speaker's move: Directive — she asked how the tool actually prevents intent from getting lost in her agency's handoffs.\n\nEnglish Text: The consulting pipeline does that: it drafts a brief from the call, you confirm it, then it runs a gap analysis and folds every gap into a prioritised roadmap. Pinning bullet points locks the client's exact wording, so what crosses your time zones is decisions and open questions, not paraphrase.",
+      "answer": "Speaker's move: Directive — Maya asks how the tool actually stops intent from getting lost in the handoffs at her agency.\n\nEnglish Text: It's the rolling bullet points — merged, pinned, live — that catch intent before it leaves the room. Those feed a one-click Summary with Decisions, Open Questions and Next Steps, and the consulting tab turns that into a confirmed brief and roadmap. Whoever picks it up next gets your words, not a guess.",
       "error": "",
       "skipped": "",
-      "latency_ms": 2140,
-      "stream_chunks": 4,
+      "latency_ms": 2932,
+      "stream_chunks": 3,
       "analysis": {
-        "verdict": "OK",
-        "body": "The consulting pipeline does that: it drafts a brief from the call, you confirm it, then it runs a gap analysis and folds every gap into a prioritised roadmap. Pinning bullet points locks the client's exact wording, so what crosses your time zones is decisions and open questions, not paraphrase.",
-        "preamble": "Speaker's move: Directive — she asked how the tool actually prevents intent from getting lost in her agency's handoffs.",
+        "verdict": "CATATAN",
+        "body": "It's the rolling bullet points — merged, pinned, live — that catch intent before it leaves the room. Those feed a one-click Summary with Decisions, Open Questions and Next Steps, and the consulting tab turns that into a confirmed brief and roadmap. Whoever picks it up next gets your words, not a guess.",
+        "preamble": "Speaker's move: Directive — Maya asks how the tool actually stops intent from getting lost in the handoffs at her agency.",
         "header_language": "English",
         "matched_product_terms": [
           "brief",
-          "gap",
-          "roadmap"
+          "roadmap",
+          "summary"
         ],
-        "matched_product_terms_first_sentence": [
-          "brief",
-          "gap",
-          "roadmap"
-        ],
+        "matched_product_terms_first_sentence": [],
         "matched_invention_terms": [],
         "expect_grounded": true,
         "skipped": "",
-        "latency_ms": 2140,
-        "findings": []
+        "latency_ms": 2932,
+        "findings": [
+          {
+            "code": "grounding_late",
+            "severity": "low",
+            "note": "Menyebut produk hanya di kalimat lanjutan, bukan di rekomendasi pertama (brief, roadmap, summary).",
+            "cause": "cause 1 / F1 (grounding melemah, rekomendasi tidak menyebut produk)"
+          }
+        ]
       }
     },
     {
@@ -361,15 +366,15 @@
       "trigger_effective": "How would your tool stop that constant back-and-forth?",
       "trigger_source": "speaker",
       "context": "attached",
-      "answer": "Speaker's move: Directive — She's asking how Helpy would prevent the constant back-and-forth caused by intent getting lost in handoffs.\n\nEnglish Text: It's the consulting pipeline: we draft a client brief straight from the call, you confirm it, then it runs a gap analysis and folds every gap into a roadmap. Pinned bullet points keep your intent locked in writing, so handoffs stop re-asking.",
+      "answer": "Speaker's move: Directive — Maya asked how Helpy would stop the recurring back-and-forth caused by intent getting lost in her agency's handoffs.\n\nEnglish Text: Your Consulting pipeline is what ends the back-and-forth: it drafts a client brief straight from the call, you confirm it, then gap-checks it and folds every gap into a roadmap step. Designers hand off from one signed-off document, so intent stops getting re-asked.",
       "error": "",
       "skipped": "",
-      "latency_ms": 2377,
+      "latency_ms": 3523,
       "stream_chunks": 4,
       "analysis": {
         "verdict": "OK",
-        "body": "It's the consulting pipeline: we draft a client brief straight from the call, you confirm it, then it runs a gap analysis and folds every gap into a roadmap. Pinned bullet points keep your intent locked in writing, so handoffs stop re-asking.",
-        "preamble": "Speaker's move: Directive — She's asking how Helpy would prevent the constant back-and-forth caused by intent getting lost in handoffs.",
+        "body": "Your Consulting pipeline is what ends the back-and-forth: it drafts a client brief straight from the call, you confirm it, then gap-checks it and folds every gap into a roadmap step. Designers hand off from one signed-off document, so intent stops getting re-asked.",
+        "preamble": "Speaker's move: Directive — Maya asked how Helpy would stop the recurring back-and-forth caused by intent getting lost in her agency's handoffs.",
         "header_language": "English",
         "matched_product_terms": [
           "brief",
@@ -384,7 +389,7 @@
         "matched_invention_terms": [],
         "expect_grounded": true,
         "skipped": "",
-        "latency_ms": 2377,
+        "latency_ms": 3523,
         "findings": []
       }
     },
@@ -397,15 +402,15 @@
       "trigger_effective": "How do we stop that from happening?",
       "trigger_source": "speaker",
       "context": "attached",
-      "answer": "Speaker's move: Directive — she's asking how to stop intent from getting lost in handoffs between her team.\n\nEnglish Text: Helpy's consulting pipeline turns your call into a confirmed client brief, then a gap analysis, then a roadmap with every gap folded into a step. So intent leaves the conversation written down and signed off, not implied. Handoffs pass a step, not a vibe.",
+      "answer": "Speaker's move: Directive — she's asking how to stop intent getting lost in the handoffs.\n\nEnglish Text: Run handoffs through Helpy's Consulting pipeline: draft the client brief from the call, confirm it, then a gap analysis and roadmap fold every gap into a step. Your designers receive the confirmed brief, not a paraphrase, so intent survives.",
       "error": "",
       "skipped": "",
-      "latency_ms": 2165,
-      "stream_chunks": 3,
+      "latency_ms": 2499,
+      "stream_chunks": 1,
       "analysis": {
         "verdict": "OK",
-        "body": "Helpy's consulting pipeline turns your call into a confirmed client brief, then a gap analysis, then a roadmap with every gap folded into a step. So intent leaves the conversation written down and signed off, not implied. Handoffs pass a step, not a vibe.",
-        "preamble": "Speaker's move: Directive — she's asking how to stop intent from getting lost in handoffs between her team.",
+        "body": "Run handoffs through Helpy's Consulting pipeline: draft the client brief from the call, confirm it, then a gap analysis and roadmap fold every gap into a step. Your designers receive the confirmed brief, not a paraphrase, so intent survives.",
+        "preamble": "Speaker's move: Directive — she's asking how to stop intent getting lost in the handoffs.",
         "header_language": "English",
         "matched_product_terms": [
           "brief",
@@ -422,7 +427,7 @@
         "matched_invention_terms": [],
         "expect_grounded": true,
         "skipped": "",
-        "latency_ms": 2165,
+        "latency_ms": 2499,
         "findings": []
       }
     },
@@ -438,7 +443,7 @@
       "answer": "",
       "error": "",
       "skipped": "Filler utterance",
-      "latency_ms": 1,
+      "latency_ms": 2,
       "stream_chunks": 0,
       "analysis": {
         "verdict": "CATATAN",
@@ -450,7 +455,7 @@
         "matched_invention_terms": [],
         "expect_grounded": false,
         "skipped": "Filler utterance",
-        "latency_ms": 1,
+        "latency_ms": 2,
         "findings": [
           {
             "code": "skipped",
@@ -470,22 +475,22 @@
       "trigger_effective": "How does it work?",
       "trigger_source": "speaker",
       "context": "none",
-      "answer": "Speaker's move: Directive — the Speaker is asking how something works and wants an explanation of the mechanics.\n\nEnglish Text: It depends on which part you mean, so let's start there. Tell me the outcome you're after and I'll walk you through how that piece works. The mechanics shift a lot by use case, so a concrete example beats a general description. What should I start with?",
+      "answer": "Speaker's move: Directive — the Speaker is asking how something works, without specifying what \"it\" refers to.\n\nEnglish Text: I don't have the details in front of me, so I'd rather not guess at how it runs end to end. Tell me which part you mean — the setup or the ongoing work — and I'll walk you through it plainly, step by step.",
       "error": "",
       "skipped": "",
-      "latency_ms": 4130,
-      "stream_chunks": 2,
+      "latency_ms": 1729,
+      "stream_chunks": 4,
       "analysis": {
         "verdict": "OK",
-        "body": "It depends on which part you mean, so let's start there. Tell me the outcome you're after and I'll walk you through how that piece works. The mechanics shift a lot by use case, so a concrete example beats a general description. What should I start with?",
-        "preamble": "Speaker's move: Directive — the Speaker is asking how something works and wants an explanation of the mechanics.",
+        "body": "I don't have the details in front of me, so I'd rather not guess at how it runs end to end. Tell me which part you mean — the setup or the ongoing work — and I'll walk you through it plainly, step by step.",
+        "preamble": "Speaker's move: Directive — the Speaker is asking how something works, without specifying what \"it\" refers to.",
         "header_language": "English",
         "matched_product_terms": [],
         "matched_product_terms_first_sentence": [],
         "matched_invention_terms": [],
         "expect_grounded": false,
         "skipped": "",
-        "latency_ms": 4130,
+        "latency_ms": 1729,
         "findings": []
       }
     },
@@ -498,31 +503,27 @@
       "trigger_effective": "Bagaimana caranya supaya brief tidak hilang saat serah terima?",
       "trigger_source": "speaker",
       "context": "attached",
-      "answer": "Speaker's move: Directive — Maya asks how to keep the brief from getting lost when work is handed between teams.\n\nIndonesian Text: Pakai tab Consulting di Helpy: draf brief dari percakapan kita diedit, lalu Anda konfirmasi dulu sebelum sistem menjalankan gap analysis. Setiap celah yang ketemu langsung dilipat jadi langkah di roadmap berprioritas, jadi brief dan eksekusinya tersimpan satu paket.",
+      "answer": "Speaker's move: Directive — she's asking how to keep the brief from getting lost during handoffs.\n\nIndonesian Text: Pakai tab Consulting: brief disusun langsung dari percakapan, Anda edit dan kunci, baru jalan. Setelah terkunci, analisis celah dan roadmap selalu mengacu ke brief itu, jadi niatnya tidak menguap. Semua tersimpan di Sessions, siap dibagikan.",
       "error": "",
       "skipped": "",
-      "latency_ms": 1966,
+      "latency_ms": 2468,
       "stream_chunks": 6,
       "analysis": {
         "verdict": "OK",
-        "body": "Pakai tab Consulting di Helpy: draf brief dari percakapan kita diedit, lalu Anda konfirmasi dulu sebelum sistem menjalankan gap analysis. Setiap celah yang ketemu langsung dilipat jadi langkah di roadmap berprioritas, jadi brief dan eksekusinya tersimpan satu paket.",
-        "preamble": "Speaker's move: Directive — Maya asks how to keep the brief from getting lost when work is handed between teams.",
+        "body": "Pakai tab Consulting: brief disusun langsung dari percakapan, Anda edit dan kunci, baru jalan. Setelah terkunci, analisis celah dan roadmap selalu mengacu ke brief itu, jadi niatnya tidak menguap. Semua tersimpan di Sessions, siap dibagikan.",
+        "preamble": "Speaker's move: Directive — she's asking how to keep the brief from getting lost during handoffs.",
         "header_language": "Indonesian",
         "matched_product_terms": [
           "brief",
-          "gap",
-          "helpy",
           "roadmap"
         ],
         "matched_product_terms_first_sentence": [
-          "brief",
-          "gap",
-          "helpy"
+          "brief"
         ],
         "matched_invention_terms": [],
         "expect_grounded": true,
         "skipped": "",
-        "latency_ms": 1966,
+        "latency_ms": 2468,
         "findings": []
       }
     }
@@ -548,13 +549,13 @@
     "total": 14,
     "verdicts": {
       "PERLU DIPERHATIKAN": 4,
-      "CATATAN": 4,
-      "OK": 6
+      "CATATAN": 5,
+      "OK": 5
     },
     "findings": [
       [
         "grounding_late",
-        4,
+        5,
         "cause 1 / F1 (grounding melemah, rekomendasi tidak menyebut produk)"
       ],
       [
@@ -590,9 +591,9 @@
     ],
     "latency": {
       "n": 7,
-      "min": 1,
-      "max": 4130,
-      "avg": 2220
+      "min": 2,
+      "max": 3523,
+      "avg": 2364
     },
     "trigger_fillers": [
       "A5",

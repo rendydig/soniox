@@ -161,11 +161,21 @@ def build_questions(purpose: dict, roles: dict, checklist: list, smart_role: boo
             ),
             "criteria": {objective_key(o): o for o in session_objectives},
         }
+    # One "is it met yet?" per item. The answers are read back by the reply
+    # worker (``_objective_satisfied``) so the reply can stop re-litigating
+    # objectives the conversation has already settled, and so the pane can show
+    # progress. The instruction has to spell that out: the bare objective text
+    # reads as a topic label, not as a yes/no question.
     for i, item in enumerate(session_objectives or (checklist or [])):
         questions[f"objective_{i}"] = {
             "type": "noul",
-            "instructions": item,
-            "criteria": {"true": "Yes.", "false": "No."},
+            "instructions": (
+                f"Has the conversation already satisfied this objective: {item}?"
+            ),
+            "criteria": {
+                "true": "The conversation has already met this objective.",
+                "false": "This objective is still open or unaddressed.",
+            },
         }
     return questions
 

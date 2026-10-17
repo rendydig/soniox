@@ -10,6 +10,7 @@ from src.config import (
     AUTO_REPLY_CONTEXT_DIGEST,
     AUTO_REPLY_FILLER_FILTER,
     JEV_MIN_CONFIDENCE,
+    JEV_OBJECTIVE_MET_MIN,
     JEV_SHOULD_REPLY_MIN,
     PRONUNCIATION_GUIDES,
     SAMPLE_TEXTS,
@@ -397,6 +398,9 @@ class GeminiAutoReplyWorker(QThread):
     # The decision call the reply already pays for answers ``current_objective``
     # too, so the objective tracker gets a free observation per reply.
     objective_observed = Signal(int, float, str)
+    # Session objectives the decision call judges *already met* (list of indexes),
+    # so the pane can show progress and the reply can stop re-opening them.
+    objectives_satisfied = Signal(list)
 
     def __init__(self, transcription_text: str, target_language: str, conversation_history: list = None,
                  include_pronunciation: bool = True, purpose: str = DEFAULT_PURPOSE, images: list = None,
@@ -437,6 +441,9 @@ class GeminiAutoReplyWorker(QThread):
         self._objectives = [str(o) for o in (objectives or []) if str(o).strip()]
         self._objective_locks = [bool(x) for x in (objective_locks or [])]
         self._objective_meta = dict(objective_meta or {})
+        # Indexes the decision call judged already met (filled in ``run``); empty
+        # whenever JEV is off, unavailable or unsure, so the prompt is unchanged.
+        self._satisfied = []
         self._decision_client = None
 
     # --- JEV helpers --------------------------------------------------
@@ -500,6 +507,22 @@ class GeminiAutoReplyWorker(QThread):
             logger.debug("JEV named an unknown objective (%r); ignoring", choice)
             return None, 0.0
         return index, confidence
+
+    def _objective_satisfied(self, decision) -> list:
+        """Indexes of the objectives JEV judges *already met* by the conversation.
+
+        One ``noul`` per objective (``decision_client.build_questions``). The bar
+        is ``JEV_OBJECTIVE_MET_MIN``, deliberately higher than the act-picking
+        confidence: a wrong "met" would quietly stop the Host closing a real gap.
+        Returns ``[]`` when JEV is off, unkeyed, or sure of nothing — which is
+        what keeps the ``Already met`` prompt line inert by default.
+        """
+        satisfied = []
+        for i in range(len(self._objectives)):
+            met = answer_noul(decision, f"objective_{i}")
+            if met is not None and met >= JEV_OBJECTIVE_MET_MIN:
+                satisfied.append(i)
+        return satisfied
 
     # --- purpose / role resolution ------------------------------------
     def _resolve_purpose(self) -> dict:
@@ -647,6 +670,10 @@ Format your response exactly as follows:
         lines = ["", "", "Objective focus:", f"- Working towards: {active['text']}{detail}"]
         if active.get("locked"):
             lines.append("- This objective is locked by the user; serve it.")
+        met = [self._objectives[i] for i in self._satisfied
+               if 0 <= i < len(self._objectives) and i != active.get("index")]
+        if met:
+            lines.append("- Already met (do not re-open these): " + "; ".join(met))
         return "\n".join(lines)
 
     def _digest_block(self) -> str:
@@ -908,6 +935,13 @@ Format your response exactly as follows:
                     obj_index, obj_confidence = self._run_objective_decision(decision)
                     if obj_index is not None:
                         self.objective_observed.emit(obj_index, obj_confidence, "jev")
+
+                    # Which objectives the conversation has already settled. Read
+                    # here (and only here) so the answers are no longer paid for
+                    # and thrown away; the prompt then stops re-opening them.
+                    self._satisfied = self._objective_satisfied(decision)
+                    if self._satisfied:
+                        self.objectives_satisfied.emit(list(self._satisfied))
 
             self._emit_role_status(role, act_key, reply_language)
             system_instruction = self._build_system_instruction(

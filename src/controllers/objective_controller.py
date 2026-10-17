@@ -146,6 +146,13 @@ class ObjectiveController(QObject):
                 self._meta["confidence"] = 0.0
             elif active > index:
                 self._meta["active"] = active - 1
+        # ``satisfied`` is index-based too: drop the removed one and shift the
+        # rest down, or the pane would mark the wrong objective as done.
+        satisfied = self._meta.get("satisfied")
+        if isinstance(satisfied, list):
+            self._meta["satisfied"] = sorted(
+                i - 1 if i > index else i for i in satisfied if i != index
+            )
         self._meta["pending"] = None
         self._meta["streak"] = 0
         self._objectives = objectives
@@ -153,6 +160,25 @@ class ObjectiveController(QObject):
         self.objectives_changed.emit(self.get_objectives(), self.get_locks())
         self._apply(None, 0.0, "lock")
         self._emit_active()
+        return True
+
+    def set_satisfied(self, indexes) -> bool:
+        """Record which objectives the conversation has already met.
+
+        ``indexes`` comes from the reply worker's JEV decision call
+        (``objectives_satisfied``). Like ``active``, it is **index-based**, so it
+        is pruned whenever the list changes — otherwise an edit would silently
+        mark the wrong objective as done. Returns True when the set changed.
+        """
+        cleaned = sorted({i for i in (indexes or [])
+                          if isinstance(i, int) and not isinstance(i, bool)
+                          and 0 <= i < len(self._objectives)})
+        if cleaned == list(self._meta.get("satisfied") or []):
+            return False
+        self._meta["satisfied"] = cleaned
+        self.objectives_changed.emit(self.get_objectives(), self.get_locks())
+        self._emit_active()
+        logger.debug("Objectives satisfied: %s", cleaned)
         return True
 
     def set_lock(self, index=None, text=None, locked=None) -> bool:
@@ -269,6 +295,17 @@ class ObjectiveController(QObject):
         if pending is not None and self._resolve_index(pending) is None:
             self._meta["pending"] = None
             self._meta["streak"] = 0
+        # ``satisfied`` is index-based like ``active``: a shorter or replaced list
+        # must not leave an index pointing at a different objective.
+        satisfied = self._meta.get("satisfied")
+        if isinstance(satisfied, list):
+            kept = [i for i in satisfied
+                    if isinstance(i, int) and not isinstance(i, bool)
+                    and 0 <= i < len(self._objectives)]
+            if kept:
+                self._meta["satisfied"] = sorted(set(kept))
+            else:
+                self._meta.pop("satisfied", None)
 
     def _apply(self, index, confidence, source):
         """Fold one prediction in; True when the active objective changed."""

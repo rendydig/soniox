@@ -661,6 +661,29 @@
         background: rgba(245, 158, 11, 0.16);
     }
 
+    /* Already met: dim and strike through, but keep the item (the user still
+       owns the list). The active tint wins, so a met objective that is also the
+       current focus stays readable. */
+    .objective-item.satisfied .bullet-text {
+        text-decoration: line-through;
+        opacity: 0.6;
+    }
+
+    .objective-item.satisfied.active .bullet-text {
+        opacity: 0.8;
+    }
+
+    .objectives-view .objective-done {
+        margin-left: 6px;
+        font-size: 0.72em;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .objectives-view .objective-done.empty {
+        display: none;
+    }
+
     .objective-remove {
         flex: 0 0 auto;
         width: 20px;

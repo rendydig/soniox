@@ -884,6 +884,9 @@ class MainWindow(QMainWindow):
         # so its prediction is folded into the tracker for free.
         self.translation_controller.objective_observed.connect(
             self._on_objective_observed, Qt.ConnectionType.QueuedConnection)
+        # The same decision call also reports which objectives are already met.
+        self.translation_controller.objectives_satisfied.connect(
+            self._on_objectives_satisfied, Qt.ConnectionType.QueuedConnection)
         
         self.gemini_lang_combo.currentTextChanged.connect(self._on_auto_reply_language_changed)
 
@@ -1499,6 +1502,10 @@ class MainWindow(QMainWindow):
         # derived state, so send it too rather than duplicating lock precedence
         # in JavaScript.
         payload["objective_active"] = self.objective_controller.get_active()
+        # Which objectives are already met is index-based derived state too, so it
+        # is sent alongside the focus rather than recomputed in JavaScript.
+        payload["objective_satisfied"] = list(
+            self.objective_controller.get_meta().get("satisfied") or [])
         self.websocket_client.send_message(payload)
         self._send_purpose_state()
         # A (re)connecting pane has no countdown yet: push the current one so a
@@ -1541,6 +1548,7 @@ class MainWindow(QMainWindow):
             "items": self.objective_controller.get_objectives(),
             "locks": self.objective_controller.get_locks(),
             "active": self.objective_controller.get_active(),
+            "satisfied": list(self.objective_controller.get_meta().get("satisfied") or []),
         })
 
     def _on_objectives_changed(self, objectives: list, locks: list):
@@ -1572,6 +1580,12 @@ class MainWindow(QMainWindow):
         if not self.objective_controller.get_objectives():
             return
         self.objective_controller.observe(index, confidence, source)
+
+    def _on_objectives_satisfied(self, indexes: list):
+        """Record which objectives the reply worker's JEV call judged already met."""
+        if not self.objective_controller.get_objectives():
+            return
+        self.objective_controller.set_satisfied(indexes)
     
     def _on_ws_message_raw(self, data: dict):
         """Receive a decoded WebSocket message (runs on the asyncio thread)."""

@@ -25,6 +25,8 @@ class TranslationController(QObject):
     # A JEV prediction of the active session objective (index, confidence, source),
     # forwarded from the reply worker so the tracker gets it for free.
     objective_observed = Signal(int, float, str)
+    # Indexes of the session objectives the decision call judged already met.
+    objectives_satisfied = Signal(list)
     
     MAX_HISTORY_TURNS = 25
     HISTORY_LOG_FILE = os.path.join(
@@ -288,6 +290,8 @@ class TranslationController(QObject):
             self._auto_reply_worker.status.connect(self._on_auto_reply_status, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.objective_observed.connect(
                 self.objective_observed.emit, Qt.ConnectionType.QueuedConnection)
+            self._auto_reply_worker.objectives_satisfied.connect(
+                self.objectives_satisfied.emit, Qt.ConnectionType.QueuedConnection)
             self._auto_reply_worker.start()
             return True
         except Exception as e:

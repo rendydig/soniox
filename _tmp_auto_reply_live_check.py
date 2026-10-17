@@ -11,11 +11,22 @@ merge gate.
 Run from the repo root:
     AUTO_REPLY_LIVE_TESTS=1 venv/bin/python _tmp_auto_reply_live_check.py
 
+JEV mode (opt-in, and *separate* from ``JEV_ENABLED`` in ``.env``): the worker is
+built with ``jev_enabled=False`` by default, so this suite measures the plain
+auto-reply path unless you ask for the gate:
+
+    AUTO_REPLY_LIVE_TESTS=1 AUTO_REPLY_JEV_TESTS=1 venv/bin/python _tmp_auto_reply_live_check.py
+
+With the gate on, ``should_reply`` may legitimately suppress a reply (no text, no
+error, ``skipped == "No reply needed"``). That is a decision, not a defect, so the
+reply-required checks accept it and the suppressed cases are counted separately.
+
 It exits 0 with a notice when the flag is unset or the provider cannot be built
 (missing key), so CI without credentials is a no-op. Each scenario prints the
 actual reply so a human can judge it as well.
 """
 import json
+import logging
 import os
 import re
 import sys
@@ -36,11 +47,21 @@ if os.environ.get("AUTO_REPLY_LIVE_TESTS") != "1":
 
 import src.gemini_worker as gw  # noqa: E402
 from src.config import AI_BASE_URL, AI_MODEL, AI_PROVIDER, DISABLE_MODEL_REASONING  # noqa: E402
+from src.decision_client import DecisionClient  # noqa: E402
+
+# The JEV gate is a per-run choice, not a config read: ``JEV_ENABLED=true`` in
+# .env does not reach this suite unless the worker is built with jev_enabled.
+JEV = os.environ.get("AUTO_REPLY_JEV_TESTS") == "1"
+# "smart" is the app's default for "I am:" and the only mode where JEV is asked
+# ``host_role``; pin it so the gate's role adoption is actually exercised.
+HOST_ROLE = "smart" if JEV else "consultant"
 
 failures = []
 witnesses = []
 n_pass = 0
 latencies = []
+# Every live case's outcome, so the JEV section can summarise the gate's decisions.
+OUTCOMES = []
 
 
 def check(name, cond, detail=""):
@@ -101,25 +122,78 @@ def load_recorded_conversation():
         return []
 
 
+class LogCapture(logging.Handler):
+    """Collect ``gemini_worker`` INFO records for one case (the Other flow only logs)."""
+
+    def __init__(self):
+        super().__init__(level=logging.INFO)
+        self.messages = []
+
+    def emit(self, record):
+        try:
+            self.messages.append(record.getMessage())
+        except Exception:  # noqa: BLE001
+            pass
+
+    def count(self, needle):
+        return sum(1 for m in self.messages if needle in m)
+
+
 def live(text, history, *, context=None, purpose="consultation",
-         host_role="consultant", target="English"):
-    out = {"text": "", "error": "", "chunks": [], "skipped": ""}
+         host_role=HOST_ROLE, target="English"):
+    out = {"text": "", "error": "", "chunks": [], "skipped": "", "status": "", "escalated": False}
+    capture = LogCapture()
+    worker_logger = logging.getLogger("src.gemini_worker")
+    # ``logger.info`` is dropped when the effective level is above INFO, and this
+    # harness never configures logging (root defaults to WARNING), so the level
+    # has to be forced or the capture sees nothing.
+    previous_level = worker_logger.level
+    worker_logger.setLevel(logging.INFO)
+    worker_logger.addHandler(capture)
     worker = gw.GeminiAutoReplyWorker(
         text, target, conversation_history=list(history),
         include_pronunciation=False, purpose=purpose, host_role=host_role,
-        context=context,
+        context=context, jev_enabled=JEV,
     )
     worker.result.connect(lambda t: out.__setitem__("text", t))
     worker.error.connect(lambda t: out.__setitem__("error", t))
     worker.chunk.connect(lambda t: out["chunks"].append(t))
     worker.skipped.connect(lambda t: out.__setitem__("skipped", t))
+    worker.status.connect(lambda t: out.__setitem__("status", t))
     t0 = time.monotonic()
-    worker.run()
+    try:
+        worker.run()
+    finally:
+        worker_logger.removeHandler(capture)
+        worker_logger.setLevel(previous_level)
+    out["escalated"] = capture.count("Other flow triggered") > 0
     out["latency_ms"] = round((time.monotonic() - t0) * 1000)
     latencies.append(out["latency_ms"])
     if not out["text"] and not out["error"] and not out["skipped"]:
         out["error"] = "no result and no error"
+    OUTCOMES.append(out)
     return out
+
+
+def gated(out):
+    """True when JEV legitimately suppressed this reply (a decision, not a defect)."""
+    return bool(JEV and out.get("skipped"))
+
+
+def other_flow(out):
+    """True when JEV escalated to persona synthesis.
+
+    ``_run_other_flow`` deliberately emits ``speaker_move + reply`` and skips
+    ``_format_block``, so such a reply has no ``<Language> Text:`` header and no
+    pronunciation block. Format-dependent checks are therefore not applicable —
+    it is a different output contract, not a failure of the reply.
+    """
+    return bool(JEV and out.get("escalated"))
+
+
+def answered(out):
+    """The reply path did its job: a reply, or a legitimate gate suppression."""
+    return gated(out) or (bool(out["text"]) and not out["error"])
 
 
 def body_of(reply):
@@ -175,20 +249,26 @@ else:
     question = recorded[q_idx]["text"].strip()
     produced = 0
     grounded = 0
+    gated_n = 0
     for k in range(L1_REPEAT):
         out = live(question, recorded[: q_idx + 1], context=CTX)
         show(f"reply[{k + 1}/{L1_REPEAT}]", out)
-        if out["text"] and not out["error"]:
+        if answered(out):
             produced += 1
+        if gated(out):
+            gated_n += 1
+            print("       (JEV gate suppressed this reply: %s)" % out["skipped"])
+            continue
         hit = mentions(body_of(out["text"]), PRODUCT_TERMS)
         if hit:
             grounded += 1
         print("       matched=%s" % hit)
     check("a reply was produced", produced == L1_REPEAT, f"{produced}/{L1_REPEAT}")
-    check("the reply names a product mechanism (brief/gaps/notes/...)",
-          grounded == L1_REPEAT, f"{grounded}/{L1_REPEAT} grounded")
+    check("each case either replied or was legitimately gated by JEV",
+          grounded + gated_n == L1_REPEAT,
+          f"{grounded} grounded + {gated_n} gated of {L1_REPEAT}")
     witness("the answer is generic design-process advice, not the product",
-            grounded < L1_REPEAT, f"{L1_REPEAT - grounded}/{L1_REPEAT} ungrounded")
+            grounded < L1_REPEAT - gated_n, f"{L1_REPEAT - gated_n - grounded}/{L1_REPEAT} ungrounded")
 
 # =====================================================================
 print("\n[L2] Speaker asks a question — answer it, do not echo a question back")
@@ -197,12 +277,13 @@ out = live("How does your tool actually fix the handoffs?",
              "suggestion": ""}], context=CTX)
 show("reply", out)
 body = body_of(out["text"])
-check("a reply was produced", bool(out["text"]) and not out["error"], out["error"])
-check("the first sentence is not a question back", not first_sentence(body).endswith("?"),
-      first_sentence(body))
-check("it is not a bare acknowledgment",
-      not re.match(r"^(thanks|thank you|great question|certainly|sure)\b", body, re.I))
-check("the answer has substance (>= 10 words)", len(body.split()) >= 10, str(len(body.split())))
+check("a reply was produced", answered(out), out["error"] or out.get("skipped") or "")
+if not gated(out):
+    check("the first sentence is not a question back", not first_sentence(body).endswith("?"),
+          first_sentence(body))
+    check("it is not a bare acknowledgment",
+          not re.match(r"^(thanks|thank you|great question|certainly|sure)\b", body, re.I))
+    check("the answer has substance (>= 10 words)", len(body.split()) >= 10, str(len(body.split())))
 
 # =====================================================================
 print("\n[L3] Product question is grounded in the Host profile")
@@ -212,9 +293,11 @@ out = live("How would your tool stop that constant back-and-forth?",
 show("reply", out)
 body = body_of(out["text"])
 hit = mentions(body, PRODUCT_TERMS)
-check("the reply mentions at least one product fact", bool(hit), "matched=%s" % hit)
-witness("no product fact in the answer despite a 12 KB Host profile attached",
-        not hit, "grounding decay")
+check("a reply was produced", answered(out), out["error"] or out.get("skipped") or "")
+if not gated(out) and not other_flow(out):
+    check("the reply mentions at least one product fact", bool(hit), "matched=%s" % hit)
+    witness("no product fact in the answer despite a 12 KB Host profile attached",
+            not hit, "grounding decay")
 
 # =====================================================================
 print("\n[L4] Ack then a new question — stay in the Consultant voice")
@@ -228,8 +311,9 @@ out = live("How do we stop that from happening?", [
 show("reply", out)
 body = body_of(out["text"])
 client_voice = bool(re.search(r"\bmy (concrete )?need\b|\bwhat I(?:'d| would) need\b", body, re.I))
-check("no client-voice inversion", not client_voice, "matched" if client_voice else "")
-witness("the reply switched to the Client's voice", client_voice, "role inversion")
+check("a reply was produced", answered(out), out["error"] or out.get("skipped") or "")
+check("no client-voice inversion", gated(out) or not client_voice, "matched" if client_voice else "")
+witness("the reply switched to the Client's voice", not gated(out) and client_voice, "role inversion")
 
 # =====================================================================
 print("\n[L5] Filler-only utterance — skipped without calling the model")
@@ -237,6 +321,8 @@ out = live("Okay.", [{"role": "speaker", "text": "Okay.", "suggestion": ""}], co
 show("reply", out)
 check("no AI call is made for a filler", not out["text"] and not out["error"],
       out["error"] or "a reply was produced")
+# The filler filter short-circuits in run() *before* the JEV block, so this must
+# stay "Filler utterance" (not "No reply needed") even with the gate on.
 check("the skip is reported as a filler", out["skipped"] == "Filler utterance",
       repr(out["skipped"]))
 witness("a filler ('Okay.') still gets a full AI suggestion", bool(out["text"]),
@@ -262,14 +348,44 @@ out = live("Bagaimana caranya supaya brief tidak hilang saat serah terima?",
              "suggestion": ""}], context=CTX)
 show("reply", out)
 body = body_of(out["text"])
-check("a reply was produced", bool(out["text"]) and not out["error"], out["error"])
-check("the analysis preamble is still present (English)", "Speaker's move:" in out["text"])
-check("the reply body is Indonesian",
-      bool(mentions(body, ["tidak", "dengan", "untuk", "yang", "bisa", "kita", "brief",
-                           "proses", "supaya", "saat", "dan", "kli\u00ebn", "klien"])),
-      body[:80])
-check("the reply declares the Indonesian header",
-      bool(re.search(r"Indonesian Text:|Bahasa Indonesia", out["text"])))
+check("a reply was produced", answered(out), out["error"] or out.get("skipped") or "")
+if not gated(out) and not other_flow(out):
+    check("the analysis preamble is still present (English)", "Speaker's move:" in out["text"])
+    check("the reply body is Indonesian",
+          bool(mentions(body, ["tidak", "dengan", "untuk", "yang", "bisa", "kita", "brief",
+                               "proses", "supaya", "saat", "dan", "kli\u00ebn", "klien"])),
+          body[:80])
+    check("the reply declares the Indonesian header",
+          bool(re.search(r"Indonesian Text:|Bahasa Indonesia", out["text"])))
+
+# =====================================================================
+print("\n[JEV] The gate is opt-in and, when on, reachable")
+check("JEV mode is requested explicitly (never implied by JEV_ENABLED)",
+      (JEV and HOST_ROLE == "smart") or (not JEV and HOST_ROLE == "consultant"),
+      f"jev={JEV} role={HOST_ROLE}")
+if JEV:
+    check("the JEV client is configured for this run", bool(DecisionClient().available),
+          "JEV_ENABLED + key required")
+    suppressed = [o for o in OUTCOMES if o.get("skipped") == "No reply needed"]
+    escalated = [o for o in OUTCOMES if o.get("escalated")]
+    print(f"  JEV gate: {len(suppressed)}/{len(OUTCOMES)} replies suppressed "
+          f"('No reply needed'), {len(escalated)} escalated to the Other flow "
+          f"(extra LLM call)")
+    for o in escalated:
+        print(f"      escalated: {(o['text'] or '')[:60]}")
+    check("a gate suppression is reported with the gate's own reason",
+          all(o.get("skipped") == "No reply needed" for o in suppressed),
+          "filler skips must stay 'Filler utterance'")
+    # The Other flow emits ``speaker_move + reply`` and skips ``_format_block``,
+    # so an escalated reply has no ``<Language> Text:`` header. Recorded once, here,
+    # because it is a property of the run rather than of a single case.
+    witness("the Other flow's reply bypasses the format contract (no '<Language> Text:' header)",
+            bool(escalated), f"{len(escalated)}/{len(OUTCOMES)} escalated")
+else:
+    check("with the gate off no case is suppressed as 'No reply needed'",
+          all(o.get("skipped") != "No reply needed" for o in OUTCOMES),
+          "the gate is the only source of that reason")
+    print("  (set AUTO_REPLY_JEV_TESTS=1 to exercise the gate)")
 
 # =====================================================================
 print()

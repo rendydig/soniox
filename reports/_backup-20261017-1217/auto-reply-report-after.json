@@ -1,0 +1,461 @@
+{
+  "meta": {
+    "generated_at": "2026-10-17T06:54:57",
+    "provider": "openai",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "base_url": "https://openrouter.ai/api/v1",
+    "disable_reasoning": false,
+    "git_rev": "03aae15",
+    "session_path": "reports/auto-reply-replay-session.json",
+    "recorded_turns": 25,
+    "recorded_results": 5
+  },
+  "note": "",
+  "recorded": [
+    {
+      "id": "A1",
+      "kind": "recorded",
+      "timestamp": "2026-10-16T20:12:46.244377",
+      "trigger_last": "Okay.",
+      "trigger_source": "host",
+      "trigger_window": "Gap Analysis. Mhm. Mhm. Mhm. So let me talk about the gap analysis. Okay. Okay. Mhm. So, okay. Let me try to do something. I'll— I'll be right back. Okay? Hey, let's restart it. Okay. So, uh, now we talk about . How we can play role-playing gaming in order to . Ensure. That my application is currently is very well working. So we can try to role-play in gaming. Mm-hm. Can you explain to me a little bit? Adik, turun sayang. Kakak, turun. Kakak, di. Dek turun. Kan bundanya lagi sakit. Ah, that's my wife. Okay, we can continue then. Okay. So you're talking like, uh, you are missing somethings, and the team spends half their time chasing. Down the same three questions on every single project. With the scaling, their momentum. So they're setting up deliberately. Fake you. Client scenario to test the gap analysis part. Isn't it? But , but. Before we continue fur ther, can you try to introduce yourself and then what kind of . Positions you are right now, and . Tell me about you? No. You should be not Jordan your, your, your name is Maya's is h. Okay, now tell me about, uh, . Creative agency. What is it about? When you say about digital experience and . Uh. Like. Photography, maybe? Oh. So it's like so. It's like a fuel agency, but more like an IT things? So like website, UI/UX, design graphic, isn't it? Okay. So you often get lost translations? So it's mean are you try to working with all forces? I mean, you try to . Get a client from . Overboard and like that? So, uh, what is the examples? Uh, I see that you are very fluent in English and then why do you need this translations then? Okay. Okay. Mm-hm. Mm-hm. Okay, I understood. Okay. So I got it. So, so you're pain points is like, uh, your team. In 10. Get lost in translations to account managers and then the designers and account managers misalign on client requests. And then account managers will be the same feedback endlessly try. To hand off across time zones, letting slip through cracks. Isn't it? Mm-hm. Okay. So, uh, on this contact, I, I think you mentioned about the tools that I have right now. So, uh, currently I have a tool called like, uh, . When we try to speaking, it's l ike a AI assistance that automatically take a notes and then can try to get, uh, informations and. Yeah, kind of like that. Is that what you means? Okay. Okay, that's interesting. So In this part, uh, I'm very understand what you are saying. I know your pain point is — But in the fact, . I cannot answer it directly. Okay, that's because — Uh, I don't have any context right now. But I'm thinking — This one is the perfect time — How or. Can try to make a practice. Okay, thank you for that. Okay, let's see. Okay, hold on a second. Okay. Context then. I feel benefit. Thanks. Like, our role-playing games, uh. Okay. Okay.",
+      "trigger_effective": "Gap Analysis. Mhm. Mhm. Mhm. So let me talk about the gap analysis. Okay. Okay. Mhm. So, okay. Let me try to do something. I'll— I'll be right back. Okay? Hey, let's restart it. Okay. So, uh, now we talk about . How we can play role-playing gaming in order to . Ensure. That my application is currently is very well working. So we can try to role-play in gaming. Mm-hm. Can you explain to me a little bit? Adik, turun sayang. Kakak, turun. Kakak, di. Dek turun. Kan bundanya lagi sakit. Ah, that's my wife. Okay, we can continue then. Okay. So you're talking like, uh, you are missing somethings, and the team spends half their time chasing. Down the same three questions on every single project. With the scaling, their momentum. So they're setting up deliberately. Fake you. Client scenario to test the gap analysis part. Isn't it? But , but. Before we continue fur ther, can you try to introduce yourself and then what kind of . Positions you are right now, and . Tell me about you? No. You should be not Jordan your, your, your name is Maya's is h. Okay, now tell me about, uh, . Creative agency. What is it about? When you say about digital experience and . Uh. Like. Photography, maybe? Oh. So it's like so. It's like a fuel agency, but more like an IT things? So like website, UI/UX, design graphic, isn't it? Okay. So you often get lost translations? So it's mean are you try to working with all forces? I mean, you try to . Get a client from . Overboard and like that? So, uh, what is the examples? Uh, I see that you are very fluent in English and then why do you need this translations then? Okay. Okay. Mm-hm. Mm-hm. Okay, I understood. Okay. So I got it. So, so you're pain points is like, uh, your team. In 10. Get lost in translations to account managers and then the designers and account managers misalign on client requests. And then account managers will be the same feedback endlessly try. To hand off across time zones, letting slip through cracks. Isn't it? Mm-hm. Okay. So, uh, on this contact, I, I think you mentioned about the tools that I have right now. So, uh, currently I have a tool called like, uh, . When we try to speaking, it's l ike a AI assistance that automatically take a notes and then can try to get, uh, informations and. Yeah, kind of like that. Is that what you means? Okay. Okay, that's interesting. So In this part, uh, I'm very understand what you are saying. I know your pain point is — But in the fact, . I cannot answer it directly. Okay, that's because — Uh, I don't have any context right now. But I'm thinking — This one is the perfect time — How or. Can try to make a practice. Okay, thank you for that. Okay, let's see. Okay, hold on a second. Okay. Context then. I feel benefit. Thanks. Like, our role-playing games, uh. Okay. Okay.",
+      "answer": "Speaker's move: Expressive — the Speaker thanks you, notes the benefit they're getting, and signals they want to keep the role-play moving.\n\nEnglish Text: Use the Consulting tab: it drafts the client brief straight from the conversation, and you confirm it. Gap analysis then runs against that confirmed brief, and the roadmap folds each gap into a step. Nothing gets lost in the handoff. Want to keep role-playing and test it?",
+      "mode": "auto_reply",
+      "latency_ms": 12410,
+      "analysis": {
+        "verdict": "OK",
+        "body": "Use the Consulting tab: it drafts the client brief straight from the conversation, and you confirm it. Gap analysis then runs against that confirmed brief, and the roadmap folds each gap into a step. Nothing gets lost in the handoff. Want to keep role-playing and test it?",
+        "preamble": "Speaker's move: Expressive — the Speaker thanks you, notes the benefit they're getting, and signals they want to keep the role-play moving.",
+        "header_language": "English",
+        "matched_product_terms": [
+          "brief",
+          "gap",
+          "roadmap"
+        ],
+        "matched_product_terms_first_sentence": [
+          "brief"
+        ],
+        "matched_invention_terms": [],
+        "expect_grounded": true,
+        "skipped": "",
+        "latency_ms": 12410,
+        "findings": []
+      }
+    },
+    {
+      "id": "A2",
+      "kind": "recorded",
+      "timestamp": "2026-10-16T20:13:03.431390",
+      "trigger_last": "Încă.",
+      "trigger_source": "speaker",
+      "trigger_window": "Don't be sorry. No need to apologize for anything. I'm still curious, though, how exactly would your tool stop that constant back-and-forth with the designers? Încă.",
+      "trigger_effective": "Don't be sorry. No need to apologize for anything. I'm still curious, though, how exactly would your tool stop that constant back-and-forth with the designers? Încă.",
+      "answer": "Speaker's move: Directive — she's pressing you to explain exactly how Helpy would stop the constant back-and-forth with her designers.\n\nEnglish Text: Helpy's Rolling Bullet Points do that — they keep a live, AI-maintained list of the intent as you talk, merge duplicates, and let you pin points so nothing gets reworded. One click then builds a Summary with Decisions and Next Steps you can hand straight to the designers.",
+      "mode": "auto_reply",
+      "latency_ms": 3386,
+      "analysis": {
+        "verdict": "OK",
+        "body": "Helpy's Rolling Bullet Points do that — they keep a live, AI-maintained list of the intent as you talk, merge duplicates, and let you pin points so nothing gets reworded. One click then builds a Summary with Decisions and Next Steps you can hand straight to the designers.",
+        "preamble": "Speaker's move: Directive — she's pressing you to explain exactly how Helpy would stop the constant back-and-forth with her designers.",
+        "header_language": "English",
+        "matched_product_terms": [
+          "helpy",
+          "summary"
+        ],
+        "matched_product_terms_first_sentence": [
+          "helpy"
+        ],
+        "matched_invention_terms": [],
+        "expect_grounded": true,
+        "skipped": "",
+        "latency_ms": 3386,
+        "findings": []
+      }
+    },
+    {
+      "id": "A3",
+      "kind": "recorded",
+      "timestamp": "2026-10-16T20:13:17.366712",
+      "trigger_last": "Mm-hm. I was.",
+      "trigger_source": "speaker",
+      "trigger_window": "That's right. I'm the slightly vague client, and you're the one trying to make sense of my chaos. Mm-hm. I was.",
+      "trigger_effective": "That's right. I'm the slightly vague client, and you're the one trying to make sense of my chaos. Mm-hm. I was.",
+      "answer": "Speaker's move: Assertive — she confirmed the framing that she's playing the vague client and the Host is the one making sense of her chaos.\n\nEnglish Text: Then let's turn your chaos into something signed off. Helpy drafts a client brief from only what you've actually said, you edit and confirm it, and the gap analysis runs against that confirmed brief. Then a prioritised roadmap. You stay vague; I still leave with a plan.",
+      "mode": "auto_reply",
+      "latency_ms": 256,
+      "analysis": {
+        "verdict": "CATATAN",
+        "body": "Then let's turn your chaos into something signed off. Helpy drafts a client brief from only what you've actually said, you edit and confirm it, and the gap analysis runs against that confirmed brief. Then a prioritised roadmap. You stay vague; I still leave with a plan.",
+        "preamble": "Speaker's move: Assertive — she confirmed the framing that she's playing the vague client and the Host is the one making sense of her chaos.",
+        "header_language": "English",
+        "matched_product_terms": [
+          "brief",
+          "gap",
+          "helpy",
+          "roadmap"
+        ],
+        "matched_product_terms_first_sentence": [],
+        "matched_invention_terms": [],
+        "expect_grounded": true,
+        "skipped": "",
+        "latency_ms": 256,
+        "findings": [
+          {
+            "code": "grounding_late",
+            "severity": "low",
+            "note": "Menyebut produk hanya di kalimat lanjutan, bukan di rekomendasi pertama (brief, gap, helpy, roadmap).",
+            "cause": "cause 1 / F1 (grounding melemah, rekomendasi tidak menyebut produk)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "A4",
+      "kind": "recorded",
+      "timestamp": "2026-10-16T20:13:23.276471",
+      "trigger_last": ".",
+      "trigger_source": "host",
+      "trigger_window": "Okay, so you're saying that, uh, .",
+      "trigger_effective": "Okay, so you're saying that, uh, .",
+      "answer": "Speaker's move: Assertive — she's paraphrasing back what the Host said, checking that she's understood it correctly before continuing.\n\nEnglish Text: Right — and that's what Helpy's pinned bullet points are for: the intent you state gets locked in your own words, so it can't drift. Nothing gets quietly re-interpreted across three time zones. Want to try it on your current project?",
+      "mode": "auto_reply",
+      "latency_ms": 469,
+      "analysis": {
+        "verdict": "OK",
+        "body": "Right — and that's what Helpy's pinned bullet points are for: the intent you state gets locked in your own words, so it can't drift. Nothing gets quietly re-interpreted across three time zones. Want to try it on your current project?",
+        "preamble": "Speaker's move: Assertive — she's paraphrasing back what the Host said, checking that she's understood it correctly before continuing.",
+        "header_language": "English",
+        "matched_product_terms": [
+          "helpy"
+        ],
+        "matched_product_terms_first_sentence": [
+          "helpy"
+        ],
+        "matched_invention_terms": [],
+        "expect_grounded": true,
+        "skipped": "",
+        "latency_ms": 469,
+        "findings": []
+      }
+    },
+    {
+      "id": "A5",
+      "kind": "recorded",
+      "timestamp": "2026-10-16T20:14:45.519679",
+      "trigger_last": "How do we stop that from happening?",
+      "trigger_source": "speaker",
+      "trigger_window": "Exactly. You nailed it. Seeing as I 'm happy with my software, but miserable with the handoffs, how does your tool actually fix that part? Ugh. The last one was a nightmare. I told the designer I wanted the landing page to feel like a quiet morning in a gallery, and they came back with a stark white page and a single gray dot in the middle. It was technically minimal, but the soul was completely gone. How do we stop that from happening?",
+      "trigger_effective": "Exactly. You nailed it. Seeing as I 'm happy with my software, but miserable with the handoffs, how does your tool actually fix that part? Ugh. The last one was a nightmare. I told the designer I wanted the landing page to feel like a quiet morning in a gallery, and they came back with a stark white page and a single gray dot in the middle. It was technically minimal, but the soul was completely gone. How do we stop that from happening?",
+      "answer": "Speaker's move: Directive — she asked how to stop a handoff from losing the original creative intent.\n\nEnglish Text: Pin her exact words the moment she says them — Helpy's rolling bullet points let you lock \"quiet morning in a gallery\" so no later rebuild can reword it. Then run the brief and gap analysis, so that phrase becomes a roadmap step the designer can't quietly drop. Send them the brief, not your paraphrase.",
+      "mode": "auto_reply",
+      "latency_ms": 5970,
+      "analysis": {
+        "verdict": "OK",
+        "body": "Pin her exact words the moment she says them — Helpy's rolling bullet points let you lock \"quiet morning in a gallery\" so no later rebuild can reword it. Then run the brief and gap analysis, so that phrase becomes a roadmap step the designer can't quietly drop. Send them the brief, not your paraphrase.",
+        "preamble": "Speaker's move: Directive — she asked how to stop a handoff from losing the original creative intent.",
+        "header_language": "English",
+        "matched_product_terms": [
+          "brief",
+          "gap",
+          "helpy",
+          "roadmap"
+        ],
+        "matched_product_terms_first_sentence": [
+          "helpy"
+        ],
+        "matched_invention_terms": [],
+        "expect_grounded": true,
+        "skipped": "",
+        "latency_ms": 5970,
+        "findings": []
+      }
+    }
+  ],
+  "live": [
+    {
+      "id": "L1",
+      "kind": "live",
+      "title": "Replay pertanyaan terekam yang gagal",
+      "trigger_last": "How do we stop that from happening?",
+      "trigger_window": "How do we stop that from happening?",
+      "trigger_effective": "How do we stop that from happening?",
+      "trigger_source": "speaker",
+      "context": "attached",
+      "answer": "Speaker's move: Directive — she's asking how to stop her original intent from getting flattened in the handoff.\n\nEnglish Text: Helpy's consulting pipeline drafts a client brief straight from this call, so \"a quiet morning in a gallery\" is written down, not left to a designer's guess. You edit it, confirm it, and that confirmed brief is what gets handed over. Then the gap analysis catches what nobody asked.",
+      "error": "",
+      "skipped": "",
+      "latency_ms": 3007,
+      "stream_chunks": 5,
+      "analysis": {
+        "verdict": "OK",
+        "body": "Helpy's consulting pipeline drafts a client brief straight from this call, so \"a quiet morning in a gallery\" is written down, not left to a designer's guess. You edit it, confirm it, and that confirmed brief is what gets handed over. Then the gap analysis catches what nobody asked.",
+        "preamble": "Speaker's move: Directive — she's asking how to stop her original intent from getting flattened in the handoff.",
+        "header_language": "English",
+        "matched_product_terms": [
+          "brief",
+          "gap",
+          "helpy"
+        ],
+        "matched_product_terms_first_sentence": [
+          "brief",
+          "helpy"
+        ],
+        "matched_invention_terms": [],
+        "expect_grounded": true,
+        "skipped": "",
+        "latency_ms": 3007,
+        "findings": []
+      }
+    },
+    {
+      "id": "L2",
+      "kind": "live",
+      "title": "Speaker bertanya — harus dijawab, bukan pertanyaan balik",
+      "trigger_last": "How does your tool actually fix the handoffs?",
+      "trigger_window": "How does your tool actually fix the handoffs?",
+      "trigger_effective": "How does your tool actually fix the handoffs?",
+      "trigger_source": "speaker",
+      "context": "attached",
+      "answer": "Speaker's move: Directive — she's asking how Helpy actually solves the intent lost in handoffs.\n\nEnglish Text: Helpy's consulting pipeline turns the call into a brief you confirm, then runs a gap analysis against it, so anything the brief misses gets named. Pinned bullet points hold your client's exact wording, never reworded. That list becomes the handoff.",
+      "error": "",
+      "skipped": "",
+      "latency_ms": 2639,
+      "stream_chunks": 5,
+      "analysis": {
+        "verdict": "OK",
+        "body": "Helpy's consulting pipeline turns the call into a brief you confirm, then runs a gap analysis against it, so anything the brief misses gets named. Pinned bullet points hold your client's exact wording, never reworded. That list becomes the handoff.",
+        "preamble": "Speaker's move: Directive — she's asking how Helpy actually solves the intent lost in handoffs.",
+        "header_language": "English",
+        "matched_product_terms": [
+          "brief",
+          "gap",
+          "helpy"
+        ],
+        "matched_product_terms_first_sentence": [
+          "brief",
+          "gap",
+          "helpy"
+        ],
+        "matched_invention_terms": [],
+        "expect_grounded": true,
+        "skipped": "",
+        "latency_ms": 2639,
+        "findings": []
+      }
+    },
+    {
+      "id": "L3",
+      "kind": "live",
+      "title": "Pertanyaan produk — harus grounded di Host profile",
+      "trigger_last": "How would your tool stop that constant back-and-forth?",
+      "trigger_window": "How would your tool stop that constant back-and-forth?",
+      "trigger_effective": "How would your tool stop that constant back-and-forth?",
+      "trigger_source": "speaker",
+      "context": "attached",
+      "answer": "Speaker's move: Directive — she's asking how Helpy would stop the constant back-and-forth caused by intent getting lost in handoffs.\n\nEnglish Text: One-click Summary is what kills the back-and-forth: Decisions, Open Questions and Next Steps, captured the moment the call ends. Your twelve designers read the same recap instead of chasing you for what the client actually meant. The consulting pipeline then turns that recap into a confirmed brief, so intent stops drifting between time zones.",
+      "error": "",
+      "skipped": "",
+      "latency_ms": 2401,
+      "stream_chunks": 3,
+      "analysis": {
+        "verdict": "OK",
+        "body": "One-click Summary is what kills the back-and-forth: Decisions, Open Questions and Next Steps, captured the moment the call ends. Your twelve designers read the same recap instead of chasing you for what the client actually meant. The consulting pipeline then turns that recap into a confirmed brief, so intent stops drifting between time zones.",
+        "preamble": "Speaker's move: Directive — she's asking how Helpy would stop the constant back-and-forth caused by intent getting lost in handoffs.",
+        "header_language": "English",
+        "matched_product_terms": [
+          "brief",
+          "summary"
+        ],
+        "matched_product_terms_first_sentence": [
+          "summary"
+        ],
+        "matched_invention_terms": [],
+        "expect_grounded": true,
+        "skipped": "",
+        "latency_ms": 2401,
+        "findings": []
+      }
+    },
+    {
+      "id": "L4",
+      "kind": "live",
+      "title": "Ack lalu pertanyaan baru — harus tetap suara Consultant",
+      "trigger_last": "How do we stop that from happening?",
+      "trigger_window": "How do we stop that from happening?",
+      "trigger_effective": "How do we stop that from happening?",
+      "trigger_source": "speaker",
+      "context": "attached",
+      "answer": "Speaker's move: Directive — Maya asks how to prevent intent from getting lost in the handoffs.\n\nEnglish Text: Helpy's Consulting pipeline stops it: it drafts a client brief from the call, you confirm it, then it runs a gap analysis and folds every gap into a roadmap step. Once that brief is signed off, intent travels with the work instead of being re-explained at every handoff. Want me to walk you through it on your next one?",
+      "error": "",
+      "skipped": "",
+      "latency_ms": 3000,
+      "stream_chunks": 5,
+      "analysis": {
+        "verdict": "OK",
+        "body": "Helpy's Consulting pipeline stops it: it drafts a client brief from the call, you confirm it, then it runs a gap analysis and folds every gap into a roadmap step. Once that brief is signed off, intent travels with the work instead of being re-explained at every handoff. Want me to walk you through it on your next one?",
+        "preamble": "Speaker's move: Directive — Maya asks how to prevent intent from getting lost in the handoffs.",
+        "header_language": "English",
+        "matched_product_terms": [
+          "brief",
+          "gap",
+          "helpy",
+          "roadmap"
+        ],
+        "matched_product_terms_first_sentence": [
+          "brief",
+          "gap",
+          "helpy",
+          "roadmap"
+        ],
+        "matched_invention_terms": [],
+        "expect_grounded": true,
+        "skipped": "",
+        "latency_ms": 3000,
+        "findings": []
+      }
+    },
+    {
+      "id": "L5",
+      "kind": "live",
+      "title": "Utterance filler saja ('Okay.')",
+      "trigger_last": "Okay.",
+      "trigger_window": "Okay.",
+      "trigger_effective": "Okay.",
+      "trigger_source": "speaker",
+      "context": "attached",
+      "answer": "",
+      "error": "",
+      "skipped": "Filler utterance",
+      "latency_ms": 1,
+      "stream_chunks": 0,
+      "analysis": {
+        "verdict": "CATATAN",
+        "body": "",
+        "preamble": "",
+        "header_language": "",
+        "matched_product_terms": [],
+        "matched_product_terms_first_sentence": [],
+        "matched_invention_terms": [],
+        "expect_grounded": false,
+        "skipped": "Filler utterance",
+        "latency_ms": 1,
+        "findings": [
+          {
+            "code": "skipped",
+            "severity": "low",
+            "note": "Tidak ada jawaban: Filler utterance — perilaku yang diinginkan, bukan cacat.",
+            "cause": "bukan cacat (filter filler F6 atau JEV sengaja diam)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "L7",
+      "kind": "live",
+      "title": "Tanpa Host context — jangan mengarang klaim produk",
+      "trigger_last": "How does it work?",
+      "trigger_window": "How does it work?",
+      "trigger_effective": "How does it work?",
+      "trigger_source": "speaker",
+      "context": "none",
+      "answer": "Speaker's move: Directive — the client asked how the process or offering actually works.\n\nEnglish Text: I'd rather show you than guess at it, so let's do a 20-minute walkthrough where I run through the steps live. You'll see exactly how it fits your setup, and you can stop me anywhere it gets unclear. What day works better, Tuesday or Thursday?",
+      "error": "",
+      "skipped": "",
+      "latency_ms": 1470,
+      "stream_chunks": 4,
+      "analysis": {
+        "verdict": "OK",
+        "body": "I'd rather show you than guess at it, so let's do a 20-minute walkthrough where I run through the steps live. You'll see exactly how it fits your setup, and you can stop me anywhere it gets unclear. What day works better, Tuesday or Thursday?",
+        "preamble": "Speaker's move: Directive — the client asked how the process or offering actually works.",
+        "header_language": "English",
+        "matched_product_terms": [],
+        "matched_product_terms_first_sentence": [],
+        "matched_invention_terms": [],
+        "expect_grounded": false,
+        "skipped": "",
+        "latency_ms": 1470,
+        "findings": []
+      }
+    },
+    {
+      "id": "L10",
+      "kind": "live",
+      "title": "Cross-language — Speaker berbahasa Indonesia",
+      "trigger_last": "Bagaimana caranya supaya brief tidak hilang saat serah terima?",
+      "trigger_window": "Bagaimana caranya supaya brief tidak hilang saat serah terima?",
+      "trigger_effective": "Bagaimana caranya supaya brief tidak hilang saat serah terima?",
+      "trigger_source": "speaker",
+      "context": "attached",
+      "answer": "Speaker's move: Directive — she's asking how to keep the brief from getting lost during handoffs.\n\nIndonesian Text: Pakai tab Consulting: draf brief disusun langsung dari percakapan, Anda edit lalu kunci, baru gap analysis dan roadmap menutup setiap celahnya. Karena brief yang sudah dikonfirmasi jadi acuan, intent-nya ikut terbawa, bukan cuma tugasnya. Semua tersimpan di sesi, jadi bisa dibuka lagi kapan saja.",
+      "error": "",
+      "skipped": "",
+      "latency_ms": 3183,
+      "stream_chunks": 5,
+      "analysis": {
+        "verdict": "OK",
+        "body": "Pakai tab Consulting: draf brief disusun langsung dari percakapan, Anda edit lalu kunci, baru gap analysis dan roadmap menutup setiap celahnya. Karena brief yang sudah dikonfirmasi jadi acuan, intent-nya ikut terbawa, bukan cuma tugasnya. Semua tersimpan di sesi, jadi bisa dibuka lagi kapan saja.",
+        "preamble": "Speaker's move: Directive — she's asking how to keep the brief from getting lost during handoffs.",
+        "header_language": "Indonesian",
+        "matched_product_terms": [
+          "brief",
+          "gap",
+          "roadmap"
+        ],
+        "matched_product_terms_first_sentence": [
+          "brief",
+          "gap",
+          "roadmap"
+        ],
+        "matched_invention_terms": [],
+        "expect_grounded": true,
+        "skipped": "",
+        "latency_ms": 3183,
+        "findings": []
+      }
+    }
+  ],
+  "contract": {
+    "grounding_rule_present": true,
+    "grounding_first_sentence_rule": true,
+    "no_context_anti_invention_rule": true,
+    "style_block_present": true,
+    "host_line_omitted_without_context": true,
+    "answer_first_objective": true,
+    "answer_first_objective_in_seed": true,
+    "stale_builtin_copy": false,
+    "history_starts_with_user": true,
+    "question_sent_once": true,
+    "question_sent_once_with_trailing_host_turn": true,
+    "history_turns": 4,
+    "recorded_turns": 25
+  },
+  "aggregate": {
+    "total": 12,
+    "verdicts": {
+      "OK": 10,
+      "CATATAN": 2
+    },
+    "findings": [
+      [
+        "grounding_late",
+        1,
+        "cause 1 / F1 (grounding melemah, rekomendasi tidak menyebut produk)"
+      ],
+      [
+        "skipped",
+        1,
+        "bukan cacat (filter filler F6 atau JEV sengaja diam)"
+      ]
+    ],
+    "latency": {
+      "n": 7,
+      "min": 1,
+      "max": 3183,
+      "avg": 2243
+    },
+    "trigger_fillers": [
+      "L5"
+    ]
+  }
+}

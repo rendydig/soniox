@@ -1,16 +1,16 @@
 {
   "meta": {
-    "generated_at": "2026-10-17T06:54:00",
+    "generated_at": "2026-10-17T12:17:30",
     "provider": "openai",
     "model": "deepseek/deepseek-v4.1-flash",
     "base_url": "https://openrouter.ai/api/v1",
     "disable_reasoning": false,
-    "git_rev": "03aae15",
+    "git_rev": "1ae4b00",
     "session_path": "sessions/current.json",
     "recorded_turns": 25,
     "recorded_results": 7
   },
-  "note": "",
+  "note": "Bagian B dilewati. Jalankan `AUTO_REPLY_LIVE_TESTS=1 venv/bin/python tools/auto_reply_report.py` untuk menjalankannya (memanggil model asli).",
   "recorded": [
     {
       "id": "A1",
@@ -282,259 +282,7 @@
       }
     }
   ],
-  "live": [
-    {
-      "id": "L1",
-      "kind": "live",
-      "title": "Replay pertanyaan terekam yang gagal",
-      "trigger_last": "How do we stop that from happening?",
-      "trigger_window": "How do we stop that from happening?",
-      "trigger_effective": "How do we stop that from happening?",
-      "trigger_source": "speaker",
-      "context": "attached",
-      "answer": "Speaker's move: Expressive — she's venting about a handoff where her visual intent got flattened, and asking how to stop it recurring.\n\nEnglish Text: I'd pin the phrase itself — \"quiet morning in a gallery\" — as a locked bullet point, so a later rebuild can never reword or drop it. Screenshot any reference image straight into the brief too. Then the handoff carries the soul, not just \"minimal.\"",
-      "error": "",
-      "skipped": "",
-      "latency_ms": 4774,
-      "stream_chunks": 4,
-      "analysis": {
-        "verdict": "CATATAN",
-        "body": "I'd pin the phrase itself — \"quiet morning in a gallery\" — as a locked bullet point, so a later rebuild can never reword or drop it. Screenshot any reference image straight into the brief too. Then the handoff carries the soul, not just \"minimal.\"",
-        "preamble": "Speaker's move: Expressive — she's venting about a handoff where her visual intent got flattened, and asking how to stop it recurring.",
-        "header_language": "English",
-        "matched_product_terms": [
-          "brief"
-        ],
-        "matched_product_terms_first_sentence": [],
-        "matched_invention_terms": [],
-        "expect_grounded": true,
-        "skipped": "",
-        "latency_ms": 4774,
-        "findings": [
-          {
-            "code": "grounding_late",
-            "severity": "low",
-            "note": "Menyebut produk hanya di kalimat lanjutan, bukan di rekomendasi pertama (brief).",
-            "cause": "cause 1 / F1 (grounding melemah, rekomendasi tidak menyebut produk)"
-          }
-        ]
-      }
-    },
-    {
-      "id": "L2",
-      "kind": "live",
-      "title": "Speaker bertanya — harus dijawab, bukan pertanyaan balik",
-      "trigger_last": "How does your tool actually fix the handoffs?",
-      "trigger_window": "How does your tool actually fix the handoffs?",
-      "trigger_effective": "How does your tool actually fix the handoffs?",
-      "trigger_source": "speaker",
-      "context": "attached",
-      "answer": "Speaker's move: Directive — Maya asked how Helpy concretely stops intent from getting lost in handoffs.\n\nEnglish Text: Rolling bullet points capture intent the moment Maya says it, then the consulting pipeline turns that into a client brief, a gap analysis and a prioritised roadmap. Her designers inherit the actual intent, not a raw transcript. Nothing gets lost when the work crosses a time zone.",
-      "error": "",
-      "skipped": "",
-      "latency_ms": 3457,
-      "stream_chunks": 6,
-      "analysis": {
-        "verdict": "OK",
-        "body": "Rolling bullet points capture intent the moment Maya says it, then the consulting pipeline turns that into a client brief, a gap analysis and a prioritised roadmap. Her designers inherit the actual intent, not a raw transcript. Nothing gets lost when the work crosses a time zone.",
-        "preamble": "Speaker's move: Directive — Maya asked how Helpy concretely stops intent from getting lost in handoffs.",
-        "header_language": "English",
-        "matched_product_terms": [
-          "brief",
-          "capture",
-          "gap",
-          "roadmap",
-          "transcript"
-        ],
-        "matched_product_terms_first_sentence": [
-          "brief",
-          "capture",
-          "gap",
-          "roadmap"
-        ],
-        "matched_invention_terms": [],
-        "expect_grounded": true,
-        "skipped": "",
-        "latency_ms": 3457,
-        "findings": []
-      }
-    },
-    {
-      "id": "L3",
-      "kind": "live",
-      "title": "Pertanyaan produk — harus grounded di Host profile",
-      "trigger_last": "How would your tool stop that constant back-and-forth?",
-      "trigger_window": "How would your tool stop that constant back-and-forth?",
-      "trigger_effective": "How would your tool stop that constant back-and-forth?",
-      "trigger_source": "speaker",
-      "context": "attached",
-      "answer": "Speaker's move: Directive — Maya is asking how the tool would stop intent getting lost in handoffs between her teams.\n\nEnglish Text: The consulting pipeline is what kills the back-and-forth: it drafts a client brief straight from the call, you confirm it, then it runs a gap analysis and builds a roadmap with every gap folded into a step. Your designers would work from that brief instead of re-interpreting the call. Same for internal handoffs — rolling bullet points and the session summary carry decisions and next steps, so intent moves as a document, not a memory.",
-      "error": "",
-      "skipped": "",
-      "latency_ms": 2190,
-      "stream_chunks": 7,
-      "analysis": {
-        "verdict": "OK",
-        "body": "The consulting pipeline is what kills the back-and-forth: it drafts a client brief straight from the call, you confirm it, then it runs a gap analysis and builds a roadmap with every gap folded into a step. Your designers would work from that brief instead of re-interpreting the call. Same for internal handoffs — rolling bullet points and the session summary carry decisions and next steps, so intent moves as a document, not a memory.",
-        "preamble": "Speaker's move: Directive — Maya is asking how the tool would stop intent getting lost in handoffs between her teams.",
-        "header_language": "English",
-        "matched_product_terms": [
-          "brief",
-          "gap",
-          "roadmap",
-          "summary"
-        ],
-        "matched_product_terms_first_sentence": [
-          "brief",
-          "gap",
-          "roadmap"
-        ],
-        "matched_invention_terms": [],
-        "expect_grounded": true,
-        "skipped": "",
-        "latency_ms": 2190,
-        "findings": []
-      }
-    },
-    {
-      "id": "L4",
-      "kind": "live",
-      "title": "Ack lalu pertanyaan baru — harus tetap suara Consultant",
-      "trigger_last": "How do we stop that from happening?",
-      "trigger_window": "How do we stop that from happening?",
-      "trigger_effective": "How do we stop that from happening?",
-      "trigger_source": "speaker",
-      "context": "attached",
-      "answer": "Speaker's move: Directive — she's asking how to actually stop intent from getting lost in the handoffs between her teams.\n\nEnglish Text: Helpy's consulting pipeline is how — you draft and confirm a client brief, then run a gap analysis against it. So each handoff becomes a written spec with owners, not a verbal relay. Your designers across three time zones read intent, not memory.",
-      "error": "",
-      "skipped": "",
-      "latency_ms": 4849,
-      "stream_chunks": 5,
-      "analysis": {
-        "verdict": "OK",
-        "body": "Helpy's consulting pipeline is how — you draft and confirm a client brief, then run a gap analysis against it. So each handoff becomes a written spec with owners, not a verbal relay. Your designers across three time zones read intent, not memory.",
-        "preamble": "Speaker's move: Directive — she's asking how to actually stop intent from getting lost in the handoffs between her teams.",
-        "header_language": "English",
-        "matched_product_terms": [
-          "brief",
-          "gap",
-          "helpy"
-        ],
-        "matched_product_terms_first_sentence": [
-          "brief",
-          "gap",
-          "helpy"
-        ],
-        "matched_invention_terms": [],
-        "expect_grounded": true,
-        "skipped": "",
-        "latency_ms": 4849,
-        "findings": []
-      }
-    },
-    {
-      "id": "L5",
-      "kind": "live",
-      "title": "Utterance filler saja ('Okay.')",
-      "trigger_last": "Okay.",
-      "trigger_window": "Okay.",
-      "trigger_effective": "Okay.",
-      "trigger_source": "speaker",
-      "context": "attached",
-      "answer": "",
-      "error": "",
-      "skipped": "Filler utterance",
-      "latency_ms": 5,
-      "stream_chunks": 0,
-      "analysis": {
-        "verdict": "CATATAN",
-        "body": "",
-        "preamble": "",
-        "header_language": "",
-        "matched_product_terms": [],
-        "matched_product_terms_first_sentence": [],
-        "matched_invention_terms": [],
-        "expect_grounded": false,
-        "skipped": "Filler utterance",
-        "latency_ms": 5,
-        "findings": [
-          {
-            "code": "skipped",
-            "severity": "low",
-            "note": "Tidak ada jawaban: Filler utterance — perilaku yang diinginkan, bukan cacat.",
-            "cause": "bukan cacat (filter filler F6 atau JEV sengaja diam)"
-          }
-        ]
-      }
-    },
-    {
-      "id": "L7",
-      "kind": "live",
-      "title": "Tanpa Host context — jangan mengarang klaim produk",
-      "trigger_last": "How does it work?",
-      "trigger_window": "How does it work?",
-      "trigger_effective": "How does it work?",
-      "trigger_source": "speaker",
-      "context": "none",
-      "answer": "Speaker's move: The Speaker asked how it works, requesting an explanation of the process.\n\nEnglish Text: Easiest way is a short walkthrough — I'll screen-share and run through it live, then you can poke at it yourself. Seeing it beats me describing it. Which part matters most to you, the setup or the day-to-day use?",
-      "error": "",
-      "skipped": "",
-      "latency_ms": 2206,
-      "stream_chunks": 6,
-      "analysis": {
-        "verdict": "OK",
-        "body": "Easiest way is a short walkthrough — I'll screen-share and run through it live, then you can poke at it yourself. Seeing it beats me describing it. Which part matters most to you, the setup or the day-to-day use?",
-        "preamble": "Speaker's move: The Speaker asked how it works, requesting an explanation of the process.",
-        "header_language": "English",
-        "matched_product_terms": [],
-        "matched_product_terms_first_sentence": [],
-        "matched_invention_terms": [],
-        "expect_grounded": false,
-        "skipped": "",
-        "latency_ms": 2206,
-        "findings": []
-      }
-    },
-    {
-      "id": "L10",
-      "kind": "live",
-      "title": "Cross-language — Speaker berbahasa Indonesia",
-      "trigger_last": "Bagaimana caranya supaya brief tidak hilang saat serah terima?",
-      "trigger_window": "Bagaimana caranya supaya brief tidak hilang saat serah terima?",
-      "trigger_effective": "Bagaimana caranya supaya brief tidak hilang saat serah terima?",
-      "trigger_source": "speaker",
-      "context": "attached",
-      "answer": "Speaker's move: Directive — Maya asks how to keep the brief from getting lost during handoffs between her teams.\n\nIndonesian Text: Pakai tab Consulting, ya. Draf brief-nya dibuat dari percakapan, kamu edit dan konfirmasi dulu, baru gap analysis dijalankan terhadap brief yang sudah dikunci itu. Setiap gap langsung dilipat jadi langkah di roadmap berprioritas, dan semuanya tersimpan di sesi. Jadi handoff selalu mengacu ke satu brief yang sama.",
-      "error": "",
-      "skipped": "",
-      "latency_ms": 2206,
-      "stream_chunks": 5,
-      "analysis": {
-        "verdict": "CATATAN",
-        "body": "Pakai tab Consulting, ya. Draf brief-nya dibuat dari percakapan, kamu edit dan konfirmasi dulu, baru gap analysis dijalankan terhadap brief yang sudah dikunci itu. Setiap gap langsung dilipat jadi langkah di roadmap berprioritas, dan semuanya tersimpan di sesi. Jadi handoff selalu mengacu ke satu brief yang sama.",
-        "preamble": "Speaker's move: Directive — Maya asks how to keep the brief from getting lost during handoffs between her teams.",
-        "header_language": "Indonesian",
-        "matched_product_terms": [
-          "brief",
-          "gap",
-          "roadmap"
-        ],
-        "matched_product_terms_first_sentence": [],
-        "matched_invention_terms": [],
-        "expect_grounded": true,
-        "skipped": "",
-        "latency_ms": 2206,
-        "findings": [
-          {
-            "code": "grounding_late",
-            "severity": "low",
-            "note": "Menyebut produk hanya di kalimat lanjutan, bukan di rekomendasi pertama (brief, gap, roadmap).",
-            "cause": "cause 1 / F1 (grounding melemah, rekomendasi tidak menyebut produk)"
-          }
-        ]
-      }
-    }
-  ],
+  "live": [],
   "contract": {
     "grounding_rule_present": true,
     "grounding_first_sentence_rule": true,
@@ -544,6 +292,8 @@
     "answer_first_objective": true,
     "answer_first_objective_in_seed": true,
     "stale_builtin_copy": false,
+    "digest_enabled": false,
+    "objective_focus_absent": true,
     "history_starts_with_user": true,
     "question_sent_once": true,
     "question_sent_once_with_trailing_host_turn": true,
@@ -551,16 +301,15 @@
     "recorded_turns": 25
   },
   "aggregate": {
-    "total": 14,
+    "total": 7,
     "verdicts": {
       "PERLU DIPERHATIKAN": 4,
-      "CATATAN": 6,
-      "OK": 4
+      "CATATAN": 3
     },
     "findings": [
       [
         "grounding_late",
-        6,
+        4,
         "cause 1 / F1 (grounding melemah, rekomendasi tidak menyebut produk)"
       ],
       [
@@ -587,23 +336,12 @@
         "role_inversion",
         1,
         "cause 4 / data fix (maya.context.txt vs profil speaker)"
-      ],
-      [
-        "skipped",
-        1,
-        "bukan cacat (filter filler F6 atau JEV sengaja diam)"
       ]
     ],
-    "latency": {
-      "n": 7,
-      "min": 5,
-      "max": 4849,
-      "avg": 2812
-    },
+    "latency": null,
     "trigger_fillers": [
       "A5",
-      "A6",
-      "L5"
+      "A6"
     ]
   }
 }

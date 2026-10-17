@@ -1,0 +1,1815 @@
+{
+  "id": "20261016-194018",
+  "created_at": "2026-10-16T12:40:18.530308+00:00",
+  "updated_at": "2026-10-16T13:15:12.099777+00:00",
+  "bullets": [
+    "Sequence: brief → gap analysis → execution roadmap is the engine",
+    "Gap analysis acts as filter so roadmap isn't built on assumptions",
+    "Open question: how to handle AI-detected gaps that are actually conscious client silence",
+    "Host proposes role-play gaming to test the application",
+    "Role-play scenario: vague/contradictory client to test gap analysis",
+    "Role-play persona: Maya, Head of Operations at mid-size creative agency",
+    "Maya oversees 12 designers across 3 time zones",
+    "Handoffs to account managers let things slip through cracks",
+    "Agency does high-end brand identity and digital experiences",
+    "Work spans wireframes to interactive prototypes",
+    "Clients in London and Singapore; time zones cause issues",
+    "Designer captures client request, account manager finds it missed 2 days later",
+    "Intent gets lost, not literal language translation",
+    "Example: designer builds complex animation client wanted simple",
+    "Account managers frustrated repeating same feedback",
+    "Client complains team spends half time chasing same 3 questions per project",
+    "Maya tired of hearing about problems from her team every Friday afternoon",
+    "Worst moment: client sees final version ignoring a note given 3 weeks earlier",
+    "Maya asks host as consultant how to stop this recurring",
+    "Host describes an AI assistant tool that auto-takes notes and extracts information",
+    "Maya loves her current project management software but still can't explain why handoffs fail",
+    "Maya agrees to be as clinical as needed for the test run",
+    "Maya stays in character as frustrated head of ops",
+    "Maya doubts a tool can stop the designer back-and-forth friction",
+    "Handoff failure example: asked for 'quiet morning in a gallery', got stark white page with gray dot",
+    "Maya's ask: how does the tool fix the handoff friction specifically"
+  ],
+  "bullet_windows": [
+    {
+      "end": "2026-10-16T20:01:09.300257",
+      "from_index": 0,
+      "lines": 163,
+      "mode": "rebuild",
+      "start": "2026-10-16T19:43:13.404596",
+      "to_index": 15
+    },
+    {
+      "end": "2026-10-16T20:02:33.814517",
+      "from_index": 16,
+      "lines": 32,
+      "mode": "auto",
+      "start": "2026-10-16T20:01:11.117656",
+      "to_index": 19
+    },
+    {
+      "end": "2026-10-16T20:04:06.796682",
+      "from_index": 20,
+      "lines": 36,
+      "mode": "auto",
+      "start": "2026-10-16T20:02:39.731260",
+      "to_index": 22
+    },
+    {
+      "end": "2026-10-16T20:12:16.533384",
+      "from_index": 23,
+      "lines": 7,
+      "mode": "auto",
+      "start": "2026-10-16T20:12:02.658026",
+      "to_index": 23
+    },
+    {
+      "end": "2026-10-16T20:15:00.733274",
+      "from_index": 24,
+      "lines": 40,
+      "mode": "auto",
+      "start": "2026-10-16T20:13:00.044452",
+      "to_index": 25
+    }
+  ],
+  "bullet_locks": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "conversation": [
+    {
+      "text": " You.\n",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": " You.\n",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": " Stresses that you actually love",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": "—\n",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": " Your current",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": " project management software. So the real problem is the frictions in the handoff",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": ", not.\n",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": " The tool itself.\n",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": " And you're handing the floor over to the host",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": ".\n",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": " Okay.\n",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": " Exactly.\n",
+      "role": "speaker",
+      "suggestion": ""
+    },
+    {
+      "text": " You nailed it.\n",
+      "role": "speaker",
+      "suggestion": ""
+    },
+    {
+      "text": " Seeing as I",
+      "role": "speaker",
+      "suggestion": ""
+    },
+    {
+      "text": "'m happy with my software, but miserable with the handoffs, how does your tool actually fix that part?\n",
+      "role": "speaker",
+      "suggestion": ""
+    },
+    {
+      "text": " So I think",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": " I, I can map the accept points where we're changes hands and propose one fix for the worst one.\n",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": " Can you walk me through the last handoff that went wrong?\n",
+      "role": "host",
+      "suggestion": ""
+    },
+    {
+      "text": " Ugh. The last one was a nightmare.\n",
+      "role": "speaker",
+      "suggestion": ""
+    },
+    {
+      "text": " I told the designer",
+      "role": "speaker",
+      "suggestion": ""
+    },
+    {
+      "text": " I wanted the landing page to feel like a quiet",
+      "role": "speaker",
+      "suggestion": ""
+    },
+    {
+      "text": " morning in a gallery, and they came back with a stark white page and a single gray dot in the middle.\n",
+      "role": "speaker",
+      "suggestion": ""
+    },
+    {
+      "text": " It was technically minimal, but the soul was completely gone.\n",
+      "role": "speaker",
+      "suggestion": ""
+    },
+    {
+      "text": " How do we stop that from happening?\n",
+      "role": "speaker",
+      "suggestion": ""
+    },
+    {
+      "text": " Okay.\n",
+      "role": "host",
+      "suggestion": ""
+    }
+  ],
+  "transcriptions": [
+    {
+      "source": "host",
+      "text": "Gap Analysis.\n",
+      "timestamp": "2026-10-16T19:43:13.404596"
+    },
+    {
+      "source": "speaker",
+      "text": "Right, the gap analysis.\n",
+      "timestamp": "2026-10-16T19:43:17.538255"
+    },
+    {
+      "source": "host",
+      "text": " Mhm.\n",
+      "timestamp": "2026-10-16T19:43:19.337968"
+    },
+    {
+      "source": "speaker",
+      "text": " And the execution roadmap.\n",
+      "timestamp": "2026-10-16T19:43:21.121142"
+    },
+    {
+      "source": "speaker",
+      "text": " To wrap it all up.\n",
+      "timestamp": "2026-10-16T19:43:21.458755"
+    },
+    {
+      "source": "host",
+      "text": " Mhm.\n",
+      "timestamp": "2026-10-16T19:43:22.871062"
+    },
+    {
+      "source": "speaker",
+      "text": " That sequence from the brief",
+      "timestamp": "2026-10-16T19:43:25.270569"
+    },
+    {
+      "source": "speaker",
+      "text": ".\n",
+      "timestamp": "2026-10-16T19:43:25.273982"
+    },
+    {
+      "source": "speaker",
+      "text": " Through the gap analysis to the roadmap is the real engine here.\n",
+      "timestamp": "2026-10-16T19:43:28.954097"
+    },
+    {
+      "source": "host",
+      "text": " Mhm.\n",
+      "timestamp": "2026-10-16T19:43:30.304188"
+    },
+    {
+      "source": "host",
+      "text": " So let me talk about the gap analysis.\n",
+      "timestamp": "2026-10-16T19:43:35.339088"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T19:43:36.170826"
+    },
+    {
+      "source": "speaker",
+      "text": " Yeah.\n",
+      "timestamp": "2026-10-16T19:43:38.987243"
+    },
+    {
+      "source": "speaker",
+      "text": " The gap analysis.\n",
+      "timestamp": "2026-10-16T19:43:40.487553"
+    },
+    {
+      "source": "speaker",
+      "text": " The filter, that keeps the roadmap from being built on assumptions.\n",
+      "timestamp": "2026-10-16T19:43:45.509225"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T19:43:47.320911"
+    },
+    {
+      "source": "speaker",
+      "text": " I'm curious",
+      "timestamp": "2026-10-16T19:43:51.556429"
+    },
+    {
+      "source": "speaker",
+      "text": " how your planning to handle the cases where",
+      "timestamp": "2026-10-16T19:43:53.607785"
+    },
+    {
+      "source": "speaker",
+      "text": " the AI thinks there's a gap, but the client silence is actually a conscious choice.\n",
+      "timestamp": "2026-10-16T19:43:54.492424"
+    },
+    {
+      "source": "host",
+      "text": " Mhm.\n",
+      "timestamp": "2026-10-16T19:43:56.922961"
+    },
+    {
+      "source": "speaker",
+      "text": " Mm-hm.\n",
+      "timestamp": "2026-10-16T19:43:57.887424"
+    },
+    {
+      "source": "host",
+      "text": " So,",
+      "timestamp": "2026-10-16T19:44:01.020610"
+    },
+    {
+      "source": "host",
+      "text": " okay.\n",
+      "timestamp": "2026-10-16T19:44:01.038258"
+    },
+    {
+      "source": "speaker",
+      "text": " Mm-hm.\n",
+      "timestamp": "2026-10-16T19:44:03.520111"
+    },
+    {
+      "source": "host",
+      "text": " Let me try to do something.\n",
+      "timestamp": "2026-10-16T19:44:05.687572"
+    },
+    {
+      "source": "host",
+      "text": " I'll— I'll be right back.\n",
+      "timestamp": "2026-10-16T19:44:07.756780"
+    },
+    {
+      "source": "host",
+      "text": " Okay?\n",
+      "timestamp": "2026-10-16T19:44:08.236925"
+    },
+    {
+      "source": "host",
+      "text": "Hey, let's restart it.\n",
+      "timestamp": "2026-10-16T19:55:47.662735"
+    },
+    {
+      "source": "speaker",
+      "text": "I'm ready.\n",
+      "timestamp": "2026-10-16T19:55:49.461085"
+    },
+    {
+      "source": "speaker",
+      "text": " You were just about to dive into the gap analysis part.\n",
+      "timestamp": "2026-10-16T19:55:53.394912"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T19:55:54.944917"
+    },
+    {
+      "source": "host",
+      "text": " So, uh, now we talk about",
+      "timestamp": "2026-10-16T19:55:59.677891"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T19:55:59.678362"
+    },
+    {
+      "source": "host",
+      "text": " How we can play role-playing gaming in order to",
+      "timestamp": "2026-10-16T19:56:04.212209"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T19:56:04.214154"
+    },
+    {
+      "source": "host",
+      "text": " Ensure.\n",
+      "timestamp": "2026-10-16T19:56:05.061394"
+    },
+    {
+      "source": "host",
+      "text": " That my application is currently is very well working.\n",
+      "timestamp": "2026-10-16T19:56:08.777869"
+    },
+    {
+      "source": "speaker",
+      "text": " I'm game. What kind of—\n",
+      "timestamp": "2026-10-16T19:56:12.845212"
+    },
+    {
+      "source": "speaker",
+      "text": " Scenario should we run to see if we can actually break it?\n",
+      "timestamp": "2026-10-16T19:56:15.844177"
+    },
+    {
+      "source": "host",
+      "text": " So we can try to role-play in gaming.\n",
+      "timestamp": "2026-10-16T19:56:18.766216"
+    },
+    {
+      "source": "speaker",
+      "text": " Let's do it.\n",
+      "timestamp": "2026-10-16T19:56:21.494274"
+    },
+    {
+      "source": "speaker",
+      "text": " How about a client who's being intentionally vague or contradictory about the goals?\n",
+      "timestamp": "2026-10-16T19:56:26.178383"
+    },
+    {
+      "source": "speaker",
+      "text": " That would really put the gap analysis to the test.\n",
+      "timestamp": "2026-10-16T19:56:29.078766"
+    },
+    {
+      "source": "speaker",
+      "text": " Alright, I'm in.\n",
+      "timestamp": "2026-10-16T19:56:29.844582"
+    },
+    {
+      "source": "speaker",
+      "text": " Hi, thanks for meeting with me.\n",
+      "timestamp": "2026-10-16T19:56:31.193960"
+    },
+    {
+      "source": "speaker",
+      "text": " Look, my team's current workflow is just...\n It's not where it needs to be.\n",
+      "timestamp": "2026-10-16T19:56:35.128449"
+    },
+    {
+      "source": "host",
+      "text": " Mm-hm.\n",
+      "timestamp": "2026-10-16T19:56:36.162482"
+    },
+    {
+      "source": "speaker",
+      "text": " We're missing things, and I know there's a better way to handle the handoffs, but—\n",
+      "timestamp": "2026-10-16T19:56:39.211305"
+    },
+    {
+      "source": "speaker",
+      "text": " I can't quite put my finger on why the current system is failing us.\n",
+      "timestamp": "2026-10-16T19:56:43.227621"
+    },
+    {
+      "source": "host",
+      "text": " Can you explain to me a little bit?\n",
+      "timestamp": "2026-10-16T19:56:47.694478"
+    },
+    {
+      "source": "speaker",
+      "text": " It's just clunky.\n",
+      "timestamp": "2026-10-16T19:56:50.060602"
+    },
+    {
+      "source": "speaker",
+      "text": " My team sp",
+      "timestamp": "2026-10-16T19:56:56.110846"
+    },
+    {
+      "source": "speaker",
+      "text": "ends half their time chasing down the same 3 questions in every single—\n",
+      "timestamp": "2026-10-16T19:56:56.362610"
+    },
+    {
+      "source": "host",
+      "text": " Adik, turun sayang. Kakak, turun.\n",
+      "timestamp": "2026-10-16T19:56:56.900890"
+    },
+    {
+      "source": "speaker",
+      "text": " Ooh, sounds like—\n",
+      "timestamp": "2026-10-16T19:56:59.876534"
+    },
+    {
+      "source": "host",
+      "text": " Kakak,",
+      "timestamp": "2026-10-16T19:57:00.197149"
+    },
+    {
+      "source": "host",
+      "text": " di.\n",
+      "timestamp": "2026-10-16T19:57:00.210614"
+    },
+    {
+      "source": "host",
+      "text": " Dek turun.\n",
+      "timestamp": "2026-10-16T19:57:01.010884"
+    },
+    {
+      "source": "host",
+      "text": " Kan bundanya lagi sakit.\n",
+      "timestamp": "2026-10-16T19:57:03.631378"
+    },
+    {
+      "source": "speaker",
+      "text": " Someone's definitely—\n",
+      "timestamp": "2026-10-16T19:57:04.046217"
+    },
+    {
+      "source": "speaker",
+      "text": " Oh no, who's not feeling well? Which one of them is sick?\n",
+      "timestamp": "2026-10-16T19:57:07.293829"
+    },
+    {
+      "source": "host",
+      "text": " Ah, that's my wife.\n",
+      "timestamp": "2026-10-16T19:57:08.794048"
+    },
+    {
+      "source": "speaker",
+      "text": " Oh, I'm sorry to hear that.\n",
+      "timestamp": "2026-10-16T19:57:10.878966"
+    },
+    {
+      "source": "speaker",
+      "text": " What's been happening with her?\n",
+      "timestamp": "2026-10-16T19:57:12.244301"
+    },
+    {
+      "source": "host",
+      "text": " Okay, we can continue then.\n",
+      "timestamp": "2026-10-16T19:57:12.526870"
+    },
+    {
+      "source": "speaker",
+      "text": " Alright, back to it.\n",
+      "timestamp": "2026-10-16T19:57:14.281431"
+    },
+    {
+      "source": "speaker",
+      "text": " As I was saying, my team",
+      "timestamp": "2026-10-16T19:57:20.344824"
+    },
+    {
+      "source": "speaker",
+      "text": " spends half their time chasing down the same 3 questions in every single project.\n",
+      "timestamp": "2026-10-16T19:57:20.598457"
+    },
+    {
+      "source": "speaker",
+      "text": " And it's just killing our momentum.\n",
+      "timestamp": "2026-10-16T19:57:22.048833"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T19:57:26.076866"
+    },
+    {
+      "source": "host",
+      "text": " So you're talking like, uh,",
+      "timestamp": "2026-10-16T19:57:29.910991"
+    },
+    {
+      "source": "host",
+      "text": " you are missing somethings, and the team spends half their time",
+      "timestamp": "2026-10-16T19:57:35.802312"
+    },
+    {
+      "source": "host",
+      "text": " chasing.\n",
+      "timestamp": "2026-10-16T19:57:35.815454"
+    },
+    {
+      "source": "host",
+      "text": " Down the same three questions on every single project.\n",
+      "timestamp": "2026-10-16T19:57:39.465123"
+    },
+    {
+      "source": "host",
+      "text": " With the scaling, their momentum.\n",
+      "timestamp": "2026-10-16T19:57:42.198104"
+    },
+    {
+      "source": "host",
+      "text": " So they're setting up",
+      "timestamp": "2026-10-16T19:57:45.082412"
+    },
+    {
+      "source": "host",
+      "text": " deliberately.\n",
+      "timestamp": "2026-10-16T19:57:45.097502"
+    },
+    {
+      "source": "host",
+      "text": " Fake you.\n",
+      "timestamp": "2026-10-16T19:57:45.932012"
+    },
+    {
+      "source": "host",
+      "text": " Client scenario to test the gap analysis part.\n",
+      "timestamp": "2026-10-16T19:57:49.502532"
+    },
+    {
+      "source": "host",
+      "text": " Isn't it?\n",
+      "timestamp": "2026-10-16T19:57:50.469367"
+    },
+    {
+      "source": "speaker",
+      "text": " Caught me.\n",
+      "timestamp": "2026-10-16T19:57:52.047899"
+    },
+    {
+      "source": "speaker",
+      "text": " But until you can actually pin down what those 3 questions are, I'm still just stuff.\n",
+      "timestamp": "2026-10-16T19:57:56.364956"
+    },
+    {
+      "source": "speaker",
+      "text": " Frustrated client with a clunky workflow.\n",
+      "timestamp": "2026-10-16T19:57:58.475047"
+    },
+    {
+      "source": "speaker",
+      "text": " That vagueness is—\n",
+      "timestamp": "2026-10-16T19:58:00.177629"
+    },
+    {
+      "source": "host",
+      "text": " But",
+      "timestamp": "2026-10-16T19:58:00.757838"
+    },
+    {
+      "source": "host",
+      "text": ", but.\n",
+      "timestamp": "2026-10-16T19:58:00.769744"
+    },
+    {
+      "source": "host",
+      "text": " Before we continue fur",
+      "timestamp": "2026-10-16T19:58:06.919566"
+    },
+    {
+      "source": "host",
+      "text": "ther, can you try to introduce yourself and then what kind of",
+      "timestamp": "2026-10-16T19:58:07.736724"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T19:58:07.742929"
+    },
+    {
+      "source": "host",
+      "text": " Positions you are right now, and",
+      "timestamp": "2026-10-16T19:58:12.105409"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T19:58:12.111463"
+    },
+    {
+      "source": "host",
+      "text": " Tell me about you?\n",
+      "timestamp": "2026-10-16T19:58:12.922114"
+    },
+    {
+      "source": "speaker",
+      "text": " Right, let's ground this.\n",
+      "timestamp": "2026-10-16T19:58:14.944783"
+    },
+    {
+      "source": "host",
+      "text": " No.\n",
+      "timestamp": "2026-10-16T19:58:18.560085"
+    },
+    {
+      "source": "speaker",
+      "text": " I'm Jordan, Head of Operations at a mid-size creative agency.\n",
+      "timestamp": "2026-10-16T19:58:19.373983"
+    },
+    {
+      "source": "speaker",
+      "text": " My bad.\n",
+      "timestamp": "2026-10-16T19:58:21.082808"
+    },
+    {
+      "source": "host",
+      "text": " You",
+      "timestamp": "2026-10-16T19:58:24.695976"
+    },
+    {
+      "source": "host",
+      "text": " should be not Jordan your, your, your name is Maya's is",
+      "timestamp": "2026-10-16T19:58:25.274287"
+    },
+    {
+      "source": "host",
+      "text": "h.\n",
+      "timestamp": "2026-10-16T19:58:25.278800"
+    },
+    {
+      "source": "speaker",
+      "text": " Got it.\n",
+      "timestamp": "2026-10-16T19:58:25.861292"
+    },
+    {
+      "source": "speaker",
+      "text": " I'm Maya, Head of Operations at a mid-size creative agency.\n",
+      "timestamp": "2026-10-16T19:58:30.314074"
+    },
+    {
+      "source": "speaker",
+      "text": " My team is gre",
+      "timestamp": "2026-10-16T19:58:36.281710"
+    },
+    {
+      "source": "speaker",
+      "text": "at, but the way we're coordinating our client deliverables right now is a mess.\n",
+      "timestamp": "2026-10-16T19:58:37.047633"
+    },
+    {
+      "source": "speaker",
+      "text": " I'm overseeing 12 different",
+      "timestamp": "2026-10-16T19:58:43.098631"
+    },
+    {
+      "source": "speaker",
+      "text": " designers across 3 time zones, and something is slipping through the cracks during the handoff to the account managers.\n",
+      "timestamp": "2026-10-16T19:58:44.814376"
+    },
+    {
+      "source": "host",
+      "text": " Okay, now tell me about, uh,",
+      "timestamp": "2026-10-16T19:58:49.403159"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T19:58:49.415064"
+    },
+    {
+      "source": "host",
+      "text": " Creative agency. What is it about?\n",
+      "timestamp": "2026-10-16T19:58:52.433098"
+    },
+    {
+      "source": "speaker",
+      "text": " We specialize in high-end brand identity and digital experiences.\n",
+      "timestamp": "2026-10-16T19:58:57.532756"
+    },
+    {
+      "source": "speaker",
+      "text": " Basically",
+      "timestamp": "2026-10-16T19:58:59.218541"
+    },
+    {
+      "source": "speaker",
+      "text": " a.\n",
+      "timestamp": "2026-10-16T19:58:59.231526"
+    },
+    {
+      "source": "speaker",
+      "text": " We take a company's vision",
+      "timestamp": "2026-10-16T19:59:05.383058"
+    },
+    {
+      "source": "speaker",
+      "text": " and turn it into a full visual",
+      "timestamp": "2026-10-16T19:59:07.348307"
+    },
+    {
+      "source": "speaker",
+      "text": " language, but the digital",
+      "timestamp": "2026-10-16T19:59:09.380600"
+    },
+    {
+      "source": "speaker",
+      "text": " experience is side of our work is where the coordination usually falls apart.\n",
+      "timestamp": "2026-10-16T19:59:09.997489"
+    },
+    {
+      "source": "host",
+      "text": " When you say about digital experience and",
+      "timestamp": "2026-10-16T19:59:15.598469"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T19:59:15.600280"
+    },
+    {
+      "source": "host",
+      "text": " Uh.\n",
+      "timestamp": "2026-10-16T19:59:16.430816"
+    },
+    {
+      "source": "host",
+      "text": " Like.\n",
+      "timestamp": "2026-10-16T19:59:17.235852"
+    },
+    {
+      "source": "host",
+      "text": " Photography, maybe?\n",
+      "timestamp": "2026-10-16T19:59:18.684113"
+    },
+    {
+      "source": "speaker",
+      "text": " Ph",
+      "timestamp": "2026-10-16T19:59:24.565355"
+    },
+    {
+      "source": "speaker",
+      "text": "otography is definitely a part of it",
+      "timestamp": "2026-10-16T19:59:26.364211"
+    },
+    {
+      "source": "speaker",
+      "text": ", but we're more focused on the whole interac",
+      "timestamp": "2026-10-16T19:59:28.414465"
+    },
+    {
+      "source": "speaker",
+      "text": "tive journey, like custom UI designs and complex websites that feel seamless.\n",
+      "timestamp": "2026-10-16T19:59:29.013940"
+    },
+    {
+      "source": "host",
+      "text": " Oh.\n",
+      "timestamp": "2026-10-16T19:59:31.147651"
+    },
+    {
+      "source": "speaker",
+      "text": " The real headache starts when those high-fidelity—\n",
+      "timestamp": "2026-10-16T19:59:31.816649"
+    },
+    {
+      "source": "speaker",
+      "text": " Right, the real headaches.\n",
+      "timestamp": "2026-10-16T19:59:33.797338"
+    },
+    {
+      "source": "host",
+      "text": " So it's like",
+      "timestamp": "2026-10-16T19:59:34.780736"
+    },
+    {
+      "source": "host",
+      "text": " so.\n",
+      "timestamp": "2026-10-16T19:59:34.781121"
+    },
+    {
+      "source": "host",
+      "text": " It's like a fuel agency, but more like an IT things?\n",
+      "timestamp": "2026-10-16T19:59:38.948399"
+    },
+    {
+      "source": "host",
+      "text": " So like website, UI/UX, design graphic, isn't it?\n",
+      "timestamp": "2026-10-16T19:59:43.764394"
+    },
+    {
+      "source": "speaker",
+      "text": " Exactly.\n",
+      "timestamp": "2026-10-16T19:59:45.142968"
+    },
+    {
+      "source": "speaker",
+      "text": " We do everything from the initial wireframes to the final interactive prototypes.\n",
+      "timestamp": "2026-10-16T19:59:49.744053"
+    },
+    {
+      "source": "speaker",
+      "text": " The problem is",
+      "timestamp": "2026-10-16T19:59:55.882105"
+    },
+    {
+      "source": "speaker",
+      "text": " that by the time a project hits the account managers, the original intent often gets lost in translation.\n",
+      "timestamp": "2026-10-16T19:59:56.914289"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:00:01.547930"
+    },
+    {
+      "source": "speaker",
+      "text": " Yeah, it's a—\n",
+      "timestamp": "2026-10-16T20:00:03.414415"
+    },
+    {
+      "source": "host",
+      "text": " So you often",
+      "timestamp": "2026-10-16T20:00:07.632207"
+    },
+    {
+      "source": "host",
+      "text": " get lost translations? So it's mean are you try to working with all forces?\n",
+      "timestamp": "2026-10-16T20:00:08.597691"
+    },
+    {
+      "source": "host",
+      "text": " I mean, you try to",
+      "timestamp": "2026-10-16T20:00:11.581167"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T20:00:11.581585"
+    },
+    {
+      "source": "host",
+      "text": " Get a client from",
+      "timestamp": "2026-10-16T20:00:14.336346"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T20:00:14.340492"
+    },
+    {
+      "source": "host",
+      "text": " Overboard and like that?\n",
+      "timestamp": "2026-10-16T20:00:15.948070"
+    },
+    {
+      "source": "speaker",
+      "text": " Yeah, we've got clients all over the place.\n",
+      "timestamp": "2026-10-16T20:00:18.669276"
+    },
+    {
+      "source": "speaker",
+      "text": " We're working with a firm in London, and another in Singapore right now, but that's exactly where the wheels come off.\n",
+      "timestamp": "2026-10-16T20:00:23.731838"
+    },
+    {
+      "source": "speaker",
+      "text": " I'll have a designer in one",
+      "timestamp": "2026-10-16T20:00:29.865508"
+    },
+    {
+      "source": "speaker",
+      "text": " time zone, swear they've captured",
+      "timestamp": "2026-10-16T20:00:31.831199"
+    },
+    {
+      "source": "speaker",
+      "text": " a specific client request only for the account manager to realize 2 days later that it was completely missed.\n",
+      "timestamp": "2026-10-16T20:00:32.414472"
+    },
+    {
+      "source": "host",
+      "text": " So, uh, what is the examples?\n",
+      "timestamp": "2026-10-16T20:00:36.232326"
+    },
+    {
+      "source": "host",
+      "text": " Uh, I see that you are",
+      "timestamp": "2026-10-16T20:00:41.732118"
+    },
+    {
+      "source": "host",
+      "text": " very fluent in English and then why do you need this translations then?\n",
+      "timestamp": "2026-10-16T20:00:41.866166"
+    },
+    {
+      "source": "speaker",
+      "text": " Oh, I didn't mean literal language translation.\n",
+      "timestamp": "2026-10-16T20:00:46.164509"
+    },
+    {
+      "source": "speaker",
+      "text": " I meant the intent gets lost.\n",
+      "timestamp": "2026-10-16T20:00:47.615249"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:00:51.348334"
+    },
+    {
+      "source": "speaker",
+      "text": " Like when a designer builds",
+      "timestamp": "2026-10-16T20:00:53.664250"
+    },
+    {
+      "source": "speaker",
+      "text": " a complex animation that the c",
+      "timestamp": "2026-10-16T20:00:55.714784"
+    },
+    {
+      "source": "speaker",
+      "text": "lient specifically asked to keep simple, and the account manager doesn't catch the mistake until the final review.\n",
+      "timestamp": "2026-10-16T20:00:57.330886"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:00:58.382948"
+    },
+    {
+      "source": "speaker",
+      "text": " It's a nightmare when you're the one who has to deliver that bad news.\n",
+      "timestamp": "2026-10-16T20:01:02.798200"
+    },
+    {
+      "source": "speaker",
+      "text": " To the client.\n",
+      "timestamp": "2026-10-16T20:01:03.986542"
+    },
+    {
+      "source": "host",
+      "text": " Mm-hm.\n",
+      "timestamp": "2026-10-16T20:01:06.833819"
+    },
+    {
+      "source": "speaker",
+      "text": " The account managers are getting frustrated because they feel like they're just repeating the same feedback over and over.\n",
+      "timestamp": "2026-10-16T20:01:09.300257"
+    },
+    {
+      "source": "host",
+      "text": " Mm-hm.\n",
+      "timestamp": "2026-10-16T20:01:11.117664"
+    },
+    {
+      "source": "host",
+      "text": " Okay, I understood.\n",
+      "timestamp": "2026-10-16T20:01:12.464445"
+    },
+    {
+      "source": "speaker",
+      "text": " So as the consultant here, how would you handle that?\n",
+      "timestamp": "2026-10-16T20:01:16.872387"
+    },
+    {
+      "source": "speaker",
+      "text": " I'm at the point where I'm just tired of hearing my bad from the team every Friday afternoon.\n",
+      "timestamp": "2026-10-16T20:01:22.164808"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:01:26.347869"
+    },
+    {
+      "source": "speaker",
+      "text": " I know, you've got—\n",
+      "timestamp": "2026-10-16T20:01:28.231707"
+    },
+    {
+      "source": "host",
+      "text": " So I got it. So, so you're pain points is like, uh,",
+      "timestamp": "2026-10-16T20:01:31.981733"
+    },
+    {
+      "source": "host",
+      "text": " your team.\n",
+      "timestamp": "2026-10-16T20:01:31.982536"
+    },
+    {
+      "source": "host",
+      "text": " In 10.\n",
+      "timestamp": "2026-10-16T20:01:32.864561"
+    },
+    {
+      "source": "host",
+      "text": " Get lost in translations",
+      "timestamp": "2026-10-16T20:01:38.948678"
+    },
+    {
+      "source": "host",
+      "text": " to account managers and then the designers and account managers misalign on client requests.\n",
+      "timestamp": "2026-10-16T20:01:40.747971"
+    },
+    {
+      "source": "host",
+      "text": " And then account managers will be the same feedback endlessly",
+      "timestamp": "2026-10-16T20:01:45.350383"
+    },
+    {
+      "source": "host",
+      "text": " try.\n",
+      "timestamp": "2026-10-16T20:01:45.364647"
+    },
+    {
+      "source": "host",
+      "text": " To hand off across time zones, letting slip through cracks.\n",
+      "timestamp": "2026-10-16T20:01:48.431053"
+    },
+    {
+      "source": "host",
+      "text": " Isn't it?\n",
+      "timestamp": "2026-10-16T20:01:49.197432"
+    },
+    {
+      "source": "speaker",
+      "text": " And that",
+      "timestamp": "2026-10-16T20:01:54.765467"
+    },
+    {
+      "source": "speaker",
+      "text": "'s the gist of it. The worst part is the look",
+      "timestamp": "2026-10-16T20:01:56.813859"
+    },
+    {
+      "source": "speaker",
+      "text": " on a client's face when they see a final version that ignores a note they gave us 3 weeks ago.\n",
+      "timestamp": "2026-10-16T20:01:57.415951"
+    },
+    {
+      "source": "host",
+      "text": " Mm-hm.\n",
+      "timestamp": "2026-10-16T20:01:58.697844"
+    },
+    {
+      "source": "speaker",
+      "text": " What would you do to stop that from happening?\n",
+      "timestamp": "2026-10-16T20:02:01.166295"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:02:07.166742"
+    },
+    {
+      "source": "speaker",
+      "text": " Hmm.\n",
+      "timestamp": "2026-10-16T20:02:09.197413"
+    },
+    {
+      "source": "host",
+      "text": " So, uh, on this contact, I, I think you mentioned about the tools that I have right now.\n",
+      "timestamp": "2026-10-16T20:02:14.215287"
+    },
+    {
+      "source": "host",
+      "text": " So,",
+      "timestamp": "2026-10-16T20:02:20.351860"
+    },
+    {
+      "source": "host",
+      "text": " uh, currently I have a tool called like, uh,",
+      "timestamp": "2026-10-16T20:02:20.497940"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T20:02:20.500320"
+    },
+    {
+      "source": "host",
+      "text": " When we try to speaking, it's l",
+      "timestamp": "2026-10-16T20:02:26.634915"
+    },
+    {
+      "source": "host",
+      "text": "ike a AI assistance that",
+      "timestamp": "2026-10-16T20:02:28.600181"
+    },
+    {
+      "source": "host",
+      "text": " automatically take a notes",
+      "timestamp": "2026-10-16T20:02:30.664446"
+    },
+    {
+      "source": "host",
+      "text": " and then can try to get, uh, informations",
+      "timestamp": "2026-10-16T20:02:31.063979"
+    },
+    {
+      "source": "host",
+      "text": " and.\n",
+      "timestamp": "2026-10-16T20:02:31.064369"
+    },
+    {
+      "source": "host",
+      "text": " Yeah, kind of like that. Is that what you means?\n",
+      "timestamp": "2026-10-16T20:02:33.814524"
+    },
+    {
+      "source": "speaker",
+      "text": " That sounds l",
+      "timestamp": "2026-10-16T20:02:39.731301"
+    },
+    {
+      "source": "speaker",
+      "text": "ike exactly what I need. How",
+      "timestamp": "2026-10-16T20:02:41.781320"
+    },
+    {
+      "source": "speaker",
+      "text": " does it actually make sure the designer and the account manager seeing the same thing?\n",
+      "timestamp": "2026-10-16T20:02:42.047581"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:02:44.381138"
+    },
+    {
+      "source": "speaker",
+      "text": " Mm-hmm.\n",
+      "timestamp": "2026-10-16T20:02:45.466095"
+    },
+    {
+      "source": "host",
+      "text": " Okay, that's interesting.\n",
+      "timestamp": "2026-10-16T20:02:47.947410"
+    },
+    {
+      "source": "host",
+      "text": " So",
+      "timestamp": "2026-10-16T20:02:50.831803"
+    },
+    {
+      "source": "host",
+      "text": " In this part, uh, I'm very understand what you are saying.\n",
+      "timestamp": "2026-10-16T20:02:55.631472"
+    },
+    {
+      "source": "host",
+      "text": " I know your pain point is",
+      "timestamp": "2026-10-16T20:02:59.597660"
+    },
+    {
+      "source": "host",
+      "text": "—\n",
+      "timestamp": "2026-10-16T20:02:59.598468"
+    },
+    {
+      "source": "host",
+      "text": " But in the fact,",
+      "timestamp": "2026-10-16T20:03:03.170100"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T20:03:03.171831"
+    },
+    {
+      "source": "host",
+      "text": " I cannot answer it directly.\n",
+      "timestamp": "2026-10-16T20:03:06.581319"
+    },
+    {
+      "source": "host",
+      "text": " Okay, that's because",
+      "timestamp": "2026-10-16T20:03:10.031226"
+    },
+    {
+      "source": "host",
+      "text": "—\n",
+      "timestamp": "2026-10-16T20:03:10.031858"
+    },
+    {
+      "source": "host",
+      "text": " Uh, I don't have any context right now.\n",
+      "timestamp": "2026-10-16T20:03:14.381849"
+    },
+    {
+      "source": "host",
+      "text": " But I'm thinking",
+      "timestamp": "2026-10-16T20:03:18.797807"
+    },
+    {
+      "source": "host",
+      "text": "—\n",
+      "timestamp": "2026-10-16T20:03:18.798557"
+    },
+    {
+      "source": "host",
+      "text": " This one is the perfect time",
+      "timestamp": "2026-10-16T20:03:22.516212"
+    },
+    {
+      "source": "host",
+      "text": "—\n",
+      "timestamp": "2026-10-16T20:03:22.517214"
+    },
+    {
+      "source": "host",
+      "text": " How",
+      "timestamp": "2026-10-16T20:03:23.981546"
+    },
+    {
+      "source": "host",
+      "text": " or.\n",
+      "timestamp": "2026-10-16T20:03:23.982670"
+    },
+    {
+      "source": "host",
+      "text": " Can try to make a practice.\n",
+      "timestamp": "2026-10-16T20:03:26.731011"
+    },
+    {
+      "source": "host",
+      "text": " Okay, thank you for that.\n",
+      "timestamp": "2026-10-16T20:03:29.365777"
+    },
+    {
+      "source": "speaker",
+      "text": " I'll take that as a win.\n",
+      "timestamp": "2026-10-16T20:03:31.881162"
+    },
+    {
+      "source": "host",
+      "text": " Okay, let's see.\n",
+      "timestamp": "2026-10-16T20:03:31.914171"
+    },
+    {
+      "source": "speaker",
+      "text": " Since you're using this as a test run, we can be as clinical as you want.\n",
+      "timestamp": "2026-10-16T20:03:36.652334"
+    },
+    {
+      "source": "speaker",
+      "text": " I'm still sitting here as Maya the frustrated head of ops.\n",
+      "timestamp": "2026-10-16T20:03:40.414977"
+    },
+    {
+      "source": "speaker",
+      "text": " To make it interest",
+      "timestamp": "2026-10-16T20:03:46.483942"
+    },
+    {
+      "source": "speaker",
+      "text": "ing, I'll add that I actually l",
+      "timestamp": "2026-10-16T20:03:48.504262"
+    },
+    {
+      "source": "speaker",
+      "text": "ove my current project management software, but I still can't figure out why the handoffs are failing.\n",
+      "timestamp": "2026-10-16T20:03:49.706906"
+    },
+    {
+      "source": "speaker",
+      "text": " What's your next move?\n",
+      "timestamp": "2026-10-16T20:03:51.517105"
+    },
+    {
+      "source": "host",
+      "text": " Okay, hold on a second.\n",
+      "timestamp": "2026-10-16T20:03:55.538798"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:04:00.064172"
+    },
+    {
+      "source": "host",
+      "text": " Context then.\n",
+      "timestamp": "2026-10-16T20:04:02.632144"
+    },
+    {
+      "source": "host",
+      "text": " I feel benefit.\n",
+      "timestamp": "2026-10-16T20:04:06.796699"
+    },
+    {
+      "source": "host",
+      "text": "Thanks. Like, our role-playing games,",
+      "timestamp": "2026-10-16T20:12:02.658054"
+    },
+    {
+      "source": "host",
+      "text": " uh.\n",
+      "timestamp": "2026-10-16T20:12:02.674895"
+    },
+    {
+      "source": "speaker",
+      "text": "Let's do it.\n",
+      "timestamp": "2026-10-16T20:12:04.746438"
+    },
+    {
+      "source": "speaker",
+      "text": " Hmm.\n",
+      "timestamp": "2026-10-16T20:12:05.682189"
+    },
+    {
+      "source": "speaker",
+      "text": " Sounds interesting.\n",
+      "timestamp": "2026-10-16T20:12:07.234648"
+    },
+    {
+      "source": "speaker",
+      "text": " But I'm not sure if a tool like that actually solves the friction we're feeling with the designers.\n",
+      "timestamp": "2026-10-16T20:12:12.852820"
+    },
+    {
+      "source": "speaker",
+      "text": " How would this actually stop the back-and-forth?\n",
+      "timestamp": "2026-10-16T20:12:16.533536"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:12:21.748675"
+    },
+    {
+      "source": "speaker",
+      "text": " The floor is yours.\n",
+      "timestamp": "2026-10-16T20:12:24.031825"
+    },
+    {
+      "source": "speaker",
+      "text": " Actually, hang on, I think I jumped the gun there.\n",
+      "timestamp": "2026-10-16T20:12:28.905498"
+    },
+    {
+      "source": "speaker",
+      "text": " I'll just stop.\n",
+      "timestamp": "2026-10-16T20:12:30.182310"
+    },
+    {
+      "source": "speaker",
+      "text": " Talking and let you take it from here.\n",
+      "timestamp": "2026-10-16T20:12:31.732076"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:12:33.833716"
+    },
+    {
+      "source": "speaker",
+      "text": " Don't be sorry. No need to apologize for anything.\n",
+      "timestamp": "2026-10-16T20:12:47.922980"
+    },
+    {
+      "source": "speaker",
+      "text": " I'm still curious, though, how exactly would your tool stop that constant back-and-forth with the designers?\n",
+      "timestamp": "2026-10-16T20:12:53.804500"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:12:56.581853"
+    },
+    {
+      "source": "host",
+      "text": " Hold on a second.\n",
+      "timestamp": "2026-10-16T20:12:56.631904"
+    },
+    {
+      "source": "speaker",
+      "text": " Încă.\n",
+      "timestamp": "2026-10-16T20:13:00.044493"
+    },
+    {
+      "source": "host",
+      "text": " So, currently I'm as a consultant, and you're my client, right?\n",
+      "timestamp": "2026-10-16T20:13:04.715626"
+    },
+    {
+      "source": "speaker",
+      "text": " That's right.\n",
+      "timestamp": "2026-10-16T20:13:06.267864"
+    },
+    {
+      "source": "speaker",
+      "text": " I'm the slightly vague client, and you're the one trying to make sense of my chaos.\n",
+      "timestamp": "2026-10-16T20:13:10.017140"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:13:14.033320"
+    },
+    {
+      "source": "host",
+      "text": " Hold on.\n",
+      "timestamp": "2026-10-16T20:13:16.343672"
+    },
+    {
+      "source": "speaker",
+      "text": " Mm-hm. I was.\n",
+      "timestamp": "2026-10-16T20:13:17.110709"
+    },
+    {
+      "source": "speaker",
+      "text": " Yeah?\n",
+      "timestamp": "2026-10-16T20:13:18.809609"
+    },
+    {
+      "source": "host",
+      "text": " Okay, so you're saying that, uh,",
+      "timestamp": "2026-10-16T20:13:22.793080"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T20:13:22.807381"
+    },
+    {
+      "source": "host",
+      "text": " You have pre-stated he",
+      "timestamp": "2026-10-16T20:13:28.943726"
+    },
+    {
+      "source": "host",
+      "text": "alth of ops want to know",
+      "timestamp": "2026-10-16T20:13:31.035660"
+    },
+    {
+      "source": "host",
+      "text": " specifically how the whole stools would actually stop the constant back-and-forth of designers?\n",
+      "timestamp": "2026-10-16T20:13:33.029750"
+    },
+    {
+      "source": "host",
+      "text": " The stresses, that",
+      "timestamp": "2026-10-16T20:13:36.883722"
+    },
+    {
+      "source": "host",
+      "text": ", uh.\n",
+      "timestamp": "2026-10-16T20:13:36.888801"
+    },
+    {
+      "source": "host",
+      "text": " You.\n",
+      "timestamp": "2026-10-16T20:13:37.716278"
+    },
+    {
+      "source": "host",
+      "text": " You.\n",
+      "timestamp": "2026-10-16T20:13:38.548758"
+    },
+    {
+      "source": "host",
+      "text": " Stresses that you actually love",
+      "timestamp": "2026-10-16T20:13:41.870377"
+    },
+    {
+      "source": "host",
+      "text": "—\n",
+      "timestamp": "2026-10-16T20:13:41.882483"
+    },
+    {
+      "source": "host",
+      "text": " Your current",
+      "timestamp": "2026-10-16T20:13:48.016089"
+    },
+    {
+      "source": "host",
+      "text": " project management software. So the real problem is the frictions in the handoff",
+      "timestamp": "2026-10-16T20:13:48.849002"
+    },
+    {
+      "source": "host",
+      "text": ", not.\n",
+      "timestamp": "2026-10-16T20:13:48.865626"
+    },
+    {
+      "source": "host",
+      "text": " The tool itself.\n",
+      "timestamp": "2026-10-16T20:13:49.569539"
+    },
+    {
+      "source": "host",
+      "text": " And you're handing the floor over to the host",
+      "timestamp": "2026-10-16T20:13:54.151200"
+    },
+    {
+      "source": "host",
+      "text": ".\n",
+      "timestamp": "2026-10-16T20:13:54.156764"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:13:56.665281"
+    },
+    {
+      "source": "speaker",
+      "text": " Exactly.\n",
+      "timestamp": "2026-10-16T20:13:57.065243"
+    },
+    {
+      "source": "speaker",
+      "text": " You nailed it.\n",
+      "timestamp": "2026-10-16T20:13:59.015877"
+    },
+    {
+      "source": "speaker",
+      "text": " Seeing as I",
+      "timestamp": "2026-10-16T20:14:05.073754"
+    },
+    {
+      "source": "speaker",
+      "text": "'m happy with my software, but miserable with the handoffs, how does your tool actually fix that part?\n",
+      "timestamp": "2026-10-16T20:14:05.913785"
+    },
+    {
+      "source": "host",
+      "text": " So I think",
+      "timestamp": "2026-10-16T20:14:15.013862"
+    },
+    {
+      "source": "host",
+      "text": " I, I can map the accept points where we're changes hands and propose one fix for the worst one.\n",
+      "timestamp": "2026-10-16T20:14:16.834413"
+    },
+    {
+      "source": "host",
+      "text": " Can you walk me through the last handoff that went wrong?\n",
+      "timestamp": "2026-10-16T20:14:21.256444"
+    },
+    {
+      "source": "speaker",
+      "text": " Ugh. The last one was a nightmare.\n",
+      "timestamp": "2026-10-16T20:14:24.183925"
+    },
+    {
+      "source": "speaker",
+      "text": " I told the designer",
+      "timestamp": "2026-10-16T20:14:30.317811"
+    },
+    {
+      "source": "speaker",
+      "text": " I wanted the landing page to feel like a quiet",
+      "timestamp": "2026-10-16T20:14:32.382240"
+    },
+    {
+      "source": "speaker",
+      "text": " morning in a gallery, and they came back with a stark white page and a single gray dot in the middle.\n",
+      "timestamp": "2026-10-16T20:14:33.785094"
+    },
+    {
+      "source": "speaker",
+      "text": " It was technically minimal, but the soul was completely gone.\n",
+      "timestamp": "2026-10-16T20:14:37.767202"
+    },
+    {
+      "source": "speaker",
+      "text": " How do we stop that from happening?\n",
+      "timestamp": "2026-10-16T20:14:39.549331"
+    },
+    {
+      "source": "host",
+      "text": " Okay.\n",
+      "timestamp": "2026-10-16T20:15:00.733501"
+    }
+  ],
+  "translations": [],
+  "gemini_results": [
+    {
+      "mode": "auto_reply",
+      "text": "Speaker's move: Expressive — the Speaker thanks you, notes the benefit they're getting, and signals they want to keep the role-play moving.\n\nEnglish Text: Use the Consulting tab: it drafts the client brief straight from the conversation, and you confirm it. Gap analysis then runs against that confirmed brief, and the roadmap folds each gap into a step. Nothing gets lost in the handoff. Want to keep role-playing and test it?",
+      "timestamp": "2026-10-16T20:12:46.244377"
+    },
+    {
+      "mode": "auto_reply",
+      "text": "Speaker's move: Directive — she's pressing you to explain exactly how Helpy would stop the constant back-and-forth with her designers.\n\nEnglish Text: Helpy's Rolling Bullet Points do that — they keep a live, AI-maintained list of the intent as you talk, merge duplicates, and let you pin points so nothing gets reworded. One click then builds a Summary with Decisions and Next Steps you can hand straight to the designers.",
+      "timestamp": "2026-10-16T20:13:03.431390"
+    },
+    {
+      "mode": "auto_reply",
+      "text": "Speaker's move: Assertive — she confirmed the framing that she's playing the vague client and the Host is the one making sense of her chaos.\n\nEnglish Text: Then let's turn your chaos into something signed off. Helpy drafts a client brief from only what you've actually said, you edit and confirm it, and the gap analysis runs against that confirmed brief. Then a prioritised roadmap. You stay vague; I still leave with a plan.",
+      "timestamp": "2026-10-16T20:13:17.366712"
+    },
+    {
+      "mode": "auto_reply",
+      "text": "Speaker's move: Assertive — she's paraphrasing back what the Host said, checking that she's understood it correctly before continuing.\n\nEnglish Text: Right — and that's what Helpy's pinned bullet points are for: the intent you state gets locked in your own words, so it can't drift. Nothing gets quietly re-interpreted across three time zones. Want to try it on your current project?",
+      "timestamp": "2026-10-16T20:13:23.276471"
+    },
+    {
+      "mode": "auto_reply",
+      "text": "Speaker's move: Directive — she asked how to stop a handoff from losing the original creative intent.\n\nEnglish Text: Pin her exact words the moment she says them — Helpy's rolling bullet points let you lock \"quiet morning in a gallery\" so no later rebuild can reword it. Then run the brief and gap analysis, so that phrase becomes a roadmap step the designer can't quietly drop. Send them the brief, not your paraphrase.",
+      "timestamp": "2026-10-16T20:14:45.519679"
+    }
+  ],
+  "screenshots": [],
+  "last_pickup": "Pembicara masih berperan sebagai Maya, kepala operasional yang frustrasi, dan sekarang dia ingin tahu secara konkret bagaimana alat yang ditawarkan Host bisa menghentikan bolak-balik komunikasi yang terus terjadi dengan para desainer. Dia menegaskan bahwa dia sendiri sebenarnya menyukai software manajemen proyeknya saat ini, jadi masalahnya bukan pada alat itu, melainkan pada gesekan dalam serah-terima kerja. Dia juga mempersilakan Host untuk mengambil alih dan menjelaskan langkah selanjutnya.\n\nEnglish: The speaker, still in character as Maya the frustrated head of ops, wants to know specifically how the host's tool would actually stop the constant back-and-forth with the designers. She stresses that she actually loves her current project management software, so the real problem is the friction in the handoffs, not the tool itself, and she's handing the floor over to the host to explain the next move.",
+  "summary": "",
+  "brief": "## Goals\n- Wants to understand how the gap analysis handles cases where the AI thinks there's a gap but the client's silence is a conscious choice.\n- The sequence from the brief through the gap analysis to the roadmap is seen as the real engine, keeping the roadmap from being built on assumptions.\n\n## Pain Points\n- Maya's team spends half their time chasing down the same 3 questions in every single project, killing their momentum.\n- Her team is great, but coordinating client deliverables is a mess.\n- She oversees 12 designers across 3 time zones, and something is slipping through the cracks during the handoff to the account managers.\n- The digital experience side of their work is where coordination usually falls apart.\n- By the time a project hits the account managers, the original intent often gets lost in translation.\n- A designer in one time zone may believe they captured a specific client request, only for the account manager to realize 2 days later that it was completely missed.\n- Designers build things contrary to client requests (e.g., a complex animation the client asked to keep simple) and the account manager doesn't catch the mistake until the final review.\n- Delivering that bad news to the client is a nightmare.\n- Account managers are frustrated because they feel like they're just repeating the same feedback over and over.\n- She's tired of hearing problems from the team every Friday afternoon.\n- The worst part is the look on a client's face when they see a final version that ignores a note given 3 weeks ago.\n- She loves her current project management software but still can't figure out why the handoffs are failing.\n\n## Constraints\n- The account manager doesn't catch mistakes until the final review.\n- Clients are spread across locations including London and Singapore.\n\n## Scope\n- The agency specializes in high-end brand identity and digital experiences, taking a company's vision and turning it into a full visual language.\n- Work spans from initial wireframes to final interactive prototypes, focused on the whole interactive journey, like custom UI designs and complex websites.\n- Photography is part of it.\n\n## Open Questions\n- How will the gap analysis handle cases where the AI thinks there's a gap but the client's silence is actually a conscious choice?\n- How does the tool actually make sure the designer and the account manager are seeing the same thing?\n- What are the same 3 questions the team keeps chasing down in every project?\n- Why are the handoffs failing despite Maya liking her current project management software?",
+  "gaps": "**Contradictory setup** — The client says she loves her current project management software yet cannot figure out why handoffs fail, which contradicts the stated goal of fixing the workflow breakdown.\nAsk: \"If the PM tool works well for you, at exactly which step does the intent leave the tool and get lost — the designer's handoff or the account manager's intake?\"\n\n**Unspecified success metric** — She describes the pain (missed client notes, repeated feedback) but never defines what \"fixed\" looks like, which is a gap for a process-redesign goal.\nAsk: \"What single number would tell you the handoffs are fixed — missed client notes per project, or the time from designer handoff to account manager confirmation?\"\n\n**Unaddressed prior failure** — She has not said what was already tried to fix the handoffs, a missing constraint for diagnosing why the current system is failing.\nAsk: \"What has your team already tried to fix these handoffs, and why did it not stick?\"\n\n**Thin root cause** — \"Clunky\" and \"can't put my finger on why\" is an undefined diagnosis for a multi-time-zone, 12-person coordination problem.\nAsk: \"Walk me through the last project that went wrong — where exactly did the client's note drop out of the process?\"",
+  "roadmap": "",
+  "speaker": {
+    "facts": [
+      "Head of Operations at a mid-size creative agency",
+      "Oversees 12 designers across 3 time zones",
+      "Agency does brand identity and digital experiences",
+      "Clients include firms in London and Singapore",
+      "Loves her current project management software"
+    ],
+    "goals": [],
+    "interests": [],
+    "location": "",
+    "name": "Maya",
+    "occupation": "Head of Operations at a mid-size creative agency",
+    "pain_points": [
+      "Intent gets lost in translation to account managers",
+      "Designers and account managers misalign on client requests",
+      "Account managers repeat the same feedback endlessly",
+      "Handoffs across time zones let things slip through cracks",
+      "Tired of hearing problems from team every Friday afternoon",
+      "Clients see final versions ignoring notes given weeks earlier",
+      "Can't figure out why handoffs fail despite liking her project management software",
+      "Happy with software but miserable with handoffs"
+    ]
+  },
+  "brief_meta": {
+    "confirmed": false
+  },
+  "replay": {
+    "generated_at": "2026-10-17T06:54:29",
+    "source": "sessions/current.json",
+    "source_id": "20261016-194018",
+    "provider": "openai",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "purpose": "consultation",
+    "host_role": "consultant",
+    "context": {
+      "host": "docs/helpy.context.txt",
+      "speaker": "maya.context.txt"
+    },
+    "triggers": 7,
+    "replied": 5,
+    "skipped": 2,
+    "errors": 0,
+    "entries": [
+      {
+        "case": "A1",
+        "trigger": "Gap Analysis. Mhm. Mhm. Mhm. So let me talk about the gap analysis. Okay. Okay. Mhm. So, okay. Let me try to do something. I'll— I'll be right back. Okay? Hey, let's restart it. Okay. So, uh, now we talk about . How we can play role-playing gaming in order to . Ensure. That my application is currently is very well working. So we can try to role-play in gaming. Mm-hm. Can you explain to me a little bit? Adik, turun sayang. Kakak, turun. Kakak, di. Dek turun. Kan bundanya lagi sakit. Ah, that's my wife. Okay, we can continue then. Okay. So you're talking like, uh, you are missing somethings, and the team spends half their time chasing. Down the same three questions on every single project. With the scaling, their momentum. So they're setting up deliberately. Fake you. Client scenario to test the gap analysis part. Isn't it? But , but. Before we continue fur ther, can you try to introduce yourself and then what kind of . Positions you are right now, and . Tell me about you? No. You should be not Jordan your, your, your name is Maya's is h. Okay, now tell me about, uh, . Creative agency. What is it about? When you say about digital experience and . Uh. Like. Photography, maybe? Oh. So it's like so. It's like a fuel agency, but more like an IT things? So like website, UI/UX, design graphic, isn't it? Okay. So you often get lost translations? So it's mean are you try to working with all forces? I mean, you try to . Get a client from . Overboard and like that? So, uh, what is the examples? Uh, I see that you are very fluent in English and then why do you need this translations then? Okay. Okay. Mm-hm. Mm-hm. Okay, I understood. Okay. So I got it. So, so you're pain points is like, uh, your team. In 10. Get lost in translations to account managers and then the designers and account managers misalign on client requests. And then account managers will be the same feedback endlessly try. To hand off across time zones, letting slip through cracks. Isn't it? Mm-hm. Okay. So, uh, on this contact, I, I think you mentioned about the tools that I have right now. So, uh, currently I have a tool called like, uh, . When we try to speaking, it's l ike a AI assistance that automatically take a notes and then can try to get, uh, informations and. Yeah, kind of like that. Is that what you means? Okay. Okay, that's interesting. So In this part, uh, I'm very understand what you are saying. I know your pain point is — But in the fact, . I cannot answer it directly. Okay, that's because — Uh, I don't have any context right now. But I'm thinking — This one is the perfect time — How or. Can try to make a practice. Okay, thank you for that. Okay, let's see. Okay, hold on a second. Okay. Context then. I feel benefit. Thanks. Like, our role-playing games, uh. Okay. Okay.",
+        "history_turns": 25,
+        "outcome": "reply",
+        "skipped": "",
+        "error": "",
+        "latency_ms": 6070
+      },
+      {
+        "case": "A2",
+        "trigger": "Don't be sorry. No need to apologize for anything. I'm still curious, though, how exactly would your tool stop that constant back-and-forth with the designers? Încă.",
+        "history_turns": 0,
+        "outcome": "reply",
+        "skipped": "",
+        "error": "",
+        "latency_ms": 4741
+      },
+      {
+        "case": "A3",
+        "trigger": "That's right. I'm the slightly vague client, and you're the one trying to make sense of my chaos. Mm-hm. I was.",
+        "history_turns": 0,
+        "outcome": "reply",
+        "skipped": "",
+        "error": "",
+        "latency_ms": 3523
+      },
+      {
+        "case": "A4",
+        "trigger": "Okay, so you're saying that, uh, .",
+        "history_turns": 10,
+        "outcome": "reply",
+        "skipped": "",
+        "error": "",
+        "latency_ms": 5003
+      },
+      {
+        "case": "A5",
+        "trigger": "Exactly. You nailed it.",
+        "history_turns": 13,
+        "outcome": "skipped",
+        "skipped": "Filler utterance",
+        "error": "",
+        "latency_ms": 8
+      },
+      {
+        "case": "A6",
+        "trigger": "You nailed it.",
+        "history_turns": 13,
+        "outcome": "skipped",
+        "skipped": "Filler utterance",
+        "error": "",
+        "latency_ms": 1
+      },
+      {
+        "case": "A7",
+        "trigger": "Seeing as I 'm happy with my software, but miserable with the handoffs, how does your tool actually fix that part? Ugh. The last one was a nightmare. I told the designer I wanted the landing page to feel like a quiet morning in a gallery, and they came back with a stark white page and a single gray dot in the middle. It was technically minimal, but the soul was completely gone. How do we stop that from happening?",
+        "history_turns": 24,
+        "outcome": "reply",
+        "skipped": "",
+        "error": "",
+        "latency_ms": 4335
+      }
+    ]
+  }
+}

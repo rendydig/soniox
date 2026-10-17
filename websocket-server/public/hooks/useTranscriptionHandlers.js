@@ -38,6 +38,7 @@ export const useTranscriptionHandlers = ({
     setObjectiveLocks,
     setObjectiveActive,
     setObjectiveHistory,
+    setObjectiveSatisfied,
     setObjectiveStatus,
     setPurposeState,
     wsManager
@@ -454,7 +455,7 @@ export const useTranscriptionHandlers = ({
     }, [setConsultingStatus]);
 
     /** Session objectives (list, parallel locks and the resolved focus). */
-    const handleObjectives = useCallback((items, locks, active) => {
+    const handleObjectives = useCallback((items, locks, active, satisfied) => {
         if (typeof setObjectives === 'function') {
             setObjectives(Array.isArray(items) ? items : []);
         }
@@ -464,8 +465,11 @@ export const useTranscriptionHandlers = ({
         if (typeof setObjectiveActive === 'function') {
             setObjectiveActive(active && typeof active === 'object' ? active : {});
         }
+        if (typeof setObjectiveSatisfied === 'function') {
+            setObjectiveSatisfied(Array.isArray(satisfied) ? satisfied : []);
+        }
         console.log('[DEBUG] Objectives updated:', Array.isArray(items) ? items.length : 0);
-    }, [setObjectives, setObjectiveLocks, setObjectiveActive]);
+    }, [setObjectives, setObjectiveLocks, setObjectiveActive, setObjectiveSatisfied]);
 
     /** One committed transition appended to the history timeline. */
     const handleObjectivesHistory = useCallback((entry) => {
@@ -586,6 +590,12 @@ export const useTranscriptionHandlers = ({
                     : {}
             );
         }
+        if (typeof setObjectiveSatisfied === 'function') {
+            // Index-based and derived backend-side, same as the focus.
+            setObjectiveSatisfied(
+                Array.isArray(data.objective_satisfied) ? data.objective_satisfied : []
+            );
+        }
         if (typeof setObjectiveStatus === 'function') {
             setObjectiveStatus('');
         }
@@ -593,7 +603,7 @@ export const useTranscriptionHandlers = ({
             setLastPickupAuto(data.last_pickup_auto);
         }
         console.log('[DEBUG] Session state applied');
-    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints, setBulletLocks, setSpeakerProfile, setLastPickup, setSummary, setBrief, setGaps, setRoadmap, setBriefConfirmed, setConsultingStatus, setObjectives, setObjectiveLocks, setObjectiveHistory, setObjectiveActive, setObjectiveStatus, setLastPickupAuto]);
+    }, [setFinalizedSentences, setFinalizedTranslations, setGeminiResults, setScreenshots, setBulletPoints, setBulletLocks, setSpeakerProfile, setLastPickup, setSummary, setBrief, setGaps, setRoadmap, setBriefConfirmed, setConsultingStatus, setObjectives, setObjectiveLocks, setObjectiveHistory, setObjectiveActive, setObjectiveSatisfied, setObjectiveStatus, setLastPickupAuto]);
 
     return {
         handleFinalTranscription,

@@ -115,6 +115,11 @@ JEV_BASE_URL = os.environ.get("JEV_BASE_URL", "https://openrouter.ai/api")
 JEV_API_KEY = os.environ.get("JEV_API_KEY") or AI_API_KEY
 JEV_MIN_CONFIDENCE = _env_float("JEV_MIN_CONFIDENCE", 0.55)
 JEV_SHOULD_REPLY_MIN = _env_float("JEV_SHOULD_REPLY_MIN", 0.5)
+# How sure JEV must be that a session objective is *already met* before the reply
+# is told not to re-open it. Deliberately higher than JEV_MIN_CONFIDENCE: calling
+# an objective done is a stronger claim than picking a speech act, and a wrong
+# "met" would quietly stop the Host from closing a real gap.
+JEV_OBJECTIVE_MET_MIN = _env_float("JEV_OBJECTIVE_MET_MIN", 0.7)
 
 # Auto-reply streaming. The AI response is read incrementally and broadcast to
 # the panes as it is produced (word-by-word), instead of waiting for the full

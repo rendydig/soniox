@@ -374,11 +374,16 @@ check("a current_objective choice question is added",
       and _qs["current_objective"]["criteria"]
       == {"confirm_the_timeline": "Confirm the timeline", "fix_the_owner": "Fix the owner"})
 check("the per-objective noul questions use the session objectives",
-      _qs["objective_0"]["instructions"] == "Confirm the timeline"
-      and _qs["objective_1"]["instructions"] == "Fix the owner")
+      _qs["objective_0"]["instructions"]
+      == "Has the conversation already satisfied this objective: Confirm the timeline?"
+      and _qs["objective_1"]["instructions"]
+      == "Has the conversation already satisfied this objective: Fix the owner?")
+check("the per-objective noul asks a yes/no question with explicit criteria",
+      _qs["objective_0"]["type"] == "noul"
+      and set(_qs["objective_0"]["criteria"]) == {"true", "false"})
 check("with no session objectives the purpose checklist is the fallback",
       build_questions({}, {}, ["fallback one"], False, [], None)["objective_0"]["instructions"]
-      == "fallback one"
+      == "Has the conversation already satisfied this objective: fallback one?"
       and "current_objective" not in build_questions({}, {}, [], False, [], None))
 _st = build_state("host", "speaker", "Consultation", "consultant", [], "hi",
                   objectives=["Confirm the timeline"],
@@ -474,6 +479,45 @@ finally:
     shutil.rmtree(tmpdir, ignore_errors=True)
 
 oc_mod.ObjectiveWorker = _RealWorker
+
+# =====================================================================
+# [8] Satisfied objectives — the JEV "already met" answers, index-safe
+# =====================================================================
+print("\n[8] Satisfied objectives — recorded, pruned, shifted, persisted")
+_sat = ObjectiveController()
+_sat.set_objectives(["Agree scope", "Confirm timeline", "Close pricing"])
+check("a fresh tracker has nothing satisfied", _sat.get_meta().get("satisfied") in (None, []))
+
+_sat.set_satisfied([0, 2])
+check("the satisfied indexes are recorded", _sat.get_meta()["satisfied"] == [0, 2])
+check("set_satisfied reports a change", _sat.set_satisfied([0, 2]) is False,
+      "an unchanged set must not re-broadcast")
+
+# Out-of-range and non-int entries are dropped, never stored.
+_sat.set_satisfied([0, 9, -1, "2", True, None])
+check("out-of-range / non-int satisfied indexes are dropped",
+      _sat.get_meta()["satisfied"] == [0], str(_sat.get_meta().get("satisfied")))
+
+# Removing an objective must shift the remaining satisfied indexes down.
+_sat.set_satisfied([0, 2])
+_sat.remove_objective(0)
+check("removing an objective shifts the satisfied indexes",
+      _sat.get_meta()["satisfied"] == [1], str(_sat.get_meta().get("satisfied")))
+check("the shift lands on the same objective text",
+      _sat.get_objectives()[1] == "Close pricing")
+
+# Replacing the list with a shorter one prunes what no longer exists.
+_sat.set_objectives(["Only one left"])
+check("a shorter list prunes the stale satisfied index",
+      _sat.get_meta().get("satisfied") in (None, []))
+
+# It must round-trip through the session like every other derived field.
+_sat.set_satisfied([0])
+check("satisfied is kept on the tracker meta (so it persists with it)",
+      _sat.get_meta().get("satisfied") == [0])
+_sat.reset()
+check("reset clears the satisfied set", _sat.get_meta().get("satisfied") in (None, []))
+_sat.cleanup()
 
 print()
 print(f"{n_pass} checks passed, {len(failures)} failed.")

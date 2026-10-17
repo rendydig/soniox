@@ -36,6 +36,7 @@ const BulletPointsApp = () => {
     const [objectives, setObjectives] = useState([]);
     const [objectiveLocks, setObjectiveLocks] = useState([]);
     const [objectiveActive, setObjectiveActive] = useState({});
+    const [objectiveSatisfied, setObjectiveSatisfied] = useState([]);
     const [objectiveHistory, setObjectiveHistory] = useState([]);
     const [objectiveStatus, setObjectiveStatus] = useState('');
     const wsManager = useRef(null);
@@ -83,6 +84,7 @@ const BulletPointsApp = () => {
         setObjectives,
         setObjectiveLocks,
         setObjectiveActive,
+        setObjectiveSatisfied,
         setObjectiveHistory,
         setObjectiveStatus,
         wsManager
@@ -223,6 +225,7 @@ const BulletPointsApp = () => {
             items=${objectives}
             locks=${objectiveLocks}
             active=${objectiveActive}
+            satisfied=${objectiveSatisfied}
             history=${objectiveHistory}
             status=${objectiveStatus}
             onToggleLock=${(index, text, locked) => sendControl({

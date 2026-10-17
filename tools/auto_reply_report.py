@@ -31,6 +31,7 @@ evidence tool, not a gate (the gate is the test suite).
 import argparse
 import copy
 import json
+import logging
 import os
 import re
 import sys
@@ -55,6 +56,7 @@ from src.config import (  # noqa: E402
     DISABLE_MODEL_REASONING,
     PURPOSES_PATH,
 )
+from src.decision_client import DecisionClient  # noqa: E402
 from src.purposes import BUILTIN_PURPOSES  # noqa: E402
 
 SESSION_PATH = os.path.join(REPO, "sessions", "current.json")
@@ -63,6 +65,12 @@ DEFAULT_JSON = os.path.join(REPO, "reports", "auto-reply-report.json")
 
 PURPOSE = "consultation"
 HOST_ROLE = "consultant"
+
+# The role the live worker is built with. ``smart`` is the app's default for
+# "I am:" and is the only mode in which JEV is asked ``host_role`` at all
+# (``build_questions`` only adds it when ``smart_role`` is true), so a JEV run
+# that wants to measure role adoption has to use it.
+ROLES = ("consultant", "client", "smart")
 
 # --- detectors -----------------------------------------------------------
 # Mirrors _tmp_auto_reply_live_check.py:86-93 and :229. The constants are copied
@@ -523,6 +531,9 @@ def prompt_contract(session: dict, helpy: str, maya: str) -> dict:
         # which side of the A/B each one was.
         "digest_enabled": bool(getattr(gw, "AUTO_REPLY_CONTEXT_DIGEST", False)),
         "objective_focus_absent": "Objective focus:" not in si,
+        # Config-level, not per-run: whether JEV *could* run at all (flag + key).
+        # Whether this run actually used it is in the metadata (``jev``).
+        "jev_available": bool(DecisionClient().available),
         "history_starts_with_user": bool(messages) and messages[0].get("role") == "user",
         "question_sent_once": q_count == 1,
         "question_sent_once_with_trailing_host_turn": trailing_q == 1,
@@ -552,6 +563,8 @@ CONTRACT_ROWS = [
      "Phase 1 — opt-in, jadi ✅ di sini berarti run ini mengukur sisi digest"),
     ("objective_focus_absent", "Tanpa objective, prompt tidak memuat blok `Objective focus:`",
      "Phase 2 — blok objective hanya muncul saat ada objective terlacak"),
+    ("jev_available", "JEV bisa jalan di checkout ini (`JEV_ENABLED` + key)",
+     "konfigurasi — apakah run ini memakai JEV ada di Metadata (`jev`)"),
 ]
 
 
@@ -614,25 +627,63 @@ def live_scenarios(session: dict, recorded_cases: list, repeat: int) -> list:
     return scenarios
 
 
-def run_live(scenario: dict, helpy: str, maya: str) -> dict:
+class _LogCapture(logging.Handler):
+    """Collect ``gemini_worker`` log messages for the duration of one live case.
+
+    The Other flow (persona synthesis) is only observable through its log line —
+    it does not emit a distinct signal, and in the harness it cannot register a
+    persona (no ``purpose_store`` is passed), so ``Learned new persona`` never
+    appears. Capturing the record is the least invasive way to count how often
+    the JEV path escalates.
+    """
+
+    def __init__(self):
+        super().__init__(level=logging.INFO)
+        self.messages = []
+
+    def emit(self, record):
+        try:
+            self.messages.append(record.getMessage())
+        except Exception:  # noqa: BLE001 - never let logging break a report
+            pass
+
+    def count(self, needle: str) -> int:
+        return sum(1 for m in self.messages if needle in m)
+
+
+def run_live(scenario: dict, helpy: str, maya: str, jev: bool = False,
+             role: str = HOST_ROLE) -> dict:
     context = None if scenario["context"] == "attached" else {"host": "", "speaker": ""}
     if context is None:
         context = {"host": helpy or "HOSTCTX", "speaker": maya}
     history = scenario["history"]
     if history is None:
         history = []
-    out = {"text": "", "error": "", "chunks": []}
+    out = {"text": "", "error": "", "chunks": [], "skipped": "", "status": ""}
+    capture = _LogCapture()
+    worker_logger = logging.getLogger("src.gemini_worker")
+    # ``logger.info`` is dropped when the logger's effective level is above INFO,
+    # and these harnesses never configure logging (the root default is WARNING),
+    # so the level has to be forced for the capture to see anything.
+    previous_level = worker_logger.level
+    worker_logger.setLevel(logging.INFO)
+    worker_logger.addHandler(capture)
     worker = gw.GeminiAutoReplyWorker(
         scenario["text"], "English", conversation_history=list(history),
-        include_pronunciation=False, purpose=PURPOSE, host_role=HOST_ROLE,
-        context=context,
+        include_pronunciation=False, purpose=PURPOSE, host_role=role,
+        context=context, jev_enabled=jev,
     )
     worker.result.connect(lambda t: out.__setitem__("text", t))
     worker.error.connect(lambda t: out.__setitem__("error", t))
     worker.chunk.connect(lambda t: out["chunks"].append(t))
     worker.skipped.connect(lambda t: out.__setitem__("skipped", t))
+    worker.status.connect(lambda t: out.__setitem__("status", t))
     t0 = time.monotonic()
-    worker.run()
+    try:
+        worker.run()
+    finally:
+        worker_logger.removeHandler(capture)
+        worker_logger.setLevel(previous_level)
     latency = round((time.monotonic() - t0) * 1000)
     analysis = analyze(out["text"], scenario["text"],
                        expect_language=scenario["expect_language"], latency_ms=latency,
@@ -656,6 +707,11 @@ def run_live(scenario: dict, helpy: str, maya: str) -> dict:
         "answer": out["text"],
         "error": out["error"],
         "skipped": out.get("skipped", ""),
+        "status": out.get("status", ""),
+        "jev": bool(jev),
+        "role": role,
+        "escalated": capture.count("Other flow triggered") > 0,
+        "role_rejected": capture.count("JEV: no reply needed") > 0,
         "latency_ms": latency,
         "stream_chunks": len(out["chunks"]),
         "analysis": analysis,
@@ -693,6 +749,8 @@ def render_markdown(meta: dict, recorded: list, live: list, contract: dict,
              f"({meta['recorded_turns']} turn, {meta['recorded_results']} jawaban terekam) · "
              f"`docs/helpy.context.txt` (Host) · `maya.context.txt` (Speaker)")
     L.append(f"- Kasus: Bagian A = {len(recorded)}, Bagian B = {len(live)}")
+    L.append(f"- Bagian B: gerbang JEV `{'AKTIF' if meta.get('jev') else 'mati'}` · "
+             f"peran 'I am:' `{meta.get('role', HOST_ROLE)}`")
     if note:
         L.append(f"- Catatan: {note}")
     L.append("")
@@ -742,6 +800,10 @@ def render_markdown(meta: dict, recorded: list, live: list, contract: dict,
                             else " · **tidak di kalimat pertama**"))
             if c.get("skipped"):
                 L.append(f"- **Skip:** {c['skipped']}")
+            if c.get("status"):
+                L.append(f"- **Status:** {c['status']}")
+            if c.get("escalated"):
+                L.append("- **Eskalasi:** Other flow (persona synthesis) — panggilan LLM tambahan")
             L.append("")
             L.append("**Jawaban AI:**")
             L.append("")
@@ -777,6 +839,23 @@ def render_markdown(meta: dict, recorded: list, live: list, contract: dict,
     L.append("")
     if aggregate["trigger_fillers"]:
         L.append(f"- Pemicu berupa filler: {', '.join(aggregate['trigger_fillers'])}")
+        L.append("")
+    jev = aggregate.get("jev") or {}
+    if jev.get("enabled"):
+        L.append("**Gerbang JEV (Bagian B).** Skip di sini adalah **keputusan gerbang**, bukan cacat: "
+                 "`should_reply` menilai Speaker belum butuh jawaban.")
+        L.append("")
+        L.append(f"- Peran 'I am:' `{jev.get('role')}`")
+        L.append(f"- Ditahan gerbang: {', '.join(jev.get('suppressed') or []) or '—'}")
+        L.append(f"- Eskalasi ke Other flow (panggilan LLM tambahan): "
+                 f"{', '.join(jev.get('escalated') or []) or '—'}")
+        if jev.get("status"):
+            L.append("- Status per kasus: " + " · ".join(
+                f"`{cid}` {st}" for cid, st in jev["status"].items()))
+        L.append("")
+    elif live:
+        L.append("_Bagian B berjalan **tanpa** gerbang JEV (worker dibangun dengan "
+                 "`jev_enabled=False`). Pakai `--jev` untuk mengukurnya._")
         L.append("")
     L.append("Catatan keterbatasan detektor (baca verdict sebagai sinyal, bukan putusan):")
     L.append("")
@@ -830,12 +909,25 @@ def build_aggregate(recorded: list, live: list) -> dict:
     verdicts = {}
     for c in cases:
         verdicts[c["analysis"]["verdict"]] = verdicts.get(c["analysis"]["verdict"], 0) + 1
+    # JEV-specific behaviour. Suppression is a legitimate outcome (the gate
+    # decided the Speaker needs nothing), not a defect, so it is counted here
+    # rather than left to the finding table.
+    suppressed = [c["id"] for c in live if c.get("skipped")]
+    escalated = [c["id"] for c in live if c.get("escalated")]
+    jev = {
+        "enabled": any(c.get("jev") for c in live),
+        "role": next((c.get("role") for c in live if c.get("jev")), None),
+        "suppressed": suppressed,
+        "escalated": escalated,
+        "status": {c["id"]: c.get("status", "") for c in live if c.get("status")},
+    }
     return {
         "total": len(cases),
         "verdicts": verdicts,
         "findings": findings,
         "latency": latency,
         "trigger_fillers": fillers,
+        "jev": jev,
     }
 
 
@@ -860,7 +952,18 @@ def main() -> int:
     parser.add_argument("--session", default=SESSION_PATH,
                         help="sesi untuk Bagian A (default: %(default)s); gunakan file replay "
                              "hasil _tmp_auto_reply_record.py untuk mengukur prompt saat ini")
+    parser.add_argument("--jev", action="store_true",
+                        help="jalankan Bagian B dengan gerbang JEV aktif (jev_enabled=True). "
+                             "Tanpa ini run mengukur jalur non-JEV, walau JEV_ENABLED=true di .env")
+    parser.add_argument("--role", default=HOST_ROLE, choices=ROLES,
+                        help="peran 'I am:' untuk Bagian B (default: %(default)s). Pakai "
+                             "'smart' untuk mengukur adopsi peran oleh JEV")
     args = parser.parse_args()
+
+    # JEV has to be requested explicitly: the worker's ``jev_enabled`` defaults to
+    # False, so ``JEV_ENABLED=true`` in .env alone never reaches this harness.
+    jev = bool(args.jev or os.environ.get("AUTO_REPLY_JEV_TESTS") == "1")
+    role = args.role
 
     session = load_session(args.session)
     helpy = read_file("docs", "helpy.context.txt")
@@ -879,7 +982,7 @@ def main() -> int:
             note = f"Bagian B dilewati: provider tidak bisa dibangun ({type(e).__name__}: {e})."
         else:
             for scenario in live_scenarios(session, recorded, max(1, args.repeat)):
-                live.append(run_live(scenario, helpy, maya))
+                live.append(run_live(scenario, helpy, maya, jev=jev, role=role))
     else:
         note = ("Bagian B dilewati. Jalankan `AUTO_REPLY_LIVE_TESTS=1 venv/bin/python "
                 "tools/auto_reply_report.py` untuk menjalankannya (memanggil model asli).")
@@ -896,6 +999,10 @@ def main() -> int:
         "session_path": os.path.relpath(os.path.abspath(args.session), REPO),
         "recorded_turns": len(session.get("conversation") or []),
         "recorded_results": len(session.get("gemini_results") or []),
+        # The two live-tier axes. A report is only comparable to another report
+        # that ran with the same values here.
+        "jev": jev,
+        "role": role,
     }
 
     markdown = render_markdown(meta, recorded, live, contract, aggregate, note)
